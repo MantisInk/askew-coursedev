@@ -164,14 +164,7 @@ public class RopeBridge extends ComplexObstacle {
 		for (int ii = 0; ii < bodies.size-1; ii++) {
 			//#region INSERT CODE HERE
 			// Look at what we did above and join the planks
-			jointDef.bodyA = bodies.get(ii).getBody();
-			jointDef.bodyB = bodies.get(ii + 1).getBody();
-			jointDef.localAnchorA.set(anchor1);
-			jointDef.localAnchorB.set(anchor2);
-			jointDef.collideConnected = false;
-			joints.add(world.createJoint(jointDef));
-
-
+						
 			//#endregion
 		}
 

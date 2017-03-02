@@ -72,7 +72,7 @@ public class GDXRoot extends Game implements ScreenListener {
 		
 		// Initialize the three game worlds
 		controllers = new WorldController[1];
-		controllers[0] = new PlatformController();
+		controllers[1] = new PlatformController();
 		for(int ii = 0; ii < controllers.length; ii++) {
 			controllers[ii].preLoadContent(manager);
 		}

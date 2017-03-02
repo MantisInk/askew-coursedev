@@ -127,7 +127,7 @@ public class DudeModel extends CapsuleObstacle {
 	 * @return true if the dude is actively jumping.
 	 */
 	public boolean isJumping() {
-		return isJumping && isGrounded && jumpCooldown <= 0;
+		return isJumping && jumpCooldown <= 0;
 	}
 	
 	/**
