@@ -71,12 +71,10 @@ public class InputController {
 	private boolean exitPressed;
 	private boolean exitPrevious;
 
-	/** Whether the reset button was pressed. */
+	/** Whether the right hand is grabbing. */
 	private float leftGrabPressed;
-	//private float leftGrabPrevious;
-	/** Whether the reset button was pressed. */
+	/** Whether the left hand is grabbing. */
 	private float rightGrabPressed;
-	//private float rightGrabPrevious;
 
 	/** How much did left arm move horizontally? */
 	private float leftHorizontal;
@@ -86,6 +84,7 @@ public class InputController {
 	private float rightHorizontal;
 	/** How much did right arm move move vertically? */
 	private float rightVertical;
+
 	/** The crosshair position (for raddoll) */
 	private Vector2 crosshair;
 	/** The crosshair cache (for using as a return value) */
@@ -326,20 +325,17 @@ public class InputController {
 		primePressed = xbox.getA();
 		debugPressed  = xbox.getY();
 
+		//Check if hands are grabbing
 		leftGrabPressed = xbox.getLeftTrigger();
 		rightGrabPressed = xbox.getRightTrigger();
 
-//		System.out.println("LEEEEEEFTTTT: "+leftGrabPressed);
-//		System.out.println("RIGHT: "+rightGrabPressed);
-//
-//		if(leftGrabPressed>0) System.out.println("LLLLLLLEEEEEFTTTTTTT");
-//		if(rightGrabPressed>0) System.out.println("Right");
-
-		// Increase animation frame, but only if trying to move
+		//Get positions of joysticks/arms
 		leftHorizontal = xbox.getLeftX();
 		leftVertical   = xbox.getLeftY();
 		rightHorizontal = xbox.getRightX();
 		rightVertical   = xbox.getRightY();
+
+		// Increase animation frame, but only if trying to move
 		secondPressed = xbox.getRightTrigger() > 0.6f;
 
 		// Move the crosshairs with the right stick.
