@@ -33,8 +33,8 @@ public class InputController {
 
 	/** The singleton instance of the input controller */
 	private static InputController theController = null;
-	
-	/** 
+
+	/**
 	 * Return the singleton instance of the input controller
 	 *
 	 * @return the singleton instance of the input controller
@@ -45,7 +45,7 @@ public class InputController {
 		}
 		return theController;
 	}
-	
+
 	// Fields to manage buttons
 	/** Whether the reset button was pressed. */
 	private boolean resetPressed;
@@ -70,48 +70,110 @@ public class InputController {
 	/** Whether the exit button was pressed. */
 	private boolean exitPressed;
 	private boolean exitPrevious;
-	
-	/** How much did we move horizontally? */
-	private float horizontal;
-	/** How much did we move vertically? */
-	private float vertical;
+
+	/** Whether the reset button was pressed. */
+	private float leftGrabPressed;
+	//private float leftGrabPrevious;
+	/** Whether the reset button was pressed. */
+	private float rightGrabPressed;
+	//private float rightGrabPrevious;
+
+	/** How much did left arm move horizontally? */
+	private float leftHorizontal;
+	/** How much did left arm move move vertically? */
+	private float leftVertical;
+	/** How much did right arm move horizontally? */
+	private float rightHorizontal;
+	/** How much did right arm move move vertically? */
+	private float rightVertical;
 	/** The crosshair position (for raddoll) */
 	private Vector2 crosshair;
 	/** The crosshair cache (for using as a return value) */
 	private Vector2 crosscache;
 	/** For the gamepad crosshair control */
 	private float momentum;
-	
+
 	/** An X-Box controller (if it is connected) */
 	XBox360Controller xbox;
-	
+
 	/**
-	 * Returns the amount of sideways movement. 
+	 * Returns the amount of sideways movement for the left arm.
 	 *
 	 * -1 = left, 1 = right, 0 = still
 	 *
-	 * @return the amount of sideways movement. 
+	 * @return the amount of sideways movement.
 	 */
-	public float getHorizontal() {
-		return horizontal;
+	public float getLeftHorizontal() {
+		return leftHorizontal;
 	}
-	
+
 	/**
-	 * Returns the amount of vertical movement. 
+	 * Returns the amount of vertical movement for the left arm.
 	 *
 	 * -1 = down, 1 = up, 0 = still
 	 *
-	 * @return the amount of vertical movement. 
+	 * @return the amount of vertical movement.
 	 */
-	public float getVertical() {
-		return vertical;
+	public float getLeftVertical() {
+		return leftVertical;
 	}
-	
+
+	/**
+	 * Returns the amount of sideways movement for the left arm.
+	 *
+	 * -1 = left, 1 = right, 0 = still
+	 *
+	 * @return the amount of sideways movement.
+	 */
+	public float getRightHorizontal() {
+		return rightHorizontal;
+	}
+
+	/**
+	 * Returns the amount of vertical movement for the left arm.
+	 *
+	 * -1 = down, 1 = up, 0 = still
+	 *
+	 * @return the amount of vertical movement.
+	 */
+	public float getRightVertical() {
+		return rightVertical;
+	}
+
+	/**
+	 * Returns how much the left trigger button was pressed.
+	 *
+	 * This is a value between 0 and 1, where 0 is no pressure.
+	 *
+	 * This is a sustained button. It will returns true as long as the player
+	 * holds it down.
+	 *
+	 * @return how much the left trigger button was pressed.
+	 */
+	public float getLeftGrab() {
+		return leftGrabPressed;
+	}
+
+	/**
+	 * Returns how much the right trigger button was pressed.
+	 *
+	 * This is a value between 0 and 1, where 0 is no pressure.
+	 *
+	 * This is a sustained button. It will returns true as long as the player
+	 * holds it down.
+	 *
+	 * @return how much the right trigger button was pressed.
+	 */
+	public float getRightGrab() {
+		return rightGrabPressed;
+	}
+
+
 	/**
 	 * Returns the current position of the crosshairs on the screen.
 	 *
 	 * This value does not return the actual reference to the crosshairs position.
-	 * That way this method can be called multiple times without any fair that 
+	 * That way this method can be called multiple times without any fair that
 	 * the position has been corrupted.  However, it does return the same object
 	 * each time.  So if you modify the object, the object will be reset in a
 	 * subsequent call to this getter.
@@ -175,7 +237,7 @@ public class InputController {
 	public boolean didAdvance() {
 		return nextPressed && !nextPrevious;
 	}
-	
+
 	/**
 	 * Returns true if the player wants to go to the previous level.
 	 *
@@ -184,7 +246,7 @@ public class InputController {
 	public boolean didRetreat() {
 		return prevPressed && !prevPrevious;
 	}
-	
+
 	/**
 	 * Returns true if the player wants to go toggle the debug mode.
 	 *
@@ -193,7 +255,7 @@ public class InputController {
 	public boolean didDebug() {
 		return debugPressed && !debugPrevious;
 	}
-	
+
 	/**
 	 * Returns true if the exit button was pressed.
 	 *
@@ -202,14 +264,14 @@ public class InputController {
 	public boolean didExit() {
 		return exitPressed && !exitPrevious;
 	}
-	
+
 	/**
 	 * Creates a new input controller
-	 * 
+	 *
 	 * The input controller attempts to connect to the X-Box controller at device 0,
 	 * if it exists.  Otherwise, it falls back to the keyboard control.
 	 */
-	public InputController() { 
+	public InputController() {
 		// If we have a game-pad for id, then use it.
 		xbox = new XBox360Controller(0);
 		crosshair = new Vector2();
@@ -223,7 +285,7 @@ public class InputController {
 	 * the drawing scale to convert screen coordinates to world coordinates.  The
 	 * bounds are for the crosshair.  They cannot go outside of this zone.
 	 *
-	 * @param bounds The input bounds for the crosshair.  
+	 * @param bounds The input bounds for the crosshair.
 	 * @param scale  The drawing scale
 	 */
 	public void readInput(Rectangle bounds, Vector2 scale) {
@@ -236,7 +298,7 @@ public class InputController {
 		exitPrevious = exitPressed;
 		nextPrevious = nextPressed;
 		prevPrevious = prevPressed;
-		
+
 		// Check to see if a GamePad is connected
 		if (xbox.isConnected()) {
 			readGamepad(bounds, scale);
@@ -253,7 +315,7 @@ public class InputController {
 	 * the drawing scale to convert screen coordinates to world coordinates.  The
 	 * bounds are for the crosshair.  They cannot go outside of this zone.
 	 *
-	 * @param bounds The input bounds for the crosshair.  
+	 * @param bounds The input bounds for the crosshair.
 	 * @param scale  The drawing scale
 	 */
 	private void readGamepad(Rectangle bounds, Vector2 scale) {
@@ -264,11 +326,22 @@ public class InputController {
 		primePressed = xbox.getA();
 		debugPressed  = xbox.getY();
 
+		leftGrabPressed = xbox.getLeftTrigger();
+		rightGrabPressed = xbox.getRightTrigger();
+
+//		System.out.println("LEEEEEEFTTTT: "+leftGrabPressed);
+//		System.out.println("RIGHT: "+rightGrabPressed);
+//
+//		if(leftGrabPressed>0) System.out.println("LLLLLLLEEEEEFTTTTTTT");
+//		if(rightGrabPressed>0) System.out.println("Right");
+
 		// Increase animation frame, but only if trying to move
-		horizontal = xbox.getLeftX();
-		vertical   = xbox.getLeftY();
+		leftHorizontal = xbox.getLeftX();
+		leftVertical   = xbox.getLeftY();
+		rightHorizontal = xbox.getRightX();
+		rightVertical   = xbox.getRightY();
 		secondPressed = xbox.getRightTrigger() > 0.6f;
-		
+
 		// Move the crosshairs with the right stick.
 		tertiaryPressed = xbox.getA();
 		crosscache.set(xbox.getLeftX(), xbox.getLeftY());
@@ -302,32 +375,32 @@ public class InputController {
 		prevPressed = (secondary && prevPressed) || (Gdx.input.isKeyPressed(Input.Keys.P));
 		nextPressed = (secondary && nextPressed) || (Gdx.input.isKeyPressed(Input.Keys.N));
 		exitPressed  = (secondary && exitPressed) || (Gdx.input.isKeyPressed(Input.Keys.ESCAPE));
-		
+
 		// Directional controls
-		horizontal = (secondary ? horizontal : 0.0f);
+		leftHorizontal = (secondary ? leftHorizontal : 0.0f);
 		if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-			horizontal += 1.0f;
+			leftHorizontal += 1.0f;
 		}
 		if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-			horizontal -= 1.0f;
+			leftHorizontal -= 1.0f;
 		}
-		
-		vertical = (secondary ? vertical : 0.0f);
+
+		leftVertical = (secondary ? leftVertical : 0.0f);
 		if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
-			vertical += 1.0f;
+			leftVertical += 1.0f;
 		}
 		if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-			vertical -= 1.0f;
+			leftVertical -= 1.0f;
 		}
-		
+
 		// Mouse results
-        tertiaryPressed = Gdx.input.isButtonPressed(Input.Buttons.LEFT);
+		tertiaryPressed = Gdx.input.isButtonPressed(Input.Buttons.LEFT);
 		crosshair.set(Gdx.input.getX(), Gdx.input.getY());
 		crosshair.scl(1/scale.x,-1/scale.y);
 		crosshair.y += bounds.height;
 		clampPosition(bounds);
 	}
-	
+
 	/**
 	 * Clamp the cursor position so that it does not go outside the window
 	 *
