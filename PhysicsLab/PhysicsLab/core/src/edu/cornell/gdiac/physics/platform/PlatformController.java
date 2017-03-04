@@ -63,8 +63,8 @@ public class PlatformController extends WorldController implements ContactListen
 	/** Texture file for watery foreground */
 	private static final String FOREG_FILE = "ragdoll/foreground.png";
 	/** Files for the body textures */
-	private static final String[] RAGDOLL_FILES = { "ragdoll/tux_body.png", "ragdoll/ProfWhite.png",
-			"ragdoll/tux_arm.png",  "ragdoll/tux_forearm.png",
+	private static final String[] RAGDOLL_FILES = { "ragdoll/trevorhand.png", "ragdoll/ProfWhite.png",
+			"ragdoll/trevorarm.png",  "ragdoll/tux_forearm.png",
 			"ragdoll/tux_thigh.png", "ragdoll/tux_shin.png" };
 
 
@@ -370,13 +370,10 @@ public class PlatformController extends WorldController implements ContactListen
 	 * This method is called after input is read, but before collisions are resolved.
 	 * The very last thing that it should do is apply forces to the appropriate objects.
 	 *
-	 * @param delta Number of seconds since last animation frame
+	 * @param dt Number of seconds since last animation frame
 	 */
 	public void update(float dt) {
 		// Process actions in object model
-		//avatar.setMovement(InputController.getInstance().getLeftHorizontal() *avatar.getForce());
-		//avatar.setJumping(InputController.getInstance().didPrimary());
-		//avatar.setShooting(InputController.getInstance().didSecondary());
 		sloth.setLeftHori(InputController.getInstance().getLeftHorizontal());
 		sloth.setLeftVert(InputController.getInstance().getLeftVertical());
 		sloth.setRightHori(InputController.getInstance().getRightHorizontal());
@@ -399,40 +396,6 @@ public class PlatformController extends WorldController implements ContactListen
 	    // If we use sound, we must remember this.
 	    SoundController.getInstance().update();
 	}
-
-	/**
-	 * Add a new bullet to the world and send it in the right direction.
-	 */
-	private void createBullet() {
-		float offset = (avatar.isFacingRight() ? BULLET_OFFSET : -BULLET_OFFSET);
-		float radius = bulletTexture.getRegionWidth()/(2.0f*scale.x);
-		WheelObstacle bullet = new WheelObstacle(avatar.getX()+offset, avatar.getY(), radius);
-		
-	    bullet.setName("bullet");
-		bullet.setDensity(HEAVY_DENSITY);
-	    bullet.setDrawScale(scale);
-	    bullet.setTexture(bulletTexture);
-	    bullet.setBullet(true);
-	    bullet.setGravityScale(0);
-		
-		// Compute position and velocity
-		float speed  = (avatar.isFacingRight() ? BULLET_SPEED : -BULLET_SPEED);
-		bullet.setVX(speed);
-		addQueuedObject(bullet);
-		
-		SoundController.getInstance().play(PEW_FILE, PEW_FILE, false, EFFECT_VOLUME);
-	}
-	
-	/**
-	 * Remove a new bullet from the world.
-	 *
-	 * @param  bullet   the bullet to remove
-	 */
-	public void removeBullet(Obstacle bullet) {
-	    bullet.markRemoved(true);
-	    SoundController.getInstance().play(POP_FILE,POP_FILE,false,EFFECT_VOLUME);
-	}
-
 	
 	/**
 	 * Callback method for the start of a collision

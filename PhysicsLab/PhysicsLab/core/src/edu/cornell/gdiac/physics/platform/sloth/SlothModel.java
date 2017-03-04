@@ -6,22 +6,31 @@ package edu.cornell.gdiac.physics.platform.sloth;
  * This the sloth!
  */
 
-        import com.badlogic.gdx.math.*;
-        import com.badlogic.gdx.physics.box2d.*;
-        import com.badlogic.gdx.physics.box2d.joints.*;
-        import com.badlogic.gdx.graphics.g2d.*;
-
-        import edu.cornell.gdiac.physics.obstacle.*;
+import com.badlogic.gdx.math.*;
+import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.physics.box2d.joints.*;
+import com.badlogic.gdx.graphics.g2d.*;
+import edu.cornell.gdiac.physics.obstacle.*;
 
 public class SlothModel extends ComplexObstacle {
+
+    /** Constants for tuning sloth behaviour */
+    public static final float HAND_DENSITY = 1.0f;
+    public static final float ARM_DENSITY = 0.1f;
+    public static final float TWO_FREE_FORCE_MULTIPLIER = 5.0f;
+
+    private static final boolean HANDS_FIXED_ROTATION = true;
 
     /** Indices for the body parts in the bodies array */
     private static final int PART_NONE = -1;
     private static final int PART_RIGHT_ARM = 0;
     private static final int PART_LEFT_ARM = 1;
+    private static final int PART_LEFT_HAND = 2;
+    private static final int PART_RIGHT_HAND = 3;
 
     /** The number of DISTINCT body parts */
     private static final int BODY_TEXTURE_COUNT = 6;
+    private static final float GRAVITY_SCALE = 1.7f;
 
     public float x;
     public float y;
@@ -39,6 +48,9 @@ public class SlothModel extends ComplexObstacle {
      */
     private static int partToAsset(int part) {
         switch (part) {
+            case PART_LEFT_HAND:
+            case PART_RIGHT_HAND:
+                return 0;
             case PART_LEFT_ARM:
             case PART_RIGHT_ARM:
                 return 2;
@@ -48,14 +60,14 @@ public class SlothModel extends ComplexObstacle {
     }
 
     // Layout of ragdoll
-    //  |______0______| LOL WTF
+    //  |0|______0______|0| LOL WTF
     //
     /** Dist between arms? */
-    private static final float ARM_XOFFSET    = 2.75f;
+    private static final float ARM_XOFFSET    = 1.00f;
     private static final float ARM_YOFFSET    = 0;
 
-    /** The density for each body part */
-    private static final float DENSITY = 1.0f;
+    private static final float HAND_XOFFSET    = .70f;
+    private static final float HAND_YOFFSET    = 0;
 
     /** Texture assets for the body parts */
     private TextureRegion[] partTextures;
@@ -90,9 +102,17 @@ public class SlothModel extends ComplexObstacle {
         BoxObstacle part;
 
         // ARMS
-        makePart(PART_RIGHT_ARM, PART_NONE, x, y);
-        part = makePart(PART_LEFT_ARM, PART_RIGHT_ARM, ARM_XOFFSET, ARM_YOFFSET);
+        part = makePart(PART_RIGHT_ARM, PART_NONE, x, y, ARM_DENSITY);
+        part.setGravityScale(GRAVITY_SCALE);
+        part = makePart(PART_LEFT_ARM, PART_RIGHT_ARM, ARM_XOFFSET, ARM_YOFFSET, ARM_DENSITY);
         part.setAngle((float)Math.PI);
+        part.setGravityScale(GRAVITY_SCALE);
+        part = makePart(PART_LEFT_HAND, PART_LEFT_ARM, ARM_XOFFSET, ARM_YOFFSET, HAND_DENSITY);
+        part.setFixedRotation(HANDS_FIXED_ROTATION);
+        part.setGravityScale(GRAVITY_SCALE);
+        part = makePart(PART_RIGHT_HAND, PART_RIGHT_ARM, ARM_XOFFSET, ARM_YOFFSET, HAND_DENSITY);
+        part.setFixedRotation(HANDS_FIXED_ROTATION);
+        part.setGravityScale(GRAVITY_SCALE);
     }
 
     /**
@@ -162,7 +182,7 @@ public class SlothModel extends ComplexObstacle {
      *
      * @return the newly created part
      */
-    private BoxObstacle makePart(int part, int connect, float x, float y) {
+    private BoxObstacle makePart(int part, int connect, float x, float y, float density) {
         TextureRegion texture = partTextures[partToAsset(part)];
 
         partCache.set(x,y);
@@ -176,7 +196,7 @@ public class SlothModel extends ComplexObstacle {
         BoxObstacle body = new BoxObstacle(partCache.x, partCache.y, dwidth, dheight);
         body.setDrawScale(drawScale);
         body.setTexture(texture);
-        body.setDensity(DENSITY);
+        body.setDensity(density);
         bodies.add(body);
         return body;
     }
@@ -209,6 +229,35 @@ public class SlothModel extends ComplexObstacle {
         Joint joint = world.createJoint(jointDef);
         joints.add(joint);
 
+        // HANDS
+        anchorA = new com.badlogic.gdx.math.Vector2(-HAND_XOFFSET, 0);
+        anchorB = new com.badlogic.gdx.math.Vector2(0, 0);
+        jointDef = new RevoluteJointDef();
+        jointDef.bodyA = bodies.get(PART_LEFT_ARM).getBody(); // barrier
+        jointDef.bodyB = bodies.get(PART_LEFT_HAND).getBody(); // pin
+        jointDef.localAnchorA.set(anchorA);
+        jointDef.localAnchorB.set(anchorB);
+        jointDef.collideConnected = false;
+        //jointDef.lowerAngle = (float) (- Math.PI/4);
+        //jointDef.upperAngle = (float) (Math.PI/4);
+        //jointDef.enableLimit = true;
+        joint = world.createJoint(jointDef);
+        joints.add(joint);
+
+        anchorA = new com.badlogic.gdx.math.Vector2(HAND_XOFFSET, 0);
+        anchorB = new com.badlogic.gdx.math.Vector2(0, 0);
+        jointDef = new RevoluteJointDef();
+        jointDef.bodyA = bodies.get(PART_RIGHT_ARM).getBody(); // barrier
+        jointDef.bodyB = bodies.get(PART_RIGHT_HAND).getBody(); // pin
+        jointDef.localAnchorA.set(anchorA);
+        jointDef.localAnchorB.set(anchorB);
+        jointDef.collideConnected = false;
+        //jointDef.lowerAngle = (float) (- Math.PI/4);
+        //jointDef.upperAngle = (float) (Math.PI/4);
+        //jointDef.enableLimit = true;
+        joint = world.createJoint(jointDef);
+        joints.add(joint);
+
         return true;
     }
 
@@ -232,13 +281,18 @@ public class SlothModel extends ComplexObstacle {
      * DOES EVERYTHING!!
      */
     public void applyForce() {
-        Obstacle right = bodies.get(0);
-        Obstacle left = bodies.get(1);
+        Obstacle right = bodies.get(2);
+        Obstacle left = bodies.get(3);
 
-        left.setVX(leftHori);
-        left.setVY(-leftVert);
-        right.setVX(rightHori);
-        right.setVY(-rightVert);
+        right.setFixedRotation(true);
+        left.setFixedRotation(true);
+
+        left
+                .getBody()
+                .applyForce(leftHori*TWO_FREE_FORCE_MULTIPLIER, -leftVert*TWO_FREE_FORCE_MULTIPLIER, left.getX(), left.getY(), true);
+        right
+                .getBody()
+                .applyForce(rightHori*TWO_FREE_FORCE_MULTIPLIER, -rightVert*TWO_FREE_FORCE_MULTIPLIER, right.getX(), right.getY(), true);
     }
 }
 
