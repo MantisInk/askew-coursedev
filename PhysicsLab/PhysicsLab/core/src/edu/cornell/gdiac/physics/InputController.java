@@ -303,6 +303,7 @@ public class InputController {
 			readGamepad(bounds, scale);
 			readKeyboard(bounds, scale, true); // Read as a back-up
 		} else {
+			System.err.println("no 360 controller connected");
 			readKeyboard(bounds, scale, false);
 		}
 	}
