@@ -25,6 +25,10 @@ public class SlothModel extends ComplexObstacle {
 
     public float x;
     public float y;
+    private float rightVert;
+    private float leftHori;
+    private float leftVert;
+    private float rightHori;
 
     /**
      * Returns the texture index for the given body part
@@ -189,7 +193,6 @@ public class SlothModel extends ComplexObstacle {
     protected boolean createJoints(World world) {
         assert bodies.size > 0;
 
-        //#region INSERT CODE HERE HAHAHA
         // ARM TO ARM WOW
         Vector2 anchorA = new com.badlogic.gdx.math.Vector2(ARM_XOFFSET/2, 0);
         Vector2 anchorB = new com.badlogic.gdx.math.Vector2(-ARM_XOFFSET/2, 0);
@@ -206,9 +209,36 @@ public class SlothModel extends ComplexObstacle {
         Joint joint = world.createJoint(jointDef);
         joints.add(joint);
 
-        //#endregion LOL
-
         return true;
+    }
+
+    public void setLeftHori(float leftHori) {
+        this.leftHori = leftHori;
+    }
+
+    public void setLeftVert(float leftVert) {
+        this.leftVert = leftVert;
+    }
+
+    public void setRightHori(float rightHori) {
+        this.rightHori = rightHori;
+    }
+
+    public void setRightVert(float rightVert) {
+        this.rightVert = rightVert;
+    }
+
+    /**
+     * DOES EVERYTHING!!
+     */
+    public void applyForce() {
+        Obstacle right = bodies.get(0);
+        Obstacle left = bodies.get(1);
+
+        left.setVX(leftHori);
+        left.setVY(-leftVert);
+        right.setVX(rightHori);
+        right.setVY(-rightVert);
     }
 }
 

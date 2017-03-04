@@ -374,19 +374,27 @@ public class PlatformController extends WorldController implements ContactListen
 	 */
 	public void update(float dt) {
 		// Process actions in object model
-		avatar.setMovement(InputController.getInstance().getLeftHorizontal() *avatar.getForce());
-		avatar.setJumping(InputController.getInstance().didPrimary());
-		avatar.setShooting(InputController.getInstance().didSecondary());
-		
+		//avatar.setMovement(InputController.getInstance().getLeftHorizontal() *avatar.getForce());
+		//avatar.setJumping(InputController.getInstance().didPrimary());
+		//avatar.setShooting(InputController.getInstance().didSecondary());
+		sloth.setLeftHori(InputController.getInstance().getLeftHorizontal());
+		sloth.setLeftVert(InputController.getInstance().getLeftVertical());
+		sloth.setRightHori(InputController.getInstance().getRightHorizontal());
+		sloth.setRightVert(InputController.getInstance().getRightVertical());
+
 		// Add a bullet if we fire
+		/*
 		if (avatar.isShooting()) {
 			createBullet();
 		}
+		*/
 		
-		avatar.applyForce();
+		sloth.applyForce();
+		/*
 	    if (avatar.isJumping()) {
 	        SoundController.getInstance().play(JUMP_FILE,JUMP_FILE,false,EFFECT_VOLUME);
 	    }
+	    */
 		
 	    // If we use sound, we must remember this.
 	    SoundController.getInstance().update();
