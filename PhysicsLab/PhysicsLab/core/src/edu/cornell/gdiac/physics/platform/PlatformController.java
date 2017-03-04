@@ -41,6 +41,8 @@ public class PlatformController extends WorldController implements ContactListen
 	private static final String BULLET_FILE  = "platform/bullet.png";
 	/** The texture file for the bridge plank */
 	private static final String ROPE_FILE  = "platform/ropebridge.png";
+	/** The texture file for the vine */
+	private static final String VINE_FILE  = "platform/vine.png";
 	
 	/** The sound file for a jump */
 	private static final String JUMP_FILE = "platform/jump.mp3";
@@ -57,31 +59,22 @@ public class PlatformController extends WorldController implements ContactListen
 	private TextureRegion bulletTexture;
 	/** Texture asset for the bridge plank */
 	private TextureRegion bridgeTexture;
-
-	/** Texture file for mouse crosshairs */
-	private static final String CROSS_FILE = "ragdoll/crosshair.png";
-	/** Texture file for watery foreground */
 	private static final String FOREG_FILE = "ragdoll/foreground.png";
 	/** Files for the body textures */
 	private static final String[] RAGDOLL_FILES = { "ragdoll/trevorhand.png", "ragdoll/ProfWhite.png",
 			"ragdoll/trevorarm.png",  "ragdoll/tux_forearm.png",
 			"ragdoll/tux_thigh.png", "ragdoll/tux_shin.png" };
 
-
-	/** Texture asset for mouse crosshairs */
-	private TextureRegion crosshairTexture;
-	/** Texture asset for background image */
-	private TextureRegion backgroundTexture;
-	/** Texture asset for watery foreground */
-	private TextureRegion foregroundTexture;
-	/** Texture asset for the bubble generator */
-	private TextureRegion bubbleTexture;
 	/** Texture assets for the body parts */
 	private TextureRegion[] bodyTextures;
 	private static Vector2 DOLL_POS = new Vector2( 2.5f,  5.0f);
 
 	/** Track asset loading from all instances and subclasses */
 	private AssetState ragdollAssetState = AssetState.EMPTY;
+
+	/** Texture asset for the vine */
+	private TextureRegion vineTexture;
+
 	/** Track asset loading from all instances and subclasses */
 	private AssetState platformAssetState = AssetState.EMPTY;
 	
@@ -109,6 +102,8 @@ public class PlatformController extends WorldController implements ContactListen
 		assets.add(BULLET_FILE);
 		manager.load(ROPE_FILE, Texture.class);
 		assets.add(ROPE_FILE);
+		manager.load(VINE_FILE, Texture.class);
+		assets.add(VINE_FILE);
 		
 		manager.load(JUMP_FILE, Sound.class);
 		assets.add(JUMP_FILE);
@@ -145,6 +140,7 @@ public class PlatformController extends WorldController implements ContactListen
 		barrierTexture = createTexture(manager,BARRIER_FILE,false);
 		bulletTexture = createTexture(manager,BULLET_FILE,false);
 		bridgeTexture = createTexture(manager,ROPE_FILE,false);
+		vineTexture = createTexture(manager,VINE_FILE,false);
 
 		SoundController sounds = SoundController.getInstance();
 		sounds.allocate(manager, JUMP_FILE);
@@ -180,6 +176,8 @@ public class PlatformController extends WorldController implements ContactListen
 	private static final float  BULLET_SPEED = 20.0f;
 	/** The volume for sound effects */
 	private static final float EFFECT_VOLUME = 0.8f;
+	/** The length of the vine */
+	private static final float VINE_LENGTH = 5f;
 
 	// Since these appear only once, we do not care about the magic numbers.
 	// In an actual game, this information would go in a data file.
@@ -214,6 +212,8 @@ public class PlatformController extends WorldController implements ContactListen
 	private static Vector2 DUDE_POS = new Vector2(2.5f, 5.0f);
 	/** The position of the rope bridge */
 	private static Vector2 BRIDGE_POS  = new Vector2(9.0f, 3.8f);
+	/** The position of the vine */
+	private static Vector2 VINE_POS  = new Vector2(15f, 17f);
 
 	// Physics objects for the game
 	/** Reference to the character avatar */
@@ -322,20 +322,20 @@ public class PlatformController extends WorldController implements ContactListen
 		bridge.setTexture(bridgeTexture);
 		bridge.setDrawScale(scale);
 		addObject(bridge);
-		
-		// Create spinning platform
-		dwidth  = barrierTexture.getRegionWidth()/scale.x;
-		dheight = barrierTexture.getRegionHeight()/scale.y;
-		Spinner spinPlatform = new Spinner(SPIN_POS.x,SPIN_POS.y,dwidth,dheight);
-		spinPlatform.setDrawScale(scale);
-		spinPlatform.setTexture(barrierTexture);
-		addObject(spinPlatform);
 
 		// Create sloth
 		sloth = new SlothModel(DOLL_POS.x, DOLL_POS.y);
 		sloth.setDrawScale(scale.x,scale.y);
 		sloth.setPartTextures(bodyTextures);
 		addObject(sloth);
+
+		// Create vine
+		dwidth  = vineTexture.getRegionWidth()/scale.x;
+		dheight = vineTexture.getRegionHeight()/scale.y;
+		Vine s_vine = new Vine(VINE_POS.x, VINE_POS.y, VINE_LENGTH, dwidth, dheight);
+		s_vine.setTexture(vineTexture);
+		s_vine.setDrawScale(scale);
+		addObject(s_vine);
 	}
 	
 	/**
@@ -345,7 +345,7 @@ public class PlatformController extends WorldController implements ContactListen
 	 * to switch to a new game mode.  If not, the update proceeds
 	 * normally.
 	 *
-	 * @param delta Number of seconds since last animation frame
+	 * @param dt Number of seconds since last animation frame
 	 * 
 	 * @return whether to process the update loop
 	 */

@@ -15,6 +15,7 @@
 package edu.cornell.gdiac.physics.platform;
 
 import com.badlogic.gdx.graphics.g2d.*;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.*;
 
@@ -74,10 +75,14 @@ public class Spinner extends ComplexObstacle {
         bodies.add(barrier);
         
 		//#region INSERT CODE HERE
-        // Create a pin to anchor the barrier 
+        // Create a pin to anchor the barrier
         // Radius: SPIN_PIN_RADIUS
-        // Density: LIGHT_DENSITY
-        		
+		// Density: LIGHT_DENSITY
+		WheelObstacle pin = new WheelObstacle(x,y,SPIN_PIN_RADIUS);
+		pin.setName(SPIN_PIN_NAME);
+		pin.setDensity(LIGHT_DENSITY);
+		pin.setBodyType(BodyDef.BodyType.StaticBody);
+		bodies.add(pin);
         //#endregion
     }
 	
@@ -95,7 +100,15 @@ public class Spinner extends ComplexObstacle {
 
 		//#region INSERT CODE HERE
 		// Attach the barrier to the pin here
-
+		Vector2 anchor1 = new Vector2();
+		RevoluteJointDef jointDef = new RevoluteJointDef();
+		jointDef.bodyA = barrier.getBody();
+		jointDef.bodyB = bodies.get(1).getBody();
+		jointDef.localAnchorA.set(anchor1);
+		jointDef.localAnchorB.set(anchor1);
+		jointDef.collideConnected = false;
+		Joint joint = world.createJoint(jointDef);
+		joints.add(joint);
 		//#endregion
 
 		return true;

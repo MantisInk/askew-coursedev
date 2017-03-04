@@ -127,7 +127,7 @@ public class DudeModel extends CapsuleObstacle {
 	 * @return true if the dude is actively jumping.
 	 */
 	public boolean isJumping() {
-		return isJumping && jumpCooldown <= 0;
+		return isJumping && isGrounded && jumpCooldown <= 0;
 	}
 	
 	/**
@@ -325,7 +325,7 @@ public class DudeModel extends CapsuleObstacle {
 	 *
 	 * We use this method to reset cooldowns.
 	 *
-	 * @param delta Number of seconds since last animation frame
+	 * @param dt Number of seconds since last animation frame
 	 */
 	public void update(float dt) {
 		// Apply cooldowns
