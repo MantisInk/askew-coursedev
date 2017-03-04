@@ -1,7 +1,8 @@
 package edu.cornell.gdiac.physics.obstacle;
 
-import com.badlogic.gdx.physics.box2d.FixtureDef;
-
+/**
+ * Box obstacle but with no collisions
+ */
 public class TrevorObstacle extends BoxObstacle {
 
     public TrevorObstacle(float x, float y, float width, float height) {

@@ -11,6 +11,7 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.*;
 import com.badlogic.gdx.graphics.g2d.*;
 import edu.cornell.gdiac.physics.obstacle.*;
+import lombok.Getter;
 
 public class SlothModel extends ComplexObstacle {
 
@@ -40,7 +41,9 @@ public class SlothModel extends ComplexObstacle {
     private float leftHori;
     private float leftVert;
     private float rightHori;
+    @Getter
     private boolean leftGrab;
+    @Getter
     private boolean rightGrab;
 
     /**
@@ -269,5 +272,6 @@ public class SlothModel extends ComplexObstacle {
     public void setRightGrab(float rightGrab) {
         this.rightGrab = rightGrab > 0;
     }
+
 }
 

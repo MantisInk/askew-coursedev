@@ -367,6 +367,11 @@ public class PlatformController extends WorldController implements ContactListen
 		sloth.setRightGrab(InputController.getInstance().getRightGrab());
 
 		// Physics tiem
+		// Gribby grab
+		if (sloth.isLeftGrab()) {
+
+		}
+		// Normal physics
 		sloth.doThePhysics();
 		
 	    // If we use sound, we must remember this.
