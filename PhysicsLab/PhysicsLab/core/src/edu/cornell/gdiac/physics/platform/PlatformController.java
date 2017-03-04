@@ -18,6 +18,7 @@ import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.physics.box2d.*;
 
+import edu.cornell.gdiac.physics.platform.sloth.SlothModel;
 import edu.cornell.gdiac.util.*;
 import edu.cornell.gdiac.physics.*;
 import edu.cornell.gdiac.physics.obstacle.*;
@@ -56,7 +57,31 @@ public class PlatformController extends WorldController implements ContactListen
 	private TextureRegion bulletTexture;
 	/** Texture asset for the bridge plank */
 	private TextureRegion bridgeTexture;
-	
+
+	/** Texture file for mouse crosshairs */
+	private static final String CROSS_FILE = "ragdoll/crosshair.png";
+	/** Texture file for watery foreground */
+	private static final String FOREG_FILE = "ragdoll/foreground.png";
+	/** Files for the body textures */
+	private static final String[] RAGDOLL_FILES = { "ragdoll/tux_body.png", "ragdoll/ProfWhite.png",
+			"ragdoll/tux_arm.png",  "ragdoll/tux_forearm.png",
+			"ragdoll/tux_thigh.png", "ragdoll/tux_shin.png" };
+
+
+	/** Texture asset for mouse crosshairs */
+	private TextureRegion crosshairTexture;
+	/** Texture asset for background image */
+	private TextureRegion backgroundTexture;
+	/** Texture asset for watery foreground */
+	private TextureRegion foregroundTexture;
+	/** Texture asset for the bubble generator */
+	private TextureRegion bubbleTexture;
+	/** Texture assets for the body parts */
+	private TextureRegion[] bodyTextures;
+	private static Vector2 DOLL_POS = new Vector2( 2.5f,  5.0f);
+
+	/** Track asset loading from all instances and subclasses */
+	private AssetState ragdollAssetState = AssetState.EMPTY;
 	/** Track asset loading from all instances and subclasses */
 	private AssetState platformAssetState = AssetState.EMPTY;
 	
@@ -91,7 +116,13 @@ public class PlatformController extends WorldController implements ContactListen
 		assets.add(PEW_FILE);
 		manager.load(POP_FILE, Sound.class);
 		assets.add(POP_FILE);
-		
+
+		// SLOTH
+		for(int ii = 0; ii < RAGDOLL_FILES.length; ii++) {
+			manager.load(RAGDOLL_FILES[ii], Texture.class);
+			assets.add(RAGDOLL_FILES[ii]);
+		}
+
 		super.preLoadContent(manager);
 	}
 
@@ -119,6 +150,13 @@ public class PlatformController extends WorldController implements ContactListen
 		sounds.allocate(manager, JUMP_FILE);
 		sounds.allocate(manager, PEW_FILE);
 		sounds.allocate(manager, POP_FILE);
+
+		// SLOTH
+		bodyTextures = new TextureRegion[RAGDOLL_FILES.length];
+		for(int ii = 0; ii < RAGDOLL_FILES.length; ii++) {
+			bodyTextures[ii] =  createTexture(manager,RAGDOLL_FILES[ii],false);
+		}
+
 		super.loadContent(manager);
 		platformAssetState = AssetState.COMPLETE;
 	}
@@ -180,6 +218,7 @@ public class PlatformController extends WorldController implements ContactListen
 	// Physics objects for the game
 	/** Reference to the character avatar */
 	private DudeModel avatar;
+	private SlothModel sloth;
 	/** Reference to the goalDoor (for collision detection) */
 	private BoxObstacle goalDoor;
 
@@ -291,6 +330,12 @@ public class PlatformController extends WorldController implements ContactListen
 		spinPlatform.setDrawScale(scale);
 		spinPlatform.setTexture(barrierTexture);
 		addObject(spinPlatform);
+
+		// Create sloth
+		sloth = new SlothModel(DOLL_POS.x, DOLL_POS.y);
+		sloth.setDrawScale(scale.x,scale.y);
+		sloth.setPartTextures(bodyTextures);
+		addObject(sloth);
 	}
 	
 	/**
@@ -403,15 +448,6 @@ public class PlatformController extends WorldController implements ContactListen
 		try {
 			Obstacle bd1 = (Obstacle)body1.getUserData();
 			Obstacle bd2 = (Obstacle)body2.getUserData();
-
-			// Test bullet collision with world
-			if (bd1.getName().equals("bullet") && bd2 != avatar) {
-		        removeBullet(bd1);
-			}
-
-			if (bd2.getName().equals("bullet") && bd1 != avatar) {
-		        removeBullet(bd2);
-			}
 
 			// See if we have landed on the ground.
 			if ((avatar.getSensorName().equals(fd2) && avatar != bd1) ||
