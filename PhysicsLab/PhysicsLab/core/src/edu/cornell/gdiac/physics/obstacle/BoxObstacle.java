@@ -30,7 +30,7 @@ public class BoxObstacle extends SimpleObstacle {
 	/** A cache value for when the user wants to access the dimensions */
 	private Vector2 sizeCache;
 	/** A cache value for the fixture (for resizing) */
-	private Fixture geometry;
+	protected Fixture geometry;
 	/** Cache of the polygon vertices (for resizing) */
 	private float[] vertices;
 	

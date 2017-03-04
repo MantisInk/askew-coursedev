@@ -53,13 +53,8 @@ public class PlatformController extends WorldController implements ContactListen
 
 	/** Texture asset for character avatar */
 	private TextureRegion avatarTexture;
-	/** Texture asset for the spinning barrier */
-	private TextureRegion barrierTexture;
-	/** Texture asset for the bullet */
-	private TextureRegion bulletTexture;
 	/** Texture asset for the bridge plank */
 	private TextureRegion bridgeTexture;
-	private static final String FOREG_FILE = "ragdoll/foreground.png";
 	/** Files for the body textures */
 	private static final String[] RAGDOLL_FILES = { "ragdoll/trevorhand.png", "ragdoll/ProfWhite.png",
 			"ragdoll/trevorarm.png",  "ragdoll/tux_forearm.png",
@@ -137,8 +132,6 @@ public class PlatformController extends WorldController implements ContactListen
 		}
 		
 		avatarTexture = createTexture(manager,DUDE_FILE,false);
-		barrierTexture = createTexture(manager,BARRIER_FILE,false);
-		bulletTexture = createTexture(manager,BULLET_FILE,false);
 		bridgeTexture = createTexture(manager,ROPE_FILE,false);
 		vineTexture = createTexture(manager,VINE_FILE,false);
 
@@ -162,20 +155,12 @@ public class PlatformController extends WorldController implements ContactListen
 	private static final float  DEFAULT_GRAVITY = -14.7f;
 	/** The density for most physics objects */
 	private static final float  BASIC_DENSITY = 0.0f;
-	/** The density for a bullet */
-	private static final float  HEAVY_DENSITY = 10.0f;
 	/** Friction of most platforms */
 	private static final float  BASIC_FRICTION = 0.4f;
 	/** The restitution for all physics objects */
 	private static final float  BASIC_RESTITUTION = 0.1f;
 	/** The width of the rope bridge */
 	private static final float  BRIDGE_WIDTH = 14.0f;
-	/** Offset for bullet when firing */
-	private static final float  BULLET_OFFSET = 0.2f;
-	/** The speed of the bullet after firing */
-	private static final float  BULLET_SPEED = 20.0f;
-	/** The volume for sound effects */
-	private static final float EFFECT_VOLUME = 0.8f;
 	/** The length of the vine */
 	private static final float VINE_LENGTH = 5f;
 
@@ -378,20 +363,11 @@ public class PlatformController extends WorldController implements ContactListen
 		sloth.setLeftVert(InputController.getInstance().getLeftVertical());
 		sloth.setRightHori(InputController.getInstance().getRightHorizontal());
 		sloth.setRightVert(InputController.getInstance().getRightVertical());
+		sloth.setLeftGrab(InputController.getInstance().getLeftGrab());
+		sloth.setRightGrab(InputController.getInstance().getRightGrab());
 
-		// Add a bullet if we fire
-		/*
-		if (avatar.isShooting()) {
-			createBullet();
-		}
-		*/
-		
-		sloth.applyForce();
-		/*
-	    if (avatar.isJumping()) {
-	        SoundController.getInstance().play(JUMP_FILE,JUMP_FILE,false,EFFECT_VOLUME);
-	    }
-	    */
+		// Physics tiem
+		sloth.doThePhysics();
 		
 	    // If we use sound, we must remember this.
 	    SoundController.getInstance().update();
