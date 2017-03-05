@@ -6,11 +6,17 @@ package edu.cornell.gdiac.physics.platform.sloth;
  * This the sloth!
  */
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.*;
 import com.badlogic.gdx.graphics.g2d.*;
+import edu.cornell.gdiac.physics.GameCanvas;
 import edu.cornell.gdiac.physics.obstacle.*;
+import com.badlogic.gdx.math.Matrix4;
 import lombok.Getter;
 
 public class SlothModel extends ComplexObstacle {
@@ -34,6 +40,9 @@ public class SlothModel extends ComplexObstacle {
 
     private RevoluteJointDef leftGrabJoint;
     private RevoluteJointDef rightGrabJoint;
+
+    /** For drawing the force lines*/
+    ShapeRenderer shaper = new ShapeRenderer();
 
     public float x;
     public float y;
@@ -92,6 +101,7 @@ public class SlothModel extends ComplexObstacle {
         super(x,y);
         this.x = x;
         this.y = y;
+
     }
 
     private void init() {
@@ -263,6 +273,29 @@ public class SlothModel extends ComplexObstacle {
         right
                 .getBody()
                 .applyForce(rightHori*TWO_FREE_FORCE_MULTIPLIER, -rightVert*TWO_FREE_FORCE_MULTIPLIER, right.getX(), right.getY(), true);
+
+        //Draw the lines for the forces
+
+        float left_x = leftHori*TWO_FREE_FORCE_MULTIPLIER;
+        float left_y = -leftVert*TWO_FREE_FORCE_MULTIPLIER;
+
+        float right_x = rightHori*TWO_FREE_FORCE_MULTIPLIER;
+        float right_y = -rightVert*TWO_FREE_FORCE_MULTIPLIER;
+
+        OrthographicCamera camera = new OrthographicCamera(Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
+        camera.setToOrtho(false);
+
+        //ShapeRenderer shaper = new ShapeRenderer();
+        Gdx.gl.glLineWidth(3);
+        shaper.setProjectionMatrix(camera.combined);
+
+        shaper.begin(ShapeRenderer.ShapeType.Line);
+        shaper.setColor(Color.BLACK);
+        //System.out.println(shaper.isDrawing());
+        shaper.line(left.getX(),left.getY(), left.getX()+(left_x*200),left.getY()+(left_y*200));
+        shaper.line(right.getX(),right.getY(), right.getX()+(right_x*200),right.getY()+(right_y*200));
+        shaper.end();
+        Gdx.gl.glLineWidth(3);
     }
 
     public void setLeftGrab(float leftGrab) {
