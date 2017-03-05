@@ -179,18 +179,18 @@ public class PlatformController extends WorldController implements ContactListen
 												{ 1.0f, 3.0f, 6.0f, 3.0f, 6.0f, 2.5f, 1.0f, 2.5f},
 												{ 6.0f, 4.0f, 9.0f, 4.0f, 9.0f, 2.5f, 6.0f, 2.5f},
 												{23.0f, 4.0f,31.0f, 4.0f,31.0f, 2.5f,23.0f, 2.5f},
-												{26.0f, 5.5f,28.0f, 5.5f,28.0f, 5.0f,26.0f, 5.0f},
-												{29.0f, 7.0f,31.0f, 7.0f,31.0f, 6.5f,29.0f, 6.5f},
-												{24.0f, 8.5f,27.0f, 8.5f,27.0f, 8.0f,24.0f, 8.0f},
-												{29.0f,10.0f,31.0f,10.0f,31.0f, 9.5f,29.0f, 9.5f},
-												{23.0f,11.5f,27.0f,11.5f,27.0f,11.0f,23.0f,11.0f},
-												{19.0f,12.5f,23.0f,12.5f,23.0f,12.0f,19.0f,12.0f},
-												{ 1.0f,12.5f, 7.0f,12.5f, 7.0f,12.0f, 1.0f,12.0f}
+												//{26.0f, 5.5f,28.0f, 5.5f,28.0f, 5.0f,26.0f, 5.0f},
+												//{29.0f, 7.0f,31.0f, 7.0f,31.0f, 6.5f,29.0f, 6.5f},
+												//{24.0f, 8.5f,27.0f, 8.5f,27.0f, 8.0f,24.0f, 8.0f},
+												//{29.0f,10.0f,31.0f,10.0f,31.0f, 9.5f,29.0f, 9.5f},
+												//{23.0f,11.5f,27.0f,11.5f,27.0f,11.0f,23.0f,11.0f},
+												//{19.0f,12.5f,23.0f,12.5f,23.0f,12.0f,19.0f,12.0f},
+												//{ 1.0f,12.5f, 7.0f,12.5f, 7.0f,12.0f, 1.0f,12.0f}
 											   };
 
 	// Other game objects
 	/** The goal door position */
-	private static Vector2 GOAL_POS = new Vector2(4.0f,14.0f);
+	private static Vector2 GOAL_POS = new Vector2(9999.0f,9999.0f);
 	/** The position of the spinning barrier */
 	private static Vector2 SPIN_POS = new Vector2(13.0f,12.5f);
 	/** The initial position of the dude */
