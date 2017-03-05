@@ -6,10 +6,12 @@ package edu.cornell.gdiac.physics.platform.sloth;
  * This the sloth!
  */
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.*;
 import com.badlogic.gdx.graphics.g2d.*;
+import edu.cornell.gdiac.physics.GameCanvas;
 import edu.cornell.gdiac.physics.obstacle.*;
 import lombok.Getter;
 
@@ -33,6 +35,8 @@ public class SlothModel extends ComplexObstacle {
     private static final int BODY_TEXTURE_COUNT = 6;
 
     private RevoluteJointDef leftGrabJoint;
+    private PolygonShape sensorShape;
+    private Fixture sensorFixture;
     private RevoluteJointDef rightGrabJoint;
 
     public float x;
@@ -213,6 +217,9 @@ public class SlothModel extends ComplexObstacle {
         createJoint(world, PART_LEFT_ARM, PART_LEFT_HAND, -HAND_XOFFSET, 0, 0, 0);
         createJoint(world, PART_RIGHT_ARM, PART_RIGHT_HAND, HAND_XOFFSET, 0, 0, 0);
 
+        // This is bad but i do sensors here
+        activatePhysics();
+
         return true;
     }
 
@@ -271,6 +278,28 @@ public class SlothModel extends ComplexObstacle {
 
     public void setRightGrab(float rightGrab) {
         this.rightGrab = rightGrab > 0;
+    }
+
+    public void activatePhysics() {
+        float MN_HEIGHT = 5.0f;
+        float MN_SENSOR_HEIGHT = .4f;
+        float MN_WIDTH = .4f;
+        //float MN_SHRINK = 0.6f;
+        Vector2 sensorCenter = new Vector2(0, 0);
+        FixtureDef sensorDef = new FixtureDef();
+        sensorDef.density = 0.0f;
+        sensorDef.isSensor = true;
+        sensorShape = new PolygonShape();
+        sensorShape.setAsBox(MN_WIDTH, MN_SENSOR_HEIGHT, sensorCenter, 0.0f);
+        sensorDef.shape = sensorShape;
+
+        sensorFixture = bodies.get(PART_LEFT_HAND).getBody().createFixture(sensorDef);
+        sensorFixture.setUserData("handy");
+    }
+
+    public void drawDebug(GameCanvas canvas) {
+        super.drawDebug(canvas);
+        canvas.drawPhysics(sensorShape, Color.RED,bodies.get(PART_LEFT_HAND).getX(),bodies.get(PART_LEFT_HAND).getY(),getAngle(),drawScale.x,drawScale.y);
     }
 
 }

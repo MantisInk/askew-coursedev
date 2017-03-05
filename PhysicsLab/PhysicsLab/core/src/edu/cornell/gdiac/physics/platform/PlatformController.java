@@ -368,9 +368,6 @@ public class PlatformController extends WorldController implements ContactListen
 
 		// Physics tiem
 		// Gribby grab
-		if (sloth.isLeftGrab()) {
-
-		}
 		// Normal physics
 		sloth.doThePhysics();
 		
@@ -384,6 +381,8 @@ public class PlatformController extends WorldController implements ContactListen
 	 * This method is called when we first get a collision between two objects.  We use 
 	 * this method to test if it is the "right" kind of collision.  In particular, we
 	 * use it to test if we made it to the win door.
+	 *
+	 * But trevor uses it for something else
 	 *
 	 * @param contact The two bodies that collided
 	 */
@@ -400,6 +399,14 @@ public class PlatformController extends WorldController implements ContactListen
 		try {
 			Obstacle bd1 = (Obstacle)body1.getUserData();
 			Obstacle bd2 = (Obstacle)body2.getUserData();
+
+			if (fd1 != null && fd1.equals("handy")) {
+				System.out.println("FD1 WOW" + Math.random());
+			}
+
+			if (fd2 != null && fd2.equals("handy")) {
+				System.out.println("FD2 WOW" + Math.random());
+			}
 
 			// See if we have landed on the ground.
 			if ((avatar.getSensorName().equals(fd2) && avatar != bd1) ||
