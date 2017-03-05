@@ -51,6 +51,8 @@ public class PlatformController extends WorldController implements ContactListen
 	/** The sound file for a bullet collision */
 	private static final String POP_FILE = "platform/plop.mp3";
 
+	private Body leftBody;
+
 	/** Texture asset for character avatar */
 	private TextureRegion avatarTexture;
 	/** Texture asset for the bridge plank */
@@ -368,6 +370,11 @@ public class PlatformController extends WorldController implements ContactListen
 
 		// Physics tiem
 		// Gribby grab
+		if (sloth.isLeftGrab() && leftBody != null) {
+			sloth.grabLeft(world,leftBody);
+		} else {
+			sloth.releaseLeft(world);
+		}
 		// Normal physics
 		sloth.doThePhysics();
 		
@@ -402,10 +409,12 @@ public class PlatformController extends WorldController implements ContactListen
 
 			if (fd1 != null && fd1.equals("handy")) {
 				System.out.println("FD1 WOW" + Math.random());
+				leftBody = body2;
 			}
 
 			if (fd2 != null && fd2.equals("handy")) {
 				System.out.println("FD2 WOW" + Math.random());
+				leftBody = body1;
 			}
 
 			// See if we have landed on the ground.

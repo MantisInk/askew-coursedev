@@ -34,7 +34,8 @@ public class SlothModel extends ComplexObstacle {
     /** The number of DISTINCT body parts */
     private static final int BODY_TEXTURE_COUNT = 6;
 
-    private RevoluteJointDef leftGrabJoint;
+    private RevoluteJointDef leftGrabJointDef;
+    private Joint leftGrabJoint;
     private PolygonShape sensorShape;
     private Fixture sensorFixture;
     private RevoluteJointDef rightGrabJoint;
@@ -278,6 +279,35 @@ public class SlothModel extends ComplexObstacle {
 
     public void setRightGrab(float rightGrab) {
         this.rightGrab = rightGrab > 0;
+    }
+
+    public void grabLeft(World world, Body target) {
+        Vector2 anchorHand = new com.badlogic.gdx.math.Vector2(0, 0);
+        // TODO: Improve this vector
+        Vector2 anchorTarget = new com.badlogic.gdx.math.Vector2(0, 0);
+
+        RevoluteJointDef jointDef = new RevoluteJointDef();
+        leftGrabJointDef = new RevoluteJointDef();
+        jointDef.bodyA = bodies.get(PART_LEFT_HAND).getBody(); // barrier
+        jointDef.bodyB = target; // pin
+        jointDef.localAnchorA.set(anchorHand);
+        jointDef.localAnchorB.set(anchorTarget);
+        jointDef.collideConnected = false;
+        //jointDef.lowerAngle = (float) (- Math.PI/4);
+        //jointDef.upperAngle = (float) (Math.PI/4);
+        //jointDef.enableLimit = true;
+        leftGrabJoint = world.createJoint(jointDef);
+        joints.add(leftGrabJoint);
+    }
+
+    public void releaseLeft(World world) {
+        if (leftGrabJoint != null) {
+            System.err.println("Release");
+            world.destroyJoint(leftGrabJoint);
+            //joints.removeValue(leftGrabJoint,true);
+        }
+
+        leftGrabJoint = null;
     }
 
     public void activatePhysics() {
