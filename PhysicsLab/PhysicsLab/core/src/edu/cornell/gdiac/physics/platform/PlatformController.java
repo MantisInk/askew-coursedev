@@ -22,6 +22,8 @@ import edu.cornell.gdiac.physics.platform.sloth.SlothModel;
 import edu.cornell.gdiac.util.*;
 import edu.cornell.gdiac.physics.*;
 import edu.cornell.gdiac.physics.obstacle.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Gameplay specific controller for the platformer game.  
@@ -200,7 +202,9 @@ public class PlatformController extends WorldController implements ContactListen
 	/** The position of the rope bridge */
 	private static Vector2 BRIDGE_POS  = new Vector2(9.0f, 3.8f);
 	/** The position of the vine */
-	private static Vector2 VINE_POS  = new Vector2(15f, 17f);
+	private static ArrayList<Vector2> VINE_POS  = new ArrayList<Vector2>(
+			Arrays.asList(new Vector2(15f, 15f), new Vector2(12f, 17f)
+			));
 
 	// Physics objects for the game
 	/** Reference to the character avatar */
@@ -317,12 +321,15 @@ public class PlatformController extends WorldController implements ContactListen
 		addObject(sloth);
 
 		// Create vine
-		dwidth  = vineTexture.getRegionWidth()/scale.x;
-		dheight = vineTexture.getRegionHeight()/scale.y;
-		Vine s_vine = new Vine(VINE_POS.x, VINE_POS.y, VINE_LENGTH, dwidth, dheight);
-		s_vine.setTexture(vineTexture);
-		s_vine.setDrawScale(scale);
-		addObject(s_vine);
+		Vine s_vine;
+		for (int v = 0; v < VINE_POS.size(); v++) {
+			dwidth = vineTexture.getRegionWidth() / scale.x;
+			dheight = vineTexture.getRegionHeight() / scale.y;
+			s_vine = new Vine(VINE_POS.get(v).x, VINE_POS.get(v).y, VINE_LENGTH, dwidth, dheight);
+			s_vine.setTexture(vineTexture);
+			s_vine.setDrawScale(scale);
+			addObject(s_vine);
+		}
 	}
 	
 	/**
