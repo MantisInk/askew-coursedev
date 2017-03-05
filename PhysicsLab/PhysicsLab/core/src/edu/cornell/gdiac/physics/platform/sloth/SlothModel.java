@@ -282,6 +282,7 @@ public class SlothModel extends ComplexObstacle {
     }
 
     public void grabLeft(World world, Body target) {
+        releaseLeft(world);
         Vector2 anchorHand = new com.badlogic.gdx.math.Vector2(0, 0);
         // TODO: Improve this vector
         Vector2 anchorTarget = new com.badlogic.gdx.math.Vector2(0, 0);
