@@ -38,11 +38,14 @@ public class SlothModel extends ComplexObstacle {
     /** The number of DISTINCT body parts */
     private static final int BODY_TEXTURE_COUNT = 6;
 
-    private RevoluteJointDef leftGrabJoint;
+    private RevoluteJointDef leftGrabJointDef;
+    private Joint leftGrabJoint;
+    private PolygonShape sensorShape;
+    private Fixture sensorFixture;
     private RevoluteJointDef rightGrabJoint;
 
     /** For drawing the force lines*/
-    ShapeRenderer shaper = new ShapeRenderer();
+    private ShapeRenderer shaper = new ShapeRenderer();
 
     public float x;
     public float y;
@@ -223,6 +226,9 @@ public class SlothModel extends ComplexObstacle {
         createJoint(world, PART_LEFT_ARM, PART_LEFT_HAND, -HAND_XOFFSET, 0, 0, 0);
         createJoint(world, PART_RIGHT_ARM, PART_RIGHT_HAND, HAND_XOFFSET, 0, 0, 0);
 
+        // This is bad but i do sensors here
+        activatePhysics();
+
         return true;
     }
 
@@ -259,6 +265,14 @@ public class SlothModel extends ComplexObstacle {
         this.rightVert = rightVert;
     }
 
+//    public static Obstacle getLeftArm(){
+//        return bodies.get(3);
+//    }
+//
+//    public static Obstacle getRightArm(){
+//        return bodies.get(2);
+//    }
+
     /**
      * DOES EVERYTHING!!
      */
@@ -292,10 +306,49 @@ public class SlothModel extends ComplexObstacle {
         shaper.begin(ShapeRenderer.ShapeType.Line);
         shaper.setColor(Color.BLACK);
         //System.out.println(shaper.isDrawing());
+        //System.out.println(left_x+", "+left_y);
+        //System.out.println(right_x+", "+right_y);
         shaper.line(left.getX(),left.getY(), left.getX()+(left_x*200),left.getY()+(left_y*200));
         shaper.line(right.getX(),right.getY(), right.getX()+(right_x*200),right.getY()+(right_y*200));
         shaper.end();
         Gdx.gl.glLineWidth(3);
+    }
+
+    public void drawForces(){
+        Obstacle right = bodies.get(2);
+        Obstacle left = bodies.get(3);
+
+        //Draw the lines for the forces
+
+        float left_x = leftHori*TWO_FREE_FORCE_MULTIPLIER;
+        float left_y = -leftVert*TWO_FREE_FORCE_MULTIPLIER;
+
+        float right_x = rightHori*TWO_FREE_FORCE_MULTIPLIER;
+        float right_y = -rightVert*TWO_FREE_FORCE_MULTIPLIER;
+
+        OrthographicCamera camera = new OrthographicCamera(Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
+        camera.setToOrtho(false);
+
+        //ShapeRenderer shaper = new ShapeRenderer();
+        Gdx.gl.glLineWidth(3);
+        shaper.setProjectionMatrix(camera.combined);
+
+        shaper.begin(ShapeRenderer.ShapeType.Line);
+        shaper.setColor(Color.BLUE);
+        //System.out.println(shaper.isDrawing());
+        //System.out.println(left_x+", "+left_y);
+        //System.out.println(right_x+", "+right_y);
+        //System.out.println(left.getX()+", "+left.getY());
+        //System.out.println(right.getX()+", "+right.getY());
+        //System.out.println(this.x+", "+this.y);
+        //shaper.line(this.x+left.getX(),this.y+left.getY(), left.getX()+(left_x*20),left.getY()+(left_y*20));
+        shaper.line(60,60, 60+(left_x*20),60+(left_y*20));
+        shaper.setColor(Color.RED);
+        //shaper.line(this.x+right.getX(),this.y+right.getY(), right.getX()+(right_x*20),right.getY()+(right_y*20));
+        shaper.line(60,60, 60+(right_x*20),60+(right_y*20));
+        shaper.end();
+        Gdx.gl.glLineWidth(3);
+
     }
 
     public void setLeftGrab(float leftGrab) {
@@ -304,6 +357,58 @@ public class SlothModel extends ComplexObstacle {
 
     public void setRightGrab(float rightGrab) {
         this.rightGrab = rightGrab > 0;
+    }
+
+    public void grabLeft(World world, Body target) {
+        if (leftGrabJoint != null) return;
+        Vector2 anchorHand = new com.badlogic.gdx.math.Vector2(0, 0);
+        // TODO: Improve this vector
+        Vector2 anchorTarget = new com.badlogic.gdx.math.Vector2(0, 0);
+
+        RevoluteJointDef jointDef = new RevoluteJointDef();
+        leftGrabJointDef = new RevoluteJointDef();
+        jointDef.bodyA = bodies.get(PART_LEFT_HAND).getBody(); // barrier
+        jointDef.bodyB = target; // pin
+        jointDef.localAnchorA.set(anchorHand);
+        jointDef.localAnchorB.set(anchorTarget);
+        jointDef.collideConnected = false;
+        //jointDef.lowerAngle = (float) (- Math.PI/4);
+        //jointDef.upperAngle = (float) (Math.PI/4);
+        //jointDef.enableLimit = true;
+        leftGrabJoint = world.createJoint(jointDef);
+        joints.add(leftGrabJoint);
+    }
+
+    public void releaseLeft(World world) {
+        if (leftGrabJoint != null) {
+            System.err.println("Release");
+            world.destroyJoint(leftGrabJoint);
+            //joints.removeValue(leftGrabJoint,true);
+        }
+
+        leftGrabJoint = null;
+    }
+
+    public void activatePhysics() {
+        float MN_HEIGHT = 5.0f;
+        float MN_SENSOR_HEIGHT = .4f;
+        float MN_WIDTH = .4f;
+        //float MN_SHRINK = 0.6f;
+        Vector2 sensorCenter = new Vector2(0, 0);
+        FixtureDef sensorDef = new FixtureDef();
+        sensorDef.density = 0.0f;
+        sensorDef.isSensor = true;
+        sensorShape = new PolygonShape();
+        sensorShape.setAsBox(MN_WIDTH, MN_SENSOR_HEIGHT, sensorCenter, 0.0f);
+        sensorDef.shape = sensorShape;
+
+        sensorFixture = bodies.get(PART_LEFT_HAND).getBody().createFixture(sensorDef);
+        sensorFixture.setUserData("handy");
+    }
+
+    public void drawDebug(GameCanvas canvas) {
+        super.drawDebug(canvas);
+        canvas.drawPhysics(sensorShape, Color.RED,bodies.get(PART_LEFT_HAND).getX(),bodies.get(PART_LEFT_HAND).getY(),getAngle(),drawScale.x,drawScale.y);
     }
 
 }

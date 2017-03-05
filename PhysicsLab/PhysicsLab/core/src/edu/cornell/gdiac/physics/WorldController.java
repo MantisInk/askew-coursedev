@@ -26,6 +26,8 @@ import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.graphics.g2d.freetype.*;
+import edu.cornell.gdiac.physics.platform.PlatformController;
+import edu.cornell.gdiac.physics.platform.sloth.SlothModel;
 import edu.cornell.gdiac.util.*;
 import edu.cornell.gdiac.physics.obstacle.*;
 
@@ -607,6 +609,10 @@ public abstract class WorldController implements Screen {
 			canvas.drawTextCentered("FAILURE!", displayFont, 0.0f);
 			canvas.end();
 		}
+
+		//Draws the force lines
+		SlothModel sloth = PlatformController.getSloth();
+		sloth.drawForces();
 	}
 	
 	/**

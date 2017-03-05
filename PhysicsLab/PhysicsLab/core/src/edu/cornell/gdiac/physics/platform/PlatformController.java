@@ -22,6 +22,8 @@ import edu.cornell.gdiac.physics.platform.sloth.SlothModel;
 import edu.cornell.gdiac.util.*;
 import edu.cornell.gdiac.physics.*;
 import edu.cornell.gdiac.physics.obstacle.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Gameplay specific controller for the platformer game.  
@@ -50,6 +52,8 @@ public class PlatformController extends WorldController implements ContactListen
 	private static final String PEW_FILE = "platform/pew.mp3";
 	/** The sound file for a bullet collision */
 	private static final String POP_FILE = "platform/plop.mp3";
+
+	private Body leftBody;
 
 	/** Texture asset for character avatar */
 	private TextureRegion avatarTexture;
@@ -179,18 +183,18 @@ public class PlatformController extends WorldController implements ContactListen
 												{ 1.0f, 3.0f, 6.0f, 3.0f, 6.0f, 2.5f, 1.0f, 2.5f},
 												{ 6.0f, 4.0f, 9.0f, 4.0f, 9.0f, 2.5f, 6.0f, 2.5f},
 												{23.0f, 4.0f,31.0f, 4.0f,31.0f, 2.5f,23.0f, 2.5f},
-												{26.0f, 5.5f,28.0f, 5.5f,28.0f, 5.0f,26.0f, 5.0f},
-												{29.0f, 7.0f,31.0f, 7.0f,31.0f, 6.5f,29.0f, 6.5f},
-												{24.0f, 8.5f,27.0f, 8.5f,27.0f, 8.0f,24.0f, 8.0f},
-												{29.0f,10.0f,31.0f,10.0f,31.0f, 9.5f,29.0f, 9.5f},
-												{23.0f,11.5f,27.0f,11.5f,27.0f,11.0f,23.0f,11.0f},
-												{19.0f,12.5f,23.0f,12.5f,23.0f,12.0f,19.0f,12.0f},
-												{ 1.0f,12.5f, 7.0f,12.5f, 7.0f,12.0f, 1.0f,12.0f}
+												//{26.0f, 5.5f,28.0f, 5.5f,28.0f, 5.0f,26.0f, 5.0f},
+												//{29.0f, 7.0f,31.0f, 7.0f,31.0f, 6.5f,29.0f, 6.5f},
+												//{24.0f, 8.5f,27.0f, 8.5f,27.0f, 8.0f,24.0f, 8.0f},
+												//{29.0f,10.0f,31.0f,10.0f,31.0f, 9.5f,29.0f, 9.5f},
+												//{23.0f,11.5f,27.0f,11.5f,27.0f,11.0f,23.0f,11.0f},
+												//{19.0f,12.5f,23.0f,12.5f,23.0f,12.0f,19.0f,12.0f},
+												//{ 1.0f,12.5f, 7.0f,12.5f, 7.0f,12.0f, 1.0f,12.0f}
 											   };
 
 	// Other game objects
 	/** The goal door position */
-	private static Vector2 GOAL_POS = new Vector2(4.0f,14.0f);
+	private static Vector2 GOAL_POS = new Vector2(9999.0f,9999.0f);
 	/** The position of the spinning barrier */
 	private static Vector2 SPIN_POS = new Vector2(13.0f,12.5f);
 	/** The initial position of the dude */
@@ -198,12 +202,14 @@ public class PlatformController extends WorldController implements ContactListen
 	/** The position of the rope bridge */
 	private static Vector2 BRIDGE_POS  = new Vector2(9.0f, 3.8f);
 	/** The position of the vine */
-	private static Vector2 VINE_POS  = new Vector2(15f, 17f);
+	private static ArrayList<Vector2> VINE_POS  = new ArrayList<Vector2>(
+			Arrays.asList(new Vector2(15f, 15f), new Vector2(12f, 17f)
+			));
 
 	// Physics objects for the game
 	/** Reference to the character avatar */
 	private DudeModel avatar;
-	private SlothModel sloth;
+	private static SlothModel sloth;
 	/** Reference to the goalDoor (for collision detection) */
 	private BoxObstacle goalDoor;
 
@@ -315,13 +321,19 @@ public class PlatformController extends WorldController implements ContactListen
 		addObject(sloth);
 
 		// Create vine
-		dwidth  = vineTexture.getRegionWidth()/scale.x;
-		dheight = vineTexture.getRegionHeight()/scale.y;
-		Vine s_vine = new Vine(VINE_POS.x, VINE_POS.y, VINE_LENGTH, dwidth, dheight);
-		s_vine.setTexture(vineTexture);
-		s_vine.setDrawScale(scale);
-		addObject(s_vine);
+		Vine s_vine;
+		for (int v = 0; v < VINE_POS.size(); v++) {
+			dwidth = vineTexture.getRegionWidth() / scale.x;
+			dheight = vineTexture.getRegionHeight() / scale.y;
+			s_vine = new Vine(VINE_POS.get(v).x, VINE_POS.get(v).y, VINE_LENGTH, dwidth, dheight);
+			s_vine.setTexture(vineTexture);
+			s_vine.setDrawScale(scale);
+			addObject(s_vine);
+		}
 	}
+
+	/**For drawing force lines*/
+	public static SlothModel getSloth(){return sloth;}
 	
 	/**
 	 * Returns whether to process the update loop
@@ -368,8 +380,10 @@ public class PlatformController extends WorldController implements ContactListen
 
 		// Physics tiem
 		// Gribby grab
-		if (sloth.isLeftGrab()) {
-
+		if (sloth.isLeftGrab() && leftBody != null) {
+			sloth.grabLeft(world,leftBody);
+		} else {
+			sloth.releaseLeft(world);
 		}
 		// Normal physics
 		sloth.doThePhysics();
@@ -384,6 +398,8 @@ public class PlatformController extends WorldController implements ContactListen
 	 * This method is called when we first get a collision between two objects.  We use 
 	 * this method to test if it is the "right" kind of collision.  In particular, we
 	 * use it to test if we made it to the win door.
+	 *
+	 * But trevor uses it for something else
 	 *
 	 * @param contact The two bodies that collided
 	 */
@@ -400,6 +416,16 @@ public class PlatformController extends WorldController implements ContactListen
 		try {
 			Obstacle bd1 = (Obstacle)body1.getUserData();
 			Obstacle bd2 = (Obstacle)body2.getUserData();
+
+			if (fd1 != null && fd1.equals("handy")) {
+				System.out.println("FD1 WOW" + Math.random());
+				leftBody = body2;
+			}
+
+			if (fd2 != null && fd2.equals("handy")) {
+				System.out.println("FD2 WOW" + Math.random());
+				leftBody = body1;
+			}
 
 			// See if we have landed on the ground.
 			if ((avatar.getSensorName().equals(fd2) && avatar != bd1) ||
