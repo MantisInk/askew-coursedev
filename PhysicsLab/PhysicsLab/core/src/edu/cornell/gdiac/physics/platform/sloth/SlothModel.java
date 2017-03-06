@@ -22,9 +22,9 @@ import lombok.Getter;
 public class SlothModel extends ComplexObstacle {
 
     /** Constants for tuning sloth behaviour */
-    private static final float HAND_DENSITY = 2.0f;
+    private static final float HAND_DENSITY = 1.0f;
     private static final float ARM_DENSITY = 0.1f;
-    private static final float TWO_FREE_FORCE_MULTIPLIER = 10.0f;
+    private static final float TWO_FREE_FORCE_MULTIPLIER = 5.0f;
     private static final boolean HANDS_FIXED_ROTATION = true;
     private static final float GRAVITY_SCALE = 1.0f;
 
@@ -42,7 +42,8 @@ public class SlothModel extends ComplexObstacle {
     private RevoluteJointDef rightGrabJointDef;
     private Joint leftGrabJoint;
     private PolygonShape sensorShape;
-    private Fixture sensorFixture;
+    private Fixture sensorFixture1;
+    private Fixture sensorFixture2;
 
     private Joint rightGrabJoint;
 
@@ -434,10 +435,10 @@ public class SlothModel extends ComplexObstacle {
         sensorShape.setAsBox(MN_WIDTH, MN_SENSOR_HEIGHT, sensorCenter, 0.0f);
         sensorDef.shape = sensorShape;
 
-        sensorFixture = bodies.get(PART_LEFT_HAND).getBody().createFixture(sensorDef);
-        sensorFixture.setUserData("handy");
-        //sensorFixture = bodies.get(PART_RIGHT_HAND).getBody().createFixture(sensorDef);
-        //sensorFixture.setUserData("handy righty");
+        sensorFixture1 = bodies.get(PART_LEFT_HAND).getBody().createFixture(sensorDef);
+        sensorFixture1.setUserData("handy");
+//        sensorFixture2 = bodies.get(PART_RIGHT_HAND).getBody().createFixture(sensorDef);
+//        sensorFixture2.setUserData("handy righty");
     }
 
     public void drawDebug(GameCanvas canvas) {

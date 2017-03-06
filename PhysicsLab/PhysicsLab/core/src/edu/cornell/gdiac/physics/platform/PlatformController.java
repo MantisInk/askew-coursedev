@@ -427,7 +427,15 @@ public class PlatformController extends WorldController implements ContactListen
 				System.out.println("FD1 WOW" + Math.random());
 				rightBody = body2;
 			}
+			if (fd1 != null && fd1.equals("handy")) {
+				System.out.println("FD1 WOW" + Math.random());
+				leftBody = body2;
+			}
 
+			if (fd2 != null && fd2.equals("handy")) {
+				System.out.println("FD2 WOW" + Math.random());
+				rightBody = body1;
+			}
 			if (fd2 != null && fd2.equals("handy")) {
 				System.out.println("FD2 WOW" + Math.random());
 				leftBody = body1;
