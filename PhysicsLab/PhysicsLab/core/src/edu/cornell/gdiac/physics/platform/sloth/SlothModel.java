@@ -22,11 +22,11 @@ import lombok.Getter;
 public class SlothModel extends ComplexObstacle {
 
     /** Constants for tuning sloth behaviour */
-    private static final float HAND_DENSITY = 1.0f;
+    private static final float HAND_DENSITY = 2.0f;
     private static final float ARM_DENSITY = 0.1f;
-    private static final float TWO_FREE_FORCE_MULTIPLIER = 5.0f;
+    private static final float TWO_FREE_FORCE_MULTIPLIER = 10.0f;
     private static final boolean HANDS_FIXED_ROTATION = true;
-    private static final float GRAVITY_SCALE = 1.7f;
+    private static final float GRAVITY_SCALE = 1.0f;
 
     /** Indices for the body parts in the bodies array */
     private static final int PART_NONE = -1;
@@ -344,10 +344,10 @@ public class SlothModel extends ComplexObstacle {
         //System.out.println(right.getX()+", "+right.getY());
         //System.out.println(this.x+", "+this.y);
         //shaper.line(this.x+left.getX(),this.y+left.getY(), left.getX()+(left_x*20),left.getY()+(left_y*20));
-        shaper.line(60,60, 60+(left_x*20),60+(left_y*20));
+        shaper.line(left.getX()*drawScale.x,left.getY() * drawScale.y, left.getX()*drawScale.x+(left_x*20),left.getY() * drawScale.y+(left_y*20));
         shaper.setColor(Color.RED);
         //shaper.line(this.x+right.getX(),this.y+right.getY(), right.getX()+(right_x*20),right.getY()+(right_y*20));
-        shaper.line(60,60, 60+(right_x*20),60+(right_y*20));
+        shaper.line(right.getX()*drawScale.x,right.getY() * drawScale.y, right.getX()*drawScale.x+(right_x*20),right.getY() * drawScale.y+(right_y*20));
         shaper.end();
         Gdx.gl.glLineWidth(3);
 
