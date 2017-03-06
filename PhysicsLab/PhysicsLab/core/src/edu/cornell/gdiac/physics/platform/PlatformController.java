@@ -62,7 +62,7 @@ public class PlatformController extends WorldController implements ContactListen
 	private TextureRegion bridgeTexture;
 	/** Files for the body textures */
 	private static final String[] RAGDOLL_FILES = { "ragdoll/trevorhand.png", "ragdoll/ProfWhite.png",
-			"ragdoll/trevorarm.png",  "ragdoll/tux_forearm.png",
+			"ragdoll/trevorarm.png",  "ragdoll/dude.png",
 			"ragdoll/tux_thigh.png", "ragdoll/tux_shin.png" };
 
 	/** Texture assets for the body parts */
@@ -300,12 +300,12 @@ public class PlatformController extends WorldController implements ContactListen
 	    }
 
 		// Create dude
-		dwidth  = avatarTexture.getRegionWidth()/scale.x;
-		dheight = avatarTexture.getRegionHeight()/scale.y;
-		avatar = new DudeModel(DUDE_POS.x, DUDE_POS.y, dwidth, dheight);
-		avatar.setDrawScale(scale);
-		avatar.setTexture(avatarTexture);
-		addObject(avatar);
+//		dwidth  = avatarTexture.getRegionWidth()/scale.x;
+//		dheight = avatarTexture.getRegionHeight()/scale.y;
+//		avatar = new DudeModel(DUDE_POS.x, DUDE_POS.y, dwidth, dheight);
+//		avatar.setDrawScale(scale);
+//		avatar.setTexture(avatarTexture);
+//		addObject(avatar);
 
 		// Create rope bridge
 		dwidth  = bridgeTexture.getRegionWidth()/scale.x;
@@ -320,6 +320,7 @@ public class PlatformController extends WorldController implements ContactListen
 		sloth.setDrawScale(scale.x,scale.y);
 		sloth.setPartTextures(bodyTextures);
 		addObject(sloth);
+		sloth.activateSlothPhysics(world);
 
 		// Create vine
 		Vine s_vine;
@@ -352,10 +353,10 @@ public class PlatformController extends WorldController implements ContactListen
 			return false;
 		}
 		
-		if (!isFailure() && avatar.getY() < -1) {
-			setFailure(true);
-			return false;
-		}
+//		if (!isFailure() && avatar.getY() < -1) {
+//			setFailure(true);
+//			return false;
+//		}
 		
 		return true;
 	}
@@ -442,11 +443,11 @@ public class PlatformController extends WorldController implements ContactListen
 			}
 
 			// See if we have landed on the ground.
-			if ((avatar.getSensorName().equals(fd2) && avatar != bd1) ||
-				(avatar.getSensorName().equals(fd1) && avatar != bd2)) {
-				avatar.setGrounded(true);
-				sensorFixtures.add(avatar == bd1 ? fix2 : fix1); // Could have more than one ground
-			}
+//			if ((avatar.getSensorName().equals(fd2) && avatar != bd1) ||
+//				(avatar.getSensorName().equals(fd1) && avatar != bd2)) {
+//				avatar.setGrounded(true);
+//				sensorFixtures.add(avatar == bd1 ? fix2 : fix1); // Could have more than one ground
+//			}
 			
 			// Check for win condition
 			if ((bd1 == avatar   && bd2 == goalDoor) ||
@@ -479,13 +480,13 @@ public class PlatformController extends WorldController implements ContactListen
 		Object bd1 = body1.getUserData();
 		Object bd2 = body2.getUserData();
 
-		if ((avatar.getSensorName().equals(fd2) && avatar != bd1) ||
-			(avatar.getSensorName().equals(fd1) && avatar != bd2)) {
-			sensorFixtures.remove(avatar == bd1 ? fix2 : fix1);
-			if (sensorFixtures.size == 0) {
-				avatar.setGrounded(false);
-			}
-		}
+//		if ((avatar.getSensorName().equals(fd2) && avatar != bd1) ||
+//			(avatar.getSensorName().equals(fd1) && avatar != bd2)) {
+//			sensorFixtures.remove(avatar == bd1 ? fix2 : fix1);
+//			if (sensorFixtures.size == 0) {
+//				avatar.setGrounded(false);
+//			}
+//		}
 	}
 	
 	/** Unused ContactListener method */
