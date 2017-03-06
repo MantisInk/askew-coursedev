@@ -23,8 +23,6 @@ import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.graphics.glutils.*;
 import com.badlogic.gdx.physics.box2d.*;
-import edu.cornell.gdiac.physics.obstacle.Obstacle;
-import edu.cornell.gdiac.physics.platform.sloth.SlothModel;
 
 /**
  * Primary view class for the game, abstracting the basic graphics calls.
@@ -375,42 +373,6 @@ public class GameCanvas {
 	 * Ends a drawing sequence, flushing textures to the graphics card.
 	 */
     public void end() {
-    	//
-//		try{
-//			ShapeRenderer shaper = new ShapeRenderer();
-//
-//			OrthographicCamera camera = new OrthographicCamera(Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
-//			camera.setToOrtho(false);
-//
-//			//ShapeRenderer shaper = new ShapeRenderer();
-//			Gdx.gl.glLineWidth(3);
-//			shaper.setProjectionMatrix(camera.combined);
-//
-//			shaper.begin(ShapeRenderer.ShapeType.Line);
-//			shaper.setColor(Color.BLACK);
-//			//System.out.println(shaper.isDrawing());
-//			//System.out.println(left_x+", "+left_y);
-//			//System.out.println(right_x+", "+right_y);
-//			//shaper.line(0,0, 500,500);
-//			//shaper.line(0,0, 700,300);
-//
-//			Obstacle left_arm = SlothModel.getLeftArm();
-//			Obstacle right_arm = SlothModel.getRightArm();
-//
-//			InputController player = new InputController();
-//
-//			shaper.line(left_arm.getX(),left_arm.getY(), left_arm.getX()+(player.getLeftHorizontal()), left_arm.getY()+(player.getLeftVertical()));
-//			shaper.line(right_arm.getX(),right_arm.getY(), right_arm.getX()+(player.getRightHorizontal()),right_arm.getY()+(player.getRightVertical()));
-//
-//			shaper.end();
-//			Gdx.gl.glLineWidth(3);
-//
-//		}
-//		catch (NullPointerException e){
-//
-//		}
-
-		//
     	spriteBatch.end();
     	active = DrawPass.INACTIVE;
     }
