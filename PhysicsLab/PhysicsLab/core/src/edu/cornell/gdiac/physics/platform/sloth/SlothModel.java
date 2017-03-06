@@ -406,11 +406,11 @@ public class SlothModel extends ComplexObstacle {
         Vector2 anchorHand = new com.badlogic.gdx.math.Vector2(0, 0);
         // TODO: Improve this vector
         Vector2 anchorTarget = new com.badlogic.gdx.math.Vector2(0, 0);
-
+        grabPointL.setTransform(bodies.get(PART_LEFT_HAND).getPosition(), 0);
         //RevoluteJointDef jointDef = new RevoluteJointDef();
         leftGrabJointDef = new RevoluteJointDef();
         leftGrabJointDef.bodyA = bodies.get(PART_LEFT_HAND).getBody(); // barrier
-        leftGrabJointDef.bodyB = target; // pin
+        leftGrabJointDef.bodyB = grabPointL; // pin
         leftGrabJointDef.localAnchorA.set(anchorHand);
         leftGrabJointDef.localAnchorB.set(anchorTarget);
         leftGrabJointDef.collideConnected = false;
@@ -436,11 +436,11 @@ public class SlothModel extends ComplexObstacle {
         Vector2 anchorHand = new com.badlogic.gdx.math.Vector2(0, 0);
         // TODO: Improve this vector
         Vector2 anchorTarget = new com.badlogic.gdx.math.Vector2(0, 0);
-
+        grabPointR.setTransform(bodies.get(PART_RIGHT_HAND).getPosition(), 0);
         //RevoluteJointDef jointDef = new RevoluteJointDef();
         rightGrabJointDef = new RevoluteJointDef();
         rightGrabJointDef.bodyA = bodies.get(PART_RIGHT_HAND).getBody(); // barrier
-        rightGrabJointDef.bodyB = target; // pin
+        rightGrabJointDef.bodyB = grabPointR; // pin
         rightGrabJointDef.localAnchorA.set(anchorHand);
         rightGrabJointDef.localAnchorB.set(anchorTarget);
         rightGrabJointDef.collideConnected = false;
