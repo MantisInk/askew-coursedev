@@ -54,6 +54,7 @@ public class PlatformController extends WorldController implements ContactListen
 	private static final String POP_FILE = "platform/plop.mp3";
 
 	private Body leftBody;
+	private Body rightBody;
 
 	/** Texture asset for character avatar */
 	private TextureRegion avatarTexture;
@@ -385,6 +386,11 @@ public class PlatformController extends WorldController implements ContactListen
 		} else {
 			sloth.releaseLeft(world);
 		}
+		if (sloth.isRightGrab() && rightBody != null) {
+			sloth.grabRight(world,rightBody);
+		} else {
+			sloth.releaseRight(world);
+		}
 		// Normal physics
 		sloth.doThePhysics();
 		
@@ -419,7 +425,7 @@ public class PlatformController extends WorldController implements ContactListen
 
 			if (fd1 != null && fd1.equals("handy")) {
 				System.out.println("FD1 WOW" + Math.random());
-				leftBody = body2;
+				rightBody = body2;
 			}
 
 			if (fd2 != null && fd2.equals("handy")) {

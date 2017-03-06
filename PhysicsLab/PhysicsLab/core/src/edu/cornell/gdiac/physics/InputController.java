@@ -72,9 +72,9 @@ public class InputController {
 	private boolean exitPrevious;
 
 	/** Whether the right hand is grabbing. */
-	private float leftGrabPressed;
+	private boolean leftGrabPressed;
 	/** Whether the left hand is grabbing. */
-	private float rightGrabPressed;
+	private boolean rightGrabPressed;
 
 	/** How much did left arm move horizontally? */
 	private float leftHorizontal;
@@ -149,7 +149,7 @@ public class InputController {
 	 *
 	 * @return how much the left trigger button was pressed.
 	 */
-	public float getLeftGrab() {
+	public boolean getLeftGrab() {
 		return leftGrabPressed;
 	}
 
@@ -163,7 +163,7 @@ public class InputController {
 	 *
 	 * @return how much the right trigger button was pressed.
 	 */
-	public float getRightGrab() {
+	public boolean getRightGrab() {
 		return rightGrabPressed;
 	}
 
@@ -321,14 +321,19 @@ public class InputController {
 	private void readGamepad(Rectangle bounds, Vector2 scale) {
 		resetPressed = xbox.getStart();
 		exitPressed  = xbox.getBack();
-		nextPressed  = xbox.getRB();
-		prevPressed  = xbox.getLB();
+		nextPressed  = xbox.getRightTrigger()!=0;
+		prevPressed  = xbox.getLeftTrigger()!=0;
 		primePressed = xbox.getA();
 		debugPressed  = xbox.getY();
 
 		//Check if hands are grabbing
-		leftGrabPressed = xbox.getLeftTrigger();
-		rightGrabPressed = xbox.getRightTrigger();
+		//leftGrabPressed = xbox.getLeftTrigger();
+		leftGrabPressed = xbox.getRB();
+		//rightGrabPressed = xbox.getRightTrigger();
+		rightGrabPressed = xbox.getLB();
+		System.out.print("InputController  ");
+		System.out.print("left " + leftGrabPressed);
+		System.out.println("  right " + rightGrabPressed);
 
 		//Get positions of joysticks/arms
 		leftHorizontal = xbox.getLeftX();

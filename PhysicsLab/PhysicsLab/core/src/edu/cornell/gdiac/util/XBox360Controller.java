@@ -576,7 +576,8 @@ public class XBox360Controller implements ControllerListener {
 	public float getLeftTrigger() {
 		float value = controller.getAxis(axis_left_trigger);
 		// Workaround for bug in Mac driver
-		if (left_trigger_begin) {
+		System.out.print("Xbox left " + value);
+		if (left_trigger_begin && macosx) {
 			if (value != 0) {
 				left_trigger_begin = false;
 				return value;
@@ -627,7 +628,8 @@ public class XBox360Controller implements ControllerListener {
 	public float getRightTrigger() {
 		float value = controller.getAxis(axis_right_trigger);
 		// Workaround for bug in Mac driver
-		if (right_trigger_begin) {
+		System.out.print("   Xbox right " + value+ "  ");
+		if (right_trigger_begin && macosx) {
 			if (value != 0) {
 				right_trigger_begin = false;
 				return value;

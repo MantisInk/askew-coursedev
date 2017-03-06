@@ -39,10 +39,12 @@ public class SlothModel extends ComplexObstacle {
     private static final int BODY_TEXTURE_COUNT = 6;
 
     private RevoluteJointDef leftGrabJointDef;
+    private RevoluteJointDef rightGrabJointDef;
     private Joint leftGrabJoint;
     private PolygonShape sensorShape;
     private Fixture sensorFixture;
-    private RevoluteJointDef rightGrabJoint;
+
+    private Joint rightGrabJoint;
 
     /** For drawing the force lines*/
     private ShapeRenderer shaper = new ShapeRenderer();
@@ -351,31 +353,32 @@ public class SlothModel extends ComplexObstacle {
 
     }
 
-    public void setLeftGrab(float leftGrab) {
-        this.leftGrab = leftGrab > 0;
+    public void setLeftGrab(boolean leftGrab) {
+        this.leftGrab = leftGrab;
     }
 
-    public void setRightGrab(float rightGrab) {
-        this.rightGrab = rightGrab > 0;
+    public void setRightGrab(boolean rightGrab) {
+        this.rightGrab = rightGrab;
     }
 
     public void grabLeft(World world, Body target) {
         if (leftGrabJoint != null) return;
+        System.err.println("Grab");
         Vector2 anchorHand = new com.badlogic.gdx.math.Vector2(0, 0);
         // TODO: Improve this vector
         Vector2 anchorTarget = new com.badlogic.gdx.math.Vector2(0, 0);
 
-        RevoluteJointDef jointDef = new RevoluteJointDef();
+        //RevoluteJointDef jointDef = new RevoluteJointDef();
         leftGrabJointDef = new RevoluteJointDef();
-        jointDef.bodyA = bodies.get(PART_LEFT_HAND).getBody(); // barrier
-        jointDef.bodyB = target; // pin
-        jointDef.localAnchorA.set(anchorHand);
-        jointDef.localAnchorB.set(anchorTarget);
-        jointDef.collideConnected = false;
+        leftGrabJointDef.bodyA = bodies.get(PART_LEFT_HAND).getBody(); // barrier
+        leftGrabJointDef.bodyB = target; // pin
+        leftGrabJointDef.localAnchorA.set(anchorHand);
+        leftGrabJointDef.localAnchorB.set(anchorTarget);
+        leftGrabJointDef.collideConnected = false;
         //jointDef.lowerAngle = (float) (- Math.PI/4);
         //jointDef.upperAngle = (float) (Math.PI/4);
         //jointDef.enableLimit = true;
-        leftGrabJoint = world.createJoint(jointDef);
+        leftGrabJoint = world.createJoint(leftGrabJointDef);
         joints.add(leftGrabJoint);
     }
 
@@ -385,8 +388,37 @@ public class SlothModel extends ComplexObstacle {
             world.destroyJoint(leftGrabJoint);
             //joints.removeValue(leftGrabJoint,true);
         }
-
         leftGrabJoint = null;
+    }
+
+    public void grabRight(World world, Body target) {
+        if (rightGrabJoint != null) return;
+        System.err.println("Grab");
+        Vector2 anchorHand = new com.badlogic.gdx.math.Vector2(0, 0);
+        // TODO: Improve this vector
+        Vector2 anchorTarget = new com.badlogic.gdx.math.Vector2(0, 0);
+
+        //RevoluteJointDef jointDef = new RevoluteJointDef();
+        rightGrabJointDef = new RevoluteJointDef();
+        rightGrabJointDef.bodyA = bodies.get(PART_RIGHT_HAND).getBody(); // barrier
+        rightGrabJointDef.bodyB = target; // pin
+        rightGrabJointDef.localAnchorA.set(anchorHand);
+        rightGrabJointDef.localAnchorB.set(anchorTarget);
+        rightGrabJointDef.collideConnected = false;
+        //jointDef.lowerAngle = (float) (- Math.PI/4);
+        //jointDef.upperAngle = (float) (Math.PI/4);
+        //jointDef.enableLimit = true;
+        rightGrabJoint = world.createJoint(rightGrabJointDef);
+        joints.add(rightGrabJoint);
+    }
+
+    public void releaseRight(World world) {
+        if (rightGrabJoint != null) {
+            System.err.println("Release");
+            world.destroyJoint(rightGrabJoint);
+            //joints.removeValue(rightGrabJoint,true);
+        }
+        rightGrabJoint = null;
     }
 
     public void activatePhysics() {
@@ -404,6 +436,8 @@ public class SlothModel extends ComplexObstacle {
 
         sensorFixture = bodies.get(PART_LEFT_HAND).getBody().createFixture(sensorDef);
         sensorFixture.setUserData("handy");
+        //sensorFixture = bodies.get(PART_RIGHT_HAND).getBody().createFixture(sensorDef);
+        //sensorFixture.setUserData("handy righty");
     }
 
     public void drawDebug(GameCanvas canvas) {
