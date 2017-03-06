@@ -183,7 +183,7 @@ public class PlatformController extends WorldController implements ContactListen
 	private static final float[][] PLATFORMS = { 
 												{ 1.0f, 3.0f, 6.0f, 3.0f, 6.0f, 2.5f, 1.0f, 2.5f},
 												{ 6.0f, 4.0f, 9.0f, 4.0f, 9.0f, 2.5f, 6.0f, 2.5f},
-												{23.0f, 4.0f,31.0f, 4.0f,31.0f, 2.5f,23.0f, 2.5f},
+												//{23.0f, 4.0f,31.0f, 4.0f,31.0f, 2.5f,23.0f, 2.5f},
 												//{1.0f, 14.0f,6.0f, 24.0f,31.0f, 12.5f,26.0f, 11.5f},
 												//{26.0f, 5.5f,28.0f, 5.5f,28.0f, 5.0f,26.0f, 5.0f},
 												//{29.0f, 7.0f,31.0f, 7.0f,31.0f, 6.5f,29.0f, 6.5f},
@@ -192,7 +192,8 @@ public class PlatformController extends WorldController implements ContactListen
 												//{23.0f,11.5f,27.0f,11.5f,27.0f,11.0f,23.0f,11.0f},
 												//{19.0f,12.5f,23.0f,12.5f,23.0f,12.0f,19.0f,12.0f},
 												//{ 1.0f,12.5f, 7.0f,12.5f, 7.0f,12.0f, 1.0f,12.0f}
-												{ 1.0f,10.5f, 7.0f,10.5f, 7.0f,10.0f, 1.0f,10.0f},
+												{ 1.0f,10.5f, 10.0f,10.5f, 10.0f,10.0f, 1.0f,10.0f},
+												//{ 1.0f,10.5f, 7.0f,10.5f, 7.0f,10.0f, 1.0f,10.0f},
 												{ 23.0f,10.5f, 31.0f,10.5f, 31.0f,10.0f, 23.0f,10.0f},
 											   };
 
