@@ -14,10 +14,14 @@ import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.*;
 import com.badlogic.gdx.graphics.g2d.*;
+import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.physics.GameCanvas;
 import edu.cornell.gdiac.physics.obstacle.*;
 import com.badlogic.gdx.math.Matrix4;
 import lombok.Getter;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class SlothModel extends ComplexObstacle {
 
@@ -30,6 +34,7 @@ public class SlothModel extends ComplexObstacle {
     private static final boolean BODY_FIXED_ROTATION = true;
     private static final boolean HANDS_FIXED_ROTATION = true;
     private static final float GRAVITY_SCALE = 1.0f;
+    public boolean SPIDERMAN_MODE = false;
 
     /** Indices for the body parts in the bodies array */
     private static final int PART_NONE = -1;
@@ -402,7 +407,7 @@ public class SlothModel extends ComplexObstacle {
 
     public void grabLeft(World world, Body target) {
         if (leftGrabJoint != null) return;
-        System.err.println("Grab");
+//        System.err.println("Grab");
         Vector2 anchorHand = new com.badlogic.gdx.math.Vector2(0, 0);
         // TODO: Improve this vector
         Vector2 anchorTarget = new com.badlogic.gdx.math.Vector2(0, 0);
@@ -410,7 +415,15 @@ public class SlothModel extends ComplexObstacle {
         //RevoluteJointDef jointDef = new RevoluteJointDef();
         leftGrabJointDef = new RevoluteJointDef();
         leftGrabJointDef.bodyA = bodies.get(PART_LEFT_HAND).getBody(); // barrier
-        leftGrabJointDef.bodyB = grabPointL; // pin
+        if (target == null) {
+            if (SPIDERMAN_MODE) {
+                leftGrabJointDef.bodyB = grabPointL; // pin
+            } else {
+                return;
+            }
+        }
+        else
+            leftGrabJointDef.bodyB = target;
         leftGrabJointDef.localAnchorA.set(anchorHand);
         leftGrabJointDef.localAnchorB.set(anchorTarget);
         leftGrabJointDef.collideConnected = false;
@@ -440,7 +453,15 @@ public class SlothModel extends ComplexObstacle {
         //RevoluteJointDef jointDef = new RevoluteJointDef();
         rightGrabJointDef = new RevoluteJointDef();
         rightGrabJointDef.bodyA = bodies.get(PART_RIGHT_HAND).getBody(); // barrier
-        rightGrabJointDef.bodyB = grabPointR; // pin
+        if (target == null) {
+            if (SPIDERMAN_MODE) {
+                rightGrabJointDef.bodyB = grabPointR; // pin
+            } else {
+                return;
+            }
+        }
+        else
+            rightGrabJointDef.bodyB = target;
         rightGrabJointDef.localAnchorA.set(anchorHand);
         rightGrabJointDef.localAnchorB.set(anchorTarget);
         rightGrabJointDef.collideConnected = false;
@@ -474,21 +495,26 @@ public class SlothModel extends ComplexObstacle {
         sensorDef.shape = sensorShape;
 
         sensorFixture1 = bodies.get(PART_LEFT_HAND).getBody().createFixture(sensorDef);
-        sensorFixture1.setUserData("handy");
-//        sensorFixture2 = bodies.get(PART_RIGHT_HAND).getBody().createFixture(sensorDef);
-//        sensorFixture2.setUserData("handy righty");
+        sensorFixture1.setUserData("sloth left hand");
+        sensorFixture2 = bodies.get(PART_RIGHT_HAND).getBody().createFixture(sensorDef);
+        sensorFixture2.setUserData("sloth right hand");
         BodyDef bd = new BodyDef();
         bd.type = BodyDef.BodyType.StaticBody;
         bd.position.set(0.0f, -10.0f);
         grabPointL = world.createBody(bd);
         grabPointR = world.createBody(bd);
-
-
     }
 
     public void drawDebug(GameCanvas canvas) {
         super.drawDebug(canvas);
         canvas.drawPhysics(sensorShape, Color.RED,bodies.get(PART_LEFT_HAND).getX(),bodies.get(PART_LEFT_HAND).getY(),getAngle(),drawScale.x,drawScale.y);
+        canvas.drawPhysics(sensorShape, Color.RED,bodies.get(PART_RIGHT_HAND).getX(),bodies.get(PART_RIGHT_HAND).getY(),getAngle(),drawScale.x,drawScale.y);
+    }
+
+    public ObjectSet<Obstacle> badBodies() {
+        ObjectSet<Obstacle> wtfSet = new ObjectSet<Obstacle>();
+        for (Obstacle b : bodies) wtfSet.add(b);
+        return wtfSet;
     }
 
 }
