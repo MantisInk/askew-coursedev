@@ -26,15 +26,17 @@ import java.util.Set;
 public class SlothModel extends ComplexObstacle {
 
     /** Constants for tuning sloth behaviour */
-    private static final float HAND_DENSITY = 1.0f;
+    private static final float HAND_DENSITY = 4.0f;
     private static final float ARM_DENSITY = 0.1f;
     private static final float HEAD_DENSITY = 1.0f;
     private static final float BODY_DENSITY = 0.1f;
     private static final float TWO_FREE_FORCE_MULTIPLIER = 5.0f;
+    private static final float TORQUE = 6.0f;
     private static final boolean BODY_FIXED_ROTATION = true;
     private static final boolean HANDS_FIXED_ROTATION = true;
-    private static final float GRAVITY_SCALE = 1.0f;
-    public boolean SPIDERMAN_MODE = false;
+    private static final float GRAVITY_SCALE = 0.7f;
+    private static final float ARM_MASS = 5.0f;
+    public boolean SPIDERMAN_MODE = true;
 
     /** Indices for the body parts in the bodies array */
     private static final int PART_NONE = -1;
@@ -45,6 +47,7 @@ public class SlothModel extends ComplexObstacle {
     private static final int PART_RIGHT_HAND = 4;
     private static final int PART_HEAD = 5;
 
+    private static final float PI = (float)Math.PI;
 
     /** The number of DISTINCT body parts */
     private static final int BODY_TEXTURE_COUNT = 6;
@@ -59,6 +62,9 @@ public class SlothModel extends ComplexObstacle {
 
     private Body grabPointR;
     private Body grabPointL;
+
+    private Vector2 forceL = new Vector2();
+    private Vector2 forceR = new Vector2();
 
 
 
@@ -146,11 +152,13 @@ public class SlothModel extends ComplexObstacle {
         // Right arm
         part = makePart(PART_RIGHT_ARM, PART_BODY, SHOULDER_XOFFSET + ARM_XOFFSET, SHOULDER_YOFFSET + ARM_YOFFSET, ARM_DENSITY,false);
         part.setGravityScale(GRAVITY_SCALE);
+        //part.setMass(ARM_MASS);
 
         // Left arm
         part = makePart(PART_LEFT_ARM, PART_BODY, -ARM_XOFFSET, -ARM_YOFFSET, ARM_DENSITY,false);
         part.setAngle((float)Math.PI);
         part.setGravityScale(GRAVITY_SCALE);
+        //part.setMass(ARM_MASS);
 
         // HANDS
         // Left hand
@@ -161,7 +169,6 @@ public class SlothModel extends ComplexObstacle {
         part = makePart(PART_RIGHT_HAND, PART_RIGHT_ARM, ARM_XOFFSET, ARM_YOFFSET, HAND_DENSITY,false);
         part.setFixedRotation(HANDS_FIXED_ROTATION);
         part.setGravityScale(GRAVITY_SCALE);
-
 
 
 
@@ -319,22 +326,60 @@ public class SlothModel extends ComplexObstacle {
 //        return bodies.get(2);
 //    }
 
+    //theta is in radians between 0 and pi
+    public float calculateTorque(float deltaTheta){
+        return (float) Math.max(-1.0f,Math.min(1.0f, 1.2 * Math.sin(deltaTheta)));
+    }
+
     /**
      * DOES EVERYTHING!!
      */
-    public void doThePhysics() {
-        Obstacle right = bodies.get(PART_RIGHT_HAND);
-        Obstacle left = bodies.get(PART_LEFT_HAND);
 
+
+    public void doThePhysics() {
+        Obstacle rightHand = bodies.get(PART_RIGHT_HAND);
+        Obstacle leftHand = bodies.get(PART_LEFT_HAND);
+
+        Obstacle rightArm = bodies.get(PART_RIGHT_ARM);
+        Obstacle leftArm = bodies.get(PART_LEFT_ARM);
+        //TODO CALCULATE TORQUE
         // Apply forces
+        float dLTheta = 0f;
+        float dRTheta = 0f;
+
+
+        float lcTheta = (float)Math.atan2(leftVert,leftHori);
+        float lTheta = leftArm.getAngle();
+        lTheta = -(lTheta+PI)%(2*PI)-PI;
+        float lLength = (float)Math.sqrt((leftVert * leftVert) + (leftHori * leftHori));
+        dLTheta = (float)(lTheta - lcTheta);
+        dLTheta = (dLTheta+PI)%(2*PI)-PI;
+
+        float rcTheta = (float)Math.atan2(rightVert,rightHori);
+        float rTheta = rightArm.getAngle();
+        rTheta = -(rTheta+PI)%(2*PI)-PI;
+        float rLength = (float)Math.sqrt((rightVert * rightVert) + (rightHori * rightHori));
+        dRTheta = (float)(rTheta - rcTheta);
+        dRTheta = (dRTheta+PI)%(2*PI)-PI;
+
+        float forceLeft = calculateTorque(-dLTheta);
+        float lx = (float) (TORQUE * -Math.sin(lTheta) * forceLeft * lLength);
+        float ly = (float) (TORQUE * -Math.cos(lTheta) * forceLeft * lLength);
+        forceL.set(lx,ly);
+
+        float forceRight = calculateTorque(-dRTheta);
+        float rx = (float) (TORQUE * -Math.sin(rTheta) * forceRight * rLength);
+        float ry = (float) (TORQUE * -Math.cos(rTheta) * forceRight * rLength);
+        forceR.set(rx,ry);
+
         if (isRightGrab() && !isLeftGrab())
-        left
+        leftHand
                 .getBody()
-                .applyForce(leftHori*TWO_FREE_FORCE_MULTIPLIER, -leftVert*TWO_FREE_FORCE_MULTIPLIER, left.getX(), left.getY(), true);
-        if (isLeftGrab() && !isRightGrab())
-        right
+                .applyForce(lx, ly, leftHand.getX(), leftHand.getY(), true);
+        if (!isRightGrab() && isLeftGrab())
+        rightHand
                 .getBody()
-                .applyForce(rightHori*TWO_FREE_FORCE_MULTIPLIER, -rightVert*TWO_FREE_FORCE_MULTIPLIER, right.getX(), right.getY(), true);
+                .applyForce(rx, ry, rightHand.getX(), rightHand.getY(), true);
 
         //Draw the lines for the forces
 
@@ -356,8 +401,8 @@ public class SlothModel extends ComplexObstacle {
         //System.out.println(shaper.isDrawing());
         //System.out.println(left_x+", "+left_y);
         //System.out.println(right_x+", "+right_y);
-        shaper.line(left.getX(),left.getY(), left.getX()+(left_x*200),left.getY()+(left_y*200));
-        shaper.line(right.getX(),right.getY(), right.getX()+(right_x*200),right.getY()+(right_y*200));
+        shaper.line(leftHand.getX(),leftHand.getY(), leftHand.getX()+(left_x*200),leftHand.getY()+(left_y*200));
+        shaper.line(rightHand.getX(),rightHand.getY(), rightHand.getX()+(right_x*200),rightHand.getY()+(right_y*200));
         shaper.end();
         Gdx.gl.glLineWidth(3);
     }
@@ -367,12 +412,6 @@ public class SlothModel extends ComplexObstacle {
         Obstacle left = bodies.get(PART_LEFT_HAND);
 
         //Draw the lines for the forces
-
-        float left_x = leftHori*TWO_FREE_FORCE_MULTIPLIER;
-        float left_y = -leftVert*TWO_FREE_FORCE_MULTIPLIER;
-
-        float right_x = rightHori*TWO_FREE_FORCE_MULTIPLIER;
-        float right_y = -rightVert*TWO_FREE_FORCE_MULTIPLIER;
 
         OrthographicCamera camera = new OrthographicCamera(Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
         camera.setToOrtho(false);
@@ -390,10 +429,10 @@ public class SlothModel extends ComplexObstacle {
         //System.out.println(right.getX()+", "+right.getY());
         //System.out.println(this.x+", "+this.y);
         //shaper.line(this.x+left.getX(),this.y+left.getY(), left.getX()+(left_x*20),left.getY()+(left_y*20));
-        shaper.line(left.getX()*drawScale.x,left.getY() * drawScale.y, left.getX()*drawScale.x+(left_x*20),left.getY() * drawScale.y+(left_y*20));
+        shaper.line(left.getX()*drawScale.x,left.getY() * drawScale.y, left.getX()*drawScale.x+(forceL.x*20),left.getY() * drawScale.y+(forceL.y*20));
         shaper.setColor(Color.RED);
         //shaper.line(this.x+right.getX(),this.y+right.getY(), right.getX()+(right_x*20),right.getY()+(right_y*20));
-        shaper.line(right.getX()*drawScale.x,right.getY() * drawScale.y, right.getX()*drawScale.x+(right_x*20),right.getY() * drawScale.y+(right_y*20));
+        shaper.line(right.getX()*drawScale.x,right.getY() * drawScale.y, right.getX()*drawScale.x+(forceR.x*20),right.getY() * drawScale.y+(forceR.y*20));
         shaper.end();
         Gdx.gl.glLineWidth(3);
 
@@ -409,7 +448,6 @@ public class SlothModel extends ComplexObstacle {
 
     public void grabLeft(World world, Body target) {
         if (leftGrabJoint != null) return;
-//        System.err.println("Grab");
         Vector2 anchorHand = new com.badlogic.gdx.math.Vector2(0, 0);
         // TODO: Improve this vector
         Vector2 anchorTarget = new com.badlogic.gdx.math.Vector2(0, 0);
@@ -417,12 +455,11 @@ public class SlothModel extends ComplexObstacle {
         //RevoluteJointDef jointDef = new RevoluteJointDef();
         leftGrabJointDef = new RevoluteJointDef();
         leftGrabJointDef.bodyA = bodies.get(PART_LEFT_HAND).getBody(); // barrier
-        if (target == null) {
-            if (SPIDERMAN_MODE) {
-                leftGrabJointDef.bodyB = grabPointL; // pin
-            } else {
+        if (SPIDERMAN_MODE) {
+            leftGrabJointDef.bodyB = grabPointL; // pin
+        }
+        else if (target == null) {
                 return;
-            }
         }
         else
             leftGrabJointDef.bodyB = target;
@@ -455,12 +492,11 @@ public class SlothModel extends ComplexObstacle {
         //RevoluteJointDef jointDef = new RevoluteJointDef();
         rightGrabJointDef = new RevoluteJointDef();
         rightGrabJointDef.bodyA = bodies.get(PART_RIGHT_HAND).getBody(); // barrier
-        if (target == null) {
-            if (SPIDERMAN_MODE) {
-                rightGrabJointDef.bodyB = grabPointR; // pin
-            } else {
+        if (SPIDERMAN_MODE) {
+            rightGrabJointDef.bodyB = grabPointR; // pin
+        }
+        else if (target == null) {
                 return;
-            }
         }
         else
             rightGrabJointDef.bodyB = target;
@@ -505,6 +541,10 @@ public class SlothModel extends ComplexObstacle {
         bd.position.set(0.0f, -10.0f);
         grabPointL = world.createBody(bd);
         grabPointR = world.createBody(bd);
+    }
+
+    public float getTorqueForce(float torque, float r, float theta){
+        return torque/(r*(float)Math.sin(theta));
     }
 
     public void drawDebug(GameCanvas canvas) {
