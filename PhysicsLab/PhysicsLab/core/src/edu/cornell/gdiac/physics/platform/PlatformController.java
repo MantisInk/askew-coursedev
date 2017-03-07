@@ -62,7 +62,7 @@ public class PlatformController extends WorldController implements ContactListen
 	private TextureRegion bridgeTexture;
 	/** Files for the body textures */
 	private static final String[] RAGDOLL_FILES = { "ragdoll/trevorhand.png", "ragdoll/ProfWhite.png",
-			"ragdoll/trevorarm.png",  "ragdoll/tux_forearm.png",
+			"ragdoll/trevorarm.png",  "ragdoll/dude.png",
 			"ragdoll/tux_thigh.png", "ragdoll/tux_shin.png" };
 
 	/** Texture assets for the body parts */
@@ -304,12 +304,12 @@ public class PlatformController extends WorldController implements ContactListen
 	    }
 
 		// Create dude
-		dwidth  = avatarTexture.getRegionWidth()/scale.x;
-		dheight = avatarTexture.getRegionHeight()/scale.y;
-		avatar = new DudeModel(DUDE_POS.x, DUDE_POS.y, dwidth, dheight);
-		avatar.setDrawScale(scale);
-		avatar.setTexture(avatarTexture);
-		addObject(avatar);
+//		dwidth  = avatarTexture.getRegionWidth()/scale.x;
+//		dheight = avatarTexture.getRegionHeight()/scale.y;
+//		avatar = new DudeModel(DUDE_POS.x, DUDE_POS.y, dwidth, dheight);
+//		avatar.setDrawScale(scale);
+//		avatar.setTexture(avatarTexture);
+//		addObject(avatar);
 
 		// Create rope bridge
 		dwidth  = bridgeTexture.getRegionWidth()/scale.x;
@@ -324,6 +324,7 @@ public class PlatformController extends WorldController implements ContactListen
 		sloth.setDrawScale(scale.x,scale.y);
 		sloth.setPartTextures(bodyTextures);
 		addObject(sloth);
+		sloth.activateSlothPhysics(world);
 
 		// Create vine
 		Vine s_vine;
@@ -356,10 +357,10 @@ public class PlatformController extends WorldController implements ContactListen
 			return false;
 		}
 		
-		if (!isFailure() && avatar.getY() < -1) {
-			setFailure(true);
-			return false;
-		}
+//		if (!isFailure() && avatar.getY() < -1) {
+//			setFailure(true);
+//			return false;
+//		}
 		
 		return true;
 	}
@@ -385,12 +386,13 @@ public class PlatformController extends WorldController implements ContactListen
 
 		// Physics tiem
 		// Gribby grab
-		if (sloth.isLeftGrab() && leftBody != null) {
+		if (sloth.isLeftGrab()) {
 			sloth.grabLeft(world,leftBody);
 		} else {
 			sloth.releaseLeft(world);
 		}
-		if (sloth.isRightGrab() && rightBody != null) {
+
+		if (sloth.isRightGrab()) {
 			sloth.grabRight(world,rightBody);
 		} else {
 			sloth.releaseRight(world);
@@ -427,29 +429,19 @@ public class PlatformController extends WorldController implements ContactListen
 			Obstacle bd1 = (Obstacle)body1.getUserData();
 			Obstacle bd2 = (Obstacle)body2.getUserData();
 
-			if (fd1 != null && fd1.equals("handy")) {
-				System.out.println("FD1 WOW" + Math.random());
-				rightBody = body2;
-			}
-			if (fd1 != null && fd1.equals("handy")) {
-				System.out.println("FD1 WOW" + Math.random());
+			if (fd1 != null && fd1.equals("sloth left hand") && bd2 != avatar && (!sloth.badBodies().contains(bd2))) {
+				System.out.println(body2);
 				leftBody = body2;
 			}
-
-			if (fd2 != null && fd2.equals("handy")) {
-				System.out.println("FD2 WOW" + Math.random());
-				rightBody = body1;
+			if (fd1 != null && fd1.equals("sloth right hand") && bd2 != avatar && bd2 != sloth && (!sloth.badBodies().contains(bd2))) {
+				rightBody = body2;
 			}
-			if (fd2 != null && fd2.equals("handy")) {
-				System.out.println("FD2 WOW" + Math.random());
+
+			if (fd2 != null && fd2.equals("sloth left hand") && bd1 != avatar && bd1 != sloth && (!sloth.badBodies().contains(bd1))) {
 				leftBody = body1;
 			}
-
-			// See if we have landed on the ground.
-			if ((avatar.getSensorName().equals(fd2) && avatar != bd1) ||
-				(avatar.getSensorName().equals(fd1) && avatar != bd2)) {
-				avatar.setGrounded(true);
-				sensorFixtures.add(avatar == bd1 ? fix2 : fix1); // Could have more than one ground
+			if (fd2 != null && fd2.equals("sloth right hand") && bd1 != avatar && bd1 != sloth && (!sloth.badBodies().contains(bd1))) {
+				rightBody = body1;
 			}
 			
 			// Check for win condition
@@ -479,20 +471,18 @@ public class PlatformController extends WorldController implements ContactListen
 
 		Object fd1 = fix1.getUserData();
 		Object fd2 = fix2.getUserData();
-		
+
 		Object bd1 = body1.getUserData();
 		Object bd2 = body2.getUserData();
 
-		if ((avatar.getSensorName().equals(fd2) && avatar != bd1) ||
-			(avatar.getSensorName().equals(fd1) && avatar != bd2)) {
-			sensorFixtures.remove(avatar == bd1 ? fix2 : fix1);
-			if (sensorFixtures.size == 0) {
-				avatar.setGrounded(false);
-			}
-		}
+		if (fd1 != null && fd1.equals("sloth left hand") && body2 == leftBody && !sloth.isLeftGrab()) leftBody = null;
+		if (fd2 != null && fd2.equals("sloth left hand") && body1 == leftBody && !sloth.isLeftGrab()) leftBody = null;
+		if (fd1 != null && fd1.equals("sloth right hand") && body2 == rightBody && !sloth.isRightGrab()) rightBody = null;
+		if (fd2 != null && fd2.equals("sloth right hand") && body1 == rightBody && !sloth.isRightGrab()) rightBody = null;
 	}
-	
-	/** Unused ContactListener method */
+
+
+		/** Unused ContactListener method */
 	public void postSolve(Contact contact, ContactImpulse impulse) {}
 	/** Unused ContactListener method */
 	public void preSolve(Contact contact, Manifold oldManifold) {}
