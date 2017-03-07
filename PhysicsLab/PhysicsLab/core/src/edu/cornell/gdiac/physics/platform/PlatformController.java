@@ -322,13 +322,13 @@ public class PlatformController extends WorldController implements ContactListen
 //		avatar.setTexture(avatarTexture);
 //		addObject(avatar);
 
-		// Create rope bridge
-		dwidth  = bridgeTexture.getRegionWidth()/scale.x;
-		dheight = bridgeTexture.getRegionHeight()/scale.y;
-		RopeBridge bridge = new RopeBridge(BRIDGE_POS.x, BRIDGE_POS.y, BRIDGE_WIDTH, dwidth, dheight);
-		bridge.setTexture(bridgeTexture);
-		bridge.setDrawScale(scale);
-		addObject(bridge);
+//		// Create rope bridge
+//		dwidth  = bridgeTexture.getRegionWidth()/scale.x;
+//		dheight = bridgeTexture.getRegionHeight()/scale.y;
+//		RopeBridge bridge = new RopeBridge(BRIDGE_POS.x, BRIDGE_POS.y, BRIDGE_WIDTH, dwidth, dheight);
+//		bridge.setTexture(bridgeTexture);
+//		bridge.setDrawScale(scale);
+//		addObject(bridge);
 
 		// Create sloth
 		sloth = new SlothModel(DOLL_POS.x, DOLL_POS.y);
