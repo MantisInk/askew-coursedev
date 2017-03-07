@@ -183,7 +183,7 @@ public class PlatformController extends WorldController implements ContactListen
 	private static final float[][] PLATFORMS = {
 												//   x1     y1  x2    y2     x3   y3    x4    y4
 												//{ 1.0f, 3.0f, 3.0f, 3.0f, 3.0f, 2.5f, 1.0f, 2.5f},
-												{ 1.0f, 2.0f, 3.0f, 2.0f, 3.0f, 2.3f, 1.0f, 2.3f},
+												{ 1.0f, 2.0f, 3.0f, 2.0f, 3.0f, 1.5f, 1.0f, 1.5f},
 												//{ 6.0f, 4.0f, 9.0f, 4.0f, 9.0f, 2.5f, 6.0f, 2.5f},
 												//{23.0f, 4.0f,31.0f, 4.0f,31.0f, 2.5f,23.0f, 2.5f},
 												//{1.0f, 14.0f,6.0f, 24.0f,31.0f, 12.5f,26.0f, 11.5f},

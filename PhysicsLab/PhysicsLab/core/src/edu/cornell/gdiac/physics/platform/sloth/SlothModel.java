@@ -17,7 +17,6 @@ import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.physics.GameCanvas;
 import edu.cornell.gdiac.physics.obstacle.*;
-import com.badlogic.gdx.math.Matrix4;
 import lombok.Getter;
 
 import java.util.HashSet;
