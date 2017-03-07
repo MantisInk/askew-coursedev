@@ -205,7 +205,7 @@ public class PlatformController extends WorldController implements ContactListen
 	/** The position of the spinning barrier */
 	private static Vector2 SPIN_POS = new Vector2(13.0f,12.5f);
 	/** The initial position of the dude */
-	private static Vector2 DUDE_POS = new Vector2(2.5f, 5.0f);
+	private static Vector2 DUDE_POS = new Vector2(3.5f, 5.0f);
 	/** The position of the rope bridge */
 	private static Vector2 BRIDGE_POS  = new Vector2(-20.0f, 1.8f);
 	/** The position of the vine */
@@ -214,7 +214,7 @@ public class PlatformController extends WorldController implements ContactListen
 					new Vector2(18f, 17.1f),
 					new Vector2(10f, 17.1f),
 					//new Vector2(10f, 9.1f),
-					new Vector2(1.5f, 7.9f),
+					//new Vector2(1.5f, 7.9f),
 					new Vector2(5.5f, 7.9f),
 					new Vector2(14f, 7.9f),
 					new Vector2(22f, 7.9f),
@@ -440,18 +440,19 @@ public class PlatformController extends WorldController implements ContactListen
 			Obstacle bd1 = (Obstacle)body1.getUserData();
 			Obstacle bd2 = (Obstacle)body2.getUserData();
 
-			if (fd1 != null && fd1.equals("sloth left hand") && bd2 != avatar && (!sloth.badBodies().contains(bd2))) {
+
+			if (fd1 != null && fd1.equals("sloth left hand") && bd2 != avatar && (!sloth.badBodies().contains(bd2)) && (!(bd2 instanceof PolygonObstacle))) {
 				System.out.println(body2);
 				leftBody = body2;
 			}
-			if (fd1 != null && fd1.equals("sloth right hand") && bd2 != avatar && bd2 != sloth && (!sloth.badBodies().contains(bd2))) {
+			if (fd1 != null && fd1.equals("sloth right hand") && bd2 != avatar && bd2 != sloth && (!sloth.badBodies().contains(bd2))&& (!(bd2 instanceof PolygonObstacle))) {
 				rightBody = body2;
 			}
 
-			if (fd2 != null && fd2.equals("sloth left hand") && bd1 != avatar && bd1 != sloth && (!sloth.badBodies().contains(bd1))) {
+			if (fd2 != null && fd2.equals("sloth left hand") && bd1 != avatar && bd1 != sloth && (!sloth.badBodies().contains(bd1))&& (!(bd1 instanceof PolygonObstacle))) {
 				leftBody = body1;
 			}
-			if (fd2 != null && fd2.equals("sloth right hand") && bd1 != avatar && bd1 != sloth && (!sloth.badBodies().contains(bd1))) {
+			if (fd2 != null && fd2.equals("sloth right hand") && bd1 != avatar && bd1 != sloth && (!sloth.badBodies().contains(bd1))&& (!(bd1 instanceof PolygonObstacle))) {
 				rightBody = body1;
 			}
 			
