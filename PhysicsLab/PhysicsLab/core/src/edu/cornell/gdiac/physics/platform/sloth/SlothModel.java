@@ -450,7 +450,8 @@ public class SlothModel extends ComplexObstacle {
         Vector2 anchorHand = new com.badlogic.gdx.math.Vector2(0, 0);
         // TODO: Improve this vector
         Vector2 anchorTarget = new com.badlogic.gdx.math.Vector2(0, 0);
-        grabPointL.setTransform(bodies.get(PART_LEFT_HAND).getPosition(), 0);
+        if (SPIDERMAN_MODE)
+            grabPointL.setTransform(bodies.get(PART_LEFT_HAND).getPosition(), 0);
         //RevoluteJointDef jointDef = new RevoluteJointDef();
         leftGrabJointDef = new RevoluteJointDef();
         leftGrabJointDef.bodyA = bodies.get(PART_LEFT_HAND).getBody(); // barrier
@@ -489,7 +490,8 @@ public class SlothModel extends ComplexObstacle {
         Vector2 anchorHand = new com.badlogic.gdx.math.Vector2(0, 0);
         // TODO: Improve this vector
         Vector2 anchorTarget = new com.badlogic.gdx.math.Vector2(0, 0);
-        grabPointR.setTransform(bodies.get(PART_RIGHT_HAND).getPosition(), 0);
+        if (SPIDERMAN_MODE)
+                grabPointR.setTransform(bodies.get(PART_RIGHT_HAND).getPosition(), 0);
         //RevoluteJointDef jointDef = new RevoluteJointDef();
         rightGrabJointDef = new RevoluteJointDef();
         rightGrabJointDef.bodyA = bodies.get(PART_RIGHT_HAND).getBody(); // barrier
@@ -543,6 +545,9 @@ public class SlothModel extends ComplexObstacle {
         bd.position.set(0.0f, -10.0f);
         grabPointL = world.createBody(bd);
         grabPointR = world.createBody(bd);
+        grabPointL.setTransform(-5f, -5f, 0f);
+        grabPointR.setTransform(-5f, -5f, 0f);
+
     }
 
     public float getTorqueForce(float torque, float r, float theta){
