@@ -328,12 +328,12 @@ public class InputController {
 
 		//Check if hands are grabbing
 		//leftGrabPressed = xbox.getLeftTrigger();
-		leftGrabPressed = xbox.getLB();
+		leftGrabPressed = xbox.getRB();
 		//rightGrabPressed = xbox.getRightTrigger();
-		rightGrabPressed = xbox.getRB();
-		System.out.print("InputController  ");
-		System.out.print("left " + leftGrabPressed);
-		System.out.println("  right " + rightGrabPressed);
+		rightGrabPressed = xbox.getLB();
+		//System.out.print("InputController  ");
+		//System.out.print("left " + leftGrabPressed);
+		//System.out.println("  right " + rightGrabPressed);
 
 		//Get positions of joysticks/arms
 		leftHorizontal = xbox.getLeftX();
