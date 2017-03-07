@@ -182,7 +182,8 @@ public class PlatformController extends WorldController implements ContactListen
 	/** The outlines of all of the platforms */
 	private static final float[][] PLATFORMS = {
 												//   x1     y1  x2    y2     x3   y3    x4    y4
-												{ 1.0f, 3.0f, 3.0f, 3.0f, 3.0f, 2.5f, 1.0f, 2.5f},
+												//{ 1.0f, 3.0f, 3.0f, 3.0f, 3.0f, 2.5f, 1.0f, 2.5f},
+												{ 1.0f, 2.0f, 3.0f, 2.0f, 3.0f, 2.3f, 1.0f, 2.3f},
 												//{ 6.0f, 4.0f, 9.0f, 4.0f, 9.0f, 2.5f, 6.0f, 2.5f},
 												//{23.0f, 4.0f,31.0f, 4.0f,31.0f, 2.5f,23.0f, 2.5f},
 												//{1.0f, 14.0f,6.0f, 24.0f,31.0f, 12.5f,26.0f, 11.5f},
@@ -200,7 +201,7 @@ public class PlatformController extends WorldController implements ContactListen
 
 	// Other game objects
 	/** The goal door position */
-	private static Vector2 GOAL_POS = new Vector2(9999.0f,9999.0f);
+	private static Vector2 GOAL_POS = new Vector2(2.5f,15.5f);
 	/** The position of the spinning barrier */
 	private static Vector2 SPIN_POS = new Vector2(13.0f,12.5f);
 	/** The initial position of the dude */
