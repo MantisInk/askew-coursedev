@@ -327,9 +327,11 @@ public class SlothModel extends ComplexObstacle {
         Obstacle left = bodies.get(PART_LEFT_HAND);
 
         // Apply forces
+        if (isRightGrab() && !isLeftGrab())
         left
                 .getBody()
                 .applyForce(leftHori*TWO_FREE_FORCE_MULTIPLIER, -leftVert*TWO_FREE_FORCE_MULTIPLIER, left.getX(), left.getY(), true);
+        if (isLeftGrab() && !isRightGrab())
         right
                 .getBody()
                 .applyForce(rightHori*TWO_FREE_FORCE_MULTIPLIER, -rightVert*TWO_FREE_FORCE_MULTIPLIER, right.getX(), right.getY(), true);
