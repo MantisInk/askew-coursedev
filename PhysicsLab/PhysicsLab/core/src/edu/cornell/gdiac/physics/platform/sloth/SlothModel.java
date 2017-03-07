@@ -36,7 +36,7 @@ public class SlothModel extends ComplexObstacle {
     private static final boolean HANDS_FIXED_ROTATION = true;
     private static final float GRAVITY_SCALE = 0.7f;
     private static final float ARM_MASS = 5.0f;
-    public boolean SPIDERMAN_MODE = true;
+    public boolean SPIDERMAN_MODE = false;
 
     /** Indices for the body parts in the bodies array */
     private static final int PART_NONE = -1;
@@ -455,11 +455,13 @@ public class SlothModel extends ComplexObstacle {
         //RevoluteJointDef jointDef = new RevoluteJointDef();
         leftGrabJointDef = new RevoluteJointDef();
         leftGrabJointDef.bodyA = bodies.get(PART_LEFT_HAND).getBody(); // barrier
-        if (SPIDERMAN_MODE) {
-            leftGrabJointDef.bodyB = grabPointL; // pin
-        }
-        else if (target == null) {
+
+        if (target == null) {
+            if (SPIDERMAN_MODE) {
+                leftGrabJointDef.bodyB = grabPointL; // pin
+            } else{
                 return;
+            }
         }
         else
             leftGrabJointDef.bodyB = target;
@@ -492,11 +494,12 @@ public class SlothModel extends ComplexObstacle {
         //RevoluteJointDef jointDef = new RevoluteJointDef();
         rightGrabJointDef = new RevoluteJointDef();
         rightGrabJointDef.bodyA = bodies.get(PART_RIGHT_HAND).getBody(); // barrier
-        if (SPIDERMAN_MODE) {
-            rightGrabJointDef.bodyB = grabPointR; // pin
-        }
-        else if (target == null) {
+        if (target == null) {
+            if (SPIDERMAN_MODE) {
+                rightGrabJointDef.bodyB = grabPointR; // pin
+            } else{
                 return;
+            }
         }
         else
             rightGrabJointDef.bodyB = target;

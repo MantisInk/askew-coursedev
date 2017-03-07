@@ -441,18 +441,18 @@ public class PlatformController extends WorldController implements ContactListen
 			Obstacle bd2 = (Obstacle)body2.getUserData();
 
 
-			if (fd1 != null && fd1.equals("sloth left hand") && bd2 != avatar && (!sloth.badBodies().contains(bd2))) {
+			if (fd1 != null && fd1.equals("sloth left hand") && bd2 != avatar && (!sloth.badBodies().contains(bd2)) && (!(bd2 instanceof PolygonObstacle))) {
 				System.out.println(body2);
 				leftBody = body2;
 			}
-			if (fd1 != null && fd1.equals("sloth right hand") && bd2 != avatar && bd2 != sloth && (!sloth.badBodies().contains(bd2))) {
+			if (fd1 != null && fd1.equals("sloth right hand") && bd2 != avatar && bd2 != sloth && (!sloth.badBodies().contains(bd2))&& (!(bd2 instanceof PolygonObstacle))) {
 				rightBody = body2;
 			}
 
-			if (fd2 != null && fd2.equals("sloth left hand") && bd1 != avatar && bd1 != sloth && (!sloth.badBodies().contains(bd1))) {
+			if (fd2 != null && fd2.equals("sloth left hand") && bd1 != avatar && bd1 != sloth && (!sloth.badBodies().contains(bd1))&& (!(bd1 instanceof PolygonObstacle))) {
 				leftBody = body1;
 			}
-			if (fd2 != null && fd2.equals("sloth right hand") && bd1 != avatar && bd1 != sloth && (!sloth.badBodies().contains(bd1))) {
+			if (fd2 != null && fd2.equals("sloth right hand") && bd1 != avatar && bd1 != sloth && (!sloth.badBodies().contains(bd1))&& (!(bd1 instanceof PolygonObstacle))) {
 				rightBody = body1;
 			}
 			
