@@ -4,32 +4,35 @@
 Playing as "dude" from Lab 4 (now with giant arm enhancements!) you must swing from vine to vine to reach the goal!
 
 
-##Controls (__Requires Xbox Controller__)
+##Controls (_Requires Xbox Controller_)
 
-####Grabbing
-Used to take hold of vines and other parts of the stage!
+###Grabbing
+_Used to take hold of vines and other parts of the stage!_
 
-- __Left bumper (LB)__: grab (holding the bumper) or release (letting go of the bumper) an object with **left** hand
-- __Right bumper (LB)__: grab (holding the bumper) or release (letting go of the bumper) an object with **right** hand
+- _Left bumper (LB)_: grab (holding the bumper) or release (letting go of the bumper) an object with **left** hand
+- _Right bumper (LB)_: grab (holding the bumper) or release (letting go of the bumper) an object with **right** hand
 
-__**Rules for Grabbing**__
-For the purpose of this prototype, you are only able to grab the vines (any part of them) and certain sections of the upper floor. No walls or ceilings are grabbable at this time.
+####Rules for Grabbing
 
-
-####Swinging
-Used to gain momentum on vines to swing yourself across the stage!
-
-- __Left joystick__: swing **left** arm in whichever diretion you tilt
-- __Right joystick__: swing **right** arm in whichever diretion you tilt
-
-**Note: 360 degrees of motion are possible here**
-
-__**Rules for Swinging**__
-Due to a technical issue, there is a specific rule for swinging your arms: __you must be "grabbing" in order to move and arm__ (whether your character is actually grabbing an object/vine or not). **This rule is true at all times.**
+For the purpose of this prototype, you are only able to grab the vines (any part of them) and certain sections of the upper floor. _No walls or ceilings are grabbable at this time._
 
 
-####Misc.
-- __Start button__: resets the game (__see Known Issues__)
+###Swinging
+_Used to gain momentum on vines to swing yourself across the stage!_
+
+- _Left joystick_: swing **left** arm in whichever diretion you tilt
+- _Right joystick_: swing **right** arm in whichever diretion you tilt
+
+_Note: 360 degrees of motion are possible here_
+
+_**Rules for Swinging**_
+
+Due to a technical issue, there is a specific rule for swinging your arms: _you must be "grabbing" in order to move and arm_ (whether your character is actually grabbing an object/vine or not). **This rule is true at all times.**
+
+
+###Misc.
+- _Start button_: resets the game (_see Known Issues_)
+- _Any other button_: probably crash the game
 
 **Note: force vector on each hand will appear once you start moving its respective arm. The left hand is designated by the blue vector, and the right hand is designated by the red vector.**
 
@@ -39,11 +42,11 @@ If the rule for swinging didn't make sense, following these instructions may hel
 
 1. Tilt both arms to the bottom left corner of the screen
 2. Hold down the grab button for either hand (I find myself using the right bumper)
-3. With the __**opposite arm**__ (the one you're not grabbing with), reach for the first vine and try to grab it (I find myself using the left joystick and left bumper for this)
+3. With the _**opposite arm**_ (the one you're not grabbing with), reach for the first vine and try to grab it (I find myself using the left joystick and left bumper for this)
 4. If you grabbed it, use the other arm to start swinging on the vine!
 
 - I recommend waiting until the vine has swung to the left of its swinging cycle two times, it's a bit easier to grab after that point. 
-- It may take a few tries to get used to this and not keep falling off the platform. If this happens, you should be able to press __Start__ to restart the stage (__see Known Issues__). 
+- It may take a few tries to get used to this and not keep falling off the platform. If this happens, you should be able to press _Start_ to restart the stage (_see Known Issues_). 
 
 
 ##Hints for Completing the Stage
