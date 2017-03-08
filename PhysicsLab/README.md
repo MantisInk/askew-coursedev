@@ -9,8 +9,8 @@ Playing as "dude" from Lab 4 (now with giant arm enhancements!) you must swing f
 ###Grabbing
 _Used to take hold of vines and other parts of the stage!_
 
-- _**Left bumper (LB)**_: grab (holding the bumper) or release (letting go of the bumper) an object with **left** hand
-- _**Right bumper (LB)**_: grab (holding the bumper) or release (letting go of the bumper) an object with **right** hand
+- _**Left bumper (LB)**_: grab (_holding the bumper_) or release (_letting go of the bumper_) an object with **left** hand
+- _**Right bumper (LB)**_: grab (_holding the bumper_) or release (_letting go of the bumper_) an object with **right** hand
 
 ####Rules for Grabbing
 
