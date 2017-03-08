@@ -9,8 +9,8 @@ Playing as "dude" from Lab 4 (now with giant arm enhancements!) you must swing f
 ###Grabbing
 _Used to take hold of vines and other parts of the stage!_
 
-- _Left bumper (LB)_: grab (holding the bumper) or release (letting go of the bumper) an object with **left** hand
-- _Right bumper (LB)_: grab (holding the bumper) or release (letting go of the bumper) an object with **right** hand
+- _**Left bumper (LB)**_: grab (holding the bumper) or release (letting go of the bumper) an object with **left** hand
+- _**Right bumper (LB)**_: grab (holding the bumper) or release (letting go of the bumper) an object with **right** hand
 
 ####Rules for Grabbing
 
@@ -20,21 +20,21 @@ For the purpose of this prototype, you are only able to grab the vines (any part
 ###Swinging
 _Used to gain momentum on vines to swing yourself across the stage!_
 
-- _Left joystick_: swing **left** arm in whichever diretion you tilt
-- _Right joystick_: swing **right** arm in whichever diretion you tilt
+- _**Left joystick**_: swing **left** arm in whichever diretion you tilt
+- _**Right joystick**_: swing **right** arm in whichever diretion you tilt
 
-_Note: 360 degrees of motion are possible here_
+_**Note:** 360 degrees of motion are possible here_
 
-_**Rules for Swinging**_
+####Rules for Swinging
 
 Due to a technical issue, there is a specific rule for swinging your arms: _you must be "grabbing" in order to move and arm_ (whether your character is actually grabbing an object/vine or not). **This rule is true at all times.**
 
 
 ###Misc.
-- _Start button_: resets the game (_see Known Issues_)
-- _Any other button_: probably crash the game
+- _**Start button**_: resets the game (_see Known Issues_)
+- _**Any other button**_: probably crash the game
 
-**Note: force vector on each hand will appear once you start moving its respective arm. The left hand is designated by the blue vector, and the right hand is designated by the red vector.**
+_**Note:** force vector on each hand will appear once you start moving its respective arm. The left hand is designated by the blue vector, and the right hand is designated by the red vector._
 
 
 ##Tip for Leaving the Starting Platform
@@ -46,7 +46,7 @@ If the rule for swinging didn't make sense, following these instructions may hel
 4. If you grabbed it, use the other arm to start swinging on the vine!
 
 - I recommend waiting until the vine has swung to the left of its swinging cycle two times, it's a bit easier to grab after that point. 
-- It may take a few tries to get used to this and not keep falling off the platform. If this happens, you should be able to press _Start_ to restart the stage (_see Known Issues_). 
+- It may take a few tries to get used to this and not keep falling off the platform. If this happens, you should be able to press _**Start**_ to restart the stage (_see Known Issues_). 
 
 
 ##Hints for Completing the Stage
