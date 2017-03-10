@@ -251,6 +251,7 @@ public class SlothModel extends ComplexObstacle {
         body.setDrawScale(drawScale);
         body.setTexture(texture);
         body.setDensity(density);
+
         bodies.add(body);
         return body;
     }
@@ -543,6 +544,7 @@ public class SlothModel extends ComplexObstacle {
         BodyDef bd = new BodyDef();
         bd.type = BodyDef.BodyType.StaticBody;
         bd.position.set(0.0f, -10.0f);
+        bd.angularDamping = 5f;
         grabPointL = world.createBody(bd);
         grabPointR = world.createBody(bd);
         grabPointL.setTransform(-5f, -5f, 0f);

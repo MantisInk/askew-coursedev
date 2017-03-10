@@ -183,6 +183,7 @@ public class Vine extends ComplexObstacle {
 		finish.setName(BRIDGE_PIN_NAME+1);
 		finish.setDensity(BASIC_DENSITY);
 		finish.setBodyType(BodyDef.BodyType.StaticBody);
+		finish.setAngularDamping(5f);
 		finish.activatePhysics(world);
 
 		return true;
