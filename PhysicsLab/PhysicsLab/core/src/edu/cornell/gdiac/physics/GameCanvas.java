@@ -72,6 +72,8 @@ public class GameCanvas {
 	
 	/** The current color blending mode */
 	private BlendState blend;
+
+	private Texture background;
 	
 	/** Camera for the underlying SpriteBatch */
 	private OrthographicCamera camera;
@@ -113,6 +115,8 @@ public class GameCanvas {
 		local  = new Affine2();
 		global = new Matrix4();
 		vertex = new Vector2();
+
+		background = new Texture(Gdx.files.internal("platform/background.png"));
 	}
 		
     /**
@@ -319,8 +323,11 @@ public class GameCanvas {
 	 */
 	public void clear() {
     	// Clear the screen
-		Gdx.gl.glClearColor(0.39f, 0.58f, 0.93f, 1.0f);  // Homage to the XNA years
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);		
+		Gdx.gl.glClearColor(0.81f, 0.81f, 0.83f, 1.0f);  // Homage to the XNA years
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		spriteBatch.begin();
+		spriteBatch.draw(background,0,-50f);
+		spriteBatch.end();
 	}
 
 	/**

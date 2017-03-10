@@ -18,9 +18,12 @@ import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.physics.box2d.*;
 
+import edu.cornell.gdiac.physics.platform.sloth.SlothModel;
 import edu.cornell.gdiac.util.*;
 import edu.cornell.gdiac.physics.*;
 import edu.cornell.gdiac.physics.obstacle.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Gameplay specific controller for the platformer game.  
@@ -40,6 +43,8 @@ public class PlatformController extends WorldController implements ContactListen
 	private static final String BULLET_FILE  = "platform/bullet.png";
 	/** The texture file for the bridge plank */
 	private static final String ROPE_FILE  = "platform/ropebridge.png";
+	/** The texture file for the vine */
+	private static final String VINE_FILE  = "platform/vine.png";
 	
 	/** The sound file for a jump */
 	private static final String JUMP_FILE = "platform/jump.mp3";
@@ -48,15 +53,28 @@ public class PlatformController extends WorldController implements ContactListen
 	/** The sound file for a bullet collision */
 	private static final String POP_FILE = "platform/plop.mp3";
 
+	private Body leftBody;
+	private Body rightBody;
+
 	/** Texture asset for character avatar */
 	private TextureRegion avatarTexture;
-	/** Texture asset for the spinning barrier */
-	private TextureRegion barrierTexture;
-	/** Texture asset for the bullet */
-	private TextureRegion bulletTexture;
 	/** Texture asset for the bridge plank */
 	private TextureRegion bridgeTexture;
-	
+	/** Files for the body textures */
+	private static final String[] RAGDOLL_FILES = { "ragdoll/trevorhand.png", "ragdoll/ProfWhite.png",
+			"ragdoll/trevorarm.png",  "ragdoll/dude.png",
+			"ragdoll/tux_thigh.png", "ragdoll/tux_shin.png" };
+
+	/** Texture assets for the body parts */
+	private TextureRegion[] bodyTextures;
+	private static Vector2 DOLL_POS = new Vector2( 2.5f,  5.0f);
+
+	/** Track asset loading from all instances and subclasses */
+	private AssetState ragdollAssetState = AssetState.EMPTY;
+
+	/** Texture asset for the vine */
+	private TextureRegion vineTexture;
+
 	/** Track asset loading from all instances and subclasses */
 	private AssetState platformAssetState = AssetState.EMPTY;
 	
@@ -84,6 +102,8 @@ public class PlatformController extends WorldController implements ContactListen
 		assets.add(BULLET_FILE);
 		manager.load(ROPE_FILE, Texture.class);
 		assets.add(ROPE_FILE);
+		manager.load(VINE_FILE, Texture.class);
+		assets.add(VINE_FILE);
 		
 		manager.load(JUMP_FILE, Sound.class);
 		assets.add(JUMP_FILE);
@@ -91,7 +111,13 @@ public class PlatformController extends WorldController implements ContactListen
 		assets.add(PEW_FILE);
 		manager.load(POP_FILE, Sound.class);
 		assets.add(POP_FILE);
-		
+
+		// SLOTH
+		for(int ii = 0; ii < RAGDOLL_FILES.length; ii++) {
+			manager.load(RAGDOLL_FILES[ii], Texture.class);
+			assets.add(RAGDOLL_FILES[ii]);
+		}
+
 		super.preLoadContent(manager);
 	}
 
@@ -111,14 +137,20 @@ public class PlatformController extends WorldController implements ContactListen
 		}
 		
 		avatarTexture = createTexture(manager,DUDE_FILE,false);
-		barrierTexture = createTexture(manager,BARRIER_FILE,false);
-		bulletTexture = createTexture(manager,BULLET_FILE,false);
 		bridgeTexture = createTexture(manager,ROPE_FILE,false);
+		vineTexture = createTexture(manager,VINE_FILE,false);
 
 		SoundController sounds = SoundController.getInstance();
 		sounds.allocate(manager, JUMP_FILE);
 		sounds.allocate(manager, PEW_FILE);
 		sounds.allocate(manager, POP_FILE);
+
+		// SLOTH
+		bodyTextures = new TextureRegion[RAGDOLL_FILES.length];
+		for(int ii = 0; ii < RAGDOLL_FILES.length; ii++) {
+			bodyTextures[ii] =  createTexture(manager,RAGDOLL_FILES[ii],false);
+		}
+
 		super.loadContent(manager);
 		platformAssetState = AssetState.COMPLETE;
 	}
@@ -128,20 +160,14 @@ public class PlatformController extends WorldController implements ContactListen
 	private static final float  DEFAULT_GRAVITY = -14.7f;
 	/** The density for most physics objects */
 	private static final float  BASIC_DENSITY = 0.0f;
-	/** The density for a bullet */
-	private static final float  HEAVY_DENSITY = 10.0f;
 	/** Friction of most platforms */
 	private static final float  BASIC_FRICTION = 0.4f;
 	/** The restitution for all physics objects */
 	private static final float  BASIC_RESTITUTION = 0.1f;
 	/** The width of the rope bridge */
 	private static final float  BRIDGE_WIDTH = 14.0f;
-	/** Offset for bullet when firing */
-	private static final float  BULLET_OFFSET = 0.2f;
-	/** The speed of the bullet after firing */
-	private static final float  BULLET_SPEED = 20.0f;
-	/** The volume for sound effects */
-	private static final float EFFECT_VOLUME = 0.8f;
+	/** The length of the vine */
+	private static final float VINE_LENGTH = 5f;
 
 	// Since these appear only once, we do not care about the magic numbers.
 	// In an actual game, this information would go in a data file.
@@ -154,32 +180,52 @@ public class PlatformController extends WorldController implements ContactListen
 											};
 	
 	/** The outlines of all of the platforms */
-	private static final float[][] PLATFORMS = { 
-												{ 1.0f, 3.0f, 6.0f, 3.0f, 6.0f, 2.5f, 1.0f, 2.5f},
-												{ 6.0f, 4.0f, 9.0f, 4.0f, 9.0f, 2.5f, 6.0f, 2.5f},
-												{23.0f, 4.0f,31.0f, 4.0f,31.0f, 2.5f,23.0f, 2.5f},
-												{26.0f, 5.5f,28.0f, 5.5f,28.0f, 5.0f,26.0f, 5.0f},
-												{29.0f, 7.0f,31.0f, 7.0f,31.0f, 6.5f,29.0f, 6.5f},
-												{24.0f, 8.5f,27.0f, 8.5f,27.0f, 8.0f,24.0f, 8.0f},
-												{29.0f,10.0f,31.0f,10.0f,31.0f, 9.5f,29.0f, 9.5f},
-												{23.0f,11.5f,27.0f,11.5f,27.0f,11.0f,23.0f,11.0f},
-												{19.0f,12.5f,23.0f,12.5f,23.0f,12.0f,19.0f,12.0f},
-												{ 1.0f,12.5f, 7.0f,12.5f, 7.0f,12.0f, 1.0f,12.0f}
+	private static final float[][] PLATFORMS = {
+												//   x1     y1  x2    y2     x3   y3    x4    y4
+												//{ 1.0f, 3.0f, 3.0f, 3.0f, 3.0f, 2.5f, 1.0f, 2.5f},
+												{ 1.0f, 2.0f, 3.0f, 2.0f, 3.0f, 1.5f, 1.0f, 1.5f},
+												//{ 6.0f, 4.0f, 9.0f, 4.0f, 9.0f, 2.5f, 6.0f, 2.5f},
+												//{23.0f, 4.0f,31.0f, 4.0f,31.0f, 2.5f,23.0f, 2.5f},
+												//{1.0f, 14.0f,6.0f, 24.0f,31.0f, 12.5f,26.0f, 11.5f},
+												//{26.0f, 5.5f,28.0f, 5.5f,28.0f, 5.0f,26.0f, 5.0f},
+												//{29.0f, 7.0f,31.0f, 7.0f,31.0f, 6.5f,29.0f, 6.5f},
+												//{24.0f, 8.5f,27.0f, 8.5f,27.0f, 8.0f,24.0f, 8.0f},
+												//{29.0f,10.0f,31.0f,10.0f,31.0f, 9.5f,29.0f, 9.5f},
+												//{23.0f,11.5f,27.0f,11.5f,27.0f,11.0f,23.0f,11.0f},
+												//{19.0f,12.5f,23.0f,12.5f,23.0f,12.0f,19.0f,12.0f},
+												//{ 1.0f,12.5f, 7.0f,12.5f, 7.0f,12.0f, 1.0f,12.0f}
+												{ 1.0f,8.5f, 23.0f,8.5f, 23.0f,8.0f, 1.0f,8.0f},
+												//{ 1.0f,10.5f, 7.0f,10.5f, 7.0f,10.0f, 1.0f,10.0f},
+												//{ 23.0f,10.5f, 31.0f,10.5f, 31.0f,10.0f, 23.0f,10.0f},
 											   };
 
 	// Other game objects
 	/** The goal door position */
-	private static Vector2 GOAL_POS = new Vector2(4.0f,14.0f);
+	private static Vector2 GOAL_POS = new Vector2(2.5f,15.5f);
 	/** The position of the spinning barrier */
 	private static Vector2 SPIN_POS = new Vector2(13.0f,12.5f);
 	/** The initial position of the dude */
-	private static Vector2 DUDE_POS = new Vector2(2.5f, 5.0f);
+	private static Vector2 DUDE_POS = new Vector2(3.5f, 5.0f);
 	/** The position of the rope bridge */
-	private static Vector2 BRIDGE_POS  = new Vector2(9.0f, 3.8f);
+	private static Vector2 BRIDGE_POS  = new Vector2(-20.0f, 1.8f);
+	/** The position of the vine */
+	private static ArrayList<Vector2> VINE_POS  = new ArrayList<Vector2>(
+			Arrays.asList(
+					new Vector2(18f, 17.1f),
+					new Vector2(10f, 17.1f),
+					//new Vector2(10f, 9.1f),
+					//new Vector2(1.5f, 7.9f),
+					new Vector2(5.5f, 7.9f),
+					new Vector2(14f, 7.9f),
+					new Vector2(22f, 7.9f),
+					new Vector2(26f, 14f)
+
+					));
 
 	// Physics objects for the game
 	/** Reference to the character avatar */
 	private DudeModel avatar;
+	private static SlothModel sloth;
 	/** Reference to the goalDoor (for collision detection) */
 	private BoxObstacle goalDoor;
 
@@ -269,29 +315,42 @@ public class PlatformController extends WorldController implements ContactListen
 	    }
 
 		// Create dude
-		dwidth  = avatarTexture.getRegionWidth()/scale.x;
-		dheight = avatarTexture.getRegionHeight()/scale.y;
-		avatar = new DudeModel(DUDE_POS.x, DUDE_POS.y, dwidth, dheight);
-		avatar.setDrawScale(scale);
-		avatar.setTexture(avatarTexture);
-		addObject(avatar);
+//		dwidth  = avatarTexture.getRegionWidth()/scale.x;
+//		dheight = avatarTexture.getRegionHeight()/scale.y;
+//		avatar = new DudeModel(DUDE_POS.x, DUDE_POS.y, dwidth, dheight);
+//		avatar.setDrawScale(scale);
+//		avatar.setTexture(avatarTexture);
+//		addObject(avatar);
 
-		// Create rope bridge
-		dwidth  = bridgeTexture.getRegionWidth()/scale.x;
-		dheight = bridgeTexture.getRegionHeight()/scale.y;
-		RopeBridge bridge = new RopeBridge(BRIDGE_POS.x, BRIDGE_POS.y, BRIDGE_WIDTH, dwidth, dheight);
-		bridge.setTexture(bridgeTexture);
-		bridge.setDrawScale(scale);
-		addObject(bridge);
-		
-		// Create spinning platform
-		dwidth  = barrierTexture.getRegionWidth()/scale.x;
-		dheight = barrierTexture.getRegionHeight()/scale.y;
-		Spinner spinPlatform = new Spinner(SPIN_POS.x,SPIN_POS.y,dwidth,dheight);
-		spinPlatform.setDrawScale(scale);
-		spinPlatform.setTexture(barrierTexture);
-		addObject(spinPlatform);
+//		// Create rope bridge
+//		dwidth  = bridgeTexture.getRegionWidth()/scale.x;
+//		dheight = bridgeTexture.getRegionHeight()/scale.y;
+//		RopeBridge bridge = new RopeBridge(BRIDGE_POS.x, BRIDGE_POS.y, BRIDGE_WIDTH, dwidth, dheight);
+//		bridge.setTexture(bridgeTexture);
+//		bridge.setDrawScale(scale);
+//		addObject(bridge);
+
+		// Create sloth
+		sloth = new SlothModel(DOLL_POS.x, DOLL_POS.y);
+		sloth.setDrawScale(scale.x,scale.y);
+		sloth.setPartTextures(bodyTextures);
+		addObject(sloth);
+		sloth.activateSlothPhysics(world);
+
+		// Create vine
+		Vine s_vine;
+		for (int v = 0; v < VINE_POS.size(); v++) {
+			dwidth = vineTexture.getRegionWidth() / scale.x;
+			dheight = vineTexture.getRegionHeight() / scale.y;
+			s_vine = new Vine(VINE_POS.get(v).x, VINE_POS.get(v).y, VINE_LENGTH, dwidth, dheight);
+			s_vine.setTexture(vineTexture);
+			s_vine.setDrawScale(scale);
+			addObject(s_vine);
+		}
 	}
+
+	/**For drawing force lines*/
+	public static SlothModel getSloth(){return sloth;}
 	
 	/**
 	 * Returns whether to process the update loop
@@ -300,7 +359,7 @@ public class PlatformController extends WorldController implements ContactListen
 	 * to switch to a new game mode.  If not, the update proceeds
 	 * normally.
 	 *
-	 * @param delta Number of seconds since last animation frame
+	 * @param dt Number of seconds since last animation frame
 	 * 
 	 * @return whether to process the update loop
 	 */
@@ -309,10 +368,10 @@ public class PlatformController extends WorldController implements ContactListen
 			return false;
 		}
 		
-		if (!isFailure() && avatar.getY() < -1) {
-			setFailure(true);
-			return false;
-		}
+//		if (!isFailure() && avatar.getY() < -1) {
+//			setFailure(true);
+//			return false;
+//		}
 		
 		return true;
 	}
@@ -325,61 +384,36 @@ public class PlatformController extends WorldController implements ContactListen
 	 * This method is called after input is read, but before collisions are resolved.
 	 * The very last thing that it should do is apply forces to the appropriate objects.
 	 *
-	 * @param delta Number of seconds since last animation frame
+	 * @param dt Number of seconds since last animation frame
 	 */
 	public void update(float dt) {
 		// Process actions in object model
-		avatar.setMovement(InputController.getInstance().getHorizontal() *avatar.getForce());
-		avatar.setJumping(InputController.getInstance().didPrimary());
-		avatar.setShooting(InputController.getInstance().didSecondary());
-		
-		// Add a bullet if we fire
-		if (avatar.isShooting()) {
-			createBullet();
+		sloth.setLeftHori(InputController.getInstance().getLeftHorizontal());
+		sloth.setLeftVert(InputController.getInstance().getLeftVertical());
+		sloth.setRightHori(InputController.getInstance().getRightHorizontal());
+		sloth.setRightVert(InputController.getInstance().getRightVertical());
+		sloth.setLeftGrab(InputController.getInstance().getLeftGrab());
+		sloth.setRightGrab(InputController.getInstance().getRightGrab());
+
+		// Physics tiem
+		// Gribby grab
+		if (sloth.isLeftGrab()) {
+			sloth.grabLeft(world,leftBody);
+		} else {
+			sloth.releaseLeft(world);
 		}
-		
-		avatar.applyForce();
-	    if (avatar.isJumping()) {
-	        SoundController.getInstance().play(JUMP_FILE,JUMP_FILE,false,EFFECT_VOLUME);
-	    }
+
+		if (sloth.isRightGrab()) {
+			sloth.grabRight(world,rightBody);
+		} else {
+			sloth.releaseRight(world);
+		}
+		// Normal physics
+		sloth.doThePhysics();
 		
 	    // If we use sound, we must remember this.
 	    SoundController.getInstance().update();
 	}
-
-	/**
-	 * Add a new bullet to the world and send it in the right direction.
-	 */
-	private void createBullet() {
-		float offset = (avatar.isFacingRight() ? BULLET_OFFSET : -BULLET_OFFSET);
-		float radius = bulletTexture.getRegionWidth()/(2.0f*scale.x);
-		WheelObstacle bullet = new WheelObstacle(avatar.getX()+offset, avatar.getY(), radius);
-		
-	    bullet.setName("bullet");
-		bullet.setDensity(HEAVY_DENSITY);
-	    bullet.setDrawScale(scale);
-	    bullet.setTexture(bulletTexture);
-	    bullet.setBullet(true);
-	    bullet.setGravityScale(0);
-		
-		// Compute position and velocity
-		float speed  = (avatar.isFacingRight() ? BULLET_SPEED : -BULLET_SPEED);
-		bullet.setVX(speed);
-		addQueuedObject(bullet);
-		
-		SoundController.getInstance().play(PEW_FILE, PEW_FILE, false, EFFECT_VOLUME);
-	}
-	
-	/**
-	 * Remove a new bullet from the world.
-	 *
-	 * @param  bullet   the bullet to remove
-	 */
-	public void removeBullet(Obstacle bullet) {
-	    bullet.markRemoved(true);
-	    SoundController.getInstance().play(POP_FILE,POP_FILE,false,EFFECT_VOLUME);
-	}
-
 	
 	/**
 	 * Callback method for the start of a collision
@@ -387,6 +421,8 @@ public class PlatformController extends WorldController implements ContactListen
 	 * This method is called when we first get a collision between two objects.  We use 
 	 * this method to test if it is the "right" kind of collision.  In particular, we
 	 * use it to test if we made it to the win door.
+	 *
+	 * But trevor uses it for something else
 	 *
 	 * @param contact The two bodies that collided
 	 */
@@ -404,20 +440,20 @@ public class PlatformController extends WorldController implements ContactListen
 			Obstacle bd1 = (Obstacle)body1.getUserData();
 			Obstacle bd2 = (Obstacle)body2.getUserData();
 
-			// Test bullet collision with world
-			if (bd1.getName().equals("bullet") && bd2 != avatar) {
-		        removeBullet(bd1);
+
+			if (fd1 != null && fd1.equals("sloth left hand") && bd2 != avatar && (!sloth.badBodies().contains(bd2)) && (!(bd2 instanceof PolygonObstacle))) {
+				System.out.println(body2);
+				leftBody = body2;
+			}
+			if (fd1 != null && fd1.equals("sloth right hand") && bd2 != avatar && bd2 != sloth && (!sloth.badBodies().contains(bd2))&& (!(bd2 instanceof PolygonObstacle))) {
+				rightBody = body2;
 			}
 
-			if (bd2.getName().equals("bullet") && bd1 != avatar) {
-		        removeBullet(bd2);
+			if (fd2 != null && fd2.equals("sloth left hand") && bd1 != avatar && bd1 != sloth && (!sloth.badBodies().contains(bd1))&& (!(bd1 instanceof PolygonObstacle))) {
+				leftBody = body1;
 			}
-
-			// See if we have landed on the ground.
-			if ((avatar.getSensorName().equals(fd2) && avatar != bd1) ||
-				(avatar.getSensorName().equals(fd1) && avatar != bd2)) {
-				avatar.setGrounded(true);
-				sensorFixtures.add(avatar == bd1 ? fix2 : fix1); // Could have more than one ground
+			if (fd2 != null && fd2.equals("sloth right hand") && bd1 != avatar && bd1 != sloth && (!sloth.badBodies().contains(bd1))&& (!(bd1 instanceof PolygonObstacle))) {
+				rightBody = body1;
 			}
 			
 			// Check for win condition
@@ -447,20 +483,18 @@ public class PlatformController extends WorldController implements ContactListen
 
 		Object fd1 = fix1.getUserData();
 		Object fd2 = fix2.getUserData();
-		
+
 		Object bd1 = body1.getUserData();
 		Object bd2 = body2.getUserData();
 
-		if ((avatar.getSensorName().equals(fd2) && avatar != bd1) ||
-			(avatar.getSensorName().equals(fd1) && avatar != bd2)) {
-			sensorFixtures.remove(avatar == bd1 ? fix2 : fix1);
-			if (sensorFixtures.size == 0) {
-				avatar.setGrounded(false);
-			}
-		}
+		if (fd1 != null && fd1.equals("sloth left hand") && body2 == leftBody && !sloth.isLeftGrab()) leftBody = null;
+		if (fd2 != null && fd2.equals("sloth left hand") && body1 == leftBody && !sloth.isLeftGrab()) leftBody = null;
+		if (fd1 != null && fd1.equals("sloth right hand") && body2 == rightBody && !sloth.isRightGrab()) rightBody = null;
+		if (fd2 != null && fd2.equals("sloth right hand") && body1 == rightBody && !sloth.isRightGrab()) rightBody = null;
 	}
-	
-	/** Unused ContactListener method */
+
+
+		/** Unused ContactListener method */
 	public void postSolve(Contact contact, ContactImpulse impulse) {}
 	/** Unused ContactListener method */
 	public void preSolve(Contact contact, Manifold oldManifold) {}

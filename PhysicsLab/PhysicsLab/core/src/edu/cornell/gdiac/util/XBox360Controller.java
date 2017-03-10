@@ -137,16 +137,20 @@ public class XBox360Controller implements ControllerListener {
 	 * @param controller The base controller to wrap
 	 */
 	protected void initialize(Controller controller) {
-		if (!controller.getName().toLowerCase().contains("xbox") ||
+		System.out.println(controller.getName());
+		if (!controller.getName().toLowerCase().contains("xbox") &&
 			!controller.getName().contains("360")) {
+			System.err.println("couldnt find your controller");
 			this.controller = null;
 			return;
 		}
 	
 		this.controller = controller;
-		macosx = System.getProperty("os.name").equals("Mac OS X");
-		
-		if (!macosx) {
+		macosx = (System.getProperty("os.name").equals("Mac OS X"));
+		boolean gnuSlashLinux = System.getProperty("os.name").equals("Linux");
+		System.out.println(System.getProperty("os.name"));
+
+		if (!macosx && !gnuSlashLinux) {
 			// Windows button mapping
 			button_x = 2;
 			button_y = 3;
@@ -181,42 +185,79 @@ public class XBox360Controller implements ControllerListener {
 			axis_right_x = 3;
 			axis_right_y = 2;
 			axis_right_trigger = 4;
-		} else {
-		
-			// Mac Driver settings
-			button_x = 14;
-			button_y = 15;
-			button_a = 12;
-			button_b = 13;
-			
-			button_back  = 5;
+		} else if (gnuSlashLinux) {
+			// Linux settings
+			button_x = 2;
+			button_y = 3;
+			button_a = 0;
+			button_b = 1;
+
+			button_back  = 6;
 			button_start = 4;
-			button_guide = 10;
+			button_guide = 8;
 
-			button_lb = 8;
-			button_l3 = 6;
-			button_rb = 9;
-			button_r3 = 7;
+			button_lb = 4;
+			button_l3 = 9;
+			button_rb = 5;
+			button_r3 = 10;
 
-			// Mac does not treat dpad as a POV
-			button_dpad_up    = 0;
-			button_dpad_down  = 1;
-			button_dpad_left  = 2;
-			button_dpad_right = 3;
-			
+			// linux treats as axis
+			button_dpad_up    = -1;
+			button_dpad_down  = -1;
+			button_dpad_left  = -1;
+			button_dpad_right = -1;
+
+			// TODO: Support dpad
 			pov_index_dpad = -1;
 			pov_dpad_up    = null;
 			pov_dpad_down  = null;
 			pov_dpad_left  = null;
 			pov_dpad_right = null;
-			
-			axis_left_x = 2;
-			axis_left_y = 3;
-			axis_left_trigger = 0;
-			
-			axis_right_x = 4;
-			axis_right_y = 5;
-			axis_right_trigger = 1;
+
+			axis_left_x = 0;
+			axis_left_y = 1;
+			axis_left_trigger = 5;
+
+			axis_right_x = 2;
+			axis_right_y = 3;
+			axis_right_trigger = 4;
+
+		} else {
+
+				// Mac Driver settings
+				button_x = 14;
+				button_y = 15;
+				button_a = 12;
+				button_b = 13;
+
+				button_back  = 5;
+				button_start = 4;
+				button_guide = 10;
+
+				button_lb = 8;
+				button_l3 = 6;
+				button_rb = 9;
+				button_r3 = 7;
+
+				// Mac does not treat dpad as a POV
+				button_dpad_up    = 0;
+				button_dpad_down  = 1;
+				button_dpad_left  = 2;
+				button_dpad_right = 3;
+
+				pov_index_dpad = -1;
+				pov_dpad_up    = null;
+				pov_dpad_down  = null;
+				pov_dpad_left  = null;
+				pov_dpad_right = null;
+
+				axis_left_x = 0;
+				axis_left_y = 1;
+				axis_left_trigger = 5;
+
+				axis_right_x = 2;
+				axis_right_y = 3;
+				axis_right_trigger = 4;
 		}
 		
 		// Workaround for trigger bug
@@ -535,7 +576,8 @@ public class XBox360Controller implements ControllerListener {
 	public float getLeftTrigger() {
 		float value = controller.getAxis(axis_left_trigger);
 		// Workaround for bug in Mac driver
-		if (left_trigger_begin) {
+		//System.out.print("Xbox left " + value);
+		if (left_trigger_begin && macosx) {
 			if (value != 0) {
 				left_trigger_begin = false;
 				return value;
@@ -586,7 +628,8 @@ public class XBox360Controller implements ControllerListener {
 	public float getRightTrigger() {
 		float value = controller.getAxis(axis_right_trigger);
 		// Workaround for bug in Mac driver
-		if (right_trigger_begin) {
+		//System.out.print("   Xbox right " + value+ "  ");
+		if (right_trigger_begin && macosx) {
 			if (value != 0) {
 				right_trigger_begin = false;
 				return value;

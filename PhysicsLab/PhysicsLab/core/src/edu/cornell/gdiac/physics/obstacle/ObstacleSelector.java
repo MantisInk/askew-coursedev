@@ -114,7 +114,7 @@ public class ObstacleSelector implements QueryCallback  {
      *
      * See the documentation of b2JointDef for more information on the damping ratio.
      *
-     * @param  ration   the damping ratio of the mouse joint
+     * @param  ratio   the damping ratio of the mouse joint
      */
     public void setDamping(float ratio) { 
     	mouseJointDef.dampingRatio = ratio; 
