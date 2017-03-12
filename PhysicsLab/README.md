@@ -31,8 +31,8 @@ Due to a technical issue, there is a specific rule for swinging your arms: _you 
 
 
 ###Misc.
-- _**Start button**_: resets the game (_see Known Issues_)
-- _**Any other button**_: probably crash the game
+- _**Start button**_: resets the game ~~(_see Known Issues_)~~
+- ~~_**Any other button**_: probably crash the game~~ (Should no longer be an issue)
 
 _**Note:** force vector on each hand will appear once you start moving its respective arm. The left hand is designated by the blue vector, and the right hand is designated by the red vector._
 
@@ -57,7 +57,7 @@ If the rule for swinging didn't make sense, following these instructions may hel
 
 ##Known Issues
 
-- Resetting: This doesn't work beyond the first vine. We believe it's due to not removing all of our game entities properly, but we haven't found exactly where this is happening.
+- ~~Resetting: This doesn't work beyond the first vine. We believe it's due to not removing all of our game entities properly, but we haven't found exactly where this is happening.~~ (Should no longer be an issue)
 
 - Invisible Obstacle Objects: There's a certain key point where there is an invisible object you can run into that may impede your progress. It's located right below the vine on the very right of the screen, the one that divides the top and bottom parts of the stage. It is possible to grab and swing off of it, but more concerningly it's possible to run into it when swinging on the aforementioned vine, preventing you from gaining altitude. My advice here is to swing onto the vine segment third-highest from the bottom and to swing from there. If you get stuck on the inivisble point, it is possible to swing/hoist yourself over it or to grab onto the invisble object and grab onto the vine from there.
 
