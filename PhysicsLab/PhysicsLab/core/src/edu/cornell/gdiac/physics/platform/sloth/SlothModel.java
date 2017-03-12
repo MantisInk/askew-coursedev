@@ -59,6 +59,9 @@ public class SlothModel extends ComplexObstacle {
     private Fixture sensorFixture1;
     private Fixture sensorFixture2;
 
+    /** Set damping constant for rotation of Flow's arms */
+    private static final float ROTATION_DAMPING = 5f;
+
     private Body grabPointR;
     private Body grabPointL;
 
@@ -251,6 +254,7 @@ public class SlothModel extends ComplexObstacle {
         body.setDrawScale(drawScale);
         body.setTexture(texture);
         body.setDensity(density);
+
         bodies.add(body);
         return body;
     }
@@ -543,6 +547,7 @@ public class SlothModel extends ComplexObstacle {
         BodyDef bd = new BodyDef();
         bd.type = BodyDef.BodyType.StaticBody;
         bd.position.set(0.0f, -10.0f);
+        bd.angularDamping = ROTATION_DAMPING;
         grabPointL = world.createBody(bd);
         grabPointR = world.createBody(bd);
         grabPointL.setTransform(-5f, -5f, 0f);

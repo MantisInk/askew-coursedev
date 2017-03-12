@@ -252,11 +252,15 @@ public class PlatformController extends WorldController implements ContactListen
 	 * This method disposes of the world and creates a new one.
 	 */
 	public void reset() {
+		this.clearGrab();
 		Vector2 gravity = new Vector2(world.getGravity() );
-		
+
+		InputController.getInstance().releaseGrabs();
 		for(Obstacle obj : objects) {
-			obj.deactivatePhysics(world);
+			if(! (obj instanceof SlothModel))
+				obj.deactivatePhysics(world);
 		}
+
 		objects.clear();
 		addQueue.clear();
 		world.dispose();
@@ -360,7 +364,7 @@ public class PlatformController extends WorldController implements ContactListen
 	 * normally.
 	 *
 	 * @param dt Number of seconds since last animation frame
-	 * 
+	 *
 	 * @return whether to process the update loop
 	 */
 	public boolean preUpdate(float dt) {
@@ -408,11 +412,13 @@ public class PlatformController extends WorldController implements ContactListen
 		} else {
 			sloth.releaseRight(world);
 		}
+
 		// Normal physics
 		sloth.doThePhysics();
 		
 	    // If we use sound, we must remember this.
 	    SoundController.getInstance().update();
+
 	}
 	
 	/**
@@ -493,7 +499,11 @@ public class PlatformController extends WorldController implements ContactListen
 		if (fd2 != null && fd2.equals("sloth right hand") && body1 == rightBody && !sloth.isRightGrab()) rightBody = null;
 	}
 
-
+	// only for forcing release on reset
+	public void clearGrab(){
+		leftBody = null;
+		rightBody = null;
+	}
 		/** Unused ContactListener method */
 	public void postSolve(Contact contact, ContactImpulse impulse) {}
 	/** Unused ContactListener method */

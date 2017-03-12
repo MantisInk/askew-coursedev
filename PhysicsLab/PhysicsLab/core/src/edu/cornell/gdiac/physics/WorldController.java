@@ -485,6 +485,7 @@ public abstract class WorldController implements Screen {
 	 */
 	public boolean preUpdate(float dt) {
 		InputController input = InputController.getInstance();
+
 		input.readInput(bounds, scale);
 		if (listener == null) {
 			return true;
@@ -499,27 +500,34 @@ public abstract class WorldController implements Screen {
 		if (input.didReset()) {
 			reset();
 		}
-		
+
 		// Now it is time to maybe switch screens.
-		if (input.didExit()) {
+		else if (input.didExit()) {
+			System.out.println("quit");
 			listener.exitScreen(this, EXIT_QUIT);
 			return false;
 		} else if (input.didAdvance()) {
+			System.out.println("next");
 			listener.exitScreen(this, EXIT_NEXT);
 			return false;
 		} else if (input.didRetreat()) {
+			System.out.println("prev");
 			listener.exitScreen(this, EXIT_PREV);
 			return false;
 		} else if (countdown > 0) {
+			System.out.println("counting down");
 			countdown--;
 		} else if (countdown == 0) {
 			if (failed) {
+				System.out.println("countdown failed");
 				reset();
 			} else if (complete) {
+				System.out.println("quitting");
 				listener.exitScreen(this, EXIT_NEXT);
 				return false;
 			}
 		}
+
 		return true;
 	}
 	
