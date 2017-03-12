@@ -45,6 +45,8 @@ public class Vine extends ComplexObstacle {
 	/** The right side of the bridge */
 	private WheelObstacle finish = null;
 
+	public static final float DAMPING_ROTATION = 5f;
+
 	// Dimension information
 	/** The size of the entire bridge */
 	protected Vector2 dimension;
@@ -183,7 +185,7 @@ public class Vine extends ComplexObstacle {
 		finish.setName(BRIDGE_PIN_NAME+1);
 		finish.setDensity(BASIC_DENSITY);
 		finish.setBodyType(BodyDef.BodyType.StaticBody);
-		finish.setAngularDamping(5f);
+		finish.setAngularDamping(DAMPING_ROTATION);
 		finish.activatePhysics(world);
 
 		return true;
