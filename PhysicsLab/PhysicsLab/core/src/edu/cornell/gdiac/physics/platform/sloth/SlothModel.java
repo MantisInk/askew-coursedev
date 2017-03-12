@@ -58,6 +58,8 @@ public class SlothModel extends ComplexObstacle {
     private PolygonShape sensorShape;
     private Fixture sensorFixture1;
     private Fixture sensorFixture2;
+
+    /** Set damping constant for rotation of Flow's arms */
     private static final float ROTATION_DAMPING = 5f;
 
     private Body grabPointR;
@@ -551,6 +553,19 @@ public class SlothModel extends ComplexObstacle {
         grabPointL.setTransform(-5f, -5f, 0f);
         grabPointR.setTransform(-5f, -5f, 0f);
 
+    }
+    public void deactivatePhysics(World world) {
+        // Should be good for most (simple) applications.
+        Body b;
+        for(int i = 0; i < 5; i++){
+            b = bodies.get(i).getBody();
+            if (b != null){
+                setBodyState(body);
+                world.destroyBody(body);
+                body = null;
+                bodyinfo.active = false;
+            }
+        }
     }
 
     public float getTorqueForce(float torque, float r, float theta){

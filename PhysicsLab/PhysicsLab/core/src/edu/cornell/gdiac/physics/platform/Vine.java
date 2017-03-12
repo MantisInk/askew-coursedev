@@ -44,7 +44,7 @@ public class Vine extends ComplexObstacle {
 	private WheelObstacle start = null;
 	/** The right side of the bridge */
 	private WheelObstacle finish = null;
-
+	/** Set damping constant for joint rotation in vines */
 	public static final float DAMPING_ROTATION = 5f;
 
 	// Dimension information
