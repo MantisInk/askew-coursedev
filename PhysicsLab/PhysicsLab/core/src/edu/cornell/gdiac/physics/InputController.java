@@ -359,6 +359,12 @@ public class InputController {
 		clampPosition(bounds);
 	}
 
+	// only for forcing release on reset
+	public void releaseGrabs(){
+		leftGrabPressed = false;
+		rightGrabPressed = false;
+	}
+
 	/**
 	 * Reads input from the keyboard.
 	 *

@@ -252,9 +252,11 @@ public class PlatformController extends WorldController implements ContactListen
 	 * This method disposes of the world and creates a new one.
 	 */
 	public void reset() {
+		this.clearGrab();
 		System.out.println("in reset");
 		Vector2 gravity = new Vector2(world.getGravity() );
 		System.out.println("about to deactivate physics");
+		InputController.getInstance().releaseGrabs();
 		for(Obstacle obj : objects) {
 			System.out.println("deactivating "+obj);
 			if(! (obj instanceof SlothModel))
@@ -500,7 +502,11 @@ public class PlatformController extends WorldController implements ContactListen
 		if (fd2 != null && fd2.equals("sloth right hand") && body1 == rightBody && !sloth.isRightGrab()) rightBody = null;
 	}
 
-
+	// only for forcing release on reset
+	public void clearGrab(){
+		leftBody = null;
+		rightBody = null;
+	}
 		/** Unused ContactListener method */
 	public void postSolve(Contact contact, ContactImpulse impulse) {}
 	/** Unused ContactListener method */

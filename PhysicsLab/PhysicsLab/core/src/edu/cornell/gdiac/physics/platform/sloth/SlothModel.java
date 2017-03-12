@@ -554,19 +554,6 @@ public class SlothModel extends ComplexObstacle {
         grabPointR.setTransform(-5f, -5f, 0f);
 
     }
-    public void deactivatePhysics(World world) {
-        // Should be good for most (simple) applications.
-        Body b;
-        for(int i = 0; i < 5; i++){
-            b = bodies.get(i).getBody();
-            if (b != null){
-                setBodyState(body);
-                world.destroyBody(body);
-                body = null;
-                bodyinfo.active = false;
-            }
-        }
-    }
 
     public float getTorqueForce(float torque, float r, float theta){
         return torque/(r*(float)Math.sin(theta));
