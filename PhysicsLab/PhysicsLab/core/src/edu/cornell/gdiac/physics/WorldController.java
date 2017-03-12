@@ -498,7 +498,6 @@ public abstract class WorldController implements Screen {
 		
 		// Handle resets
 		if (input.didReset()) {
-			System.out.println("reset whats going on hereeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
 			reset();
 		}
 

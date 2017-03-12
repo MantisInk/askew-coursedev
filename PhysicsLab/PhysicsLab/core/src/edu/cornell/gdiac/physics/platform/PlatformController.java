@@ -253,17 +253,14 @@ public class PlatformController extends WorldController implements ContactListen
 	 */
 	public void reset() {
 		this.clearGrab();
-		System.out.println("in reset");
 		Vector2 gravity = new Vector2(world.getGravity() );
-		System.out.println("about to deactivate physics");
+
 		InputController.getInstance().releaseGrabs();
 		for(Obstacle obj : objects) {
-			System.out.println("deactivating "+obj);
 			if(! (obj instanceof SlothModel))
-			obj.deactivatePhysics(world);
-			System.out.println("done deactivating "+obj);
+				obj.deactivatePhysics(world);
 		}
-		System.out.println("deactivated physics");
+
 		objects.clear();
 		addQueue.clear();
 		world.dispose();
