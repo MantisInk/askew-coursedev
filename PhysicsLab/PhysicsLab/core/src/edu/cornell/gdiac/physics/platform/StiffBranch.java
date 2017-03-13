@@ -68,7 +68,7 @@ public class StiffBranch extends ComplexObstacle {
 	 * @param lheight	The bridge thickness
 	 */
 	public StiffBranch(float x, float y, float width, float lwidth, float lheight) {
-		this(x, y, x+width, y, lwidth, lheight);
+		this(x, y, x, y+width, lwidth, lheight);
 	}
 
 	/**
