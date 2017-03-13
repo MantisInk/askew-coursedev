@@ -42,8 +42,6 @@ public class Vine extends ComplexObstacle {
 	// Invisible anchor objects
 	/** The left side of the bridge */
 	private WheelObstacle start = null;
-	/** The right side of the bridge */
-	private WheelObstacle finish = null;
 	/** Set damping constant for joint rotation in vines */
 	public static final float DAMPING_ROTATION = 5f;
 
@@ -176,18 +174,6 @@ public class Vine extends ComplexObstacle {
 			//#endregion
 		}
 
-		// Create the rightmost anchor
-//		Obstacle last = bodies.get(bodies.size-1);
-//
-//		pos = last.getPosition();
-//		pos.y += linksize / 2;
-//		finish = new WheelObstacle(pos.x,pos.y,BRIDGE_PIN_RADIUS);
-//		finish.setName(BRIDGE_PIN_NAME+1);
-//		finish.setDensity(BASIC_DENSITY);
-//		finish.setBodyType(BodyDef.BodyType.StaticBody);
-//		finish.setAngularDamping(DAMPING_ROTATION);
-//		finish.activatePhysics(world);
-
 		return true;
 	}
 	
@@ -201,9 +187,6 @@ public class Vine extends ComplexObstacle {
 		super.deactivatePhysics(world);
 		if (start != null) {
 			start.deactivatePhysics(world);
-		}
-		if (finish != null) {
-			finish.deactivatePhysics(world);
 		}
 	}
 	
