@@ -37,7 +37,7 @@ public class StiffBranch extends ComplexObstacle {
 	/** The radius of each anchor pin */
 	private static final float BRIDGE_PIN_RADIUS = 0.1f;
 	/** The density of each plank in the bridge */
-	private static final float BASIC_DENSITY = 13f;
+	private static final float BASIC_DENSITY = 0.3f;
 
 	// Invisible anchor objects
 	/** The left side of the bridge */
@@ -158,9 +158,10 @@ public class StiffBranch extends ComplexObstacle {
 		jointDef .localAnchorA.set(anchor1);
 		jointDef .localAnchorB.set(anchor2);
 		jointDef .collideConnected = false;
+		jointDef.dampingRatio = 1f;
 		Joint joint = world.createJoint(jointDef );
 		joints.add(joint);
-
+		//Joint joint;
 		// Link the planks together
 		anchor1.y = linksize / 2;
 		for (int ii = 0; ii < bodies.size-1; ii++) {
@@ -172,6 +173,7 @@ public class StiffBranch extends ComplexObstacle {
 			jointDef.localAnchorA.set(anchor1);
 			jointDef.localAnchorB.set(anchor2);
 			jointDef.collideConnected = false;
+			jointDef.dampingRatio = 1f;
 			joint = world.createJoint(jointDef);
 			joints.add(joint);
 			//#endregion
@@ -180,14 +182,14 @@ public class StiffBranch extends ComplexObstacle {
 		// Create the rightmost anchor
 		Obstacle last = bodies.get(bodies.size-1);
 
-//		pos = last.getPosition();
-//		pos.y += linksize / 2;
-//		finish = new WheelObstacle(pos.x,pos.y,BRIDGE_PIN_RADIUS);
-//		finish.setName(BRIDGE_PIN_NAME+1);
-//		finish.setDensity(BASIC_DENSITY);
-//		finish.setBodyType(BodyDef.BodyType.StaticBody);
-//		finish.setAngularDamping(DAMPING_ROTATION);
-//		finish.activatePhysics(world);
+		pos = last.getPosition();
+		pos.y += linksize / 2;
+		finish = new WheelObstacle(pos.x,pos.y,BRIDGE_PIN_RADIUS);
+		finish.setName(BRIDGE_PIN_NAME+1);
+		finish.setDensity(BASIC_DENSITY);
+		finish.setBodyType(BodyDef.BodyType.StaticBody);
+		finish.setAngularDamping(DAMPING_ROTATION);
+		finish.activatePhysics(world);
 
 		return true;
 	}

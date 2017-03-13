@@ -348,7 +348,7 @@ public class PlatformController extends WorldController implements ContactListen
 //		avatar.setTexture(avatarTexture);
 //		addObject(avatar);
 
-//		// Create rope bridge
+//		// Create branch
 		StiffBranch branch;
 		dwidth  = branchTexture.getRegionWidth()/scale.x;
 		dheight = branchTexture.getRegionHeight()/scale.y;

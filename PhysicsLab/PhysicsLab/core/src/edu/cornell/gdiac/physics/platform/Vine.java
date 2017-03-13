@@ -177,16 +177,16 @@ public class Vine extends ComplexObstacle {
 		}
 
 		// Create the rightmost anchor
-		Obstacle last = bodies.get(bodies.size-1);
-
-		pos = last.getPosition();
-		pos.y += linksize / 2;
-		finish = new WheelObstacle(pos.x,pos.y,BRIDGE_PIN_RADIUS);
-		finish.setName(BRIDGE_PIN_NAME+1);
-		finish.setDensity(BASIC_DENSITY);
-		finish.setBodyType(BodyDef.BodyType.StaticBody);
-		finish.setAngularDamping(DAMPING_ROTATION);
-		finish.activatePhysics(world);
+//		Obstacle last = bodies.get(bodies.size-1);
+//
+//		pos = last.getPosition();
+//		pos.y += linksize / 2;
+//		finish = new WheelObstacle(pos.x,pos.y,BRIDGE_PIN_RADIUS);
+//		finish.setName(BRIDGE_PIN_NAME+1);
+//		finish.setDensity(BASIC_DENSITY);
+//		finish.setBodyType(BodyDef.BodyType.StaticBody);
+//		finish.setAngularDamping(DAMPING_ROTATION);
+//		finish.activatePhysics(world);
 
 		return true;
 	}
