@@ -151,14 +151,27 @@ public class StiffBranch extends ComplexObstacle {
 		WeldJointDef jointDef = new WeldJointDef();
 
 		// Initial joint
-		jointDef .bodyA = start.getBody();
-		jointDef .bodyB = bodies.get(0).getBody();
-		jointDef .localAnchorA.set(anchor1);
-		jointDef .localAnchorB.set(anchor2);
-		jointDef .collideConnected = false;
-		jointDef.dampingRatio = 1f;
-		Joint joint = world.createJoint(jointDef );
+		// uncomment section to stand up
+		// comment section to fall over
+//		jointDef.bodyA = start.getBody();
+//		jointDef.bodyB = bodies.get(0).getBody();
+//		jointDef.localAnchorA.set(anchor1);
+//		jointDef.localAnchorB.set(anchor2);
+//		jointDef.collideConnected = false;
+//		Joint joint = world.createJoint(jointDef );
+//		joints.add(joint);
+
+		// uncomment to fall over
+		// comment to stand up
+		RevoluteJointDef flexJointDef = new RevoluteJointDef();
+		flexJointDef.bodyA = start.getBody();
+		flexJointDef.bodyB = bodies.get(0).getBody();
+		flexJointDef.localAnchorA.set(anchor1);
+		flexJointDef.localAnchorB.set(anchor2);
+		flexJointDef.collideConnected = false;
+		Joint joint = world.createJoint(flexJointDef);
 		joints.add(joint);
+
 		//Joint joint;
 		// Link the planks together
 		anchor1.y = linksize / 2;
@@ -171,11 +184,20 @@ public class StiffBranch extends ComplexObstacle {
 			jointDef.localAnchorA.set(anchor1);
 			jointDef.localAnchorB.set(anchor2);
 			jointDef.collideConnected = false;
-			jointDef.dampingRatio = 1f;
 			joint = world.createJoint(jointDef);
 			joints.add(joint);
 			//#endregion
 		}
+
+//		RevoluteJointDef flexJointDef = new RevoluteJointDef();
+//		flexJointDef.bodyA = bodies.get(bodies.size-2).getBody();
+//		flexJointDef.bodyB = bodies.get(bodies.size-1).getBody();
+//		flexJointDef.localAnchorA.set(anchor1);
+//		flexJointDef.localAnchorB.set(anchor2);
+//		flexJointDef.collideConnected = false;
+//		joint = world.createJoint(flexJointDef);
+//		joints.add(joint);
+
 
 		return true;
 	}
