@@ -69,8 +69,8 @@ public class PlatformController extends WorldController implements ContactListen
 
 	/** Texture assets for the body parts */
 	private TextureRegion[] bodyTextures;
-	private static Vector2 DOLL_POS = new Vector2( 2.5f,  5.0f);
-	//private static Vector2 DOLL_POS = new Vector2( 7.5f,  17.0f);
+	//private static Vector2 DOLL_POS = new Vector2( 2.5f,  5.0f);
+	private static Vector2 DOLL_POS = new Vector2( 7.5f,  17.0f);
 
 	/** Track asset loading from all instances and subclasses */
 	private AssetState ragdollAssetState = AssetState.EMPTY;
@@ -350,12 +350,21 @@ public class PlatformController extends WorldController implements ContactListen
 //		addObject(avatar);
 
 //		// Create branch
+		FallingBranch trunk;
 		StiffBranch branch;
+		float trunklen, branchlen;
 		dwidth  = branchTexture.getRegionWidth()/scale.x;
 		dheight = branchTexture.getRegionHeight()/scale.y;
 		for (int b = 0; b < BRANCH_POS.size(); b++) {
-			branch = new StiffBranch(BRANCH_POS.get(b).x, BRANCH_POS.get(b).y, BRANCH_LENGTH.get(b), dwidth, dheight);
-			//branch = new StiffBranch(BRANCH_POS.get(b).x, BRANCH_POS.get(b).y, dwidth, dheight, BRANCH_LENGTH.get(b));
+			branchlen = BRANCH_STIFF_LENGTH.get(b);
+			trunklen = BRANCH_LENGTH.get(b);
+			//branch = new Stiff=Branch(BRANCH_POS.get(b).x, BRANCH_POS.get(b).y, BRANCH_LENGTH.get(b), dwidth, dheight);
+			trunk = new FallingBranch(BRANCH_POS.get(b).x, BRANCH_POS.get(b).y,trunklen, dwidth, dheight, branchlen);
+			trunk.setTexture(branchTexture);
+			trunk.setDrawScale(scale);
+			addObject(trunk);
+
+			branch = new StiffBranch(BRANCH_POS.get(b).x, BRANCH_POS.get(b).y+(trunk.linksize*(trunklen-branchlen)),branchlen,dwidth,dheight);
 			branch.setTexture(branchTexture);
 			branch.setDrawScale(scale);
 			addObject(branch);

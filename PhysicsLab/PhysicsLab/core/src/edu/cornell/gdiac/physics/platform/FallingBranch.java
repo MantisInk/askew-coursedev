@@ -27,22 +27,25 @@ import edu.cornell.gdiac.physics.obstacle.*;
  * Note that this class returns to static loading.  That is because there are
  * no other subclasses that we might loop through.
  */
-public class StiffBranch extends ComplexObstacle {
+public class FallingBranch extends ComplexObstacle {
 	/** The debug name for the entire obstacle */
-	private static final String VINE_NAME = "vine";
+	private static final String VINE_NAME = "plank";
 	/** The debug name for each plank */
-	private static final String PLANK_NAME = "barrier";
+	private static final String PLANK_NAME = "driftwood";
 	/** The debug name for each anchor pin */
 	private static final String BRIDGE_PIN_NAME = "pin";
 	/** The radius of each anchor pin */
 	private static final float BRIDGE_PIN_RADIUS = 0.1f;
 	/** The density of each plank in the bridge */
-	private static final float BASIC_DENSITY = 0.05f;
-	private static final float BASIC_MASS = 0.3f;
+	private static final float BASIC_DENSITY = 13f;
+
+	private int ind;
+	private float x,y,stiffLen,width,height;
 
 	// Invisible anchor objects
 	/** The left side of the bridge */
 	private WheelObstacle start = null;
+	private WheelObstacle finish = null;
 	/** Set damping constant for joint rotation in vines */
 	public static final float DAMPING_ROTATION = 5f;
 
@@ -68,8 +71,8 @@ public class StiffBranch extends ComplexObstacle {
 	 * @param lwidth	The plank length
 	 * @param lheight	The bridge thickness
 	 */
-	public StiffBranch(float x, float y, float width, float lwidth, float lheight) {
-		this(x, y, x, y+width, lwidth, lheight);
+	public FallingBranch(float x, float y, float width, float lwidth, float lheight, float stiffLen) {
+		this(x, y, x, y+width, lwidth, lheight, stiffLen);
 	}
 
 	/**
@@ -82,8 +85,10 @@ public class StiffBranch extends ComplexObstacle {
 	 * @param lwidth	The plank length
 	 * @param lheight	The bridge thickness
 	 */
-	public StiffBranch(float x0, float y0, float x1, float y1, float lwidth, float lheight) {
+	public FallingBranch(float x0, float y0, float x1, float y1, float lwidth, float lheight, float stiffLen) {
 		super(x0,y0);
+		//trunk = new StiffBranch(x0,y0+(ind*linksize),stiffLen,lwidth,lheight);
+		this.x = x0;	this.y = y0;	this.stiffLen = stiffLen;	this.width = lwidth; this.height = lheight;
 		setName(VINE_NAME);
 
 		planksize = new Vector2(lwidth,lheight);
@@ -106,10 +111,12 @@ public class StiffBranch extends ComplexObstacle {
 			spacing /= (nLinks-1);
 		}
 
+		System.out.println("stiffLen "+stiffLen);
+		ind = 0;
 		// Create the planks
 		planksize.y = linksize;
 		Vector2 pos = new Vector2();
-		for (int ii = 0; ii < nLinks; ii++) {
+		for (int ii = 0; ii < nLinks-stiffLen; ii++) {
 			float t = ii*(linksize+spacing) + linksize/2.0f;
 			pos.set(norm);
 			pos.scl(t);
@@ -117,8 +124,8 @@ public class StiffBranch extends ComplexObstacle {
 			BoxObstacle plank = new BoxObstacle(pos.x, pos.y, planksize.x, planksize.y);
 			plank.setName(PLANK_NAME+ii);
 			plank.setDensity(BASIC_DENSITY);
-			plank.setMass(BASIC_MASS);
 			bodies.add(plank);
+			ind = ii;
 		}
 	}
 
@@ -155,27 +162,24 @@ public class StiffBranch extends ComplexObstacle {
 		// Initial joint
 		// uncomment section to stand up
 		// comment section to fall over
-//		jointDef.bodyA = start.getBody();
-//		jointDef.bodyB = bodies.get(0).getBody();
-//		jointDef.localAnchorA.set(anchor1);
-//		jointDef.localAnchorB.set(anchor2);
-//		jointDef.collideConnected = false;
-//		Joint joint = world.createJoint(jointDef );
-//		joints.add(joint);
+		jointDef.bodyA = start.getBody();
+		jointDef.bodyB = bodies.get(0).getBody();
+		jointDef.localAnchorA.set(anchor1);
+		jointDef.localAnchorB.set(anchor2);
+		jointDef.collideConnected = false;
+		Joint joint = world.createJoint(jointDef );
+		joints.add(joint);
 
 		// uncomment to fall over
 		// comment to stand up
-		RevoluteJointDef flexJointDef = new RevoluteJointDef();
-		flexJointDef.bodyA = start.getBody();
-		flexJointDef.bodyB = bodies.get(0).getBody();
-		flexJointDef.localAnchorA.set(anchor1);
-		flexJointDef.localAnchorB.set(anchor2);
-		flexJointDef.collideConnected = false;
-		flexJointDef.enableLimit = true;
-		flexJointDef.lowerAngle = 0-(float)Math.PI/2;
-		flexJointDef.upperAngle = (float)Math.PI/2;
-		Joint joint = world.createJoint(flexJointDef);
-		joints.add(joint);
+//		RevoluteJointDef flexJointDef = new RevoluteJointDef();
+//		flexJointDef.bodyA = start.getBody();
+//		flexJointDef.bodyB = bodies.get(0).getBody();
+//		flexJointDef.localAnchorA.set(anchor1);
+//		flexJointDef.localAnchorB.set(anchor2);
+//		flexJointDef.collideConnected = false;
+//		Joint joint = world.createJoint(flexJointDef);
+//		joints.add(joint);
 
 		//Joint joint;
 		// Link the planks together
@@ -203,6 +207,32 @@ public class StiffBranch extends ComplexObstacle {
 //		joint = world.createJoint(flexJointDef);
 //		joints.add(joint);
 
+		// Create the rightmost anchor
+		Obstacle last = bodies.get(bodies.size-1);
+
+		pos = last.getPosition();
+		pos.y += linksize / 2;
+		finish = new WheelObstacle(pos.x,pos.y,BRIDGE_PIN_RADIUS);
+		finish.setName(BRIDGE_PIN_NAME+1);
+		finish.setDensity(BASIC_DENSITY);
+		finish.setBodyType(BodyDef.BodyType.StaticBody);
+		finish.activatePhysics(world);
+
+		// Final joint
+		anchor2.y = 0;
+		jointDef.bodyA = last.getBody();
+		jointDef.bodyB = finish.getBody();
+		jointDef.localAnchorA.set(anchor1);
+		jointDef.localAnchorB.set(anchor2);
+		joint = world.createJoint(jointDef);
+		joints.add(joint);
+
+		//System.out.println("make "+finish);
+		//trunk = new StiffBranch(x,y+(ind*linksize),stiffLen,width,height);
+		//System.out.println("making trunk");
+		//trunk.createJoints(world);
+
+		System.out.println("finish "+finish);
 
 		return true;
 	}
