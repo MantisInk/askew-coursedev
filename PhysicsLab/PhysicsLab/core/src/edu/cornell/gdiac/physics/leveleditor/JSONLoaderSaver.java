@@ -16,6 +16,7 @@ public class JSONLoaderSaver {
 
     public JSONLoaderSaver() {
         GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonBuilder.setPrettyPrinting();
         gsonBuilder.registerTypeAdapter(Obstacle.class, new EntityWrapper());
         gson = gsonBuilder.create();
     }
