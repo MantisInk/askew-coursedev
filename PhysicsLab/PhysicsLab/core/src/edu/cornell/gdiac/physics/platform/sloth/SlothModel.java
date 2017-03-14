@@ -35,7 +35,7 @@ public class SlothModel extends ComplexObstacle {
     private static final boolean HANDS_FIXED_ROTATION = true;
     private static final float GRAVITY_SCALE = 0.7f;
     private static final float ARM_MASS = 5.0f;
-    public boolean SPIDERMAN_MODE = true;
+    public transient boolean SPIDERMAN_MODE = true;
 
     /** Indices for the body parts in the bodies array */
     private static final int PART_NONE = -1;
@@ -51,22 +51,22 @@ public class SlothModel extends ComplexObstacle {
     /** The number of DISTINCT body parts */
     private static final int BODY_TEXTURE_COUNT = 6;
 
-    private RevoluteJointDef leftGrabJointDef;
-    private RevoluteJointDef rightGrabJointDef;
-    private Joint leftGrabJoint;
-    private Joint rightGrabJoint;
-    private PolygonShape sensorShape;
-    private Fixture sensorFixture1;
-    private Fixture sensorFixture2;
+    private transient RevoluteJointDef leftGrabJointDef;
+    private transient RevoluteJointDef rightGrabJointDef;
+    private transient Joint leftGrabJoint;
+    private transient Joint rightGrabJoint;
+    private transient PolygonShape sensorShape;
+    private transient Fixture sensorFixture1;
+    private transient Fixture sensorFixture2;
 
     /** Set damping constant for rotation of Flow's arms */
     private static final float ROTATION_DAMPING = 5f;
 
-    private Body grabPointR;
-    private Body grabPointL;
+    private  transient Body grabPointR;
+    private transient Body grabPointL;
 
-    private Vector2 forceL = new Vector2();
-    private Vector2 forceR = new Vector2();
+    private transient Vector2 forceL = new Vector2();
+    private transient Vector2 forceR = new Vector2();
 
 
 
@@ -75,14 +75,14 @@ public class SlothModel extends ComplexObstacle {
 
     public float x;
     public float y;
-    private float rightVert;
-    private float leftHori;
-    private float leftVert;
-    private float rightHori;
+    private transient float rightVert;
+    private transient float leftHori;
+    private transient float leftVert;
+    private transient float rightHori;
     @Getter
-    private boolean leftGrab;
+    private transient boolean leftGrab;
     @Getter
-    private boolean rightGrab;
+    private transient boolean rightGrab;
 
     /**
      * Returns the texture index for the given body part
@@ -126,7 +126,7 @@ public class SlothModel extends ComplexObstacle {
     private TextureRegion[] partTextures;
 
     /** Cache vector for organizing body parts */
-    private Vector2 partCache = new Vector2();
+    private transient Vector2 partCache = new Vector2();
 
     /**
      * Creates a new ragdoll with its head at the given position.

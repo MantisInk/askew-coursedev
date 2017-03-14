@@ -39,33 +39,33 @@ import edu.cornell.gdiac.physics.*;  // For GameCanvas
 public abstract class Obstacle {
 	/// Initialization structures to store body information
 	/** Stores the body information for this shape */
-	protected BodyDef bodyinfo;
+	protected transient BodyDef bodyinfo;
 	/** Stores the fixture information for this shape */
-	protected FixtureDef fixture;
+	protected transient FixtureDef fixture;
 	/** The mass data of this shape (which may override the fixture) */
-	protected MassData massdata;
+	protected transient MassData massdata;
 	/** Whether or not to use the custom mass data */
-	protected boolean masseffect;
+	protected transient boolean masseffect;
     /** A tag for debugging purposes */
-    private String nametag;
+    private transient String nametag;
 	/** Drawing scale to convert physics units to pixels */
-	protected Vector2 drawScale;
+	protected transient Vector2 drawScale;
 
 	/// Track garbage collection status
 	/** Whether the object should be removed from the world on next pass */
-	private boolean toRemove;
+	private transient boolean toRemove;
 	/** Whether the object has changed shape and needs a new fixture */
-	private boolean isDirty;
+	private transient boolean isDirty;
 	
 	/// Caching objects
 	/** A cache value for when the user wants to access the body position */
-	protected Vector2 positionCache = new Vector2();
+	protected transient  Vector2 positionCache = new Vector2();
 	/** A cache value for when the user wants to access the linear velocity */
-	protected Vector2 velocityCache = new Vector2();
+	protected transient Vector2 velocityCache = new Vector2();
 	/** A cache value for when the user wants to access the center of mass */
-	protected Vector2 centroidCache = new Vector2();
+	protected transient Vector2 centroidCache = new Vector2();
 	/** A cache value for when the user wants to access the drawing scale */
-	protected Vector2 scaleCache = new Vector2();
+	protected transient Vector2 scaleCache = new Vector2();
 
 
 	/// BodyDef Methods

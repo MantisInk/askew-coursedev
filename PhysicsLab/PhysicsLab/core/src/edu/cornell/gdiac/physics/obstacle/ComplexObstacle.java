@@ -42,9 +42,9 @@ public abstract class ComplexObstacle extends Obstacle {
     /** A root body for this box 2d. */
     protected Body body;
 	/** A complex physics object has multiple bodies */
-	protected Array<Obstacle> bodies; //Changed to static to draw lines
+	protected transient Array<Obstacle> bodies; //Changed to static to draw lines
 	/** Potential joints for connecting the multiple bodies */
-	protected Array<Joint> joints;
+	protected transient Array<Joint> joints;
 	
 	/// BodyDef Methods
 	/**
