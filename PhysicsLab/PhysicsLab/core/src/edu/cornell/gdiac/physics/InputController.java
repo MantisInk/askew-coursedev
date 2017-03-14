@@ -321,8 +321,8 @@ public class InputController {
 	private void readGamepad(Rectangle bounds, Vector2 scale) {
 		resetPressed = xbox.getStart();
 		exitPressed  = xbox.getBack();
-		nextPressed  = xbox.getRightTrigger()!=0;
-		prevPressed  = xbox.getLeftTrigger()!=0;
+		nextPressed  = xbox.getX();
+		prevPressed  = xbox.getB();
 		primePressed = xbox.getA();
 		debugPressed  = xbox.getY();
 
@@ -331,9 +331,7 @@ public class InputController {
 		leftGrabPressed = xbox.getLB();
 		//rightGrabPressed = xbox.getRightTrigger();
 		rightGrabPressed = xbox.getRB();
-		//System.out.print("InputController  ");
-		//System.out.print("left " + leftGrabPressed);
-		//System.out.println("  right " + rightGrabPressed);
+
 
 		//Get positions of joysticks/arms
 		leftHorizontal = xbox.getLeftX();
