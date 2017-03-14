@@ -11,12 +11,14 @@
 package edu.cornell.gdiac.physics.leveleditor;
 
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.google.gson.JsonObject;
 import edu.cornell.gdiac.physics.InputController;
 import edu.cornell.gdiac.physics.WorldController;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
+import edu.cornell.gdiac.physics.platform.PlatformController;
 import edu.cornell.gdiac.physics.platform.sloth.SlothModel;
 import edu.cornell.gdiac.util.PooledList;
 
@@ -45,6 +47,7 @@ public class LevelEditorController extends WorldController implements ContactLis
 	private LevelModel lm;
 
 	private String currentLevel;
+	private String createClass;
 
 	/**
 	 * Preloads the assets for this controller.
@@ -97,6 +100,7 @@ public class LevelEditorController extends WorldController implements ContactLis
 		jls = new JSONLoaderSaver();
 		jls.setScale(this.scale);
 		currentLevel = "test_save_obstacle";
+		createClass = ".SlothModel";
 	}
 
 	/**
@@ -171,6 +175,24 @@ public class LevelEditorController extends WorldController implements ContactLis
 			make.setPartTextures();
 			addObject(make);
 		}
+	}
+
+	@Override
+	public void draw(float delta) {
+		canvas.clear();
+
+		canvas.begin();
+		for(Obstacle obj : objects) {
+			obj.draw(canvas);
+		}
+		canvas.end();
+
+
+		// Final message
+		canvas.begin(); // DO NOT SCALE
+		canvas.drawTextStandard("Level: " + currentLevel, 10.0f, 100.0f);
+		canvas.drawTextStandard("Creating: " + createClass, 10.0f, 80.0f);
+		canvas.end();
 	}
 
 	/**
