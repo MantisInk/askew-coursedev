@@ -48,6 +48,8 @@ public class InputController {
 	private boolean rightKeyPressed;
 	@Getter
 	private boolean enterKeyPressed;
+	@Getter
+	private boolean tKeyPressed;
 
 
 	/**
@@ -424,6 +426,7 @@ public class InputController {
 		leftKeyPressed =  Gdx.input.isKeyPressed(Input.Keys.LEFT);
 		rightKeyPressed =  Gdx.input.isKeyPressed(Input.Keys.RIGHT);
 		enterKeyPressed =  Gdx.input.isKeyPressed(Input.Keys.ENTER);
+		tKeyPressed =  Gdx.input.isKeyPressed(Input.Keys.T);
 		crosshair.set(Gdx.input.getX(), Gdx.input.getY());
 		crosshair.scl(1/scale.x,-1/scale.y);
 		crosshair.y += bounds.height;

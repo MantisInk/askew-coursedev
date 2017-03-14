@@ -23,6 +23,7 @@ import edu.cornell.gdiac.physics.platform.PlatformController;
 import edu.cornell.gdiac.physics.platform.Vine;
 import edu.cornell.gdiac.physics.platform.sloth.SlothModel;
 import edu.cornell.gdiac.util.PooledList;
+import lombok.Getter;
 
 import java.io.FileNotFoundException;
 import java.util.Iterator;
@@ -67,6 +68,9 @@ public class LevelEditorController extends WorldController implements ContactLis
 			".Vine",
 			".Platform"
 	};
+
+	@Getter
+	private String trialLevelName;
 
 	/**
 	 * Preloads the assets for this controller.
@@ -120,6 +124,7 @@ public class LevelEditorController extends WorldController implements ContactLis
 		jls.setScale(this.scale);
 		currentLevel = "test_save_obstacle";
 		createClass = ".SlothModel";
+		trialLevelName = "";
 	}
 
 	/**
@@ -287,6 +292,9 @@ public class LevelEditorController extends WorldController implements ContactLis
 		if (InputController.getInstance().isEnterKeyPressed()) {
 			actualindex = tentativeIndex;
 			inputThresher = THRESHER_RESET_LONG;
+		}
+		if (InputController.getInstance().isTKeyPressed()) {
+			trialLevelName = currentLevel;
 		}
 	}
 

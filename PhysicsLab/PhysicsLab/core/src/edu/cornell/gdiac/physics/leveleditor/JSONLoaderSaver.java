@@ -25,7 +25,6 @@ public class JSONLoaderSaver {
         gsonBuilder.setPrettyPrinting();
         gsonBuilder.registerTypeAdapter(Obstacle.class, new EntityWrapper(this));
         gson = gsonBuilder.create();
-        scale = new Vector2(1,1);
     }
 
     public LevelModel loadLevel(String levelName) throws FileNotFoundException {

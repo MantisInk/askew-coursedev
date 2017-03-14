@@ -19,10 +19,15 @@ import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.physics.box2d.*;
 
 import edu.cornell.gdiac.physics.leveleditor.FullAssetTracker;
+import edu.cornell.gdiac.physics.leveleditor.JSONLoaderSaver;
+import edu.cornell.gdiac.physics.leveleditor.LevelModel;
 import edu.cornell.gdiac.physics.platform.sloth.SlothModel;
 import edu.cornell.gdiac.util.*;
 import edu.cornell.gdiac.physics.*;
 import edu.cornell.gdiac.physics.obstacle.*;
+import lombok.Setter;
+
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -83,6 +88,9 @@ public class PlatformController extends WorldController implements ContactListen
 
 	/** Track asset loading from all instances and subclasses */
 	private AssetState platformAssetState = AssetState.EMPTY;
+
+	@Setter
+	private String loadLevel;
 
 	/**
 	 * Preloads the assets for this controller.
@@ -273,6 +281,7 @@ public class PlatformController extends WorldController implements ContactListen
 		setFailure(false);
 		world.setContactListener(this);
 		sensorFixtures = new ObjectSet<Fixture>();
+		loadLevel = "";
 	}
 
 	/**
@@ -305,49 +314,50 @@ public class PlatformController extends WorldController implements ContactListen
 	 * Lays out the game geography.
 	 */
 	private void populateLevel() {
-		// Add level goal
-		float dwidth  = goalTile.getRegionWidth()/scale.x;
-		float dheight = goalTile.getRegionHeight()/scale.y;
-		goalDoor = new BoxObstacle(GOAL_POS.x,GOAL_POS.y,dwidth,dheight);
-		goalDoor.setBodyType(BodyDef.BodyType.StaticBody);
-		goalDoor.setDensity(0.0f);
-		goalDoor.setFriction(0.0f);
-		goalDoor.setRestitution(0.0f);
-		goalDoor.setSensor(true);
-		goalDoor.setDrawScale(scale);
-		goalDoor.setTexture(goalTile);
-		goalDoor.setName("goal");
-		addObject(goalDoor);
+		if (loadLevel.equals("")) {
+			// Add level goal
+			float dwidth  = goalTile.getRegionWidth()/scale.x;
+			float dheight = goalTile.getRegionHeight()/scale.y;
+			goalDoor = new BoxObstacle(GOAL_POS.x,GOAL_POS.y,dwidth,dheight);
+			goalDoor.setBodyType(BodyDef.BodyType.StaticBody);
+			goalDoor.setDensity(0.0f);
+			goalDoor.setFriction(0.0f);
+			goalDoor.setRestitution(0.0f);
+			goalDoor.setSensor(true);
+			goalDoor.setDrawScale(scale);
+			goalDoor.setTexture(goalTile);
+			goalDoor.setName("goal");
+			addObject(goalDoor);
 
-		String wname = "wall";
-		for (int ii = 0; ii < WALLS.length; ii++) {
-			PolygonObstacle obj;
-			obj = new PolygonObstacle(WALLS[ii], 0, 0);
-			obj.setBodyType(BodyDef.BodyType.StaticBody);
-			obj.setDensity(BASIC_DENSITY);
-			obj.setFriction(BASIC_FRICTION);
-			obj.setRestitution(BASIC_RESTITUTION);
-			obj.setDrawScale(scale);
-			obj.setTexture(earthTile);
-			obj.setName(wname+ii);
-			addObject(obj);
-		}
+			String wname = "wall";
+			for (int ii = 0; ii < WALLS.length; ii++) {
+				PolygonObstacle obj;
+				obj = new PolygonObstacle(WALLS[ii], 0, 0);
+				obj.setBodyType(BodyDef.BodyType.StaticBody);
+				obj.setDensity(BASIC_DENSITY);
+				obj.setFriction(BASIC_FRICTION);
+				obj.setRestitution(BASIC_RESTITUTION);
+				obj.setDrawScale(scale);
+				obj.setTexture(earthTile);
+				obj.setName(wname+ii);
+				addObject(obj);
+			}
 
-		String pname = "platform";
-		for (int ii = 0; ii < PLATFORMS.length; ii++) {
-			PolygonObstacle obj;
-			obj = new PolygonObstacle(PLATFORMS[ii], 0, 0);
-			obj.setBodyType(BodyDef.BodyType.StaticBody);
-			obj.setDensity(BASIC_DENSITY);
-			obj.setFriction(BASIC_FRICTION);
-			obj.setRestitution(BASIC_RESTITUTION);
-			obj.setDrawScale(scale);
-			obj.setTexture(earthTile);
-			obj.setName(pname+ii);
-			addObject(obj);
-		}
+			String pname = "platform";
+			for (int ii = 0; ii < PLATFORMS.length; ii++) {
+				PolygonObstacle obj;
+				obj = new PolygonObstacle(PLATFORMS[ii], 0, 0);
+				obj.setBodyType(BodyDef.BodyType.StaticBody);
+				obj.setDensity(BASIC_DENSITY);
+				obj.setFriction(BASIC_FRICTION);
+				obj.setRestitution(BASIC_RESTITUTION);
+				obj.setDrawScale(scale);
+				obj.setTexture(earthTile);
+				obj.setName(pname+ii);
+				addObject(obj);
+			}
 
-		// Create dude
+			// Create dude
 //		dwidth  = avatarTexture.getRegionWidth()/scale.x;
 //		dheight = avatarTexture.getRegionHeight()/scale.y;
 //		avatar = new DudeModel(DUDE_POS.x, DUDE_POS.y, dwidth, dheight);
@@ -355,53 +365,73 @@ public class PlatformController extends WorldController implements ContactListen
 //		avatar.setTexture(avatarTexture);
 //		addObject(avatar);
 
-		// Create rope bridge
-		dwidth  = bridgeTexture.getRegionWidth()/scale.x;
-		dheight = bridgeTexture.getRegionHeight()/scale.y;
-		RopeBridge bridge = new RopeBridge(BRIDGE_POS.x, BRIDGE_POS.y, BRIDGE_WIDTH, dwidth, dheight);
-		bridge.setTexture(bridgeTexture);
-		bridge.setDrawScale(scale);
-		addObject(bridge);
+			// Create rope bridge
+			dwidth  = bridgeTexture.getRegionWidth()/scale.x;
+			dheight = bridgeTexture.getRegionHeight()/scale.y;
+			RopeBridge bridge = new RopeBridge(BRIDGE_POS.x, BRIDGE_POS.y, BRIDGE_WIDTH, dwidth, dheight);
+			bridge.setTexture(bridgeTexture);
+			bridge.setDrawScale(scale);
+			addObject(bridge);
 
 //		// Create branch
-		FallingBranch trunk;
-		StiffBranch branch;
-		float trunklen, branchlen;
-		dwidth  = branchTexture.getRegionWidth()/scale.x;
-		dheight = branchTexture.getRegionHeight()/scale.y;
-		for (int b = 0; b < BRANCH_POS.size(); b++) {
-			branchlen = BRANCH_STIFF_LENGTH.get(b);
-			trunklen = BRANCH_LENGTH.get(b);
-			//branch = new Stiff=Branch(BRANCH_POS.get(b).x, BRANCH_POS.get(b).y, BRANCH_LENGTH.get(b), dwidth, dheight);
-			trunk = new FallingBranch(BRANCH_POS.get(b).x, BRANCH_POS.get(b).y,trunklen, dwidth, dheight, branchlen);
-			trunk.setTexture(branchTexture);
-			trunk.setDrawScale(scale);
-			addObject(trunk);
+			FallingBranch trunk;
+			StiffBranch branch;
+			float trunklen, branchlen;
+			dwidth  = branchTexture.getRegionWidth()/scale.x;
+			dheight = branchTexture.getRegionHeight()/scale.y;
+			for (int b = 0; b < BRANCH_POS.size(); b++) {
+				branchlen = BRANCH_STIFF_LENGTH.get(b);
+				trunklen = BRANCH_LENGTH.get(b);
+				//branch = new Stiff=Branch(BRANCH_POS.get(b).x, BRANCH_POS.get(b).y, BRANCH_LENGTH.get(b), dwidth, dheight);
+				trunk = new FallingBranch(BRANCH_POS.get(b).x, BRANCH_POS.get(b).y,trunklen, dwidth, dheight, branchlen);
+				trunk.setTexture(branchTexture);
+				trunk.setDrawScale(scale);
+				addObject(trunk);
 
-			branch = new StiffBranch(BRANCH_POS.get(b).x, BRANCH_POS.get(b).y+(trunk.linksize*(trunklen-branchlen)),branchlen,dwidth,dheight);
-			branch.setTexture(branchTexture);
-			branch.setDrawScale(scale);
-			addObject(branch);
-		}
+				branch = new StiffBranch(BRANCH_POS.get(b).x, BRANCH_POS.get(b).y+(trunk.linksize*(trunklen-branchlen)),branchlen,dwidth,dheight);
+				branch.setTexture(branchTexture);
+				branch.setDrawScale(scale);
+				addObject(branch);
+			}
 
-		// Create sloth
-		sloth = new SlothModel(DOLL_POS.x, DOLL_POS.y);
-		sloth.setDrawScale(scale.x,scale.y);
-		sloth.setPartTextures();
-		addObject(sloth);
-		sloth.activateSlothPhysics(world);
+			// Create sloth
+			sloth = new SlothModel(DOLL_POS.x, DOLL_POS.y);
+			sloth.setDrawScale(scale.x,scale.y);
+			sloth.setPartTextures();
+			addObject(sloth);
+			sloth.activateSlothPhysics(world);
 
-		// Create vine
-		Vine s_vine;
-		dwidth = vineTexture.getRegionWidth() / scale.x;
-		dheight = vineTexture.getRegionHeight() / scale.y;
-		for (int v = 0; v < VINE_POS.size(); v++) {
-			System.out.println(dwidth);
-			System.out.println(dheight);
-			s_vine = new Vine(VINE_POS.get(v).x, VINE_POS.get(v).y, VINE_LENGTH, dwidth, dheight);
-			s_vine.setTexture(vineTexture);
-			s_vine.setDrawScale(scale);
-			addObject(s_vine);
+			// Create vine
+			Vine s_vine;
+			dwidth = vineTexture.getRegionWidth() / scale.x;
+			dheight = vineTexture.getRegionHeight() / scale.y;
+			for (int v = 0; v < VINE_POS.size(); v++) {
+				System.out.println(dwidth);
+				System.out.println(dheight);
+				s_vine = new Vine(VINE_POS.get(v).x, VINE_POS.get(v).y, VINE_LENGTH, dwidth, dheight);
+				s_vine.setTexture(vineTexture);
+				s_vine.setDrawScale(scale);
+				addObject(s_vine);
+			}
+		} else {
+			JSONLoaderSaver jls = new JSONLoaderSaver();
+			jls.setScale(this.scale);
+			try {
+				LevelModel lm = jls.loadLevel(loadLevel);
+				if (lm == null) {
+					lm = new LevelModel();
+				}
+
+				for (Obstacle o : lm.getEntities()) {
+					addObject(o);
+					if (o instanceof SlothModel) {
+						sloth = (SlothModel) o;
+						sloth.activateSlothPhysics(world);
+					}
+				}
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 

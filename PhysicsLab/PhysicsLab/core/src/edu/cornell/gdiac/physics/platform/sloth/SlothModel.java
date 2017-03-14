@@ -36,7 +36,7 @@ public class SlothModel extends ComplexObstacle {
     private static final boolean HANDS_FIXED_ROTATION = true;
     private static final float GRAVITY_SCALE = 0.7f;
     private static final float ARM_MASS = 5.0f;
-    public transient boolean SPIDERMAN_MODE = true;
+    public transient boolean SPIDERMAN_MODE = false;
 
     /** Indices for the body parts in the bodies array */
     private static final int PART_NONE = -1;
