@@ -71,7 +71,7 @@ public class SlothModel extends ComplexObstacle {
 
 
     /** For drawing the force lines*/
-    private ShapeRenderer shaper = new ShapeRenderer();
+    private ShapeRenderer shaper;
 
     public float x;
     public float y;
@@ -138,7 +138,8 @@ public class SlothModel extends ComplexObstacle {
         super(x,y);
         this.x = x;
         this.y = y;
-
+        //this.shaper = new ShapeRenderer();
+        this.shaper = null;
     }
 
     private void init() {

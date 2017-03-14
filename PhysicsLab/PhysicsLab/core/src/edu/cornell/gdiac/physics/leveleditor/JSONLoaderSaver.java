@@ -2,6 +2,8 @@ package edu.cornell.gdiac.physics.leveleditor;
 
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import edu.cornell.gdiac.physics.obstacle.Obstacle;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -13,8 +15,9 @@ public class JSONLoaderSaver {
     private Gson gson;
 
     public JSONLoaderSaver() {
-        gson = new Gson();
-
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonBuilder.registerTypeAdapter(Obstacle.class, new EntityWrapper());
+        gson = gsonBuilder.create();
     }
 
     public LevelModel loadLevel(String levelName) throws FileNotFoundException {

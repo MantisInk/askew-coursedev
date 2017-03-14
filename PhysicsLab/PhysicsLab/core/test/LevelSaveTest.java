@@ -1,4 +1,5 @@
 import edu.cornell.gdiac.physics.leveleditor.LevelModel;
+import edu.cornell.gdiac.physics.platform.sloth.SlothModel;
 import org.junit.Test;
 import edu.cornell.gdiac.physics.leveleditor.JSONLoaderSaver;
 
@@ -28,6 +29,21 @@ public class LevelSaveTest {
         LevelModel loaded = null;
         try {
             loaded = jls.loadLevel("test_save");
+        } catch (FileNotFoundException e) {
+            fail(e.getMessage());
+        }
+        assertTrue(loaded.getTitle().equals(lm.getTitle()));
+    }
+
+    @Test
+    public void testObstacleSaveLoad() {
+        JSONLoaderSaver jls = new JSONLoaderSaver();
+        LevelModel lm = makeLevel();
+        lm.addEntity(new SlothModel(0,0));
+        assertTrue(jls.saveLevel(lm,"test_save_obstacle"));
+        LevelModel loaded = null;
+        try {
+            loaded = jls.loadLevel("test_save_obstacle");
         } catch (FileNotFoundException e) {
             fail(e.getMessage());
         }

@@ -37,15 +37,15 @@ public class LevelModel {
     int width;
 
     @Getter
-    List<Obstacle> obstacles;
+    List<Obstacle> entities;
 
     public LevelModel() {
-        this.obstacles = new ArrayList<Obstacle>();
+        this.entities = new ArrayList<Obstacle>();
         this.height = 768;
         this.width = 1024;
     }
 
-    public void addObstacle(Obstacle o) {
-        obstacles.add(o);
+    public void addEntity(Obstacle o) {
+        entities.add(o);
     }
 }
