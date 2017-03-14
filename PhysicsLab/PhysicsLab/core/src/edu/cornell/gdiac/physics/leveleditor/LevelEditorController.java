@@ -13,9 +13,12 @@ package edu.cornell.gdiac.physics.leveleditor;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import com.google.gson.JsonObject;
 import edu.cornell.gdiac.physics.WorldController;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.physics.platform.sloth.SlothModel;
+
+import java.io.FileNotFoundException;
 
 
 /**
@@ -34,6 +37,12 @@ public class LevelEditorController extends WorldController implements ContactLis
 
 	private FullAssetTracker fat;
 
+	private JSONLoaderSaver jls;
+
+	private LevelModel lm;
+
+	private String currentLevel;
+
 	/**
 	 * Preloads the assets for this controller.
 	 *
@@ -45,7 +54,7 @@ public class LevelEditorController extends WorldController implements ContactLis
 	 * @param manager Reference to global asset manager.
 	 */
 	public void preLoadContent(AssetManager manager) {
-		fat.loadEverything(manager);
+		fat.preLoadEverything(manager);
 		super.preLoadContent(manager);
 	}
 
@@ -64,6 +73,8 @@ public class LevelEditorController extends WorldController implements ContactLis
 			return;
 		}
 
+		fat.loadEverything(this,manager);
+
 		super.loadContent(manager);
 		levelEditorAssetState = AssetState.COMPLETE;
 	}
@@ -74,12 +85,15 @@ public class LevelEditorController extends WorldController implements ContactLis
 	 * The game has default gravity and other settings
 	 */
 	public LevelEditorController() {
-		super(DEFAULT_WIDTH,DEFAULT_HEIGHT,DEFAULT_GRAVITY);
+		super(DEFAULT_WIDTH,DEFAULT_HEIGHT,0);
 		setDebug(false);
 		setComplete(false);
 		setFailure(false);
 		world.setContactListener(this);
-		fat = new FullAssetTracker();
+		fat = FullAssetTracker.getInstance();
+		jls = new JSONLoaderSaver();
+		jls.setScale(this.scale);
+		currentLevel = "test_save_obstacle";
 	}
 
 	/**
@@ -110,7 +124,19 @@ public class LevelEditorController extends WorldController implements ContactLis
 	 * Lays out the game geography.
 	 */
 	private void populateLevel() {
+		try {
+			lm = jls.loadLevel(currentLevel);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
 
+		if (lm == null) {
+			lm = new LevelModel();
+		}
+
+		for (Obstacle o : lm.getEntities()) {
+			addObject(o);
+		}
 	}
 
 	/**

@@ -1,9 +1,12 @@
 package edu.cornell.gdiac.physics.leveleditor;
 
 
+import com.badlogic.gdx.math.Vector2;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -14,11 +17,15 @@ public class JSONLoaderSaver {
 
     private Gson gson;
 
+    @Setter @Getter
+    private Vector2 scale;
+
     public JSONLoaderSaver() {
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.setPrettyPrinting();
-        gsonBuilder.registerTypeAdapter(Obstacle.class, new EntityWrapper());
+        gsonBuilder.registerTypeAdapter(Obstacle.class, new EntityWrapper(this));
         gson = gsonBuilder.create();
+        scale = new Vector2(1,1);
     }
 
     public LevelModel loadLevel(String levelName) throws FileNotFoundException {

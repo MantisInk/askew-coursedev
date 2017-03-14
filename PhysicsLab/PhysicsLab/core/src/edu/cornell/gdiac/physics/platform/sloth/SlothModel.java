@@ -16,6 +16,7 @@ import com.badlogic.gdx.physics.box2d.joints.*;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.utils.ObjectSet;
 import edu.cornell.gdiac.physics.GameCanvas;
+import edu.cornell.gdiac.physics.leveleditor.FullAssetTracker;
 import edu.cornell.gdiac.physics.obstacle.*;
 import lombok.Getter;
 
@@ -49,7 +50,7 @@ public class SlothModel extends ComplexObstacle {
     private static final float PI = (float)Math.PI;
 
     /** The number of DISTINCT body parts */
-    private static final int BODY_TEXTURE_COUNT = 6;
+    private static final int BODY_TEXTURE_COUNT = 3;
 
     private transient RevoluteJointDef leftGrabJointDef;
     private transient RevoluteJointDef rightGrabJointDef;
@@ -99,9 +100,9 @@ public class SlothModel extends ComplexObstacle {
                 return 0;
             case PART_LEFT_ARM:
             case PART_RIGHT_ARM:
-                return 2;
+                return 1;
             case PART_BODY:
-                return 3;
+                return 2;
             default:
                 return -1;
         }
@@ -124,6 +125,10 @@ public class SlothModel extends ComplexObstacle {
 
     /** Texture assets for the body parts */
     private TextureRegion[] partTextures;
+
+    private static final String[] RAGDOLL_FILES = { "ragdoll/trevorhand.png", "ragdoll/ProfWhite.png",
+            "ragdoll/trevorarm.png",  "ragdoll/dude.png",
+            "ragdoll/tux_thigh.png", "ragdoll/tux_shin.png" };
 
     /** Cache vector for organizing body parts */
     private transient Vector2 partCache = new Vector2();
@@ -172,10 +177,6 @@ public class SlothModel extends ComplexObstacle {
         part = makePart(PART_RIGHT_HAND, PART_RIGHT_ARM, ARM_XOFFSET, ARM_YOFFSET, HAND_DENSITY,false);
         part.setFixedRotation(HANDS_FIXED_ROTATION);
         part.setGravityScale(GRAVITY_SCALE);
-
-
-
-
     }
 
     /**
@@ -206,11 +207,16 @@ public class SlothModel extends ComplexObstacle {
      *
      * @param textures the array of textures for the individual body parts.
      */
-    public void setPartTextures(TextureRegion[] textures) {
-        assert textures != null && textures.length > BODY_TEXTURE_COUNT : "Texture array is not large enough";
+    public void setPartTextures() {
+        //assert textures != null && textures.length > BODY_TEXTURE_COUNT : "Texture array is not large enough";
 
         partTextures = new TextureRegion[BODY_TEXTURE_COUNT];
-        System.arraycopy(textures, 0, partTextures, 0, BODY_TEXTURE_COUNT);
+        partTextures[0] = FullAssetTracker.getInstance().getTextureRegion("textures/trevorhand.png");
+        partTextures[1] = FullAssetTracker.getInstance().getTextureRegion("textures/trevorarm.png");
+        partTextures[2] = FullAssetTracker.getInstance().getTextureRegion("textures/dude.png");
+
+        //partTextures = new TextureRegion[BODY_TEXTURE_COUNT];
+        //System.arraycopy(textures, 0, partTextures, 0, BODY_TEXTURE_COUNT);
         if (bodies.size == 0) {
             init();
         } else {
@@ -420,7 +426,6 @@ public class SlothModel extends ComplexObstacle {
         OrthographicCamera camera = new OrthographicCamera(Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
         camera.setToOrtho(false);
 
-        //ShapeRenderer shaper = new ShapeRenderer();
         Gdx.gl.glLineWidth(3);
         if (shaper == null) shaper = new ShapeRenderer();
         shaper.setProjectionMatrix(camera.combined);

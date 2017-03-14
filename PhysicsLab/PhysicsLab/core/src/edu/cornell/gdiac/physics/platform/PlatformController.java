@@ -18,6 +18,7 @@ import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.physics.box2d.*;
 
+import edu.cornell.gdiac.physics.leveleditor.FullAssetTracker;
 import edu.cornell.gdiac.physics.platform.sloth.SlothModel;
 import edu.cornell.gdiac.util.*;
 import edu.cornell.gdiac.physics.*;
@@ -119,6 +120,9 @@ public class PlatformController extends WorldController implements ContactListen
 		manager.load(POP_FILE, Sound.class);
 		assets.add(POP_FILE);
 
+		FullAssetTracker.getInstance().preLoadEverything(manager);
+
+
 		// SLOTH
 		for(int ii = 0; ii < RAGDOLL_FILES.length; ii++) {
 			manager.load(RAGDOLL_FILES[ii], Texture.class);
@@ -158,6 +162,8 @@ public class PlatformController extends WorldController implements ContactListen
 		for(int ii = 0; ii < RAGDOLL_FILES.length; ii++) {
 			bodyTextures[ii] =  createTexture(manager,RAGDOLL_FILES[ii],false);
 		}
+
+		FullAssetTracker.getInstance().loadEverything(this,manager);
 
 		super.loadContent(manager);
 		platformAssetState = AssetState.COMPLETE;
@@ -381,7 +387,7 @@ public class PlatformController extends WorldController implements ContactListen
 		// Create sloth
 		sloth = new SlothModel(DOLL_POS.x, DOLL_POS.y);
 		sloth.setDrawScale(scale.x,scale.y);
-		sloth.setPartTextures(bodyTextures);
+		sloth.setPartTextures();
 		addObject(sloth);
 		sloth.activateSlothPhysics(world);
 

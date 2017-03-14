@@ -2,6 +2,7 @@ package edu.cornell.gdiac.physics.leveleditor;
 
 import com.google.gson.*;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
+import edu.cornell.gdiac.physics.platform.sloth.SlothModel;
 
 import java.lang.reflect.Type;
 
@@ -12,6 +13,11 @@ public class EntityWrapper implements JsonSerializer<Obstacle>, JsonDeserializer
 
     private static final String CLASSNAME = "CLASSNAME";
     private static final String INSTANCE  = "INSTANCE";
+    private JSONLoaderSaver parent;
+
+    public EntityWrapper(JSONLoaderSaver parent) {
+        this.parent = parent;
+    }
 
     @Override
     public JsonElement serialize(Obstacle src, Type typeOfSrc,
@@ -32,13 +38,25 @@ public class EntityWrapper implements JsonSerializer<Obstacle>, JsonDeserializer
         JsonPrimitive prim = (JsonPrimitive) jsonObject.get(CLASSNAME);
         String className = prim.getAsString();
 
-        Class<?> klass = null;
-        try {
-            klass = Class.forName(className);
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            throw new JsonParseException(e.getMessage());
+        // Interpret the class, construct as appropriate
+        String obstacleClass = className.substring(className.lastIndexOf("."));
+        switch(obstacleClass) {
+            case ".SlothModel":
+                JsonObject instance = jsonObject.get("INSTANCE").getAsJsonObject();
+                SlothModel ret;
+                ret = new SlothModel(instance.get("x").getAsFloat(), instance.get("y").getAsFloat());
+                ret.setDrawScale(parent.getScale().x, parent.getScale().y);
+                ret.setPartTextures();
+                return ret;
+            default:
+                Class<?> klass = null;
+                try {
+                    klass = Class.forName(className);
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                    throw new JsonParseException(e.getMessage());
+                }
+                return context.deserialize(jsonObject.get(INSTANCE), klass);
         }
-        return context.deserialize(jsonObject.get(INSTANCE), klass);
     }
 }
