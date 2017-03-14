@@ -396,7 +396,7 @@ public class SlothModel extends ComplexObstacle {
         OrthographicCamera camera = new OrthographicCamera(Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
         camera.setToOrtho(false);
 
-        //ShapeRenderer shaper = new ShapeRenderer();
+        if (shaper == null) shaper = new ShapeRenderer();
         Gdx.gl.glLineWidth(3);
         shaper.setProjectionMatrix(camera.combined);
 
@@ -422,20 +422,14 @@ public class SlothModel extends ComplexObstacle {
 
         //ShapeRenderer shaper = new ShapeRenderer();
         Gdx.gl.glLineWidth(3);
+        if (shaper == null) shaper = new ShapeRenderer();
         shaper.setProjectionMatrix(camera.combined);
 
         shaper.begin(ShapeRenderer.ShapeType.Line);
         shaper.setColor(Color.BLUE);
-        //System.out.println(shaper.isDrawing());
-        //System.out.println(left_x+", "+left_y);
-        //System.out.println(right_x+", "+right_y);
-        //System.out.println(left.getX()+", "+left.getY());
-        //System.out.println(right.getX()+", "+right.getY());
-        //System.out.println(this.x+", "+this.y);
-        //shaper.line(this.x+left.getX(),this.y+left.getY(), left.getX()+(left_x*20),left.getY()+(left_y*20));
+
         shaper.line(left.getX()*drawScale.x,left.getY() * drawScale.y, left.getX()*drawScale.x+(forceL.x*20),left.getY() * drawScale.y+(forceL.y*20));
         shaper.setColor(Color.RED);
-        //shaper.line(this.x+right.getX(),this.y+right.getY(), right.getX()+(right_x*20),right.getY()+(right_y*20));
         shaper.line(right.getX()*drawScale.x,right.getY() * drawScale.y, right.getX()*drawScale.x+(forceR.x*20),right.getY() * drawScale.y+(forceR.y*20));
         shaper.end();
         Gdx.gl.glLineWidth(3);

@@ -11,23 +11,12 @@
 package edu.cornell.gdiac.physics.leveleditor;
 
 import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
-import com.badlogic.gdx.utils.ObjectSet;
-import edu.cornell.gdiac.physics.InputController;
 import edu.cornell.gdiac.physics.WorldController;
-import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
-import edu.cornell.gdiac.physics.obstacle.PolygonObstacle;
-import edu.cornell.gdiac.physics.platform.*;
 import edu.cornell.gdiac.physics.platform.sloth.SlothModel;
-import edu.cornell.gdiac.util.SoundController;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * Gameplay specific controller for the platformer game.  
@@ -43,6 +32,8 @@ public class LevelEditorController extends WorldController implements ContactLis
 	/** Track asset loading from all instances and subclasses */
 	private AssetState levelEditorAssetState = AssetState.EMPTY;
 
+	private FullAssetTracker fat;
+
 	/**
 	 * Preloads the assets for this controller.
 	 *
@@ -54,6 +45,7 @@ public class LevelEditorController extends WorldController implements ContactLis
 	 * @param manager Reference to global asset manager.
 	 */
 	public void preLoadContent(AssetManager manager) {
+		fat.loadEverything(manager);
 		super.preLoadContent(manager);
 	}
 
@@ -87,6 +79,7 @@ public class LevelEditorController extends WorldController implements ContactLis
 		setComplete(false);
 		setFailure(false);
 		world.setContactListener(this);
+		fat = new FullAssetTracker();
 	}
 
 	/**
