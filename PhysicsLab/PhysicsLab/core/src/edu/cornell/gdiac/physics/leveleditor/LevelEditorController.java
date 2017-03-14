@@ -14,11 +14,14 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.google.gson.JsonObject;
+import edu.cornell.gdiac.physics.InputController;
 import edu.cornell.gdiac.physics.WorldController;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.physics.platform.sloth.SlothModel;
+import edu.cornell.gdiac.util.PooledList;
 
 import java.io.FileNotFoundException;
+import java.util.Iterator;
 
 
 /**
@@ -159,7 +162,15 @@ public class LevelEditorController extends WorldController implements ContactLis
 	}
 
 	public void update(float dt) {
-
+		if (InputController.getInstance().didTertiary()) {
+			float mx = InputController.getInstance().getCrossHair().x;
+			float my = InputController.getInstance().getCrossHair().y;
+			SlothModel make;
+			make = new SlothModel(mx, my);
+			make.setDrawScale(scale.x, scale.y);
+			make.setPartTextures();
+			addObject(make);
+		}
 	}
 
 	/**
@@ -186,6 +197,33 @@ public class LevelEditorController extends WorldController implements ContactLis
 	 */
 	public void endContact(Contact contact) {
 
+	}
+
+	@Override
+	public void postUpdate(float dt) {
+		// Add any objects created by actions
+		while (!addQueue.isEmpty()) {
+			addObject(addQueue.poll());
+		}
+
+		// Turn the physics engine crank.
+		//world.step(WORLD_STEP,WORLD_VELOC,WORLD_POSIT);
+
+		// Garbage collect the deleted objects.
+		// Note how we use the linked list nodes to delete O(1) in place.
+		// This is O(n) without copying.
+		Iterator<PooledList<Obstacle>.Entry> iterator = objects.entryIterator();
+		while (iterator.hasNext()) {
+			PooledList<Obstacle>.Entry entry = iterator.next();
+			Obstacle obj = entry.getValue();
+			if (obj.isRemoved()) {
+				obj.deactivatePhysics(world);
+				entry.remove();
+			} else {
+				// Note that update is called last!
+				obj.update(dt);
+			}
+		}
 	}
 
 	/** Unused ContactListener method */

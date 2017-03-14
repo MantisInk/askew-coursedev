@@ -1,3 +1,4 @@
+import edu.cornell.gdiac.physics.leveleditor.FullAssetTracker;
 import edu.cornell.gdiac.physics.leveleditor.LevelModel;
 import edu.cornell.gdiac.physics.platform.sloth.SlothModel;
 import org.junit.Test;
@@ -37,6 +38,7 @@ public class LevelSaveTest {
 
     @Test
     public void testObstacleSaveLoad() {
+        FullAssetTracker fat = FullAssetTracker.getInstance();
         JSONLoaderSaver jls = new JSONLoaderSaver();
         LevelModel lm = makeLevel();
         lm.addEntity(new SlothModel(0,0));
