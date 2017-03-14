@@ -8,6 +8,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LevelModel {
+
+    public static final int LATEST_LEVEL_MODEL_VERSION = 1;
+
+    @Getter
+    int levelModelVersion;
+
     @Getter
     @Setter
     String title;
@@ -43,6 +49,7 @@ public class LevelModel {
         this.entities = new ArrayList<Obstacle>();
         this.height = 768;
         this.width = 1024;
+        this.levelModelVersion = LATEST_LEVEL_MODEL_VERSION;
     }
 
     public void addEntity(Obstacle o) {
