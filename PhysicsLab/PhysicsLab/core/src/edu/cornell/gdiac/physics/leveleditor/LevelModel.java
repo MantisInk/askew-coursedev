@@ -50,6 +50,9 @@ public class LevelModel {
         this.height = 768;
         this.width = 1024;
         this.levelModelVersion = LATEST_LEVEL_MODEL_VERSION;
+        this.goalTimeGold = 30;
+        this.goalTimeSilver = 45;
+        this.goalTimeBronze = 60;
     }
 
     public void addEntity(Obstacle o) {

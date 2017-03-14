@@ -17,6 +17,7 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.google.gson.JsonObject;
 import edu.cornell.gdiac.physics.InputController;
 import edu.cornell.gdiac.physics.WorldController;
+import edu.cornell.gdiac.physics.obstacle.ComplexObstacle;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.physics.platform.PlatformController;
 import edu.cornell.gdiac.physics.platform.sloth.SlothModel;
@@ -24,6 +25,8 @@ import edu.cornell.gdiac.util.PooledList;
 
 import java.io.FileNotFoundException;
 import java.util.Iterator;
+
+import static javax.swing.JOptionPane.showInputDialog;
 
 
 /**
@@ -47,7 +50,12 @@ public class LevelEditorController extends WorldController implements ContactLis
 	private LevelModel lm;
 
 	private String currentLevel;
+
 	private String createClass;
+
+	int inputThresher = 0;
+
+	public static final int THRESHER_RESET = 10;
 
 	/**
 	 * Preloads the assets for this controller.
@@ -166,6 +174,12 @@ public class LevelEditorController extends WorldController implements ContactLis
 	}
 
 	public void update(float dt) {
+
+		if (inputThresher > 0) {
+			inputThresher--;
+			return;
+		}
+
 		if (InputController.getInstance().didTertiary()) {
 			float mx = InputController.getInstance().getCrossHair().x;
 			float my = InputController.getInstance().getCrossHair().y;
@@ -174,6 +188,59 @@ public class LevelEditorController extends WorldController implements ContactLis
 			make.setDrawScale(scale.x, scale.y);
 			make.setPartTextures();
 			addObject(make);
+			inputThresher = THRESHER_RESET;
+		}
+
+		if (InputController.getInstance().isRightClickPressed()) {
+			float mx = InputController.getInstance().getCrossHair().x;
+			float my = InputController.getInstance().getCrossHair().y;
+
+			QueryCallback qc = new QueryCallback() {
+				@Override
+				public boolean reportFixture(Fixture fixture) {
+					Object userData = fixture.getBody().getUserData();
+					for (Obstacle o : objects) {
+						if (o == userData) {
+							objects.remove(o);
+							return false;
+						}
+
+						if (o instanceof ComplexObstacle) {
+							for (Obstacle oo : ((ComplexObstacle) o).getBodies()) {
+								if (oo == userData) {
+									objects.remove(o);
+									return false;
+								}
+							}
+						}
+					}
+					return true;
+				}
+			};
+
+			world.QueryAABB(qc,mx,my,mx,my);
+			inputThresher = THRESHER_RESET;
+		}
+
+		if (InputController.getInstance().isNKeyPressed()) {
+			String name = showInputDialog("what do u wanna call this mess?");
+			currentLevel = name;
+			inputThresher = THRESHER_RESET;
+		}
+
+		if (InputController.getInstance().isSKeyPressed()) {
+			System.out.println("Saving...");
+			LevelModel timeToSave = new LevelModel();
+			timeToSave.setTitle(currentLevel);
+			for (Obstacle o : objects) {
+				timeToSave.addEntity(o);
+			}
+			if (jls.saveLevel(timeToSave, currentLevel)) {
+				System.out.println("Saved!");
+			} else {
+				System.err.println("ERROR IN SAVE");
+			}
+			inputThresher = THRESHER_RESET;
 		}
 	}
 

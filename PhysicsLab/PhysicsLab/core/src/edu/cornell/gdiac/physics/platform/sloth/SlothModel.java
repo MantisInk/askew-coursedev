@@ -124,7 +124,7 @@ public class SlothModel extends ComplexObstacle {
     private static final float HAND_YOFFSET    = 0;
 
     /** Texture assets for the body parts */
-    private TextureRegion[] partTextures;
+    private transient TextureRegion[] partTextures;
 
     private static final String[] RAGDOLL_FILES = { "ragdoll/trevorhand.png", "ragdoll/ProfWhite.png",
             "ragdoll/trevorarm.png",  "ragdoll/dude.png",
