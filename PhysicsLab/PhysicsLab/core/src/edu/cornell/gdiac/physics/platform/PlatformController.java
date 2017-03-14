@@ -165,7 +165,7 @@ public class PlatformController extends WorldController implements ContactListen
 
 	// Physics constants for initialization
 	/** The new heavier gravity for this world (so it is not so floaty) */
-	private static final float  DEFAULT_GRAVITY = -14.7f;
+	private static final float  DEFAULT_GRAVITY = -10.7f;
 	/** The density for most physics objects */
 	private static final float  BASIC_DENSITY = 0.0f;
 	/** Friction of most platforms */
@@ -173,7 +173,7 @@ public class PlatformController extends WorldController implements ContactListen
 	/** The restitution for all physics objects */
 	private static final float  BASIC_RESTITUTION = 0.1f;
 	/** The width of the rope bridge */
-	private static final float  BRIDGE_WIDTH = 14.0f;
+	private static final float  BRIDGE_WIDTH = 6.0f;
 	/** The length of the vine */
 	private static final float VINE_LENGTH = 5f;
 
@@ -215,7 +215,7 @@ public class PlatformController extends WorldController implements ContactListen
 	/** The initial position of the dude */
 	private static Vector2 DUDE_POS = new Vector2(3.5f, 5.0f);
 	/** The position of the rope bridge */
-	private static Vector2 BRIDGE_POS  = new Vector2(-20.0f, 1.8f);
+	private static Vector2 BRIDGE_POS  = new Vector2(24.0f, 1.8f);
 	/** The position of the vines */
 	private static ArrayList<Vector2> VINE_POS  = new ArrayList<Vector2>(
 			Arrays.asList(
@@ -242,7 +242,7 @@ public class PlatformController extends WorldController implements ContactListen
 	/** The stiff portions of the branches */
 	private static ArrayList<Float> BRANCH_STIFF_LENGTH  = new ArrayList<Float>(
 			Arrays.asList(
-					2f, 2f
+					3f, 2f
 			));
 
 	// Physics objects for the game
@@ -348,6 +348,14 @@ public class PlatformController extends WorldController implements ContactListen
 //		avatar.setDrawScale(scale);
 //		avatar.setTexture(avatarTexture);
 //		addObject(avatar);
+
+		// Create rope bridge
+		dwidth  = bridgeTexture.getRegionWidth()/scale.x;
+		dheight = bridgeTexture.getRegionHeight()/scale.y;
+		RopeBridge bridge = new RopeBridge(BRIDGE_POS.x, BRIDGE_POS.y, BRIDGE_WIDTH, dwidth, dheight);
+		bridge.setTexture(bridgeTexture);
+		bridge.setDrawScale(scale);
+		addObject(bridge);
 
 //		// Create branch
 		FallingBranch trunk;

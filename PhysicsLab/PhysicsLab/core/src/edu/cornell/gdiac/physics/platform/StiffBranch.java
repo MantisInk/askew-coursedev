@@ -37,8 +37,10 @@ public class StiffBranch extends ComplexObstacle {
 	/** The radius of each anchor pin */
 	private static final float BRIDGE_PIN_RADIUS = 0.1f;
 	/** The density of each plank in the bridge */
-	private static final float BASIC_DENSITY = 0.05f;
-	private static final float BASIC_MASS = 0.3f;
+	private static final float BASIC_DENSITY = 0.3f;
+	private static final float BASIC_MASS = 0.03f;
+	private static final float LOWER_LIMIT = 0-(float)Math.PI/3;
+	private static final float UPPER_LIMIT = (float)Math.PI/3;
 
 	// Invisible anchor objects
 	/** The left side of the bridge */
@@ -172,8 +174,8 @@ public class StiffBranch extends ComplexObstacle {
 		flexJointDef.localAnchorB.set(anchor2);
 		flexJointDef.collideConnected = false;
 		flexJointDef.enableLimit = true;
-		flexJointDef.lowerAngle = 0-(float)Math.PI/2;
-		flexJointDef.upperAngle = (float)Math.PI/2;
+		flexJointDef.lowerAngle = LOWER_LIMIT;
+		flexJointDef.upperAngle = UPPER_LIMIT;
 		Joint joint = world.createJoint(flexJointDef);
 		joints.add(joint);
 

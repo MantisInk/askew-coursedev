@@ -87,7 +87,6 @@ public class FallingBranch extends ComplexObstacle {
 	 */
 	public FallingBranch(float x0, float y0, float x1, float y1, float lwidth, float lheight, float stiffLen) {
 		super(x0,y0);
-		//trunk = new StiffBranch(x0,y0+(ind*linksize),stiffLen,lwidth,lheight);
 		this.x = x0;	this.y = y0;	this.stiffLen = stiffLen;	this.width = lwidth; this.height = lheight;
 		setName(VINE_NAME);
 
@@ -111,7 +110,7 @@ public class FallingBranch extends ComplexObstacle {
 			spacing /= (nLinks-1);
 		}
 
-		System.out.println("stiffLen "+stiffLen);
+//		System.out.println("stiffLen "+stiffLen);
 		ind = 0;
 		// Create the planks
 		planksize.y = linksize;
@@ -198,15 +197,6 @@ public class FallingBranch extends ComplexObstacle {
 			//#endregion
 		}
 
-//		RevoluteJointDef flexJointDef = new RevoluteJointDef();
-//		flexJointDef.bodyA = bodies.get(bodies.size-2).getBody();
-//		flexJointDef.bodyB = bodies.get(bodies.size-1).getBody();
-//		flexJointDef.localAnchorA.set(anchor1);
-//		flexJointDef.localAnchorB.set(anchor2);
-//		flexJointDef.collideConnected = false;
-//		joint = world.createJoint(flexJointDef);
-//		joints.add(joint);
-
 		// Create the rightmost anchor
 		Obstacle last = bodies.get(bodies.size-1);
 
@@ -226,13 +216,6 @@ public class FallingBranch extends ComplexObstacle {
 		jointDef.localAnchorB.set(anchor2);
 		joint = world.createJoint(jointDef);
 		joints.add(joint);
-
-		//System.out.println("make "+finish);
-		//trunk = new StiffBranch(x,y+(ind*linksize),stiffLen,width,height);
-		//System.out.println("making trunk");
-		//trunk.createJoints(world);
-
-		System.out.println("finish "+finish);
 
 		return true;
 	}
