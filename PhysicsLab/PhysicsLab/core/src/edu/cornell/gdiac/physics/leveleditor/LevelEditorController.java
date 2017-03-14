@@ -20,6 +20,7 @@ import edu.cornell.gdiac.physics.WorldController;
 import edu.cornell.gdiac.physics.obstacle.ComplexObstacle;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import edu.cornell.gdiac.physics.platform.PlatformController;
+import edu.cornell.gdiac.physics.platform.Vine;
 import edu.cornell.gdiac.physics.platform.sloth.SlothModel;
 import edu.cornell.gdiac.util.PooledList;
 
@@ -54,8 +55,18 @@ public class LevelEditorController extends WorldController implements ContactLis
 	private String createClass;
 
 	int inputThresher = 0;
+	int tentativeIndex = 0;
+	int actualindex = 0;
 
 	public static final int THRESHER_RESET = 2;
+	public static final int THRESHER_RESET_LONG = 15;
+
+
+	public static final String[] creationOptions = {
+			".SlothModel",
+			".Vine",
+			".Platform"
+	};
 
 	/**
 	 * Preloads the assets for this controller.
@@ -173,6 +184,28 @@ public class LevelEditorController extends WorldController implements ContactLis
 		return true;
 	}
 
+	private void createXY(float x, float y) {
+		switch (creationOptions[actualindex]) {
+			case ".SlothModel":
+				SlothModel sloth;
+				sloth = new SlothModel(x, y);
+				sloth.setDrawScale(scale.x, scale.y);
+				sloth.setPartTextures();
+				addObject(sloth);
+				break;
+			case ".Vine":
+				Vine vine;
+				String howLong = showInputDialog("How long?");
+				int longInt = Integer.parseInt(howLong);
+				vine = new Vine(x,y,longInt,0.25f,1.0f);
+				vine.setTextures();
+				vine.setDrawScale(scale);
+				addObject(vine);
+				break;
+		}
+		inputThresher = THRESHER_RESET;
+	}
+
 	public void update(float dt) {
 
 		if (inputThresher > 0) {
@@ -183,12 +216,7 @@ public class LevelEditorController extends WorldController implements ContactLis
 		if (InputController.getInstance().didTertiary()) {
 			float mx = InputController.getInstance().getCrossHair().x;
 			float my = InputController.getInstance().getCrossHair().y;
-			SlothModel make;
-			make = new SlothModel(mx, my);
-			make.setDrawScale(scale.x, scale.y);
-			make.setPartTextures();
-			addObject(make);
-			inputThresher = THRESHER_RESET;
+			createXY(mx,my);
 		}
 
 		if (InputController.getInstance().isRightClickPressed()) {
@@ -247,6 +275,19 @@ public class LevelEditorController extends WorldController implements ContactLis
 			}
 			inputThresher = THRESHER_RESET;
 		}
+
+		if (InputController.getInstance().isLeftKeyPressed()) {
+			tentativeIndex = (tentativeIndex + 1 + creationOptions.length) % creationOptions.length;
+			inputThresher = THRESHER_RESET_LONG;
+		}
+		if (InputController.getInstance().isRightKeyPressed()) {
+			tentativeIndex = (tentativeIndex - 1 + creationOptions.length) % creationOptions.length;
+			inputThresher = THRESHER_RESET_LONG;
+		}
+		if (InputController.getInstance().isEnterKeyPressed()) {
+			actualindex = tentativeIndex;
+			inputThresher = THRESHER_RESET_LONG;
+		}
 	}
 
 	@Override
@@ -263,7 +304,10 @@ public class LevelEditorController extends WorldController implements ContactLis
 		// Final message
 		canvas.begin(); // DO NOT SCALE
 		canvas.drawTextStandard("Level: " + currentLevel, 10.0f, 100.0f);
-		canvas.drawTextStandard("Creating: " + createClass, 10.0f, 80.0f);
+		canvas.drawTextStandard("Creating: " + creationOptions[tentativeIndex], 10.0f, 80.0f);
+		if (tentativeIndex != actualindex) {
+			canvas.drawTextStandard("Hit Enter to Select New Object Type.", 10.0f, 60.0f);
+		}
 		canvas.end();
 	}
 

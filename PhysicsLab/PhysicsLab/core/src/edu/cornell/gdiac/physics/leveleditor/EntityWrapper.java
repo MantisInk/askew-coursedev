@@ -2,6 +2,7 @@ package edu.cornell.gdiac.physics.leveleditor;
 
 import com.google.gson.*;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
+import edu.cornell.gdiac.physics.platform.Vine;
 import edu.cornell.gdiac.physics.platform.sloth.SlothModel;
 
 import java.lang.reflect.Type;
@@ -48,6 +49,16 @@ public class EntityWrapper implements JsonSerializer<Obstacle>, JsonDeserializer
                 ret.setDrawScale(parent.getScale().x, parent.getScale().y);
                 ret.setPartTextures();
                 return ret;
+            case ".Vine":
+                instance = jsonObject.get("INSTANCE").getAsJsonObject();
+                Vine vine;
+                float x = instance.get("x").getAsFloat();
+                float y = instance.get("y").getAsFloat();
+                float numlinks = instance.get("numLinks").getAsFloat();
+                vine = new Vine(x, y, numlinks, 0.25f, 1.0f);
+                vine.setDrawScale(parent.getScale().x, parent.getScale().y);
+                vine.setTextures();
+                return vine;
             default:
                 Class<?> klass = null;
                 try {

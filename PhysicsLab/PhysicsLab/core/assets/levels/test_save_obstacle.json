@@ -1,10 +1,9 @@
 {
   "levelModelVersion": 1,
-  "title": "test title",
-  "goalTimeGold": 60,
-  "goalTimeSilver": 120,
-  "goalTimeBronze": 160,
-  "background": "test background",
+  "title": "test_save_obstacle",
+  "goalTimeGold": 30,
+  "goalTimeSilver": 45,
+  "goalTimeBronze": 60,
   "height": 768,
   "width": 1024,
   "entities": [

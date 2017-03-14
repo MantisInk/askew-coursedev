@@ -42,6 +42,13 @@ public class InputController {
 	private boolean nKeyPressed;
 	@Getter
 	private boolean lKeyPressed;
+	@Getter
+	private boolean leftKeyPressed;
+	@Getter
+	private boolean rightKeyPressed;
+	@Getter
+	private boolean enterKeyPressed;
+
 
 	/**
 	 * Return the singleton instance of the input controller
@@ -414,6 +421,9 @@ public class InputController {
 		sKeyPressed =  Gdx.input.isKeyPressed(Input.Keys.S);
 		nKeyPressed =  Gdx.input.isKeyPressed(Input.Keys.N);
 		lKeyPressed =  Gdx.input.isKeyPressed(Input.Keys.L);
+		leftKeyPressed =  Gdx.input.isKeyPressed(Input.Keys.LEFT);
+		rightKeyPressed =  Gdx.input.isKeyPressed(Input.Keys.RIGHT);
+		enterKeyPressed =  Gdx.input.isKeyPressed(Input.Keys.ENTER);
 		crosshair.set(Gdx.input.getX(), Gdx.input.getY());
 		crosshair.scl(1/scale.x,-1/scale.y);
 		crosshair.y += bounds.height;

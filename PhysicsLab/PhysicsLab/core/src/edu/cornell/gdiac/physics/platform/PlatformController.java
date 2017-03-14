@@ -396,6 +396,8 @@ public class PlatformController extends WorldController implements ContactListen
 		dwidth = vineTexture.getRegionWidth() / scale.x;
 		dheight = vineTexture.getRegionHeight() / scale.y;
 		for (int v = 0; v < VINE_POS.size(); v++) {
+			System.out.println(dwidth);
+			System.out.println(dheight);
 			s_vine = new Vine(VINE_POS.get(v).x, VINE_POS.get(v).y, VINE_LENGTH, dwidth, dheight);
 			s_vine.setTexture(vineTexture);
 			s_vine.setDrawScale(scale);
