@@ -55,7 +55,7 @@ public class LevelEditorController extends WorldController implements ContactLis
 
 	int inputThresher = 0;
 
-	public static final int THRESHER_RESET = 10;
+	public static final int THRESHER_RESET = 2;
 
 	/**
 	 * Preloads the assets for this controller.
@@ -226,6 +226,11 @@ public class LevelEditorController extends WorldController implements ContactLis
 			String name = showInputDialog("what do u wanna call this mess?");
 			currentLevel = name;
 			inputThresher = THRESHER_RESET;
+		}
+
+		if (InputController.getInstance().isLKeyPressed()) {
+			currentLevel = showInputDialog("what do u wanna load?");
+			reset();
 		}
 
 		if (InputController.getInstance().isSKeyPressed()) {
