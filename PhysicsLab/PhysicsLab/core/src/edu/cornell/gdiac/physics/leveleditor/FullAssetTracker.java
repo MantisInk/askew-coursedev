@@ -1,14 +1,11 @@
 package edu.cornell.gdiac.physics.leveleditor;
 
 import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import edu.cornell.gdiac.physics.WorldController;
-import edu.cornell.gdiac.util.SoundController;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -51,7 +48,7 @@ public class FullAssetTracker {
         if (textureDirectoryListing != null) {
             for (File child : textureDirectoryListing) {
                 // Do something with child
-                String textureName = child.getPath();
+                String textureName = child.getPath().replace("\\","/");
                 textureName = textureName.substring(2);
                 manager.load(textureName, Texture.class);
                 assets.add(textureName);
@@ -75,6 +72,7 @@ public class FullAssetTracker {
         if (loaded) return true;
 
         for (String texture : textures) {
+            System.out.println("[debug] loading: " + texture);
             textureLookup.put(texture, wc.createTexture(manager,texture,false));
         }
 
@@ -85,7 +83,10 @@ public class FullAssetTracker {
     }
 
     public TextureRegion getTextureRegion(String key) {
-        return textureLookup.get(key);
+        String escaped = key.replace("\\","/");
+        TextureRegion theTex = textureLookup.get(escaped);
+        if (theTex == null) throw new Error("Missing texture!");
+        return theTex;
     }
 
 }
