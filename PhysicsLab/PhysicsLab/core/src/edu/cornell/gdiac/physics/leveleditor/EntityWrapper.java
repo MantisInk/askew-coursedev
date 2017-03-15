@@ -41,24 +41,12 @@ public class EntityWrapper implements JsonSerializer<Obstacle>, JsonDeserializer
 
         // Interpret the class, construct as appropriate
         String obstacleClass = className.substring(className.lastIndexOf("."));
+        JsonObject instance = jsonObject.get("INSTANCE").getAsJsonObject();
         switch(obstacleClass) {
             case ".SlothModel":
-                JsonObject instance = jsonObject.get("INSTANCE").getAsJsonObject();
-                SlothModel ret;
-                ret = new SlothModel(instance.get("x").getAsFloat(), instance.get("y").getAsFloat());
-                ret.setDrawScale(parent.getScale().x, parent.getScale().y);
-                ret.setPartTextures();
-                return ret;
+                return SlothModel.createFromJson(instance, parent.getScale());
             case ".Vine":
-                instance = jsonObject.get("INSTANCE").getAsJsonObject();
-                Vine vine;
-                float x = instance.get("x").getAsFloat();
-                float y = instance.get("y").getAsFloat();
-                float numlinks = instance.get("numLinks").getAsFloat();
-                vine = new Vine(x, y, numlinks, 0.25f, 1.0f);
-                vine.setDrawScale(parent.getScale().x, parent.getScale().y);
-                vine.setTextures();
-                return vine;
+                return Vine.createFromJson(instance, parent.getScale());
             default:
                 Class<?> klass = null;
                 try {

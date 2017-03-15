@@ -186,26 +186,38 @@ public class LevelEditorController extends WorldController implements ContactLis
 		return true;
 	}
 
+	/**
+	 * Type safety is overrated [trevor]
+	 * @param x
+	 * @param y
+     */
 	private void createXY(float x, float y) {
 		switch (creationOptions[actualindex]) {
 			case ".SlothModel":
-				SlothModel sloth;
-				sloth = new SlothModel(x, y);
-				sloth.setDrawScale(scale.x, scale.y);
-				sloth.setPartTextures();
-				addObject(sloth);
+				String[] defaults = SlothModel.defaultArgumentsList();
+				defaults[0] = x + "";
+				defaults[1] = y + "";
+				String[] args = promptKeys(SlothModel.getArgumentsKeys(), defaults);
+				addObject(SlothModel.createFromArgumentsList(args, scale));
 				break;
 			case ".Vine":
-				Vine vine;
-				String howLong = showInputDialog("How long?");
-				int longInt = Integer.parseInt(howLong);
-				vine = new Vine(x,y,longInt,0.25f,1.0f);
-				vine.setTextures();
-				vine.setDrawScale(scale);
-				addObject(vine);
+				defaults = Vine.defaultArgumentsList();
+				defaults[0] = x + "";
+				defaults[1] = y + "";
+				args = promptKeys(Vine.getArgumentsKeys(), defaults);
+				addObject(Vine.createFromArgumentsList(args, scale));
 				break;
 		}
 		inputThresher = THRESHER_RESET;
+	}
+
+	private String[] promptKeys(String[] keys, String[] defaults) {
+		for (int i = 0; i < keys.length; i++) {
+			String resp = showInputDialog(keys[i] + "? (" + defaults[i] + ")");
+			defaults[i] = resp.equals("") ? defaults[i] : resp;
+		}
+
+		return defaults;
 	}
 
 	public void update(float dt) {

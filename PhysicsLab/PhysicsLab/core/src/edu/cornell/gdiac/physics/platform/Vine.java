@@ -19,8 +19,10 @@ import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.*;
 
+import com.google.gson.JsonObject;
 import edu.cornell.gdiac.physics.leveleditor.FullAssetTracker;
 import edu.cornell.gdiac.physics.obstacle.*;
+import edu.cornell.gdiac.physics.platform.sloth.SlothModel;
 
 /**
  * A bridge with planks connected by revolute joints.
@@ -224,5 +226,43 @@ public class Vine extends ComplexObstacle {
 
 	public void setTextures() {
 		setTexture(FullAssetTracker.getInstance().getTextureRegion("textures/vine.png"));
+	}
+
+	public static String[] getArgumentsKeys() {
+		return new String[] {
+				"x",
+				"y",
+				"numLinks"
+		};
+	}
+
+	public static Obstacle createFromArgumentsList(String[] args, Vector2 scale) {
+		Vine vine;
+		float x = Float.parseFloat(args[0]);
+		float y = Float.parseFloat(args[1]);
+		float numLinks = Float.parseFloat(args[2]);
+		vine = new Vine(x, y, numLinks, 0.25f, 1.0f);
+		vine.setDrawScale(scale.x, scale.y);
+		vine.setTextures();
+		return vine;
+	}
+
+	public static String[] defaultArgumentsList() {
+		return new String[] {
+				"0.0",
+				"0.0",
+				"5.0"
+		};
+	}
+
+	public static Obstacle createFromJson(JsonObject instance, Vector2 scale) {
+		Vine vine;
+		float x = instance.get("x").getAsFloat();
+		float y = instance.get("y").getAsFloat();
+		float numlinks = instance.get("numLinks").getAsFloat();
+		vine = new Vine(x, y, numlinks, 0.25f, 1.0f);
+		vine.setDrawScale(scale.x, scale.y);
+		vine.setTextures();
+		return vine;
 	}
 }

@@ -15,15 +15,13 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.*;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.utils.ObjectSet;
+import com.google.gson.JsonObject;
 import edu.cornell.gdiac.physics.GameCanvas;
 import edu.cornell.gdiac.physics.leveleditor.FullAssetTracker;
 import edu.cornell.gdiac.physics.obstacle.*;
 import lombok.Getter;
 
-import java.util.HashSet;
-import java.util.Set;
-
-public class SlothModel extends ComplexObstacle {
+public class SlothModel extends ComplexObstacle  {
 
     /** Constants for tuning sloth behaviour */
     private static final float HAND_DENSITY = 4.0f;
@@ -571,5 +569,34 @@ public class SlothModel extends ComplexObstacle {
         return wtfSet;
     }
 
+    public static String[] getArgumentsKeys() {
+        return new String[] {
+                "x",
+                "y"
+        };
+    }
+
+    public static Obstacle createFromArgumentsList(String[] args, Vector2 scale) {
+        SlothModel sloth;
+        sloth = new SlothModel(Float.parseFloat(args[0]), Float.parseFloat(args[1]));
+        sloth.setDrawScale(scale.x, scale.y);
+        sloth.setPartTextures();
+        return sloth;
+    }
+
+    public static String[] defaultArgumentsList() {
+        return new String[] {
+                "0.0",
+                "0.0"
+        };
+    }
+
+    public static Obstacle createFromJson(JsonObject instance, Vector2 scale) {
+        SlothModel ret;
+        ret = new SlothModel(instance.get("x").getAsFloat(), instance.get("y").getAsFloat());
+        ret.setDrawScale(scale.x, scale.y);
+        ret.setPartTextures();
+        return ret;
+    }
 }
 
