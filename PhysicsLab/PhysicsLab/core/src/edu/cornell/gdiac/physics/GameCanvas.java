@@ -24,6 +24,8 @@ import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.graphics.glutils.*;
 import com.badlogic.gdx.physics.box2d.*;
 
+import javax.swing.text.View;
+
 /**
  * Primary view class for the game, abstracting the basic graphics calls.
  * 
@@ -63,7 +65,10 @@ public class GameCanvas {
 	
 	/** Drawing context to handle textures AND POLYGONS as sprites */
 	private PolygonSpriteBatch spriteBatch;
-	
+
+	private SpriteBatch batch;
+
+
 	/** Rendering context for the debug outlines */
 	private ShapeRenderer debugRender;
 	
@@ -77,6 +82,8 @@ public class GameCanvas {
 	
 	/** Camera for the underlying SpriteBatch */
 	private OrthographicCamera camera;
+
+	public BitmapFont font;
 	
 	/** Value to cache window width (if we are currently full screen) */
 	int width;
@@ -102,6 +109,7 @@ public class GameCanvas {
 	public GameCanvas() {
 		active = DrawPass.INACTIVE;
 		spriteBatch = new PolygonSpriteBatch();
+		batch = new SpriteBatch();
 		debugRender = new ShapeRenderer();
 		
 		// Set the projection matrix (for proper scaling)
@@ -109,6 +117,8 @@ public class GameCanvas {
 		camera.setToOrtho(false);
 		spriteBatch.setProjectionMatrix(camera.combined);
 		debugRender.setProjectionMatrix(camera.combined);
+		batch.setProjectionMatrix(camera.combined);
+
 
 		// Initialize the cache objects
 		holder = new TextureRegion();
@@ -117,6 +127,7 @@ public class GameCanvas {
 		vertex = new Vector2();
 
 		background = new Texture(Gdx.files.internal("platform/background.png"));
+		font = new BitmapFont();
 	}
 		
     /**
@@ -980,6 +991,13 @@ public class GameCanvas {
     	debugRender.end();
     	active = DrawPass.INACTIVE;
     }
+
+	/**
+	 * [Trevor]
+	 */
+	public void drawTextStandard(String text, float x, float y) {
+		drawText(text,font,x,y);
+	}
     
     /**
      * Draws the outline of the given shape in the specified color

@@ -151,7 +151,7 @@ public abstract class WorldController implements Screen {
 	 *
 	 * @return a newly loaded texture region for the given file.
 	 */
-	protected TextureRegion createTexture(AssetManager manager, String file, boolean repeat) {
+	public TextureRegion createTexture(AssetManager manager, String file, boolean repeat) {
 		if (manager.isLoaded(file)) {
 			TextureRegion region = new TextureRegion(manager.get(file, Texture.class));
 			region.getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);

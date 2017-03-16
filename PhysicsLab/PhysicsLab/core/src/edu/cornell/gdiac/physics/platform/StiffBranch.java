@@ -19,7 +19,10 @@ import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.*;
 
+import com.google.gson.JsonObject;
+import edu.cornell.gdiac.physics.leveleditor.FullAssetTracker;
 import edu.cornell.gdiac.physics.obstacle.*;
+import edu.cornell.gdiac.physics.platform.sloth.SlothModel;
 
 /**
  * A bridge with planks connected by revolute joints.
@@ -44,19 +47,23 @@ public class StiffBranch extends ComplexObstacle {
 
 	// Invisible anchor objects
 	/** The left side of the bridge */
-	private WheelObstacle start = null;
+	private transient WheelObstacle start = null;
 	/** Set damping constant for joint rotation in vines */
 	public static final float DAMPING_ROTATION = 5f;
 
 	// Dimension information
 	/** The size of the entire bridge */
-	protected Vector2 dimension;
+	protected transient Vector2 dimension;
 	/** The size of a single plank */
-	protected Vector2 planksize;
+	protected transient Vector2 planksize;
 	/* The length of each link */
-	protected float linksize = 1.0f;
+	protected transient float linksize = 1.0f;
 	/** The spacing between each link */
-	protected float spacing = 0.0f;
+	protected transient float spacing = 0.0f;
+
+	private float numLinks;
+	private float x;
+	private float y;
 
 	/**
 	 * Creates a new rope bridge at the given position.
@@ -72,6 +79,9 @@ public class StiffBranch extends ComplexObstacle {
 	 */
 	public StiffBranch(float x, float y, float width, float lwidth, float lheight) {
 		this(x, y, x, y+width, lwidth, lheight);
+		this.numLinks = width;
+		this.x = x;
+		this.y = y;
 	}
 
 	/**
@@ -243,5 +253,17 @@ public class StiffBranch extends ComplexObstacle {
 			return null;
 		}
 		return ((SimpleObstacle)bodies.get(0)).getTexture();
+	}
+
+	public void setTextures() {
+		setTexture(FullAssetTracker.getInstance().getTextureRegion("textures/branch.png"));
+	}
+
+	public static Obstacle createFromJson(JsonObject instance, Vector2 scale) {
+		StiffBranch ret;
+		ret = new StiffBranch(instance.get("x").getAsFloat(), instance.get("y").getAsFloat(), instance.get("numLinks").getAsFloat(), 0.25f, 0.1f);
+		ret.setDrawScale(scale.x, scale.y);
+		ret.setTextures();
+		return ret;
 	}
 }
