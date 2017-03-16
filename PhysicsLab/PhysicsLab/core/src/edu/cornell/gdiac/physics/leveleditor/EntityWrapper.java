@@ -2,6 +2,7 @@ package edu.cornell.gdiac.physics.leveleditor;
 
 import com.google.gson.*;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
+import edu.cornell.gdiac.physics.platform.StiffBranch;
 import edu.cornell.gdiac.physics.platform.Vine;
 import edu.cornell.gdiac.physics.platform.sloth.SlothModel;
 
@@ -47,6 +48,8 @@ public class EntityWrapper implements JsonSerializer<Obstacle>, JsonDeserializer
                 return SlothModel.createFromJson(instance, parent.getScale());
             case ".Vine":
                 return Vine.createFromJson(instance, parent.getScale());
+            case ".StiffBranch":
+                return StiffBranch.createFromJson(instance, parent.getScale());
             default:
                 Class<?> klass = null;
                 try {

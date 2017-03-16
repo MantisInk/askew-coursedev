@@ -17,6 +17,7 @@ import edu.cornell.gdiac.physics.InputController;
 import edu.cornell.gdiac.physics.WorldController;
 import edu.cornell.gdiac.physics.obstacle.ComplexObstacle;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
+import edu.cornell.gdiac.physics.platform.StiffBranch;
 import edu.cornell.gdiac.physics.platform.Vine;
 import edu.cornell.gdiac.physics.platform.sloth.SlothModel;
 import edu.cornell.gdiac.util.PooledList;
@@ -67,7 +68,8 @@ public class LevelEditorController extends WorldController implements ContactLis
 	public static final String[] creationOptions = {
 			".SlothModel",
 			".Vine",
-			".Platform"
+			".Platform",
+			".StiffBranch"
 	};
 
 	@Getter
@@ -206,6 +208,9 @@ public class LevelEditorController extends WorldController implements ContactLis
 				Vine vTemplate = new Vine(x,y,5.0f,0.25f,1.0f);
 				promptTemplate(vTemplate);
 				break;
+			case ".StiffBranch":
+				StiffBranch sb = new StiffBranch(x,y, 5.0f, 0.25f, 1.0f);
+				promptTemplate(sb);
 		}
 		inputThresher = THRESHER_RESET;
 	}
