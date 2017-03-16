@@ -290,6 +290,39 @@ public class LevelEditorController extends WorldController implements ContactLis
 			inputThresher = THRESHER_RESET;
 		}
 
+		if (InputController.getInstance().isEKeyPressed()) {
+			float mx = InputController.getInstance().getCrossHair().x;
+			float my = InputController.getInstance().getCrossHair().y;
+
+			QueryCallback qc = new QueryCallback() {
+				@Override
+				public boolean reportFixture(Fixture fixture) {
+					Object userData = fixture.getBody().getUserData();
+					for (Obstacle o : objects) {
+						if (o == userData) {
+							promptTemplate(o);
+							objects.remove(o);
+							return false;
+						}
+
+						if (o instanceof ComplexObstacle) {
+							for (Obstacle oo : ((ComplexObstacle) o).getBodies()) {
+								if (oo == userData) {
+									promptTemplate(o);
+									objects.remove(o);
+									return false;
+								}
+							}
+						}
+					}
+					return true;
+				}
+			};
+
+			world.QueryAABB(qc,mx,my,mx,my);
+			inputThresher = THRESHER_RESET;
+		}
+
 		if (InputController.getInstance().isNKeyPressed()) {
 			String name = showInputDialog("what do u wanna call this mess?");
 			currentLevel = name;

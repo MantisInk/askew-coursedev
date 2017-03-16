@@ -50,6 +50,8 @@ public class InputController {
 	private boolean enterKeyPressed;
 	@Getter
 	private boolean tKeyPressed;
+	@Getter
+	private boolean eKeyPressed;
 
 
 	/**
@@ -423,6 +425,7 @@ public class InputController {
 		sKeyPressed =  Gdx.input.isKeyPressed(Input.Keys.S);
 		nKeyPressed =  Gdx.input.isKeyPressed(Input.Keys.N);
 		lKeyPressed =  Gdx.input.isKeyPressed(Input.Keys.L);
+		eKeyPressed =  Gdx.input.isKeyPressed(Input.Keys.E);
 		leftKeyPressed =  Gdx.input.isKeyPressed(Input.Keys.LEFT);
 		rightKeyPressed =  Gdx.input.isKeyPressed(Input.Keys.RIGHT);
 		enterKeyPressed =  Gdx.input.isKeyPressed(Input.Keys.ENTER);
