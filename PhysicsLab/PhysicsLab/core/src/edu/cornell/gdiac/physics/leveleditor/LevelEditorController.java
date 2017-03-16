@@ -22,6 +22,10 @@ import edu.cornell.gdiac.physics.platform.sloth.SlothModel;
 import edu.cornell.gdiac.util.PooledList;
 import lombok.Getter;
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.FileNotFoundException;
 import java.util.Iterator;
 
@@ -68,6 +72,7 @@ public class LevelEditorController extends WorldController implements ContactLis
 
 	@Getter
 	private String trialLevelName;
+	private boolean prompting;
 
 	/**
 	 * Preloads the assets for this controller.
@@ -194,30 +199,46 @@ public class LevelEditorController extends WorldController implements ContactLis
 	private void createXY(float x, float y) {
 		switch (creationOptions[actualindex]) {
 			case ".SlothModel":
-				String[] defaults = SlothModel.defaultArgumentsList();
-				defaults[0] = x + "";
-				defaults[1] = y + "";
-				String[] args = promptKeys(SlothModel.getArgumentsKeys(), defaults);
-				addObject(SlothModel.createFromArgumentsList(args, scale));
+				SlothModel sTemplate = new SlothModel(x,y);
+				promptTemplate(sTemplate);
 				break;
 			case ".Vine":
-				defaults = Vine.defaultArgumentsList();
-				defaults[0] = x + "";
-				defaults[1] = y + "";
-				args = promptKeys(Vine.getArgumentsKeys(), defaults);
-				addObject(Vine.createFromArgumentsList(args, scale));
+				Vine vTemplate = new Vine(x,y,5.0f,0.25f,1.0f);
+				promptTemplate(vTemplate);
 				break;
 		}
 		inputThresher = THRESHER_RESET;
 	}
 
-	private String[] promptKeys(String[] keys, String[] defaults) {
-		for (int i = 0; i < keys.length; i++) {
-			String resp = showInputDialog(keys[i] + "? (" + defaults[i] + ")");
-			defaults[i] = resp.equals("") ? defaults[i] : resp;
+	private void promptTemplate(Obstacle template) {
+		if (!prompting) {
+			String jsonOfTemplate = jls.gsonToJson(template);
+			// flipping swing
+			JDialog mainFrame = new JDialog();
+			mainFrame.setSize(600,600);
+			mainFrame.setLocationRelativeTo(null);
+			JPanel wtfPanel = new JPanel();
+			wtfPanel.setLayout(new FlowLayout());
+			final JTextArea commentTextArea =
+					new JTextArea(jsonOfTemplate,20,30);
+			wtfPanel.add(commentTextArea);
+			mainFrame.add(wtfPanel);
+			JButton okButton = new JButton("ok");
+			okButton.addActionListener(e -> {
+				promptCallback(commentTextArea.getText());
+				mainFrame.setVisible(false);
+				mainFrame.dispose();
+			});
+			wtfPanel.add(okButton);
+			mainFrame.setVisible(true);
+			prompting = true;
 		}
+	}
 
-		return defaults;
+	private void promptCallback(String json) {
+		Obstacle toAdd = jls.obstacleFromJson(json);
+		addObject(toAdd);
+		prompting = false;
 	}
 
 	public void update(float dt) {

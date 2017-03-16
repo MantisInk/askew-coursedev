@@ -569,28 +569,6 @@ public class SlothModel extends ComplexObstacle  {
         return wtfSet;
     }
 
-    public static String[] getArgumentsKeys() {
-        return new String[] {
-                "x",
-                "y"
-        };
-    }
-
-    public static Obstacle createFromArgumentsList(String[] args, Vector2 scale) {
-        SlothModel sloth;
-        sloth = new SlothModel(Float.parseFloat(args[0]), Float.parseFloat(args[1]));
-        sloth.setDrawScale(scale.x, scale.y);
-        sloth.setPartTextures();
-        return sloth;
-    }
-
-    public static String[] defaultArgumentsList() {
-        return new String[] {
-                "0.0",
-                "0.0"
-        };
-    }
-
     public static Obstacle createFromJson(JsonObject instance, Vector2 scale) {
         SlothModel ret;
         ret = new SlothModel(instance.get("x").getAsFloat(), instance.get("y").getAsFloat());

@@ -46,4 +46,11 @@ public class JSONLoaderSaver {
         return true;
     }
 
+    public String gsonToJson(Obstacle o) {
+        return gson.toJson(o, Obstacle.class);
+    }
+    public Obstacle obstacleFromJson(String s) {
+        return gson.fromJson(s, Obstacle.class);
+    }
+
 }
