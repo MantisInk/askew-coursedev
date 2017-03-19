@@ -50,6 +50,7 @@ public class XBox360Controller implements ControllerListener {
 	private Controller controller;
 	/** Whether this controller is currently running with the Mac OS X driver */
 	private boolean macosx;
+	private boolean gnuSlashLinux;
 	
 	/** Button identifier for the X-Button */
 	private int button_x;
@@ -147,7 +148,7 @@ public class XBox360Controller implements ControllerListener {
 	
 		this.controller = controller;
 		macosx = (System.getProperty("os.name").equals("Mac OS X"));
-		boolean gnuSlashLinux = System.getProperty("os.name").equals("Linux");
+		gnuSlashLinux = System.getProperty("os.name").equals("Linux");
 		System.out.println(System.getProperty("os.name"));
 
 		if (!macosx && !gnuSlashLinux) {
@@ -193,7 +194,7 @@ public class XBox360Controller implements ControllerListener {
 			button_b = 1;
 
 			button_back  = 6;
-			button_start = 4;
+			button_start = 30; // TODO: Fix
 			button_guide = 8;
 
 			button_lb = 4;
@@ -577,7 +578,7 @@ public class XBox360Controller implements ControllerListener {
 		float value = controller.getAxis(axis_left_trigger);
 		// Workaround for bug in Mac driver
 		//System.out.print("Xbox left " + value);
-		if (left_trigger_begin && macosx) {
+		if (left_trigger_begin && notWindows()) {
 			if (value != 0) {
 				left_trigger_begin = false;
 				return value;
@@ -585,6 +586,10 @@ public class XBox360Controller implements ControllerListener {
 			return -1;
 		}
 		return value;
+	}
+
+	public boolean notWindows() {
+		return macosx || gnuSlashLinux;
 	}
 
 	/**
@@ -629,7 +634,7 @@ public class XBox360Controller implements ControllerListener {
 		float value = controller.getAxis(axis_right_trigger);
 		// Workaround for bug in Mac driver
 		//System.out.print("   Xbox right " + value+ "  ");
-		if (right_trigger_begin && macosx) {
+		if (right_trigger_begin && notWindows()) {
 			if (value != 0) {
 				right_trigger_begin = false;
 				return value;

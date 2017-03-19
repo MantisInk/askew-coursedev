@@ -15,14 +15,13 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.*;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.utils.ObjectSet;
+import com.google.gson.JsonObject;
 import edu.cornell.gdiac.physics.GameCanvas;
+import edu.cornell.gdiac.physics.leveleditor.FullAssetTracker;
 import edu.cornell.gdiac.physics.obstacle.*;
 import lombok.Getter;
 
-import java.util.HashSet;
-import java.util.Set;
-
-public class SlothModel extends ComplexObstacle {
+public class SlothModel extends ComplexObstacle  {
 
     /** Constants for tuning sloth behaviour */
     private static final float HAND_DENSITY = 4.0f;
@@ -35,7 +34,7 @@ public class SlothModel extends ComplexObstacle {
     private static final boolean HANDS_FIXED_ROTATION = true;
     private static final float GRAVITY_SCALE = 0.7f;
     private static final float ARM_MASS = 5.0f;
-    public boolean SPIDERMAN_MODE = false;
+    public transient boolean SPIDERMAN_MODE = false;
 
     /** Indices for the body parts in the bodies array */
     private static final int PART_NONE = -1;
@@ -49,40 +48,40 @@ public class SlothModel extends ComplexObstacle {
     private static final float PI = (float)Math.PI;
 
     /** The number of DISTINCT body parts */
-    private static final int BODY_TEXTURE_COUNT = 6;
+    private static final int BODY_TEXTURE_COUNT = 3;
 
-    private RevoluteJointDef leftGrabJointDef;
-    private RevoluteJointDef rightGrabJointDef;
-    private Joint leftGrabJoint;
-    private Joint rightGrabJoint;
-    private PolygonShape sensorShape;
-    private Fixture sensorFixture1;
-    private Fixture sensorFixture2;
+    private transient RevoluteJointDef leftGrabJointDef;
+    private transient RevoluteJointDef rightGrabJointDef;
+    private transient Joint leftGrabJoint;
+    private transient Joint rightGrabJoint;
+    private transient PolygonShape sensorShape;
+    private transient Fixture sensorFixture1;
+    private transient Fixture sensorFixture2;
 
     /** Set damping constant for rotation of Flow's arms */
     private static final float ROTATION_DAMPING = 5f;
 
-    private Body grabPointR;
-    private Body grabPointL;
+    private  transient Body grabPointR;
+    private transient Body grabPointL;
 
-    private Vector2 forceL = new Vector2();
-    private Vector2 forceR = new Vector2();
+    private transient Vector2 forceL = new Vector2();
+    private transient Vector2 forceR = new Vector2();
 
 
 
     /** For drawing the force lines*/
-    private ShapeRenderer shaper = new ShapeRenderer();
+    private ShapeRenderer shaper;
 
     public float x;
     public float y;
-    private float rightVert;
-    private float leftHori;
-    private float leftVert;
-    private float rightHori;
+    private transient float rightVert;
+    private transient float leftHori;
+    private transient float leftVert;
+    private transient float rightHori;
     @Getter
-    private boolean leftGrab;
+    private transient boolean leftGrab;
     @Getter
-    private boolean rightGrab;
+    private transient boolean rightGrab;
 
     /**
      * Returns the texture index for the given body part
@@ -99,9 +98,9 @@ public class SlothModel extends ComplexObstacle {
                 return 0;
             case PART_LEFT_ARM:
             case PART_RIGHT_ARM:
-                return 2;
+                return 1;
             case PART_BODY:
-                return 3;
+                return 2;
             default:
                 return -1;
         }
@@ -123,10 +122,14 @@ public class SlothModel extends ComplexObstacle {
     private static final float HAND_YOFFSET    = 0;
 
     /** Texture assets for the body parts */
-    private TextureRegion[] partTextures;
+    private transient TextureRegion[] partTextures;
+
+    private static final String[] RAGDOLL_FILES = { "ragdoll/trevorhand.png", "ragdoll/ProfWhite.png",
+            "ragdoll/trevorarm.png",  "ragdoll/dude.png",
+            "ragdoll/tux_thigh.png", "ragdoll/tux_shin.png" };
 
     /** Cache vector for organizing body parts */
-    private Vector2 partCache = new Vector2();
+    private transient Vector2 partCache = new Vector2();
 
     /**
      * Creates a new ragdoll with its head at the given position.
@@ -138,7 +141,8 @@ public class SlothModel extends ComplexObstacle {
         super(x,y);
         this.x = x;
         this.y = y;
-
+        //this.shaper = new ShapeRenderer();
+        this.shaper = null;
     }
 
     private void init() {
@@ -171,10 +175,6 @@ public class SlothModel extends ComplexObstacle {
         part = makePart(PART_RIGHT_HAND, PART_RIGHT_ARM, ARM_XOFFSET, ARM_YOFFSET, HAND_DENSITY,false);
         part.setFixedRotation(HANDS_FIXED_ROTATION);
         part.setGravityScale(GRAVITY_SCALE);
-
-
-
-
     }
 
     /**
@@ -205,11 +205,16 @@ public class SlothModel extends ComplexObstacle {
      *
      * @param textures the array of textures for the individual body parts.
      */
-    public void setPartTextures(TextureRegion[] textures) {
-        assert textures != null && textures.length > BODY_TEXTURE_COUNT : "Texture array is not large enough";
+    public void setPartTextures() {
+        //assert textures != null && textures.length > BODY_TEXTURE_COUNT : "Texture array is not large enough";
 
         partTextures = new TextureRegion[BODY_TEXTURE_COUNT];
-        System.arraycopy(textures, 0, partTextures, 0, BODY_TEXTURE_COUNT);
+        partTextures[0] = FullAssetTracker.getInstance().getTextureRegion("textures/trevorhand.png");
+        partTextures[1] = FullAssetTracker.getInstance().getTextureRegion("textures/trevorarm.png");
+        partTextures[2] = FullAssetTracker.getInstance().getTextureRegion("textures/dude.png");
+
+        //partTextures = new TextureRegion[BODY_TEXTURE_COUNT];
+        //System.arraycopy(textures, 0, partTextures, 0, BODY_TEXTURE_COUNT);
         if (bodies.size == 0) {
             init();
         } else {
@@ -395,7 +400,7 @@ public class SlothModel extends ComplexObstacle {
         OrthographicCamera camera = new OrthographicCamera(Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
         camera.setToOrtho(false);
 
-        //ShapeRenderer shaper = new ShapeRenderer();
+        if (shaper == null) shaper = new ShapeRenderer();
         Gdx.gl.glLineWidth(3);
         shaper.setProjectionMatrix(camera.combined);
 
@@ -419,22 +424,15 @@ public class SlothModel extends ComplexObstacle {
         OrthographicCamera camera = new OrthographicCamera(Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
         camera.setToOrtho(false);
 
-        //ShapeRenderer shaper = new ShapeRenderer();
         Gdx.gl.glLineWidth(3);
+        if (shaper == null) shaper = new ShapeRenderer();
         shaper.setProjectionMatrix(camera.combined);
 
         shaper.begin(ShapeRenderer.ShapeType.Line);
         shaper.setColor(Color.BLUE);
-        //System.out.println(shaper.isDrawing());
-        //System.out.println(left_x+", "+left_y);
-        //System.out.println(right_x+", "+right_y);
-        //System.out.println(left.getX()+", "+left.getY());
-        //System.out.println(right.getX()+", "+right.getY());
-        //System.out.println(this.x+", "+this.y);
-        //shaper.line(this.x+left.getX(),this.y+left.getY(), left.getX()+(left_x*20),left.getY()+(left_y*20));
+
         shaper.line(left.getX()*drawScale.x,left.getY() * drawScale.y, left.getX()*drawScale.x+(forceL.x*20),left.getY() * drawScale.y+(forceL.y*20));
         shaper.setColor(Color.RED);
-        //shaper.line(this.x+right.getX(),this.y+right.getY(), right.getX()+(right_x*20),right.getY()+(right_y*20));
         shaper.line(right.getX()*drawScale.x,right.getY() * drawScale.y, right.getX()*drawScale.x+(forceR.x*20),right.getY() * drawScale.y+(forceR.y*20));
         shaper.end();
         Gdx.gl.glLineWidth(3);
@@ -571,5 +569,12 @@ public class SlothModel extends ComplexObstacle {
         return wtfSet;
     }
 
+    public static Obstacle createFromJson(JsonObject instance, Vector2 scale) {
+        SlothModel ret;
+        ret = new SlothModel(instance.get("x").getAsFloat(), instance.get("y").getAsFloat());
+        ret.setDrawScale(scale.x, scale.y);
+        ret.setPartTextures();
+        return ret;
+    }
 }
 

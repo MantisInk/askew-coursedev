@@ -19,7 +19,10 @@ import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.*;
 
+import com.google.gson.JsonObject;
+import edu.cornell.gdiac.physics.leveleditor.FullAssetTracker;
 import edu.cornell.gdiac.physics.obstacle.*;
+import edu.cornell.gdiac.physics.platform.sloth.SlothModel;
 
 /**
  * A bridge with planks connected by revolute joints.
@@ -41,21 +44,24 @@ public class Vine extends ComplexObstacle {
 
 	// Invisible anchor objects
 	/** The left side of the bridge */
-	private WheelObstacle start = null;
-	/** The right side of the bridge */
-	private WheelObstacle finish = null;
+	private transient WheelObstacle start = null;
 	/** Set damping constant for joint rotation in vines */
 	public static final float DAMPING_ROTATION = 5f;
 
 	// Dimension information
 	/** The size of the entire bridge */
-	protected Vector2 dimension;
+	protected transient Vector2 dimension;
 	/** The size of a single plank */
-	protected Vector2 planksize;
+	protected transient Vector2 planksize;
 	/* The length of each link */
-	protected float linksize = 1.0f;
+	protected transient float linksize = 1.0f;
 	/** The spacing between each link */
-	protected float spacing = 0.0f;
+	protected transient float spacing = 0.0f;
+
+	protected float numLinks;
+	protected float x;
+	protected float y;
+
 
 	/**
 	 * Creates a new rope bridge at the given position.
@@ -71,6 +77,9 @@ public class Vine extends ComplexObstacle {
 	 */
 	public Vine(float x, float y, float width, float lwidth, float lheight) {
 		this(x, y, x+width, y, lwidth, lheight);
+		numLinks = width;
+		this.x = x;
+		this.y = y;
 	}
 
     /**
@@ -176,18 +185,6 @@ public class Vine extends ComplexObstacle {
 			//#endregion
 		}
 
-		// Create the rightmost anchor
-		Obstacle last = bodies.get(bodies.size-1);
-
-		pos = last.getPosition();
-		pos.y += linksize / 2;
-		finish = new WheelObstacle(pos.x,pos.y,BRIDGE_PIN_RADIUS);
-		finish.setName(BRIDGE_PIN_NAME+1);
-		finish.setDensity(BASIC_DENSITY);
-		finish.setBodyType(BodyDef.BodyType.StaticBody);
-		finish.setAngularDamping(DAMPING_ROTATION);
-		finish.activatePhysics(world);
-
 		return true;
 	}
 	
@@ -201,9 +198,6 @@ public class Vine extends ComplexObstacle {
 		super.deactivatePhysics(world);
 		if (start != null) {
 			start.deactivatePhysics(world);
-		}
-		if (finish != null) {
-			finish.deactivatePhysics(world);
 		}
 	}
 	
@@ -228,5 +222,20 @@ public class Vine extends ComplexObstacle {
 			return null;
 		}
 		return ((SimpleObstacle)bodies.get(0)).getTexture();
+	}
+
+	public void setTextures() {
+		setTexture(FullAssetTracker.getInstance().getTextureRegion("textures/vine.png"));
+	}
+
+	public static Obstacle createFromJson(JsonObject instance, Vector2 scale) {
+		Vine vine;
+		float x = instance.get("x").getAsFloat();
+		float y = instance.get("y").getAsFloat();
+		float numlinks = instance.get("numLinks").getAsFloat();
+		vine = new Vine(x, y, numlinks, 0.25f, 1.0f);
+		vine.setDrawScale(scale.x, scale.y);
+		vine.setTextures();
+		return vine;
 	}
 }

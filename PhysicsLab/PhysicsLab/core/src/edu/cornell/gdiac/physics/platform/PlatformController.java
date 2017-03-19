@@ -18,10 +18,16 @@ import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.physics.box2d.*;
 
+import edu.cornell.gdiac.physics.leveleditor.FullAssetTracker;
+import edu.cornell.gdiac.physics.leveleditor.JSONLoaderSaver;
+import edu.cornell.gdiac.physics.leveleditor.LevelModel;
 import edu.cornell.gdiac.physics.platform.sloth.SlothModel;
 import edu.cornell.gdiac.util.*;
 import edu.cornell.gdiac.physics.*;
 import edu.cornell.gdiac.physics.obstacle.*;
+import lombok.Setter;
+
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -45,7 +51,9 @@ public class PlatformController extends WorldController implements ContactListen
 	private static final String ROPE_FILE  = "platform/ropebridge.png";
 	/** The texture file for the vine */
 	private static final String VINE_FILE  = "platform/vine.png";
-	
+	/** The texture file for the branch */
+	private static final String BRANCH_FILE  = "platform/branch.png";
+
 	/** The sound file for a jump */
 	private static final String JUMP_FILE = "platform/jump.mp3";
 	/** The sound file for a bullet fire */
@@ -67,17 +75,23 @@ public class PlatformController extends WorldController implements ContactListen
 
 	/** Texture assets for the body parts */
 	private TextureRegion[] bodyTextures;
-	private static Vector2 DOLL_POS = new Vector2( 2.5f,  5.0f);
+	//private static Vector2 DOLL_POS = new Vector2( 2.5f,  5.0f);
+	private static Vector2 DOLL_POS = new Vector2( 7.5f,  17.0f);
 
 	/** Track asset loading from all instances and subclasses */
 	private AssetState ragdollAssetState = AssetState.EMPTY;
 
 	/** Texture asset for the vine */
 	private TextureRegion vineTexture;
+	/** Texture asset for the branch */
+	private TextureRegion branchTexture;
 
 	/** Track asset loading from all instances and subclasses */
 	private AssetState platformAssetState = AssetState.EMPTY;
-	
+
+	@Setter
+	private String loadLevel;
+
 	/**
 	 * Preloads the assets for this controller.
 	 *
@@ -85,14 +99,14 @@ public class PlatformController extends WorldController implements ContactListen
 	 * this time.  However, we still want the assets themselves to be static.  So
 	 * we have an AssetState that determines the current loading state.  If the
 	 * assets are already loaded, this method will do nothing.
-	 * 
+	 *
 	 * @param manager Reference to global asset manager.
-	 */	
+	 */
 	public void preLoadContent(AssetManager manager) {
 		if (platformAssetState != AssetState.EMPTY) {
 			return;
 		}
-		
+
 		platformAssetState = AssetState.LOADING;
 		manager.load(DUDE_FILE, Texture.class);
 		assets.add(DUDE_FILE);
@@ -104,13 +118,18 @@ public class PlatformController extends WorldController implements ContactListen
 		assets.add(ROPE_FILE);
 		manager.load(VINE_FILE, Texture.class);
 		assets.add(VINE_FILE);
-		
+		manager.load(BRANCH_FILE, Texture.class);
+		assets.add(BRANCH_FILE);
+
 		manager.load(JUMP_FILE, Sound.class);
 		assets.add(JUMP_FILE);
 		manager.load(PEW_FILE, Sound.class);
 		assets.add(PEW_FILE);
 		manager.load(POP_FILE, Sound.class);
 		assets.add(POP_FILE);
+
+		FullAssetTracker.getInstance().preLoadEverything(manager);
+
 
 		// SLOTH
 		for(int ii = 0; ii < RAGDOLL_FILES.length; ii++) {
@@ -128,17 +147,18 @@ public class PlatformController extends WorldController implements ContactListen
 	 * this time.  However, we still want the assets themselves to be static.  So
 	 * we have an AssetState that determines the current loading state.  If the
 	 * assets are already loaded, this method will do nothing.
-	 * 
+	 *
 	 * @param manager Reference to global asset manager.
 	 */
 	public void loadContent(AssetManager manager) {
 		if (platformAssetState != AssetState.LOADING) {
 			return;
 		}
-		
+
 		avatarTexture = createTexture(manager,DUDE_FILE,false);
 		bridgeTexture = createTexture(manager,ROPE_FILE,false);
 		vineTexture = createTexture(manager,VINE_FILE,false);
+		branchTexture = createTexture(manager, BRANCH_FILE, false);
 
 		SoundController sounds = SoundController.getInstance();
 		sounds.allocate(manager, JUMP_FILE);
@@ -151,13 +171,15 @@ public class PlatformController extends WorldController implements ContactListen
 			bodyTextures[ii] =  createTexture(manager,RAGDOLL_FILES[ii],false);
 		}
 
+		FullAssetTracker.getInstance().loadEverything(this,manager);
+
 		super.loadContent(manager);
 		platformAssetState = AssetState.COMPLETE;
 	}
-	
+
 	// Physics constants for initialization
 	/** The new heavier gravity for this world (so it is not so floaty) */
-	private static final float  DEFAULT_GRAVITY = -14.7f;
+	private static final float  DEFAULT_GRAVITY = -10.7f;
 	/** The density for most physics objects */
 	private static final float  BASIC_DENSITY = 0.0f;
 	/** Friction of most platforms */
@@ -165,39 +187,39 @@ public class PlatformController extends WorldController implements ContactListen
 	/** The restitution for all physics objects */
 	private static final float  BASIC_RESTITUTION = 0.1f;
 	/** The width of the rope bridge */
-	private static final float  BRIDGE_WIDTH = 14.0f;
+	private static final float  BRIDGE_WIDTH = 6.0f;
 	/** The length of the vine */
 	private static final float VINE_LENGTH = 5f;
 
 	// Since these appear only once, we do not care about the magic numbers.
 	// In an actual game, this information would go in a data file.
 	// Wall vertices
-	private static final float[][] WALLS = { 
-			  								{16.0f, 18.0f, 16.0f, 17.0f,  1.0f, 17.0f,
-			  								  1.0f,  0.0f,  0.0f,  0.0f,  0.0f, 18.0f},
-			  								{32.0f, 18.0f, 32.0f,  0.0f, 31.0f,  0.0f,
-			  							     31.0f, 17.0f, 16.0f, 17.0f, 16.0f, 18.0f}
-											};
-	
+	private static final float[][] WALLS = {
+			{16.0f, 18.0f, 16.0f, 17.0f,  1.0f, 17.0f,
+					1.0f,  0.0f,  0.0f,  0.0f,  0.0f, 18.0f},
+			{32.0f, 18.0f, 32.0f,  0.0f, 31.0f,  0.0f,
+					31.0f, 17.0f, 16.0f, 17.0f, 16.0f, 18.0f}
+	};
+
 	/** The outlines of all of the platforms */
 	private static final float[][] PLATFORMS = {
-												//   x1     y1  x2    y2     x3   y3    x4    y4
-												//{ 1.0f, 3.0f, 3.0f, 3.0f, 3.0f, 2.5f, 1.0f, 2.5f},
-												{ 1.0f, 2.0f, 3.0f, 2.0f, 3.0f, 1.5f, 1.0f, 1.5f},
-												//{ 6.0f, 4.0f, 9.0f, 4.0f, 9.0f, 2.5f, 6.0f, 2.5f},
-												//{23.0f, 4.0f,31.0f, 4.0f,31.0f, 2.5f,23.0f, 2.5f},
-												//{1.0f, 14.0f,6.0f, 24.0f,31.0f, 12.5f,26.0f, 11.5f},
-												//{26.0f, 5.5f,28.0f, 5.5f,28.0f, 5.0f,26.0f, 5.0f},
-												//{29.0f, 7.0f,31.0f, 7.0f,31.0f, 6.5f,29.0f, 6.5f},
-												//{24.0f, 8.5f,27.0f, 8.5f,27.0f, 8.0f,24.0f, 8.0f},
-												//{29.0f,10.0f,31.0f,10.0f,31.0f, 9.5f,29.0f, 9.5f},
-												//{23.0f,11.5f,27.0f,11.5f,27.0f,11.0f,23.0f,11.0f},
-												//{19.0f,12.5f,23.0f,12.5f,23.0f,12.0f,19.0f,12.0f},
-												//{ 1.0f,12.5f, 7.0f,12.5f, 7.0f,12.0f, 1.0f,12.0f}
-												{ 1.0f,8.5f, 23.0f,8.5f, 23.0f,8.0f, 1.0f,8.0f},
-												//{ 1.0f,10.5f, 7.0f,10.5f, 7.0f,10.0f, 1.0f,10.0f},
-												//{ 23.0f,10.5f, 31.0f,10.5f, 31.0f,10.0f, 23.0f,10.0f},
-											   };
+			//   x1     y1  x2    y2     x3   y3    x4    y4
+			//{ 1.0f, 3.0f, 3.0f, 3.0f, 3.0f, 2.5f, 1.0f, 2.5f},
+			{ 1.0f, 2.0f, 3.0f, 2.0f, 3.0f, 1.5f, 1.0f, 1.5f},
+			//{ 6.0f, 4.0f, 9.0f, 4.0f, 9.0f, 2.5f, 6.0f, 2.5f},
+			//{23.0f, 4.0f,31.0f, 4.0f,31.0f, 2.5f,23.0f, 2.5f},
+			//{1.0f, 14.0f,6.0f, 24.0f,31.0f, 12.5f,26.0f, 11.5f},
+			//{26.0f, 5.5f,28.0f, 5.5f,28.0f, 5.0f,26.0f, 5.0f},
+			//{29.0f, 7.0f,31.0f, 7.0f,31.0f, 6.5f,29.0f, 6.5f},
+			//{24.0f, 8.5f,27.0f, 8.5f,27.0f, 8.0f,24.0f, 8.0f},
+			//{29.0f,10.0f,31.0f,10.0f,31.0f, 9.5f,29.0f, 9.5f},
+			//{23.0f,11.5f,27.0f,11.5f,27.0f,11.0f,23.0f,11.0f},
+			//{19.0f,12.5f,23.0f,12.5f,23.0f,12.0f,19.0f,12.0f},
+			//{ 1.0f,12.5f, 7.0f,12.5f, 7.0f,12.0f, 1.0f,12.0f}
+			{ 1.0f,8.5f, 23.0f,8.5f, 23.0f,8.0f, 1.0f,8.0f},
+			//{ 1.0f,10.5f, 7.0f,10.5f, 7.0f,10.0f, 1.0f,10.0f},
+			//{ 23.0f,10.5f, 31.0f,10.5f, 31.0f,10.0f, 23.0f,10.0f},
+	};
 
 	// Other game objects
 	/** The goal door position */
@@ -207,8 +229,8 @@ public class PlatformController extends WorldController implements ContactListen
 	/** The initial position of the dude */
 	private static Vector2 DUDE_POS = new Vector2(3.5f, 5.0f);
 	/** The position of the rope bridge */
-	private static Vector2 BRIDGE_POS  = new Vector2(-20.0f, 1.8f);
-	/** The position of the vine */
+	private static Vector2 BRIDGE_POS  = new Vector2(24.0f, 1.8f);
+	/** The position of the vines */
 	private static ArrayList<Vector2> VINE_POS  = new ArrayList<Vector2>(
 			Arrays.asList(
 					new Vector2(18f, 17.1f),
@@ -220,7 +242,22 @@ public class PlatformController extends WorldController implements ContactListen
 					new Vector2(22f, 7.9f),
 					new Vector2(26f, 14f)
 
-					));
+			));
+	/** The position of the branches */
+	private static ArrayList<Vector2> BRANCH_POS  = new ArrayList<Vector2>(
+			Arrays.asList(
+					new Vector2(5f, 10.1f)
+			));
+	/** The length of the branches */
+	private static ArrayList<Float> BRANCH_LENGTH  = new ArrayList<Float>(
+			Arrays.asList(
+					5f, 4f
+			));
+	/** The stiff portions of the branches */
+	private static ArrayList<Float> BRANCH_STIFF_LENGTH  = new ArrayList<Float>(
+			Arrays.asList(
+					3f, 2f
+			));
 
 	// Physics objects for the game
 	/** Reference to the character avatar */
@@ -244,8 +281,9 @@ public class PlatformController extends WorldController implements ContactListen
 		setFailure(false);
 		world.setContactListener(this);
 		sensorFixtures = new ObjectSet<Fixture>();
+		loadLevel = "";
 	}
-	
+
 	/**
 	 * Resets the status of the game so that we can play again.
 	 *
@@ -264,7 +302,7 @@ public class PlatformController extends WorldController implements ContactListen
 		objects.clear();
 		addQueue.clear();
 		world.dispose();
-		
+
 		world = new World(gravity,false);
 		world.setContactListener(this);
 		setComplete(false);
@@ -276,49 +314,50 @@ public class PlatformController extends WorldController implements ContactListen
 	 * Lays out the game geography.
 	 */
 	private void populateLevel() {
-		// Add level goal
-		float dwidth  = goalTile.getRegionWidth()/scale.x;
-		float dheight = goalTile.getRegionHeight()/scale.y;
-		goalDoor = new BoxObstacle(GOAL_POS.x,GOAL_POS.y,dwidth,dheight);
-		goalDoor.setBodyType(BodyDef.BodyType.StaticBody);
-		goalDoor.setDensity(0.0f);
-		goalDoor.setFriction(0.0f);
-		goalDoor.setRestitution(0.0f);
-		goalDoor.setSensor(true);
-		goalDoor.setDrawScale(scale);
-		goalDoor.setTexture(goalTile);
-		goalDoor.setName("goal");
-		addObject(goalDoor);
+		if (loadLevel.equals("")) {
+			// Add level goal
+			float dwidth  = goalTile.getRegionWidth()/scale.x;
+			float dheight = goalTile.getRegionHeight()/scale.y;
+			goalDoor = new BoxObstacle(GOAL_POS.x,GOAL_POS.y,dwidth,dheight);
+			goalDoor.setBodyType(BodyDef.BodyType.StaticBody);
+			goalDoor.setDensity(0.0f);
+			goalDoor.setFriction(0.0f);
+			goalDoor.setRestitution(0.0f);
+			goalDoor.setSensor(true);
+			goalDoor.setDrawScale(scale);
+			goalDoor.setTexture(goalTile);
+			goalDoor.setName("goal");
+			addObject(goalDoor);
 
-	    String wname = "wall";
-	    for (int ii = 0; ii < WALLS.length; ii++) {
-	        PolygonObstacle obj;
-	    	obj = new PolygonObstacle(WALLS[ii], 0, 0);
-			obj.setBodyType(BodyDef.BodyType.StaticBody);
-			obj.setDensity(BASIC_DENSITY);
-			obj.setFriction(BASIC_FRICTION);
-			obj.setRestitution(BASIC_RESTITUTION);
-			obj.setDrawScale(scale);
-			obj.setTexture(earthTile);
-			obj.setName(wname+ii);
-			addObject(obj);
-	    }
-	    
-	    String pname = "platform";
-	    for (int ii = 0; ii < PLATFORMS.length; ii++) {
-	        PolygonObstacle obj;
-	    	obj = new PolygonObstacle(PLATFORMS[ii], 0, 0);
-			obj.setBodyType(BodyDef.BodyType.StaticBody);
-			obj.setDensity(BASIC_DENSITY);
-			obj.setFriction(BASIC_FRICTION);
-			obj.setRestitution(BASIC_RESTITUTION);
-			obj.setDrawScale(scale);
-			obj.setTexture(earthTile);
-			obj.setName(pname+ii);
-			addObject(obj);
-	    }
+			String wname = "wall";
+			for (int ii = 0; ii < WALLS.length; ii++) {
+				PolygonObstacle obj;
+				obj = new PolygonObstacle(WALLS[ii], 0, 0);
+				obj.setBodyType(BodyDef.BodyType.StaticBody);
+				obj.setDensity(BASIC_DENSITY);
+				obj.setFriction(BASIC_FRICTION);
+				obj.setRestitution(BASIC_RESTITUTION);
+				obj.setDrawScale(scale);
+				obj.setTexture(earthTile);
+				obj.setName(wname+ii);
+				addObject(obj);
+			}
 
-		// Create dude
+			String pname = "platform";
+			for (int ii = 0; ii < PLATFORMS.length; ii++) {
+				PolygonObstacle obj;
+				obj = new PolygonObstacle(PLATFORMS[ii], 0, 0);
+				obj.setBodyType(BodyDef.BodyType.StaticBody);
+				obj.setDensity(BASIC_DENSITY);
+				obj.setFriction(BASIC_FRICTION);
+				obj.setRestitution(BASIC_RESTITUTION);
+				obj.setDrawScale(scale);
+				obj.setTexture(earthTile);
+				obj.setName(pname+ii);
+				addObject(obj);
+			}
+
+			// Create dude
 //		dwidth  = avatarTexture.getRegionWidth()/scale.x;
 //		dheight = avatarTexture.getRegionHeight()/scale.y;
 //		avatar = new DudeModel(DUDE_POS.x, DUDE_POS.y, dwidth, dheight);
@@ -326,36 +365,79 @@ public class PlatformController extends WorldController implements ContactListen
 //		avatar.setTexture(avatarTexture);
 //		addObject(avatar);
 
-//		// Create rope bridge
-//		dwidth  = bridgeTexture.getRegionWidth()/scale.x;
-//		dheight = bridgeTexture.getRegionHeight()/scale.y;
-//		RopeBridge bridge = new RopeBridge(BRIDGE_POS.x, BRIDGE_POS.y, BRIDGE_WIDTH, dwidth, dheight);
-//		bridge.setTexture(bridgeTexture);
-//		bridge.setDrawScale(scale);
-//		addObject(bridge);
+			// Create rope bridge
+			dwidth  = bridgeTexture.getRegionWidth()/scale.x;
+			dheight = bridgeTexture.getRegionHeight()/scale.y;
+			RopeBridge bridge = new RopeBridge(BRIDGE_POS.x, BRIDGE_POS.y, BRIDGE_WIDTH, dwidth, dheight);
+			bridge.setTexture(bridgeTexture);
+			bridge.setDrawScale(scale);
+			addObject(bridge);
 
-		// Create sloth
-		sloth = new SlothModel(DOLL_POS.x, DOLL_POS.y);
-		sloth.setDrawScale(scale.x,scale.y);
-		sloth.setPartTextures(bodyTextures);
-		addObject(sloth);
-		sloth.activateSlothPhysics(world);
+//		// Create branch
+			FallingBranch trunk;
+			StiffBranch branch;
+			float trunklen, branchlen;
+			dwidth  = branchTexture.getRegionWidth()/scale.x;
+			dheight = branchTexture.getRegionHeight()/scale.y;
+			for (int b = 0; b < BRANCH_POS.size(); b++) {
+				branchlen = BRANCH_STIFF_LENGTH.get(b);
+				trunklen = BRANCH_LENGTH.get(b);
+				//branch = new Stiff=Branch(BRANCH_POS.get(b).x, BRANCH_POS.get(b).y, BRANCH_LENGTH.get(b), dwidth, dheight);
+				trunk = new FallingBranch(BRANCH_POS.get(b).x, BRANCH_POS.get(b).y,trunklen, dwidth, dheight, branchlen);
+				trunk.setTexture(branchTexture);
+				trunk.setDrawScale(scale);
+				addObject(trunk);
 
-		// Create vine
-		Vine s_vine;
-		for (int v = 0; v < VINE_POS.size(); v++) {
+				branch = new StiffBranch(BRANCH_POS.get(b).x, BRANCH_POS.get(b).y+(trunk.linksize*(trunklen-branchlen)),branchlen,dwidth,dheight);
+				branch.setTexture(branchTexture);
+				branch.setDrawScale(scale);
+				addObject(branch);
+			}
+
+			// Create sloth
+			sloth = new SlothModel(DOLL_POS.x, DOLL_POS.y);
+			sloth.setDrawScale(scale.x,scale.y);
+			sloth.setPartTextures();
+			addObject(sloth);
+			sloth.activateSlothPhysics(world);
+
+			// Create vine
+			Vine s_vine;
 			dwidth = vineTexture.getRegionWidth() / scale.x;
 			dheight = vineTexture.getRegionHeight() / scale.y;
-			s_vine = new Vine(VINE_POS.get(v).x, VINE_POS.get(v).y, VINE_LENGTH, dwidth, dheight);
-			s_vine.setTexture(vineTexture);
-			s_vine.setDrawScale(scale);
-			addObject(s_vine);
+			for (int v = 0; v < VINE_POS.size(); v++) {
+				System.out.println(dwidth);
+				System.out.println(dheight);
+				s_vine = new Vine(VINE_POS.get(v).x, VINE_POS.get(v).y, VINE_LENGTH, dwidth, dheight);
+				s_vine.setTexture(vineTexture);
+				s_vine.setDrawScale(scale);
+				addObject(s_vine);
+			}
+		} else {
+			JSONLoaderSaver jls = new JSONLoaderSaver();
+			jls.setScale(this.scale);
+			try {
+				LevelModel lm = jls.loadLevel(loadLevel);
+				if (lm == null) {
+					lm = new LevelModel();
+				}
+
+				for (Obstacle o : lm.getEntities()) {
+					addObject(o);
+					if (o instanceof SlothModel) {
+						sloth = (SlothModel) o;
+						sloth.activateSlothPhysics(world);
+					}
+				}
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
 	/**For drawing force lines*/
 	public static SlothModel getSloth(){return sloth;}
-	
+
 	/**
 	 * Returns whether to process the update loop
 	 *
@@ -371,12 +453,12 @@ public class PlatformController extends WorldController implements ContactListen
 		if (!super.preUpdate(dt)) {
 			return false;
 		}
-		
+
 //		if (!isFailure() && avatar.getY() < -1) {
 //			setFailure(true);
 //			return false;
 //		}
-		
+
 		return true;
 	}
 
@@ -415,16 +497,16 @@ public class PlatformController extends WorldController implements ContactListen
 
 		// Normal physics
 		sloth.doThePhysics();
-		
-	    // If we use sound, we must remember this.
-	    SoundController.getInstance().update();
+
+		// If we use sound, we must remember this.
+		SoundController.getInstance().update();
 
 	}
-	
+
 	/**
 	 * Callback method for the start of a collision
 	 *
-	 * This method is called when we first get a collision between two objects.  We use 
+	 * This method is called when we first get a collision between two objects.  We use
 	 * this method to test if it is the "right" kind of collision.  In particular, we
 	 * use it to test if we made it to the win door.
 	 *
@@ -441,7 +523,7 @@ public class PlatformController extends WorldController implements ContactListen
 
 		Object fd1 = fix1.getUserData();
 		Object fd2 = fix2.getUserData();
-		
+
 		try {
 			Obstacle bd1 = (Obstacle)body1.getUserData();
 			Obstacle bd2 = (Obstacle)body2.getUserData();
@@ -461,10 +543,10 @@ public class PlatformController extends WorldController implements ContactListen
 			if (fd2 != null && fd2.equals("sloth right hand") && bd1 != avatar && bd1 != sloth && (!sloth.badBodies().contains(bd1))&& (!(bd1 instanceof PolygonObstacle))) {
 				rightBody = body1;
 			}
-			
+
 			// Check for win condition
 			if ((bd1 == avatar   && bd2 == goalDoor) ||
-				(bd1 == goalDoor && bd2 == avatar)) {
+					(bd1 == goalDoor && bd2 == avatar)) {
 				setComplete(true);
 			}
 		} catch (Exception e) {
@@ -479,7 +561,7 @@ public class PlatformController extends WorldController implements ContactListen
 	 * This method is called when two objects cease to touch.  The main use of this method
 	 * is to determine when the characer is NOT on the ground.  This is how we prevent
 	 * double jumping.
-	 */ 
+	 */
 	public void endContact(Contact contact) {
 		Fixture fix1 = contact.getFixtureA();
 		Fixture fix2 = contact.getFixtureB();
@@ -504,7 +586,7 @@ public class PlatformController extends WorldController implements ContactListen
 		leftBody = null;
 		rightBody = null;
 	}
-		/** Unused ContactListener method */
+	/** Unused ContactListener method */
 	public void postSolve(Contact contact, ContactImpulse impulse) {}
 	/** Unused ContactListener method */
 	public void preSolve(Contact contact, Manifold oldManifold) {}

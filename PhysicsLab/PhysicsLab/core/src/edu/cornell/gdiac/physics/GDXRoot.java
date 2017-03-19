@@ -20,6 +20,7 @@ import com.badlogic.gdx.graphics.g2d.freetype.*;
 import com.badlogic.gdx.assets.loaders.*;
 import com.badlogic.gdx.assets.loaders.resolvers.*;
 
+import edu.cornell.gdiac.physics.leveleditor.LevelEditorController;
 import edu.cornell.gdiac.util.*;
 import edu.cornell.gdiac.physics.platform.*;
 
@@ -71,8 +72,9 @@ public class GDXRoot extends Game implements ScreenListener {
 		loading = new LoadingMode(canvas,manager,1);
 		
 		// Initialize the three game worlds
-		controllers = new WorldController[1];
+		controllers = new WorldController[2];
 		controllers[0] = new PlatformController();
+		controllers[1] = new LevelEditorController();
 		for(int ii = 0; ii < controllers.length; ii++) {
 			controllers[ii].preLoadContent(manager);
 		}
@@ -142,6 +144,15 @@ public class GDXRoot extends Game implements ScreenListener {
 			controllers[current].reset();
 			setScreen(controllers[current]);
 		} else if (exitCode == WorldController.EXIT_PREV) {
+			if (controllers[current] instanceof LevelEditorController) {
+				LevelEditorController lec = (LevelEditorController) controllers[current];
+				if (!lec.getTrialLevelName().equals("")) {
+					WorldController next = controllers[(current+1) % controllers.length];
+					if (next instanceof PlatformController) {
+						((PlatformController) next).setLoadLevel(lec.getTrialLevelName());
+					}
+				}
+			}
 			current = (current+controllers.length-1) % controllers.length;
 			controllers[current].reset();
 			setScreen(controllers[current]);

@@ -17,6 +17,7 @@ import com.badlogic.gdx.*;
 import com.badlogic.gdx.math.*;
 
 import edu.cornell.gdiac.util.*;
+import lombok.Getter;
 
 /**
  * Class for reading player input. 
@@ -33,6 +34,25 @@ public class InputController {
 
 	/** The singleton instance of the input controller */
 	private static InputController theController = null;
+	@Getter
+	private boolean rightClickPressed;
+	@Getter
+	private boolean sKeyPressed;
+	@Getter
+	private boolean nKeyPressed;
+	@Getter
+	private boolean lKeyPressed;
+	@Getter
+	private boolean leftKeyPressed;
+	@Getter
+	private boolean rightKeyPressed;
+	@Getter
+	private boolean enterKeyPressed;
+	@Getter
+	private boolean tKeyPressed;
+	@Getter
+	private boolean eKeyPressed;
+
 
 	/**
 	 * Return the singleton instance of the input controller
@@ -321,8 +341,8 @@ public class InputController {
 	private void readGamepad(Rectangle bounds, Vector2 scale) {
 		resetPressed = xbox.getStart();
 		exitPressed  = xbox.getBack();
-		nextPressed  = xbox.getRightTrigger()!=0;
-		prevPressed  = xbox.getLeftTrigger()!=0;
+		nextPressed  = xbox.getX();
+		prevPressed  = xbox.getB();
 		primePressed = xbox.getA();
 		debugPressed  = xbox.getY();
 
@@ -331,9 +351,7 @@ public class InputController {
 		leftGrabPressed = xbox.getLB();
 		//rightGrabPressed = xbox.getRightTrigger();
 		rightGrabPressed = xbox.getRB();
-		//System.out.print("InputController  ");
-		//System.out.print("left " + leftGrabPressed);
-		//System.out.println("  right " + rightGrabPressed);
+
 
 		//Get positions of joysticks/arms
 		leftHorizontal = xbox.getLeftX();
@@ -379,9 +397,9 @@ public class InputController {
 		resetPressed = (secondary && resetPressed) || (Gdx.input.isKeyPressed(Input.Keys.R));
 		debugPressed = (secondary && debugPressed) || (Gdx.input.isKeyPressed(Input.Keys.D));
 		primePressed = (secondary && primePressed) || (Gdx.input.isKeyPressed(Input.Keys.UP));
-		secondPressed = (secondary && secondPressed) || (Gdx.input.isKeyPressed(Input.Keys.SPACE));
+		secondPressed = (secondary && secondPressed) || (Gdx.input.isKeyPressed(Input.Buttons.RIGHT));
 		prevPressed = (secondary && prevPressed) || (Gdx.input.isKeyPressed(Input.Keys.P));
-		nextPressed = (secondary && nextPressed) || (Gdx.input.isKeyPressed(Input.Keys.N));
+		nextPressed = (secondary && nextPressed) ;//(Gdx.input.isKeyPressed(Input.Keys.N));
 		exitPressed  = (secondary && exitPressed) || (Gdx.input.isKeyPressed(Input.Keys.ESCAPE));
 
 		// Directional controls
@@ -403,6 +421,15 @@ public class InputController {
 
 		// Mouse results
 		tertiaryPressed = Gdx.input.isButtonPressed(Input.Buttons.LEFT);
+		rightClickPressed = Gdx.input.isButtonPressed(Input.Buttons.RIGHT);
+		sKeyPressed =  Gdx.input.isKeyPressed(Input.Keys.S);
+		nKeyPressed =  Gdx.input.isKeyPressed(Input.Keys.N);
+		lKeyPressed =  Gdx.input.isKeyPressed(Input.Keys.L);
+		eKeyPressed =  Gdx.input.isKeyPressed(Input.Keys.E);
+		leftKeyPressed =  Gdx.input.isKeyPressed(Input.Keys.LEFT);
+		rightKeyPressed =  Gdx.input.isKeyPressed(Input.Keys.RIGHT);
+		enterKeyPressed =  Gdx.input.isKeyPressed(Input.Keys.ENTER);
+		tKeyPressed =  Gdx.input.isKeyPressed(Input.Keys.T);
 		crosshair.set(Gdx.input.getX(), Gdx.input.getY());
 		crosshair.scl(1/scale.x,-1/scale.y);
 		crosshair.y += bounds.height;

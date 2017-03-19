@@ -37,7 +37,7 @@ public class RopeBridge extends ComplexObstacle {
 	/** The radius of each anchor pin */
 	private static final float BRIDGE_PIN_RADIUS = 0.1f;
 	/** The density of each plank in the bridge */
-	private static final float BASIC_DENSITY = 1.0f;
+	private static final float BASIC_DENSITY = 0.6f;
 
 	// Invisible anchor objects
 	/** The left side of the bridge */
@@ -174,25 +174,25 @@ public class RopeBridge extends ComplexObstacle {
 			//#endregion
 		}
 
-//		// Create the rightmost anchor
-//		Obstacle last = bodies.get(bodies.size-1);
-//
-//		pos = last.getPosition();
-//		pos.x += linksize / 2;
-//		finish = new WheelObstacle(pos.x,pos.y,BRIDGE_PIN_RADIUS);
-//		finish.setName(BRIDGE_PIN_NAME+1);
-//		finish.setDensity(BASIC_DENSITY);
-//		finish.setBodyType(BodyDef.BodyType.StaticBody);
-//		finish.activatePhysics(world);
-//
-//		// Final joint
-//		anchor2.x = 0;
-//		jointDef.bodyA = last.getBody();
-//		jointDef.bodyB = finish.getBody();
-//		jointDef.localAnchorA.set(anchor1);
-//		jointDef.localAnchorB.set(anchor2);
-//		joint = world.createJoint(jointDef);
-//		joints.add(joint);
+		// Create the rightmost anchor
+		Obstacle last = bodies.get(bodies.size-1);
+
+		pos = last.getPosition();
+		pos.x += linksize / 2;
+		finish = new WheelObstacle(pos.x,pos.y,BRIDGE_PIN_RADIUS);
+		finish.setName(BRIDGE_PIN_NAME+1);
+		finish.setDensity(BASIC_DENSITY);
+		finish.setBodyType(BodyDef.BodyType.StaticBody);
+		finish.activatePhysics(world);
+
+		// Final joint
+		anchor2.x = 0;
+		jointDef.bodyA = last.getBody();
+		jointDef.bodyB = finish.getBody();
+		jointDef.localAnchorA.set(anchor1);
+		jointDef.localAnchorB.set(anchor2);
+		joint = world.createJoint(jointDef);
+		joints.add(joint);
 				
 		return true;
 	}
