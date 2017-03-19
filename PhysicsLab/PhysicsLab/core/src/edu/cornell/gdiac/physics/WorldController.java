@@ -63,7 +63,6 @@ public abstract class WorldController implements Screen {
 	protected AssetState worldAssetState = AssetState.EMPTY;
 	/** Track all loaded assets (for unloading purposes) */
 	protected Array<String> assets;	
-	
 	// Pathnames to shared assets
 	/** File to texture for walls and platforms */
 	private static String EARTH_FILE = "shared/earthtile.png";
@@ -79,6 +78,8 @@ public abstract class WorldController implements Screen {
 	protected TextureRegion goalTile;
 	/** The font for giving messages to the player */
 	protected BitmapFont displayFont;
+
+	//Loading content functions
 
 	/**
 	 * Preloads the assets for this controller.
@@ -618,9 +619,7 @@ public abstract class WorldController implements Screen {
 			canvas.end();
 		}
 
-		//Draws the force lines
-		SlothModel sloth = PlatformController.getSloth();
-		sloth.drawForces();
+
 	}
 	
 	/**
