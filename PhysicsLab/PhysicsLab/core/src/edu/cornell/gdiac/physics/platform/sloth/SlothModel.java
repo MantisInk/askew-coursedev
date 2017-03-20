@@ -581,23 +581,13 @@ public class SlothModel extends ComplexObstacle  {
             if (texture != null) {
 
                 if (x == 1 || x == 4) {
-                    //System.out.println("Blue");
-                    //canvas.draw(texture,Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.x,getAngle(),1,1);
-                    //canvas.draw(part.getTexture(), Color.BLUE, 0, 0, getX() * drawScale.x, getY() * drawScale.y, getAngle(), 1, 1);
-                    //System.out.println("X"+x+""+getX());
-                    //canvas.draw(texture, Color.BLUE, texture.getRegionWidth() / 2.0f, texture.getRegionHeight() / 2.0f, getX() * drawScale.x, getY() * drawScale.x, getAngle(), 1, 1);
                     part.draw(canvas, Color.WHITE);
                 } else if (x == 2 || x == 3) {
                     part.draw(canvas, Color.BLACK);
-                    //System.out.println("Red");
-                    //canvas.draw(part.getTexture(), Color.RED, texture.getRegionWidth() / 2.0f, texture.getRegionHeight() / 2.0f, getX() * drawScale.x, getY() * drawScale.x, getAngle(), 1, 1);
                 } else {
                     part.draw(canvas);
                 }
-                    //System.out.println("RABABABABA");
-                    //canvas.draw(part.getTexture(), Color.WHITE, texture.getRegionWidth() / 2.0f, texture.getRegionHeight() / 2.0f, getX() * drawScale.x, getY() * drawScale.x, getAngle(), 1, 1);
-                }
-//            }
+            }
         }
 
     }
