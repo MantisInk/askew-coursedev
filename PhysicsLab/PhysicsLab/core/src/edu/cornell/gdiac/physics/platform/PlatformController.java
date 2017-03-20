@@ -78,6 +78,7 @@ public class PlatformController extends WorldController implements ContactListen
 
 	/** Texture assets for the body parts */
 	private TextureRegion[] bodyTextures;
+
 	//private static Vector2 DOLL_POS = new Vector2( 2.5f,  6.0f);
 	//private static Vector2 DOLL_POS = new Vector2( 7.5f,  17.0f);
 	private static Vector2 DOLL_POS = new Vector2( 4.0f,  7.8f);
@@ -85,6 +86,7 @@ public class PlatformController extends WorldController implements ContactListen
 	//10f, 17.1f
 
 	//5.5f, 7.9f
+
 
 	/** Track asset loading from all instances and subclasses */
 	private AssetState ragdollAssetState = AssetState.EMPTY;
@@ -202,8 +204,6 @@ public class PlatformController extends WorldController implements ContactListen
 	private static final float  BASIC_RESTITUTION = 0.1f;
 	/** The width of the rope bridge */
 	private static final float  BRIDGE_WIDTH = 6.0f;
-	/** The length of the vine */
-	private static final float VINE_LENGTH = 5f;
 
 	// Since these appear only once, we do not care about the magic numbers.
 	// In an actual game, this information would go in a data file.
@@ -249,11 +249,11 @@ public class PlatformController extends WorldController implements ContactListen
 			//   x1     y1  x2    y2     x3   y3    x4    y4
 			//{ 1.0f, 3.0f, 3.0f, 3.0f, 3.0f, 2.5f, 1.0f, 2.5f},
 			//{ 1.0f, 1.0f, 3.0f, 1.0f, 3.0f, 0.5f, 1.0f, 0.5f},
-			{ 1.0f, 1.0f, 14.0f, 1.0f, 14.0f, 0.5f, 1.0f, 0.5f},
+			{ 1.0f, 1.0f, 13.5f, 1.0f, 13.5f, 0.5f, 1.0f, 0.5f},
 			//{ 7.0f, 1.0f, 13.0f, 1.0f, 13.0f, 0.5f, 7.0f, 0.5f},
 			//{ 6.0f, 4.0f, 9.0f, 4.0f, 9.0f, 2.5f, 6.0f, 2.5f},
 			{ 1.0f,8.5f, 21.0f,8.5f, 21.0f,8.0f, 1.0f,8.0f},
-			{ 8.0f,23.5f, 10.0f,23.5f, 29.0f,15.0f, 31.0f,15.0f},
+			{ 11.0f,23.5f, 13.0f,23.5f, 29.0f,15.0f, 31.0f,15.0f},
 			//{ 1.0f,10.5f, 7.0f,10.5f, 7.0f,10.0f, 1.0f,10.0f},
 			//{ 23.0f,10.5f, 31.0f,10.5f, 31.0f,10.0f, 23.0f,10.0f},
 	};
@@ -281,7 +281,7 @@ public class PlatformController extends WorldController implements ContactListen
 //					new Vector2(26f, 14f)
 
 					//new Vector2(18f, 17.1f),
-					new Vector2(10.0f, 19.5f),
+					new Vector2(9.8f, 21.5f),
 					//new Vector2(10f, 9.1f),
 					//new Vector2(1.5f, 7.9f),
 					new Vector2(6.5f, 7.9f),
@@ -289,6 +289,12 @@ public class PlatformController extends WorldController implements ContactListen
 					new Vector2(22f, 7.9f),
 					new Vector2(26f, 13.5f),
 					new Vector2(15.5f, 16.0f)
+
+			));
+	/** The lengths of the vines */
+	private static ArrayList<Float> VINE_LENGTH  = new ArrayList<Float>(
+			Arrays.asList(
+					6f, 5f, 5f, 5f, 5f, 5f
 
 			));
 	/** The position of the branches */
@@ -464,7 +470,7 @@ public class PlatformController extends WorldController implements ContactListen
 			for (int v = 0; v < VINE_POS.size(); v++) {
 				System.out.println(dwidth);
 				System.out.println(dheight);
-				s_vine = new Vine(VINE_POS.get(v).x, VINE_POS.get(v).y, VINE_LENGTH, dwidth, dheight);
+				s_vine = new Vine(VINE_POS.get(v).x, VINE_POS.get(v).y, VINE_LENGTH.get(v), dwidth, dheight);
 				s_vine.setTexture(vineTexture);
 				s_vine.setDrawScale(scale);
 				addObject(s_vine);
