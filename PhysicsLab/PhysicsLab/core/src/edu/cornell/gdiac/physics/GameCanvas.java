@@ -947,7 +947,8 @@ public class GameCanvas {
     	debugRender.setProjectionMatrix(global);
 		
     	debugRender.begin(ShapeRenderer.ShapeType.Line);
-    	active = DrawPass.DEBUG;
+
+    	//active = DrawPass.DEBUG;
     }
     
 	/**
@@ -998,7 +999,11 @@ public class GameCanvas {
 	public void drawTextStandard(String text, float x, float y) {
 		drawText(text,font,x,y);
 	}
-    
+
+	public void drawLine(float x, float y, float ex, float ey, Color c1, Color c2 ){
+
+		debugRender.line(x,y,ex,ey,c1,c2);
+	}
     /**
      * Draws the outline of the given shape in the specified color
      *
