@@ -247,11 +247,11 @@ public class PlatformController extends WorldController implements ContactListen
 			//   x1     y1  x2    y2     x3   y3    x4    y4
 			//{ 1.0f, 3.0f, 3.0f, 3.0f, 3.0f, 2.5f, 1.0f, 2.5f},
 			//{ 1.0f, 1.0f, 3.0f, 1.0f, 3.0f, 0.5f, 1.0f, 0.5f},
-			{ 1.0f, 1.0f, 14.0f, 1.0f, 14.0f, 0.5f, 1.0f, 0.5f},
+			{ 1.0f, 1.0f, 13.5f, 1.0f, 13.5f, 0.5f, 1.0f, 0.5f},
 			//{ 7.0f, 1.0f, 13.0f, 1.0f, 13.0f, 0.5f, 7.0f, 0.5f},
 			//{ 6.0f, 4.0f, 9.0f, 4.0f, 9.0f, 2.5f, 6.0f, 2.5f},
 			{ 1.0f,8.5f, 21.0f,8.5f, 21.0f,8.0f, 1.0f,8.0f},
-			{ 8.0f,23.5f, 10.0f,23.5f, 29.0f,15.0f, 31.0f,15.0f},
+			{ 11.0f,23.5f, 13.0f,23.5f, 29.0f,15.0f, 31.0f,15.0f},
 			//{ 1.0f,10.5f, 7.0f,10.5f, 7.0f,10.0f, 1.0f,10.0f},
 			//{ 23.0f,10.5f, 31.0f,10.5f, 31.0f,10.0f, 23.0f,10.0f},
 	};
@@ -279,7 +279,7 @@ public class PlatformController extends WorldController implements ContactListen
 //					new Vector2(26f, 14f)
 
 					//new Vector2(18f, 17.1f),
-					new Vector2(10.0f, 19.5f),
+					new Vector2(9.8f, 21.5f),
 					//new Vector2(10f, 9.1f),
 					//new Vector2(1.5f, 7.9f),
 					new Vector2(6.5f, 7.9f),
@@ -292,7 +292,7 @@ public class PlatformController extends WorldController implements ContactListen
 	/** The lengths of the vines */
 	private static ArrayList<Float> VINE_LENGTH  = new ArrayList<Float>(
 			Arrays.asList(
-					5f, 5f, 5f, 5f, 5f, 5f
+					6f, 5f, 5f, 5f, 5f, 5f
 
 			));
 	/** The position of the branches */
