@@ -197,8 +197,6 @@ public class PlatformController extends WorldController implements ContactListen
 	private static final float  BASIC_RESTITUTION = 0.1f;
 	/** The width of the rope bridge */
 	private static final float  BRIDGE_WIDTH = 6.0f;
-	/** The length of the vine */
-	private static final float VINE_LENGTH = 5f;
 
 	// Since these appear only once, we do not care about the magic numbers.
 	// In an actual game, this information would go in a data file.
@@ -250,6 +248,12 @@ public class PlatformController extends WorldController implements ContactListen
 					new Vector2(14f, 7.9f),
 					new Vector2(22f, 7.9f),
 					new Vector2(26f, 14f)
+
+			));
+	/** The lengths of the vines */
+	private static ArrayList<Float> VINE_LENGTH  = new ArrayList<Float>(
+			Arrays.asList(
+					5f, 5f, 5f, 5f, 5f, 5f
 
 			));
 	/** The position of the branches */
@@ -423,7 +427,7 @@ public class PlatformController extends WorldController implements ContactListen
 			for (int v = 0; v < VINE_POS.size(); v++) {
 				System.out.println(dwidth);
 				System.out.println(dheight);
-				s_vine = new Vine(VINE_POS.get(v).x, VINE_POS.get(v).y, VINE_LENGTH, dwidth, dheight);
+				s_vine = new Vine(VINE_POS.get(v).x, VINE_POS.get(v).y, VINE_LENGTH.get(v), dwidth, dheight);
 				s_vine.setTexture(vineTexture);
 				s_vine.setDrawScale(scale);
 				addObject(s_vine);
