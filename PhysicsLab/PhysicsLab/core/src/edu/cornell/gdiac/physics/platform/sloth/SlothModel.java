@@ -24,12 +24,12 @@ import lombok.Getter;
 public class SlothModel extends ComplexObstacle  {
 
     /** Constants for tuning sloth behaviour */
-    private static final float HAND_DENSITY = 4.0f;
-    private static final float ARM_DENSITY = 0.1f;
+    private static final float HAND_DENSITY = 10.0f;
+    private static final float ARM_DENSITY = 1.1f;
     private static final float HEAD_DENSITY = 1.0f;
-    private static final float BODY_DENSITY = 0.1f;
+    private static final float BODY_DENSITY = 5.0f;
     private static final float TWO_FREE_FORCE_MULTIPLIER = 5.0f;
-    private static final float TORQUE = 6.0f;
+    private static final float TORQUE = 15.0f;
     private static final boolean BODY_FIXED_ROTATION = true;
     private static final boolean HANDS_FIXED_ROTATION = true;
     private static final float GRAVITY_SCALE = 0.7f;
@@ -107,7 +107,7 @@ public class SlothModel extends ComplexObstacle  {
     }
 
     // Layout of ragdoll
-    //  |0|______0______|0| LOL WTF
+    //  |0|______0______|0|
     //
     /** Dist between arms? */
 
@@ -123,10 +123,6 @@ public class SlothModel extends ComplexObstacle  {
 
     /** Texture assets for the body parts */
     private transient TextureRegion[] partTextures;
-
-    private static final String[] RAGDOLL_FILES = { "ragdoll/trevorhand.png", "ragdoll/ProfWhite.png",
-            "ragdoll/trevorarm.png",  "ragdoll/dude.png",
-            "ragdoll/tux_thigh.png", "ragdoll/tux_shin.png" };
 
     /** Cache vector for organizing body parts */
     private transient Vector2 partCache = new Vector2();
@@ -258,6 +254,7 @@ public class SlothModel extends ComplexObstacle  {
         }
         else{
             body = new BoxObstacle(partCache.x, partCache.y, dwidth, dheight);
+            body.setFriction(.4f);
         }
         body.setDrawScale(drawScale);
         body.setTexture(texture);
@@ -338,8 +335,9 @@ public class SlothModel extends ComplexObstacle  {
 //    }
 
     //theta is in radians between 0 and pi
-    public float calculateTorque(float deltaTheta){
-        return (float) Math.max(-1.0f,Math.min(1.0f, 1.2 * Math.sin(deltaTheta)));
+    public float calculateTorque(float deltaTheta, float omega){
+        //return (float) Math.max(-1.0f,Math.min(1.0f, 1.2 * Math.sin(deltaTheta)));
+        return (float)((10.0 / (1 + Math.exp(omega + (deltaTheta *4)))) - 5);
     }
 
     /**
@@ -356,41 +354,57 @@ public class SlothModel extends ComplexObstacle  {
         //TODO CALCULATE TORQUE
         // Apply forces
         float dLTheta = 0f;
-        float dRTheta = 0f;
-
-
-        float lcTheta = (float)Math.atan2(leftVert,leftHori);
-        float lTheta = leftArm.getAngle();
-        lTheta = -(lTheta+PI)%(2*PI)-PI;
+        float lcTheta = (float)Math.atan2(leftVert,leftHori); // correct
+        float lTheta = (-leftArm.getAngle());
+        lTheta = ((lTheta%(2*PI)) + (2*PI)) % (2*PI) - PI; //ltheta is correct
+        float lav = leftArm.getAngularVelocity() * 2;
         float lLength = (float)Math.sqrt((leftVert * leftVert) + (leftHori * leftHori));
-        dLTheta = (float)(lTheta - lcTheta);
-        dLTheta = (dLTheta+PI)%(2*PI)-PI;
+        dLTheta = (float)(lcTheta - lTheta);
+        if(dLTheta > PI){ dLTheta -= (PI + PI);}
+        if(dLTheta < -PI){ dLTheta += (PI + PI);}
 
+
+        float dRTheta = 0f;
         float rcTheta = (float)Math.atan2(rightVert,rightHori);
-        float rTheta = rightArm.getAngle();
-        rTheta = -(rTheta+PI)%(2*PI)-PI;
+        float rTheta = -rightArm.getAngle() + PI;
+        rTheta = ((rTheta%(2*PI)) + (2*PI)) % (2*PI) - PI;
+        float rav = rightArm.getAngularVelocity() * 2;
         float rLength = (float)Math.sqrt((rightVert * rightVert) + (rightHori * rightHori));
-        dRTheta = (float)(rTheta - rcTheta);
-        dRTheta = (dRTheta+PI)%(2*PI)-PI;
+        dRTheta = (float)(rcTheta - rTheta);
+        if(dRTheta > PI){ dRTheta -= (PI + PI);}
+        if(dRTheta < -PI){ dRTheta += (PI + PI);}
 
-        float forceLeft = calculateTorque(-dLTheta);
+        float forceLeft =  calculateTorque(dLTheta,lav/20.0f);
         float lx = (float) (TORQUE * -Math.sin(lTheta) * forceLeft * lLength);
         float ly = (float) (TORQUE * -Math.cos(lTheta) * forceLeft * lLength);
         forceL.set(lx,ly);
 
-        float forceRight = calculateTorque(-dRTheta);
+        float forceRight = calculateTorque(dRTheta,rav/20.0f);
         float rx = (float) (TORQUE * -Math.sin(rTheta) * forceRight * rLength);
         float ry = (float) (TORQUE * -Math.cos(rTheta) * forceRight * rLength);
         forceR.set(rx,ry);
 
-        if (isRightGrab() && !isLeftGrab())
-        leftHand
-                .getBody()
-                .applyForce(lx, ly, leftHand.getX(), leftHand.getY(), true);
-        if (!isRightGrab() && isLeftGrab())
-        rightHand
-                .getBody()
-                .applyForce(rx, ry, rightHand.getX(), rightHand.getY(), true);
+//        if (isRightGrab() && !isLeftGrab())
+//        leftHand
+//                .getBody()
+//                .applyForce(lx, ly, leftHand.getX(), leftHand.getY(), true);
+//        if (!isRightGrab() && isLeftGrab())
+//        rightHand
+//                .getBody()
+//                .applyForce(rx, ry, rightHand.getX(), rightHand.getY(), true);
+
+        //leftArm.setAngle(lcTheta);
+//        if (isRightGrab() && !isLeftGrab())
+        float ltorque = TORQUE * forceLeft * lLength;
+        float rtorque = TORQUE * forceRight * rLength;
+        System.out.println(forceLeft);
+            leftArm
+                    .getBody()
+                    .applyTorque(ltorque,true);
+//        //if (!isRightGrab() && isLeftGrab())
+            rightArm
+                    .getBody()
+                    .applyTorque(rtorque, true);
 
         //Draw the lines for the forces
 
