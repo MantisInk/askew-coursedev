@@ -39,7 +39,7 @@ public class FallingBranch extends ComplexObstacle {
 	/** The density of each plank in the bridge */
 	private static final float BASIC_DENSITY = 13f;
 
-	private int ind;
+	private int nLinks;
 	private float x,y,stiffLen,width,height;
 
 	// Invisible anchor objects
@@ -100,7 +100,7 @@ public class FallingBranch extends ComplexObstacle {
 		norm.nor();
 
 		// If too small, only make one plank.
-		int nLinks = (int)(length / linksize);
+		nLinks = (int)(length / linksize);
 		if (nLinks <= 1) {
 			nLinks = 1;
 			linksize = length;
@@ -110,8 +110,6 @@ public class FallingBranch extends ComplexObstacle {
 			spacing /= (nLinks-1);
 		}
 
-//		System.out.println("stiffLen "+stiffLen);
-		ind = 0;
 		// Create the planks
 		planksize.y = linksize;
 		Vector2 pos = new Vector2();
@@ -124,7 +122,6 @@ public class FallingBranch extends ComplexObstacle {
 			plank.setName(PLANK_NAME+ii);
 			plank.setDensity(BASIC_DENSITY);
 			bodies.add(plank);
-			ind = ii;
 		}
 	}
 
@@ -219,6 +216,10 @@ public class FallingBranch extends ComplexObstacle {
 
 		return true;
 	}
+
+	public int getnLinks() {return nLinks;}
+
+	public float getLinksize() {return linksize;}
 
 	/**
 	 * Destroys the physics Body(s) of this object if applicable,
