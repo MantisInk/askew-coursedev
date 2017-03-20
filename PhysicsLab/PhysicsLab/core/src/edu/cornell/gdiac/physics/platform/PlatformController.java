@@ -385,7 +385,7 @@ public class PlatformController extends WorldController implements ContactListen
 			addObject(bridge);
 
 //		// Create branch
-			FallingBranch trunk;
+			Trunk trunk;
 			StiffBranch branch;
 			float trunklen, branchlen, branch_y, spacing, nLinks, linksize;
 			dwidth  = branchTexture.getRegionWidth()/scale.x;
@@ -394,7 +394,7 @@ public class PlatformController extends WorldController implements ContactListen
 				branchlen = BRANCH_STIFF_LENGTH.get(b);
 				trunklen = BRANCH_LENGTH.get(b);
 				//branch = new Stiff=Branch(BRANCH_POS.get(b).x, BRANCH_POS.get(b).y, BRANCH_LENGTH.get(b), dwidth, dheight);
-				trunk = new FallingBranch(BRANCH_POS.get(b).x, BRANCH_POS.get(b).y,trunklen, dwidth, dheight, branchlen);
+				trunk = new Trunk(BRANCH_POS.get(b).x, BRANCH_POS.get(b).y,trunklen, dwidth, dheight, branchlen);
 				trunk.setTexture(branchTexture);
 				trunk.setDrawScale(scale);
 				addObject(trunk);

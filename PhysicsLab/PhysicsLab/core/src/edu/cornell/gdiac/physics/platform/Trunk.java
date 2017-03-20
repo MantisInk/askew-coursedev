@@ -27,7 +27,7 @@ import edu.cornell.gdiac.physics.obstacle.*;
  * Note that this class returns to static loading.  That is because there are
  * no other subclasses that we might loop through.
  */
-public class FallingBranch extends ComplexObstacle {
+public class Trunk extends ComplexObstacle {
 	/** The debug name for the entire obstacle */
 	private static final String VINE_NAME = "plank";
 	/** The debug name for each plank */
@@ -71,7 +71,7 @@ public class FallingBranch extends ComplexObstacle {
 	 * @param lwidth	The plank length
 	 * @param lheight	The bridge thickness
 	 */
-	public FallingBranch(float x, float y, float width, float lwidth, float lheight, float stiffLen) {
+	public Trunk(float x, float y, float width, float lwidth, float lheight, float stiffLen) {
 		this(x, y, x, y+width, lwidth, lheight, stiffLen);
 	}
 
@@ -85,7 +85,7 @@ public class FallingBranch extends ComplexObstacle {
 	 * @param lwidth	The plank length
 	 * @param lheight	The bridge thickness
 	 */
-	public FallingBranch(float x0, float y0, float x1, float y1, float lwidth, float lheight, float stiffLen) {
+	public Trunk(float x0, float y0, float x1, float y1, float lwidth, float lheight, float stiffLen) {
 		super(x0,y0);
 		this.x = x0;	this.y = y0;	this.stiffLen = stiffLen;	this.width = lwidth; this.height = lheight;
 		setName(VINE_NAME);
