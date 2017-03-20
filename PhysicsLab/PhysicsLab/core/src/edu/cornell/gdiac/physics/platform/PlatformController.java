@@ -25,6 +25,7 @@ import edu.cornell.gdiac.physics.platform.sloth.SlothModel;
 import edu.cornell.gdiac.util.*;
 import edu.cornell.gdiac.physics.*;
 import edu.cornell.gdiac.physics.obstacle.*;
+import lombok.Getter;
 import lombok.Setter;
 
 import java.io.FileNotFoundException;
@@ -90,6 +91,10 @@ public class PlatformController extends WorldController implements ContactListen
 
 	/** Track asset loading from all instances and subclasses */
 	private AssetState platformAssetState = AssetState.EMPTY;
+
+	/** Track asset loading from all instances and subclasses */
+	@Getter
+	private static boolean playerIsReady = false;
 
 	@Setter
 	private String loadLevel;
@@ -178,6 +183,8 @@ public class PlatformController extends WorldController implements ContactListen
 		super.loadContent(manager);
 		platformAssetState = AssetState.COMPLETE;
 	}
+
+	public static boolean getPlayerIsReady (){return playerIsReady;}
 
 	// Physics constants for initialization
 	/** The new heavier gravity for this world (so it is not so floaty) */
@@ -292,6 +299,7 @@ public class PlatformController extends WorldController implements ContactListen
 	 * This method disposes of the world and creates a new one.
 	 */
 	public void reset() {
+		playerIsReady = false;
 		this.clearGrab();
 		Vector2 gravity = new Vector2(world.getGravity() );
 
@@ -310,6 +318,7 @@ public class PlatformController extends WorldController implements ContactListen
 		setComplete(false);
 		setFailure(false);
 		populateLevel();
+
 	}
 
 	/**
@@ -460,12 +469,61 @@ public class PlatformController extends WorldController implements ContactListen
 			return false;
 		}
 
+		//Checks to see if player has selected the button on the starting screen
+		if(!playerIsReady){
+			if(checkReady()){
+				playerIsReady = true;
+			}
+			else{
+				return false;
+			}
+		}
+		//System.out.println("Boop");
+
+		//Put here?
+
 //		if (!isFailure() && avatar.getY() < -1) {
 //			setFailure(true);
 //			return false;
 //		}
 
 		return true;
+	}
+
+	/**
+	 * Checks to see if the player has pressed any button. This is used to
+	 * indicate that the player is ready to start the level.
+	 *
+	 * @return whether the player has pressed a button
+	 */
+	public boolean checkReady(){
+		InputController	the_controller = InputController.getInstance();
+
+		//If the player pressed "A"
+		if(the_controller.didPrimary()){
+			return true;
+		}
+		//If the player pressed "X"
+//		else if(the_controller.didAdvance()){
+//			return true;
+//		}
+		//If the player pressed "B"
+		else if(the_controller.didRetreat()){
+			return true;
+		}
+		//If the player pressed "Y"
+//		else if(the_controller.didDebug()){
+//			return true;
+//		}
+		else if(the_controller.getRightGrab()){
+			return true;
+		}
+		else if(the_controller.getLeftGrab()){
+			return true;
+		}
+
+		return false;
+		//return true;
 	}
 
 	/**
@@ -521,7 +579,8 @@ public class PlatformController extends WorldController implements ContactListen
 
 		//Draws the force lines
 		SlothModel sloth = PlatformController.getSloth();
-		sloth.drawForces();
+		//sloth.drawForces();
+		sloth.drawForces(canvas.getWidth()/2,canvas.getHeight()/2);
 
 	}
 

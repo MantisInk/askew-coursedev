@@ -779,6 +779,17 @@ public abstract class SimpleObstacle extends Obstacle {
 			canvas.draw(texture,Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.x,getAngle(),1,1);
 		}
 	}
+
+	/**
+	 * Draws the physics object with a tint
+	 *
+	 * @param canvas Drawing context
+	 */
+	public void draw(GameCanvas canvas, Color tint) {
+		if (texture != null) {
+			canvas.draw(texture,tint,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.x,getAngle(),1,1);
+		}
+	}
 	
 	/**
 	 * Returns the Box2D body for this object.
