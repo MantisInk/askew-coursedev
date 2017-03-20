@@ -40,7 +40,7 @@ public class Vine extends ComplexObstacle {
 	/** The radius of each anchor pin */
 	private static final float BRIDGE_PIN_RADIUS = 0.1f;
 	/** The density of each plank in the bridge */
-	private static final float BASIC_DENSITY = 1.0f;
+	private static final float BASIC_DENSITY = 2.0f;
 
 	// Invisible anchor objects
 	/** The left side of the bridge */
