@@ -526,6 +526,23 @@ public class PlatformController extends WorldController implements ContactListen
 		//return true;
 	}
 
+	public void printHelp(){
+		//Display waiting text if not ready
+		//if (!PlatformController.getPlayerIsReady()) {//Boop
+			displayFont.setColor(Color.YELLOW);
+//			canvas.begin(); // DO NOT SCALE
+			//canvas.drawTextCentered("Hold R at the start!", displayFont, 0.0f);
+			//canvas.drawText(String text, BitmapFont font, float x, float y) {
+			SlothModel sloth = getSloth();
+//			float x_pos = -1 * sloth.getBody().getPosition().x * sloth.getDrawScale().x;
+//			float y_pos = -1 * sloth.getBody().getPosition().y * sloth.getDrawScale().y;
+			float x_pos = sloth.getBody().getPosition().x;
+			float y_pos = sloth.getBody().getPosition().y;
+			canvas.drawText("Hold R \n to start!", displayFont, 0.0f, 500.0f);
+//			canvas.end();
+		//}
+	}
+
 	/**
 	 * The core gameplay loop of this world.
 	 *
@@ -572,9 +589,13 @@ public class PlatformController extends WorldController implements ContactListen
 				, -1 * sloth.getBody().getPosition().y * sloth.getDrawScale().y);
 		camTrans.translate(canvas.getWidth()/2,canvas.getHeight()/2);
 		canvas.begin(camTrans);
+
 		for(Obstacle obj : objects) {
 			obj.draw(canvas);
 		}
+
+		if (!playerIsReady)
+			printHelp();
 		canvas.end();
 
 		//Draws the force lines
