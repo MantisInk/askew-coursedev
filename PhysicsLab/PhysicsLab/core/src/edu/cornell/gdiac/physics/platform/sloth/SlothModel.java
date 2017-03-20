@@ -398,7 +398,9 @@ public class SlothModel extends ComplexObstacle  {
         float right_y = -rightVert*TWO_FREE_FORCE_MULTIPLIER;
     }
 
-    public void drawForces(){
+    //public void drawForces(){
+    public void drawForces(float displace_x, float displace_y){
+    //public void drawForces(float x_push, float y_push){
         Obstacle right = bodies.get(PART_RIGHT_HAND);
         Obstacle left = bodies.get(PART_LEFT_HAND);
 
@@ -411,12 +413,28 @@ public class SlothModel extends ComplexObstacle  {
         if (shaper == null) shaper = new ShapeRenderer();
         shaper.setProjectionMatrix(camera.combined);
 
+        //float left_x = left.getX()*drawScale.x;
+        float left_x = left.getX();
+        //float left_y = left.getY() * drawScale.y;
+        float left_y = left.getY();
+        //float right_x = right.getX()*drawScale.x;
+        float right_x = right.getX();
+        //float right_y = right.getY() * drawScale.y;
+        float right_y = right.getY();
+
+        //float displace_x = WorldController.getCanvas().getWidth()/2; //1 * bodies.get(PART_BODY).getPosition().x * getDrawScale().x;
+        //float displace_y = WorldController.getCanvas().getHeight()/2; //1 * bodies.get(PART_BODY).getPosition().y * getDrawScale().y;
+
+        //float displace_x = x_push*getDrawScale().x;
+        //float displace_y = y_push*getDrawScale().y;
+
         shaper.begin(ShapeRenderer.ShapeType.Line);
         shaper.setColor(Color.BLUE);
-
-        shaper.line(left.getX()*drawScale.x,left.getY() * drawScale.y, left.getX()*drawScale.x+(forceL.x*20),left.getY() * drawScale.y+(forceL.y*20));
+        //shaper.line(left.getX()*drawScale.x,left.getY() * drawScale.y, left.getX()*drawScale.x+(forceL.x*20),left.getY() * drawScale.y+(forceL.y*20));
+        shaper.line(left_x+displace_x,left_y+displace_y, left_x+displace_x+(forceL.x*20),left_y+displace_y+(forceL.y*20));
         shaper.setColor(Color.RED);
-        shaper.line(right.getX()*drawScale.x,right.getY() * drawScale.y, right.getX()*drawScale.x+(forceR.x*20),right.getY() * drawScale.y+(forceR.y*20));
+        //shaper.line(right.getX()*drawScale.x,right.getY() * drawScale.y, right.getX()*drawScale.x+(forceR.x*20),right.getY() * drawScale.y+(forceR.y*20));
+        shaper.line(right_x+displace_x,right_y+displace_y, right_x+displace_x+(forceR.x*20),right_y+displace_y+(forceR.y*20));
         shaper.end();
         Gdx.gl.glLineWidth(3);
 
@@ -561,34 +579,29 @@ public class SlothModel extends ComplexObstacle  {
     }
 
     public void draw(GameCanvas canvas){
-
-        /*
-        private static final int PART_RIGHT_ARM = 1;
-        private static final int PART_LEFT_ARM = 2;
-        private static final int PART_LEFT_HAND = 3;
-        private static final int PART_RIGHT_HAND = 4;
-        */
-
-//        for(Obstacle body : bodies) {
-//            canvas.draw(((BoxObstacle) body).getTexture(), Color.WHITE, 0, 0, getX() * drawScale.x, getY() * drawScale.y, getAngle(), 1, 1);
-//        }
-
-        //for(Obstacle body : bodies) {
         for(int x=0;x<bodies.size;x++){
 
             SimpleObstacle part = (SimpleObstacle) bodies.get(x);
             TextureRegion texture = part.getTexture();
             if (texture != null) {
 
+                //If the body parts are from the right limb
                 if (x == 1 || x == 4) {
-                    part.draw(canvas, Color.WHITE);
-                } else if (x == 2 || x == 3) {
-                    part.draw(canvas, Color.BLACK);
-                } else {
+                    part.draw(canvas, Color.MAGENTA);
+                }
+                //If the body parts are from the left limb
+                else if (x == 2 || x == 3) {
+                    part.draw(canvas, Color.CYAN);
+                }
+                //If the body parts are not limbs
+                else {
                     part.draw(canvas);
                 }
             }
         }
+
+        //Commented out because the vine images disappear when this is used here?
+        //drawForces();
 
     }
 }

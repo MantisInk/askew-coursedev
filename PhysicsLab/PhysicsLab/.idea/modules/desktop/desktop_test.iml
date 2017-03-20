@@ -7,7 +7,7 @@
       <sourceFolder url="file://$MODULE_DIR$/../../../desktop/src/test/java" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/../../../desktop/src/test/resources" type="java-test-resource" />
     </content>
-    <orderEntry type="inheritedJdk" />
+    <orderEntry type="jdk" jdkName="1.8" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="desktop_main" />
     <orderEntry type="module" module-name="core_main" />

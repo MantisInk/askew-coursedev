@@ -579,7 +579,8 @@ public class PlatformController extends WorldController implements ContactListen
 
 		//Draws the force lines
 		SlothModel sloth = PlatformController.getSloth();
-		sloth.drawForces();
+		//sloth.drawForces();
+		sloth.drawForces(canvas.getWidth()/2,canvas.getHeight()/2);
 
 	}
 
