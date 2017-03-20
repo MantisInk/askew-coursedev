@@ -607,7 +607,6 @@ public abstract class WorldController implements Screen {
 			}
 			canvas.endDebug();
 		}
-
 		
 		// Final message
 		if (complete && !failed) {
