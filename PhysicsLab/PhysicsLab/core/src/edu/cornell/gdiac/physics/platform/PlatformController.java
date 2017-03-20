@@ -585,7 +585,7 @@ public class PlatformController extends WorldController implements ContactListen
 //			float y_pos = -1 * sloth.getBody().getPosition().y * sloth.getDrawScale().y;
 			float x_pos = sloth.getBody().getPosition().x;
 			float y_pos = sloth.getBody().getPosition().y;
-			canvas.drawText("Hold R \n to start!", displayFont, 0.0f, 500.0f);
+			canvas.drawText("Hold R \n to start!", displayFont, 0.0f, 550.0f);
 //			canvas.end();
 		//}
 	}
