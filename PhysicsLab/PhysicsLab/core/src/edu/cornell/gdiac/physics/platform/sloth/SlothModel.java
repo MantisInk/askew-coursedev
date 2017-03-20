@@ -8,18 +8,19 @@ package edu.cornell.gdiac.physics.platform.sloth;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.*;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Affine2;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
-import com.badlogic.gdx.physics.box2d.joints.*;
-import com.badlogic.gdx.graphics.g2d.*;
+import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
 import com.badlogic.gdx.utils.ObjectSet;
 import com.google.gson.JsonObject;
 import edu.cornell.gdiac.physics.GameCanvas;
 import edu.cornell.gdiac.physics.leveleditor.FullAssetTracker;
-import edu.cornell.gdiac.physics.obstacle.*;
-import javafx.scene.transform.Affine;
+import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
+import edu.cornell.gdiac.physics.obstacle.ComplexObstacle;
+import edu.cornell.gdiac.physics.obstacle.Obstacle;
+import edu.cornell.gdiac.physics.obstacle.SimpleObstacle;
 import lombok.Getter;
 
 public class SlothModel extends ComplexObstacle  {
@@ -28,7 +29,7 @@ public class SlothModel extends ComplexObstacle  {
     private static final float HAND_DENSITY = 10.0f;
     private static final float ARM_DENSITY = 1.1f;
     private static final float HEAD_DENSITY = 1.0f;
-    private static final float BODY_DENSITY = 5.0f;
+    private static final float BODY_DENSITY = 1.25f;
     private static final float TWO_FREE_FORCE_MULTIPLIER = 5.0f;
     private static final float TORQUE = 15.0f;
     private static final boolean BODY_FIXED_ROTATION = true;
