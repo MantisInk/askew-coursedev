@@ -19,6 +19,7 @@ import com.google.gson.JsonObject;
 import edu.cornell.gdiac.physics.GameCanvas;
 import edu.cornell.gdiac.physics.leveleditor.FullAssetTracker;
 import edu.cornell.gdiac.physics.obstacle.*;
+import javafx.scene.transform.Affine;
 import lombok.Getter;
 
 public class SlothModel extends ComplexObstacle  {
@@ -70,7 +71,7 @@ public class SlothModel extends ComplexObstacle  {
 
 
     /** For drawing the force lines*/
-    private ShapeRenderer shaper;
+    //private Affine2 camTrans = new Affine2();
 
     public float x;
     public float y;
@@ -138,7 +139,7 @@ public class SlothModel extends ComplexObstacle  {
         this.x = x;
         this.y = y;
         //this.shaper = new ShapeRenderer();
-        this.shaper = null;
+
     }
 
     private void init() {
@@ -337,7 +338,7 @@ public class SlothModel extends ComplexObstacle  {
     //theta is in radians between 0 and pi
     public float calculateTorque(float deltaTheta, float omega){
         //return (float) Math.max(-1.0f,Math.min(1.0f, 1.2 * Math.sin(deltaTheta)));
-        return (float)((10.0 / (1 + Math.exp(omega + (deltaTheta *4)))) - 5);
+        return (float)((10.0 / (1 + Math.exp(omega + (deltaTheta *4)))) - 5);//#MAGIC 4, DELTA THETA NORMALIZER
     }
 
     /**
@@ -374,34 +375,23 @@ public class SlothModel extends ComplexObstacle  {
         if(dRTheta > PI){ dRTheta -= (PI + PI);}
         if(dRTheta < -PI){ dRTheta += (PI + PI);}
 
-        float forceLeft =  calculateTorque(dLTheta,lav/20.0f);
-        float lx = (float) (TORQUE * -Math.sin(lTheta) * forceLeft * lLength);
-        float ly = (float) (TORQUE * -Math.cos(lTheta) * forceLeft * lLength);
-        forceL.set(lx,ly);
+        float forceLeft =  calculateTorque(dLTheta,lav/20.0f); //#MAGIC 20f, omega normalizer
+//        float lx = (float) (TORQUE * -Math.sin(lTheta) * forceLeft * lLength);
+//        float ly = (float) (TORQUE * -Math.cos(lTheta) * forceLeft * lLength);
+//        forceL.set(lx,ly);
 
         float forceRight = calculateTorque(dRTheta,rav/20.0f);
-        float rx = (float) (TORQUE * -Math.sin(rTheta) * forceRight * rLength);
-        float ry = (float) (TORQUE * -Math.cos(rTheta) * forceRight * rLength);
-        forceR.set(rx,ry);
+//        float rx = (float) (TORQUE * -Math.sin(rTheta) * forceRight * rLength);
+//        float ry = (float) (TORQUE * -Math.cos(rTheta) * forceRight * rLength);
+//        forceR.set(rx,ry);
 
-//        if (isRightGrab() && !isLeftGrab())
-//        leftHand
-//                .getBody()
-//                .applyForce(lx, ly, leftHand.getX(), leftHand.getY(), true);
-//        if (!isRightGrab() && isLeftGrab())
-//        rightHand
-//                .getBody()
-//                .applyForce(rx, ry, rightHand.getX(), rightHand.getY(), true);
-
-        //leftArm.setAngle(lcTheta);
-//        if (isRightGrab() && !isLeftGrab())
         float ltorque = TORQUE * forceLeft * lLength;
         float rtorque = TORQUE * forceRight * rLength;
-        System.out.println(forceLeft);
+        forceL.set((float) (ltorque * Math.sin(lTheta)),(float) (ltorque * Math.cos(lTheta)));
+        forceR.set((float) (rtorque * Math.sin(rTheta)),(float) (rtorque * Math.cos(rTheta)));
             leftArm
                     .getBody()
                     .applyTorque(ltorque,true);
-//        //if (!isRightGrab() && isLeftGrab())
             rightArm
                     .getBody()
                     .applyTorque(rtorque, true);
@@ -415,20 +405,20 @@ public class SlothModel extends ComplexObstacle  {
         float right_y = -rightVert*TWO_FREE_FORCE_MULTIPLIER;
     }
 
-    //public void drawForces(){
-    public void drawForces(float displace_x, float displace_y){
-    //public void drawForces(float x_push, float y_push){
+    public void drawForces(GameCanvas canvas, Affine2 camTrans){
+//    public void drawForces(float displace_x, float displace_y){
+//    //public void drawForces(float x_push, float y_push){
         Obstacle right = bodies.get(PART_RIGHT_HAND);
         Obstacle left = bodies.get(PART_LEFT_HAND);
 
         //Draw the lines for the forces
 
-        OrthographicCamera camera = new OrthographicCamera(Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
-        camera.setToOrtho(false);
+        //OrthographicCamera camera = new OrthographicCamera(Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
+        //camera.setToOrtho(false);
 
         Gdx.gl.glLineWidth(3);
-        if (shaper == null) shaper = new ShapeRenderer();
-        shaper.setProjectionMatrix(camera.combined);
+//        if (shaper == null) shaper = new ShapeRenderer();
+//        shaper.setProjectionMatrix(camera.combined);
 
         //float left_x = left.getX()*drawScale.x;
         float left_x = left.getX();
@@ -444,16 +434,20 @@ public class SlothModel extends ComplexObstacle  {
 
         //float displace_x = x_push*getDrawScale().x;
         //float displace_y = y_push*getDrawScale().y;
+        canvas.beginDebug(camTrans);
+        canvas.drawLine(left.getX()*drawScale.x,left.getY() * drawScale.y, left.getX()*drawScale.x+(forceL.x*2),left.getY() * drawScale.y+(forceL.y*2),Color.BLUE, Color.BLUE);
+        canvas.drawLine(right.getX()*drawScale.x,right.getY() * drawScale.y, right.getX()*drawScale.x+(forceR.x*2),right.getY() * drawScale.y+(forceR.y*2),Color.RED, Color.RED);
+        canvas.endDebug();
+//
+//        shaper.begin(ShapeRenderer.ShapeType.Line);
+//        shaper.setColor(Color.BLUE);
+//        //shaper.line();
+//        shaper.line(left_x+displace_x,left_y+displace_y, left_x+displace_x+(forceL.x*20),left_y+displace_y+(forceL.y*20));
+//        shaper.setColor(Color.RED);
+//        //shaper.line(right.getX()*drawScale.x,right.getY() * drawScale.y, right.getX()*drawScale.x+(forceR.x*20),right.getY() * drawScale.y+(forceR.y*20));
+//        shaper.line(right_x+displace_x,right_y+displace_y, right_x+displace_x+(forceR.x*20),right_y+displace_y+(forceR.y*20));
+//        shaper.end();
 
-        shaper.begin(ShapeRenderer.ShapeType.Line);
-        shaper.setColor(Color.BLUE);
-        //shaper.line(left.getX()*drawScale.x,left.getY() * drawScale.y, left.getX()*drawScale.x+(forceL.x*20),left.getY() * drawScale.y+(forceL.y*20));
-        shaper.line(left_x+displace_x,left_y+displace_y, left_x+displace_x+(forceL.x*20),left_y+displace_y+(forceL.y*20));
-        shaper.setColor(Color.RED);
-        //shaper.line(right.getX()*drawScale.x,right.getY() * drawScale.y, right.getX()*drawScale.x+(forceR.x*20),right.getY() * drawScale.y+(forceR.y*20));
-        shaper.line(right_x+displace_x,right_y+displace_y, right_x+displace_x+(forceR.x*20),right_y+displace_y+(forceR.y*20));
-        shaper.end();
-        Gdx.gl.glLineWidth(3);
 
     }
 
@@ -617,6 +611,7 @@ public class SlothModel extends ComplexObstacle  {
                 }
             }
         }
+
 
         //Commented out because the vine images disappear when this is used here?
         //drawForces();
