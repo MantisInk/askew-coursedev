@@ -31,6 +31,8 @@ import edu.cornell.gdiac.physics.platform.sloth.SlothModel;
 import edu.cornell.gdiac.util.*;
 import edu.cornell.gdiac.physics.obstacle.*;
 
+import static edu.cornell.gdiac.physics.platform.PlatformController.getSloth;
+
 /**
  * Base class for a world-specific controller.
  *
@@ -610,7 +612,14 @@ public abstract class WorldController implements Screen {
 		if (!PlatformController.getPlayerIsReady()) {//Boop
 			displayFont.setColor(Color.YELLOW);
 			canvas.begin(); // DO NOT SCALE
-			canvas.drawTextCentered("Hold R at the start!", displayFont, 0.0f);
+			//canvas.drawTextCentered("Hold R at the start!", displayFont, 0.0f);
+			//canvas.drawText(String text, BitmapFont font, float x, float y) {
+			SlothModel sloth = getSloth();
+//			float x_pos = -1 * sloth.getBody().getPosition().x * sloth.getDrawScale().x;
+//			float y_pos = -1 * sloth.getBody().getPosition().y * sloth.getDrawScale().y;
+			float x_pos = sloth.getBody().getPosition().x;
+			float y_pos = sloth.getBody().getPosition().y;
+			canvas.drawText("Hold R at the start!", displayFont, -x_pos , -y_pos);
 			canvas.end();
 		}
 		
@@ -626,9 +635,9 @@ public abstract class WorldController implements Screen {
 			canvas.drawTextCentered("FAILURE!", displayFont, 0.0f);
 			canvas.end();
 		}
-		
+
 		//Draws the force lines
-		SlothModel sloth = PlatformController.getSloth();
+		SlothModel sloth = getSloth();
 		sloth.drawForces();
 	}
 	
