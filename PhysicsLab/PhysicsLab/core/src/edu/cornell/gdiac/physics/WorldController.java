@@ -637,8 +637,8 @@ public abstract class WorldController implements Screen {
 		}
 
 		//Draws the force lines
-		SlothModel sloth = getSloth();
-		sloth.drawForces();
+//		SlothModel sloth = getSloth();
+//		sloth.drawForces();
 	}
 	
 	/**
