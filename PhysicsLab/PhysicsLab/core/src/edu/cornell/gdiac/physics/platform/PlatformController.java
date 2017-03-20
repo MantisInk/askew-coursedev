@@ -78,6 +78,7 @@ public class PlatformController extends WorldController implements ContactListen
 
 	/** Texture assets for the body parts */
 	private TextureRegion[] bodyTextures;
+
 	//private static Vector2 DOLL_POS = new Vector2( 2.5f,  6.0f);
 	//private static Vector2 DOLL_POS = new Vector2( 7.5f,  17.0f);
 	private static Vector2 DOLL_POS = new Vector2( 4.0f,  7.8f);
@@ -85,6 +86,7 @@ public class PlatformController extends WorldController implements ContactListen
 	//10f, 17.1f
 
 	//5.5f, 7.9f
+
 
 	/** Track asset loading from all instances and subclasses */
 	private AssetState ragdollAssetState = AssetState.EMPTY;

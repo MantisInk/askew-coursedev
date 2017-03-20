@@ -226,19 +226,19 @@ public class LevelEditorController extends WorldController implements ContactLis
 			JDialog mainFrame = new JDialog();
 			mainFrame.setSize(600,600);
 			mainFrame.setLocationRelativeTo(null);
-			JPanel wtfPanel = new JPanel();
-			wtfPanel.setLayout(new FlowLayout());
+			JPanel panel = new JPanel();
+			panel.setLayout(new FlowLayout());
 			final JTextArea commentTextArea =
 					new JTextArea(jsonOfTemplate,20,30);
-			wtfPanel.add(commentTextArea);
-			mainFrame.add(wtfPanel);
+			panel.add(commentTextArea);
+			mainFrame.add(panel);
 			JButton okButton = new JButton("ok");
 			okButton.addActionListener(e -> {
 				promptCallback(commentTextArea.getText());
 				mainFrame.setVisible(false);
 				mainFrame.dispose();
 			});
-			wtfPanel.add(okButton);
+			panel.add(okButton);
 			mainFrame.setVisible(true);
 			prompting = true;
 		}
