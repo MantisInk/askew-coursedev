@@ -607,21 +607,6 @@ public abstract class WorldController implements Screen {
 			}
 			canvas.endDebug();
 		}
-
-		//Display waiting text if not ready
-		if (!PlatformController.getPlayerIsReady()) {//Boop
-			displayFont.setColor(Color.YELLOW);
-			canvas.begin(); // DO NOT SCALE
-			//canvas.drawTextCentered("Hold R at the start!", displayFont, 0.0f);
-			//canvas.drawText(String text, BitmapFont font, float x, float y) {
-			SlothModel sloth = getSloth();
-//			float x_pos = -1 * sloth.getBody().getPosition().x * sloth.getDrawScale().x;
-//			float y_pos = -1 * sloth.getBody().getPosition().y * sloth.getDrawScale().y;
-			float x_pos = sloth.getBody().getPosition().x + canvas.getWidth()/2;
-			float y_pos = sloth.getBody().getPosition().y + canvas.getHeight()/2;
-			canvas.drawText("Hold R at the start!", displayFont, x_pos , y_pos);
-			canvas.end();
-		}
 		
 		// Final message
 		if (complete && !failed) {

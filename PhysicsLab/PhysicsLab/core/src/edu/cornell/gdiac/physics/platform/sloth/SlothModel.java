@@ -203,7 +203,7 @@ public class SlothModel extends ComplexObstacle  {
      *
      * The array should be BODY_TEXTURE_COUNT in size.
      *
-     * @param textures the array of textures for the individual body parts.
+     * textures the array of textures for the individual body parts.
      */
     public void setPartTextures() {
         //assert textures != null && textures.length > BODY_TEXTURE_COUNT : "Texture array is not large enough";
@@ -587,7 +587,8 @@ public class SlothModel extends ComplexObstacle  {
 
                 //If the body parts are from the right limb
                 if (x == 1 || x == 4) {
-                    part.draw(canvas, Color.MAGENTA);
+                    part.draw(canvas, Color.RED);
+                    part.draw(canvas, Color.WHITE);     //remove this line when you draw the head
                 }
                 //If the body parts are from the left limb
                 else if (x == 2 || x == 3) {
@@ -595,7 +596,7 @@ public class SlothModel extends ComplexObstacle  {
                 }
                 //If the body parts are not limbs
                 else {
-                    part.draw(canvas);
+                    part.draw(canvas, Color.WHITE);
                 }
             }
         }
