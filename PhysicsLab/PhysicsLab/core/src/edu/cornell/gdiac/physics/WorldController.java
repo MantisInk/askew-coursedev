@@ -604,6 +604,14 @@ public abstract class WorldController implements Screen {
 			}
 			canvas.endDebug();
 		}
+
+		//Display waiting text if not ready
+		if (!PlatformController.getPlayerIsReady()) {//Boop
+			displayFont.setColor(Color.YELLOW);
+			canvas.begin(); // DO NOT SCALE
+			canvas.drawTextCentered("Hold R at the start!", displayFont, 0.0f);
+			canvas.end();
+		}
 		
 		// Final message
 		if (complete && !failed) {
@@ -617,6 +625,7 @@ public abstract class WorldController implements Screen {
 			canvas.drawTextCentered("FAILURE!", displayFont, 0.0f);
 			canvas.end();
 		}
+
 
 		//Draws the force lines
 		SlothModel sloth = PlatformController.getSloth();
