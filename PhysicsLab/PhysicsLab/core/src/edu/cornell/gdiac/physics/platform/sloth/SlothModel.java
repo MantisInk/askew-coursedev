@@ -598,12 +598,12 @@ public class SlothModel extends ComplexObstacle  {
 
                 //If the body parts are from the right limb
                 if (x == 1 || x == 4) {
-                    part.draw(canvas, Color.RED);
+                    part.draw(canvas, Color.WHITE);
                     part.draw(canvas, Color.WHITE);     //remove this line when you draw the head
                 }
                 //If the body parts are from the left limb
                 else if (x == 2 || x == 3) {
-                    part.draw(canvas, Color.CYAN);
+                    part.draw(canvas, Color.BLACK);
                 }
                 //If the body parts are not limbs
                 else {
