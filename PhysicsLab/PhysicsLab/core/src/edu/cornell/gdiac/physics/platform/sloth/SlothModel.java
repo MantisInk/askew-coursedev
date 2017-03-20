@@ -396,23 +396,6 @@ public class SlothModel extends ComplexObstacle  {
 
         float right_x = rightHori*TWO_FREE_FORCE_MULTIPLIER;
         float right_y = -rightVert*TWO_FREE_FORCE_MULTIPLIER;
-
-        OrthographicCamera camera = new OrthographicCamera(Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
-        camera.setToOrtho(false);
-
-        if (shaper == null) shaper = new ShapeRenderer();
-        Gdx.gl.glLineWidth(3);
-        shaper.setProjectionMatrix(camera.combined);
-
-        shaper.begin(ShapeRenderer.ShapeType.Line);
-        shaper.setColor(Color.BLACK);
-        //System.out.println(shaper.isDrawing());
-        //System.out.println(left_x+", "+left_y);
-        //System.out.println(right_x+", "+right_y);
-        shaper.line(leftHand.getX(),leftHand.getY(), leftHand.getX()+(left_x*200),leftHand.getY()+(left_y*200));
-        shaper.line(rightHand.getX(),rightHand.getY(), rightHand.getX()+(right_x*200),rightHand.getY()+(right_y*200));
-        shaper.end();
-        Gdx.gl.glLineWidth(3);
     }
 
     public void drawForces(){

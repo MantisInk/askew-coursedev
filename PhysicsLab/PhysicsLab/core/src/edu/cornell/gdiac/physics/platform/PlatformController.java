@@ -65,6 +65,8 @@ public class PlatformController extends WorldController implements ContactListen
 	private Body leftBody;
 	private Body rightBody;
 
+	Affine2 camTrans = new Affine2();
+
 	/** Texture asset for character avatar */
 	private TextureRegion avatarTexture;
 	/** Texture asset for the bridge plank */
@@ -558,6 +560,22 @@ public class PlatformController extends WorldController implements ContactListen
 
 		// If we use sound, we must remember this.
 		SoundController.getInstance().update();
+	}
+
+	public void draw(float delta){
+		canvas.clear();
+		camTrans.setToTranslation(-1 * sloth.getBody().getPosition().x * sloth.getDrawScale().x
+				, -1 * sloth.getBody().getPosition().y * sloth.getDrawScale().y);
+		camTrans.translate(canvas.getWidth()/2,canvas.getHeight()/2);
+		canvas.begin(camTrans);
+		for(Obstacle obj : objects) {
+			obj.draw(canvas);
+		}
+		canvas.end();
+
+		//Draws the force lines
+		SlothModel sloth = PlatformController.getSloth();
+		sloth.drawForces();
 
 	}
 
