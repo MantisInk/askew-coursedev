@@ -617,9 +617,9 @@ public abstract class WorldController implements Screen {
 			SlothModel sloth = getSloth();
 //			float x_pos = -1 * sloth.getBody().getPosition().x * sloth.getDrawScale().x;
 //			float y_pos = -1 * sloth.getBody().getPosition().y * sloth.getDrawScale().y;
-			float x_pos = sloth.getBody().getPosition().x;
-			float y_pos = sloth.getBody().getPosition().y;
-			canvas.drawText("Hold R at the start!", displayFont, -x_pos , -y_pos);
+			float x_pos = sloth.getBody().getPosition().x + canvas.getWidth()/2;
+			float y_pos = sloth.getBody().getPosition().y + canvas.getHeight()/2;
+			canvas.drawText("Hold R at the start!", displayFont, x_pos , y_pos);
 			canvas.end();
 		}
 		
