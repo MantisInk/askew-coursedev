@@ -203,7 +203,7 @@ public class SlothModel extends ComplexObstacle  {
      *
      * The array should be BODY_TEXTURE_COUNT in size.
      *
-     * @param textures the array of textures for the individual body parts.
+     * textures the array of textures for the individual body parts.
      */
     public void setPartTextures() {
         //assert textures != null && textures.length > BODY_TEXTURE_COUNT : "Texture array is not large enough";
@@ -251,7 +251,10 @@ public class SlothModel extends ComplexObstacle  {
 
         BoxObstacle body;
         if(!collides){
-            body = new TrevorObstacle(partCache.x, partCache.y, dwidth, dheight);
+            body = new BoxObstacle(partCache.x, partCache.y, dwidth, dheight);
+            Filter f = new Filter();
+            f.maskBits = 0x0000;
+            body.setFilterData(f);
         }
         else{
             body = new BoxObstacle(partCache.x, partCache.y, dwidth, dheight);
