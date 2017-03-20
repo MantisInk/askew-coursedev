@@ -19,6 +19,8 @@ import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.*;
 
+import com.google.gson.JsonObject;
+import edu.cornell.gdiac.physics.leveleditor.FullAssetTracker;
 import edu.cornell.gdiac.physics.obstacle.*;
 
 /**
@@ -59,6 +61,8 @@ public class Trunk extends ComplexObstacle {
 	/** The spacing between each link */
 	protected float spacing = 0.0f;
 
+	protected float numLinks;
+
 	/**
 	 * Creates a new rope bridge at the given position.
 	 *
@@ -73,6 +77,9 @@ public class Trunk extends ComplexObstacle {
 	 */
 	public Trunk(float x, float y, float width, float lwidth, float lheight, float stiffLen) {
 		this(x, y, x, y+width, lwidth, lheight, stiffLen);
+		numLinks = width;
+		this.x = x;
+		this.y = y;
 	}
 
 	/**
@@ -254,6 +261,22 @@ public class Trunk extends ComplexObstacle {
 		if (bodies.size == 0) {
 			return null;
 		}
-		return ((SimpleObstacle)bodies.get(0)).getTexture();
+		return ((SimpleObstacle) bodies.get(0)).getTexture();
+	}
+
+	public void setTextures() {
+		setTexture(FullAssetTracker.getInstance().getTextureRegion("textures/branch.png"));
+	}
+
+	public static Obstacle createFromJson(JsonObject instance, Vector2 scale) {
+		Trunk trunk;
+		float x = instance.get("x").getAsFloat();
+		float y = instance.get("y").getAsFloat();
+		float numlinks = instance.get("numLinks").getAsFloat();
+		float stiff = instance.get("stiffLen").getAsFloat();
+		trunk = new Trunk(x, y, numlinks, 0.25f, 1.0f, stiff);
+		trunk.setDrawScale(scale.x, scale.y);
+		trunk.setTextures();
+		return trunk;
 	}
 }

@@ -14,15 +14,16 @@
  */
 package edu.cornell.gdiac.physics.platform;
 
-import com.badlogic.gdx.math.*;
-import com.badlogic.gdx.graphics.g2d.*;
-import com.badlogic.gdx.physics.box2d.*;
-import com.badlogic.gdx.physics.box2d.joints.*;
-
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.Joint;
+import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
+import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 import com.google.gson.JsonObject;
 import edu.cornell.gdiac.physics.leveleditor.FullAssetTracker;
 import edu.cornell.gdiac.physics.obstacle.*;
-import edu.cornell.gdiac.physics.platform.sloth.SlothModel;
 
 /**
  * A bridge with planks connected by revolute joints.
@@ -260,10 +261,13 @@ public class StiffBranch extends ComplexObstacle {
 	}
 
 	public static Obstacle createFromJson(JsonObject instance, Vector2 scale) {
-		StiffBranch ret;
-		ret = new StiffBranch(instance.get("x").getAsFloat(), instance.get("y").getAsFloat(), instance.get("numLinks").getAsFloat(), 0.25f, 0.1f);
-		ret.setDrawScale(scale.x, scale.y);
-		ret.setTextures();
-		return ret;
+		StiffBranch branch;
+		float x = instance.get("x").getAsFloat();
+		float y = instance.get("y").getAsFloat();
+		float stiff = instance.get("stiffLen").getAsFloat();
+		branch = new StiffBranch(x, y, stiff, 0.25f, 0.1f);
+		branch.setDrawScale(scale.x, scale.y);
+		branch.setTextures();
+		return branch;
 	}
 }
