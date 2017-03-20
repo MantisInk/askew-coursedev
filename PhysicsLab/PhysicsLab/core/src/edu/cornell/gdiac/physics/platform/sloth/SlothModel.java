@@ -24,7 +24,7 @@ import lombok.Getter;
 public class SlothModel extends ComplexObstacle  {
 
     /** Constants for tuning sloth behaviour */
-    private static final float HAND_DENSITY = 10.0f;
+    private static final float HAND_DENSITY = 9.0f;
     private static final float ARM_DENSITY = 1.1f;
     private static final float HEAD_DENSITY = 1.0f;
     private static final float BODY_DENSITY = 5.0f;
