@@ -7,7 +7,7 @@
       <sourceFolder url="file://$MODULE_DIR$/../../../desktop/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/../../../desktop/src/main/resources" type="java-resource" />
     </content>
-    <orderEntry type="jdk" jdkName="1.8" jdkType="JavaSDK" />
+    <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="core_main" />
     <orderEntry type="library" name="Gradle: com.badlogicgames.gdx:gdx-backend-lwjgl:1.8.0" level="project" />
@@ -17,6 +17,7 @@
     <orderEntry type="library" name="Gradle: com.badlogicgames.gdx:gdx-controllers-platform:natives-desktop:1.8.0" level="project" />
     <orderEntry type="library" name="Gradle: com.badlogicgames.gdx:gdx-tools:1.8.0" level="project" />
     <orderEntry type="library" name="Gradle: com.badlogicgames.gdx:gdx-freetype-platform:natives-desktop:1.8.0" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.code.gson:gson:1.7.2" level="project" />
     <orderEntry type="library" name="Gradle: com.badlogicgames.gdx:gdx:1.8.0" level="project" />
     <orderEntry type="library" name="Gradle: com.badlogicgames.gdx:gdx-box2d:1.8.0" level="project" />
     <orderEntry type="library" name="Gradle: com.badlogicgames.gdx:gdx-controllers:1.8.0" level="project" />
@@ -34,8 +35,5 @@
     <orderEntry type="library" name="Gradle: net.java.jinput:jinput-platform:natives-linux:2.0.5" level="project" />
     <orderEntry type="library" name="Gradle: net.java.jinput:jinput-platform:natives-windows:2.0.5" level="project" />
     <orderEntry type="library" name="Gradle: net.java.jinput:jinput-platform:natives-osx:2.0.5" level="project" />
-    <orderEntry type="library" name="lombok" level="project" />
-    <orderEntry type="library" name="Maven: com.google.code.gson:gson:2.8.0" level="project" />
-    <orderEntry type="library" name="Maven: org.projectlombok:lombok:1.16.10" level="project" />
   </component>
 </module>
