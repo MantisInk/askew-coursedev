@@ -82,4 +82,8 @@ public class JSONLoaderSaver {
             e.printStackTrace();
         }
     }
+
+    public String prettyJson(JsonObject notPrettyJson) {
+        return gson.toJson(notPrettyJson);
+    }
 }

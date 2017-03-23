@@ -20,6 +20,7 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.*;
 
 import com.google.gson.JsonObject;
+import edu.cornell.gdiac.physics.GlobalConfiguration;
 import edu.cornell.gdiac.physics.leveleditor.FullAssetTracker;
 import edu.cornell.gdiac.physics.obstacle.*;
 import edu.cornell.gdiac.physics.platform.sloth.SlothModel;
@@ -40,7 +41,7 @@ public class Vine extends ComplexObstacle {
 	/** The radius of each anchor pin */
 	private static final float BRIDGE_PIN_RADIUS = 0.1f;
 	/** The density of each plank in the bridge */
-	private static final float BASIC_DENSITY = 2.0f;
+	private transient float BASIC_DENSITY;
 
 	// Invisible anchor objects
 	/** The left side of the bridge */
@@ -95,6 +96,8 @@ public class Vine extends ComplexObstacle {
 	public Vine(float x0, float y0, float x1, float y1, float lwidth, float lheight) {
 		super(x0,y0);
 		setName(VINE_NAME);
+
+		this.BASIC_DENSITY = GlobalConfiguration.getInstance().getAsFloat("vineDensity");
 		
 		planksize = new Vector2(lwidth,lheight);
 		linksize = planksize.y;
@@ -233,7 +236,8 @@ public class Vine extends ComplexObstacle {
 		float x = instance.get("x").getAsFloat();
 		float y = instance.get("y").getAsFloat();
 		float numlinks = instance.get("numLinks").getAsFloat();
-		vine = new Vine(x, y, numlinks, 0.25f, 1.0f);
+		TextureRegion vineTexture = FullAssetTracker.getInstance().getTextureRegion("textures/vine.png");
+		vine = new Vine(x, y, numlinks, vineTexture.getRegionHeight() / scale.x, vineTexture.getRegionHeight() / scale.y);
 		vine.setDrawScale(scale.x, scale.y);
 		vine.setTextures();
 		return vine;

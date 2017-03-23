@@ -28,16 +28,17 @@ public class SlothModel extends ComplexObstacle  {
 
     /** Constants for tuning sloth behaviour */
     private static final float HAND_DENSITY = 10.0f;
-    private static final float ARM_DENSITY = 1.1f;
+    private transient float ARM_DENSITY;
     private static final float HEAD_DENSITY = 1.0f;
     private static final float BODY_DENSITY = 1.25f;
-    private static final float TWO_FREE_FORCE_MULTIPLIER = 5.0f;
-    private static final float TORQUE = 15.0f;
+    private transient float TWO_FREE_FORCE_MULTIPLIER;
+    private transient float TORQUE;
     private static final boolean BODY_FIXED_ROTATION = true;
     private static final boolean HANDS_FIXED_ROTATION = true;
-    private static final float GRAVITY_SCALE = 0.7f;
-    private static final float ARM_MASS = 5.0f;
+    private transient float GRAVITY_SCALE;
     private transient boolean SPIDERMAN_MODE;
+    private transient boolean GRABBING_HAND_HAS_TORQUE;
+    private transient float OMEGA_NORMALIZER;
 
     /** Indices for the body parts in the bodies array */
     private static final int PART_NONE = -1;
@@ -141,6 +142,12 @@ public class SlothModel extends ComplexObstacle  {
         this.x = x;
         this.y = y;
         this.SPIDERMAN_MODE = GlobalConfiguration.getInstance().getAsBoolean("flowGrabAnything");
+        this.TWO_FREE_FORCE_MULTIPLIER = GlobalConfiguration.getInstance().getAsFloat("flowTwoFreeForceMultiplier");
+        this.TORQUE = GlobalConfiguration.getInstance().getAsFloat("flowTorque");
+        this.GRAVITY_SCALE = GlobalConfiguration.getInstance().getAsFloat("flowGravityScale");
+        this.GRABBING_HAND_HAS_TORQUE = GlobalConfiguration.getInstance().getAsBoolean("flowCanMoveGrabbingHand");
+        this.OMEGA_NORMALIZER = GlobalConfiguration.getInstance().getAsFloat("flowOmegaNormalizer");
+        this.ARM_DENSITY = GlobalConfiguration.getInstance().getAsFloat("flowArmDensity");
         //this.shaper = new ShapeRenderer();
 
     }
@@ -355,7 +362,7 @@ public class SlothModel extends ComplexObstacle  {
 
         Obstacle rightArm = bodies.get(PART_RIGHT_ARM);
         Obstacle leftArm = bodies.get(PART_LEFT_ARM);
-        //TODO CALCULATE TORQUE
+        //TODO REDUCE MAGIC NUMBERS ( HENRY )
         // Apply forces
         float dLTheta = 0f;
         float lcTheta = (float)Math.atan2(leftVert,leftHori); // correct
@@ -378,12 +385,12 @@ public class SlothModel extends ComplexObstacle  {
         if(dRTheta > PI){ dRTheta -= (PI + PI);}
         if(dRTheta < -PI){ dRTheta += (PI + PI);}
 
-        float forceLeft =  calculateTorque(dLTheta,lav/20.0f); //#MAGIC 20f, omega normalizer
+        float forceLeft =  calculateTorque(dLTheta,lav/OMEGA_NORMALIZER); //#MAGIC 20f default, omega normalizer
 //        float lx = (float) (TORQUE * -Math.sin(lTheta) * forceLeft * lLength);
 //        float ly = (float) (TORQUE * -Math.cos(lTheta) * forceLeft * lLength);
 //        forceL.set(lx,ly);
 
-        float forceRight = calculateTorque(dRTheta,rav/20.0f);
+        float forceRight = calculateTorque(dRTheta,rav/OMEGA_NORMALIZER);
 //        float rx = (float) (TORQUE * -Math.sin(rTheta) * forceRight * rLength);
 //        float ry = (float) (TORQUE * -Math.cos(rTheta) * forceRight * rLength);
 //        forceR.set(rx,ry);
@@ -392,9 +399,12 @@ public class SlothModel extends ComplexObstacle  {
         float rtorque = TORQUE * forceRight * rLength;
         forceL.set((float) (ltorque * Math.sin(lTheta)),(float) (ltorque * Math.cos(lTheta)));
         forceR.set((float) (rtorque * Math.sin(rTheta)),(float) (rtorque * Math.cos(rTheta)));
+
+        if (GRABBING_HAND_HAS_TORQUE || !leftGrab)
             leftArm
                     .getBody()
                     .applyTorque(ltorque,true);
+        if (GRABBING_HAND_HAS_TORQUE || !rightGrab)
             rightArm
                     .getBody()
                     .applyTorque(rtorque, true);

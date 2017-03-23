@@ -14,6 +14,7 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.google.gson.JsonObject;
+import edu.cornell.gdiac.physics.GameCanvas;
 import edu.cornell.gdiac.physics.GlobalConfiguration;
 import edu.cornell.gdiac.physics.InputController;
 import edu.cornell.gdiac.physics.WorldController;
@@ -127,7 +128,6 @@ public class LevelEditorController extends WorldController implements ContactLis
 		world.setContactListener(this);
 		fat = FullAssetTracker.getInstance();
 		jls = new JSONLoaderSaver();
-		jls.setScale(this.scale);
 		currentLevel = "test_save_obstacle";
 		createClass = ".SlothModel";
 		trialLevelName = "";
@@ -255,7 +255,7 @@ public class LevelEditorController extends WorldController implements ContactLis
 	private void promptGlobalConfig() {
 		if (!prompting) {
 			prompting = true;
-			String jsonOfConfig = JSONLoaderSaver.loadArbitrary("./config.json").orElseGet(JsonObject::new).toString();
+			String jsonOfConfig = jls.prettyJson(JSONLoaderSaver.loadArbitrary("./config.json").orElseGet(JsonObject::new));
 			JDialog mainFrame = new JDialog();
 			mainFrame.setSize(600,600);
 			mainFrame.setLocationRelativeTo(null);
@@ -480,4 +480,13 @@ public class LevelEditorController extends WorldController implements ContactLis
 	public void postSolve(Contact contact, ContactImpulse impulse) {}
 	/** Unused ContactListener method */
 	public void preSolve(Contact contact, Manifold oldManifold) {}
+
+	@Override
+	public void setCanvas(GameCanvas canvas) {
+		// unscale
+		this.canvas = canvas;
+		this.scale.x = 1.0f * canvas.getWidth()/bounds.getWidth();
+		this.scale.y = 1.0f * canvas.getHeight()/bounds.getHeight();
+		jls.setScale(this.scale);
+	}
 }
