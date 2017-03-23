@@ -1,0 +1,10 @@
+{
+  "flowGrabAnything": false,
+  "flowArmDensity": 20.1,
+  "flowTwoFreeForceMultiplier": 5.0,
+  "flowTorque": 20.0,
+  "flowOmegaNormalizer": 20.0,
+  "flowGravityScale": 0.7,
+  "flowCanMoveGrabbingHand": false,
+  "vineDensity": 1.9
+}

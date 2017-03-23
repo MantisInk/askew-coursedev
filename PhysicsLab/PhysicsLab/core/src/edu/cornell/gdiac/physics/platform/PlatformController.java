@@ -478,6 +478,7 @@ public class PlatformController extends WorldController implements ContactListen
 			}
 		} else {
 			JSONLoaderSaver jls = new JSONLoaderSaver();
+			System.out.println(this.scale);
 			jls.setScale(this.scale);
 			try {
 				LevelModel lm = jls.loadLevel(loadLevel);
@@ -740,4 +741,5 @@ public class PlatformController extends WorldController implements ContactListen
 	public void postSolve(Contact contact, ContactImpulse impulse) {}
 	/** Unused ContactListener method */
 	public void preSolve(Contact contact, Manifold oldManifold) {}
+
 }

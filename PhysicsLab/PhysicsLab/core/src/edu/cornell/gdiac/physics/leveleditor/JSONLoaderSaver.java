@@ -2,8 +2,7 @@ package edu.cornell.gdiac.physics.leveleditor;
 
 
 import com.badlogic.gdx.math.Vector2;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.google.gson.*;
 import edu.cornell.gdiac.physics.obstacle.Obstacle;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,6 +11,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Optional;
 
 public class JSONLoaderSaver {
 
@@ -49,8 +49,41 @@ public class JSONLoaderSaver {
     public String gsonToJson(Obstacle o) {
         return gson.toJson(o, Obstacle.class);
     }
+
     public Obstacle obstacleFromJson(String s) {
         return gson.fromJson(s, Obstacle.class);
     }
 
+    /**
+     * Loads an arbitrary file into a generic JSON object.
+     * @param assetPath the path in assets referencing the file
+     * @return the JsonObject optional
+     */
+    public static Optional<JsonObject> loadArbitrary(String assetPath) {
+        FileReader fr = null;
+        try {
+            fr = new FileReader(assetPath);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return Optional.empty();
+        }
+        JsonParser jp = new JsonParser();
+        JsonElement je = jp.parse(fr);
+        return Optional.of(je.getAsJsonObject());
+    }
+
+    public static void saveArbitrary(String s, String text) {
+        try {
+            FileWriter fw = new FileWriter(s);
+            fw.write(text);
+            fw.close();
+        } catch (IOException e) {
+            // Not much we can do, unlikely to happen anyway.
+            e.printStackTrace();
+        }
+    }
+
+    public String prettyJson(JsonObject notPrettyJson) {
+        return gson.toJson(notPrettyJson);
+    }
 }

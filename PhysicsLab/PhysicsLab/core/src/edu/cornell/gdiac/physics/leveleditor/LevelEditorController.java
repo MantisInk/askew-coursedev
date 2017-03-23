@@ -13,6 +13,9 @@ package edu.cornell.gdiac.physics.leveleditor;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import com.google.gson.JsonObject;
+import edu.cornell.gdiac.physics.GameCanvas;
+import edu.cornell.gdiac.physics.GlobalConfiguration;
 import edu.cornell.gdiac.physics.InputController;
 import edu.cornell.gdiac.physics.WorldController;
 import edu.cornell.gdiac.physics.obstacle.ComplexObstacle;
@@ -125,7 +128,6 @@ public class LevelEditorController extends WorldController implements ContactLis
 		world.setContactListener(this);
 		fat = FullAssetTracker.getInstance();
 		jls = new JSONLoaderSaver();
-		jls.setScale(this.scale);
 		currentLevel = "test_save_obstacle";
 		createClass = ".SlothModel";
 		trialLevelName = "";
@@ -221,6 +223,7 @@ public class LevelEditorController extends WorldController implements ContactLis
 
 	private void promptTemplate(Obstacle template) {
 		if (!prompting) {
+			prompting = true;
 			String jsonOfTemplate = jls.gsonToJson(template);
 			// flipping swing
 			JDialog mainFrame = new JDialog();
@@ -234,20 +237,45 @@ public class LevelEditorController extends WorldController implements ContactLis
 			mainFrame.add(panel);
 			JButton okButton = new JButton("ok");
 			okButton.addActionListener(e -> {
-				promptCallback(commentTextArea.getText());
+				promptTemplateCallback(commentTextArea.getText());
 				mainFrame.setVisible(false);
 				mainFrame.dispose();
 			});
 			panel.add(okButton);
 			mainFrame.setVisible(true);
-			prompting = true;
 		}
 	}
 
-	private void promptCallback(String json) {
+	private void promptTemplateCallback(String json) {
 		Obstacle toAdd = jls.obstacleFromJson(json);
 		addObject(toAdd);
 		prompting = false;
+	}
+
+	private void promptGlobalConfig() {
+		if (!prompting) {
+			prompting = true;
+			String jsonOfConfig = jls.prettyJson(JSONLoaderSaver.loadArbitrary("./config.json").orElseGet(JsonObject::new));
+			JDialog mainFrame = new JDialog();
+			mainFrame.setSize(600,600);
+			mainFrame.setLocationRelativeTo(null);
+			JPanel panel = new JPanel();
+			panel.setLayout(new FlowLayout());
+			final JTextArea commentTextArea =
+					new JTextArea(jsonOfConfig,20,30);
+			panel.add(commentTextArea);
+			mainFrame.add(panel);
+			JButton okButton = new JButton("ok");
+			okButton.addActionListener(e -> {
+				JSONLoaderSaver.saveArbitrary("./config.json",commentTextArea.getText());
+				GlobalConfiguration.update();
+				mainFrame.setVisible(false);
+				mainFrame.dispose();
+				prompting = false;
+			});
+			panel.add(okButton);
+			mainFrame.setVisible(true);
+		}
 	}
 
 	public void update(float dt) {
@@ -368,6 +396,10 @@ public class LevelEditorController extends WorldController implements ContactLis
 		if (InputController.getInstance().isTKeyPressed()) {
 			trialLevelName = currentLevel;
 		}
+
+		if (InputController.getInstance().isGKeyPressed()) {
+			promptGlobalConfig();
+		}
 	}
 
 	@Override
@@ -448,4 +480,13 @@ public class LevelEditorController extends WorldController implements ContactLis
 	public void postSolve(Contact contact, ContactImpulse impulse) {}
 	/** Unused ContactListener method */
 	public void preSolve(Contact contact, Manifold oldManifold) {}
+
+	@Override
+	public void setCanvas(GameCanvas canvas) {
+		// unscale
+		this.canvas = canvas;
+		this.scale.x = 1.0f * canvas.getWidth()/bounds.getWidth();
+		this.scale.y = 1.0f * canvas.getHeight()/bounds.getHeight();
+		jls.setScale(this.scale);
+	}
 }

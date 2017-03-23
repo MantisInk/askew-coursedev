@@ -36,6 +36,8 @@ public class InputController {
 	private static InputController theController = null;
 	@Getter
 	private boolean rightClickPressed;
+
+	// Keyboard keys for the level editor
 	@Getter
 	private boolean sKeyPressed;
 	@Getter
@@ -52,6 +54,8 @@ public class InputController {
 	private boolean tKeyPressed;
 	@Getter
 	private boolean eKeyPressed;
+	@Getter
+	private boolean gKeyPressed;
 
 
 	/**
@@ -422,10 +426,14 @@ public class InputController {
 		// Mouse results
 		tertiaryPressed = Gdx.input.isButtonPressed(Input.Buttons.LEFT);
 		rightClickPressed = Gdx.input.isButtonPressed(Input.Buttons.RIGHT);
+
+		// Keypresses for level editor hotkeys
 		sKeyPressed =  Gdx.input.isKeyPressed(Input.Keys.S);
 		nKeyPressed =  Gdx.input.isKeyPressed(Input.Keys.N);
 		lKeyPressed =  Gdx.input.isKeyPressed(Input.Keys.L);
 		eKeyPressed =  Gdx.input.isKeyPressed(Input.Keys.E);
+		gKeyPressed = Gdx.input.isKeyPressed(Input.Keys.G);
+
 		leftKeyPressed =  Gdx.input.isKeyPressed(Input.Keys.LEFT);
 		rightKeyPressed =  Gdx.input.isKeyPressed(Input.Keys.RIGHT);
 		enterKeyPressed =  Gdx.input.isKeyPressed(Input.Keys.ENTER);

@@ -28,6 +28,13 @@ allprojects {
     }
 }
 
+// Gives grade access to lib folder for lombok
+repositories {
+    flatDir {
+        dirs 'lib'
+    }
+}
+
 project(":desktop") {
     apply plugin: "java"
 
@@ -42,8 +49,6 @@ project(":desktop") {
         compile "com.badlogicgames.gdx:gdx-tools:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
         // https://mvnrepository.com/artifact/com.google.code.gson/gson
-        compile group: 'com.google.code.gson', name: 'gson', version: '1.7.2'
-        compileOnly "org.projectlombok:lombok:1.16.14"
     }
 }
 
@@ -56,6 +61,8 @@ project(":core") {
         compile "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-controllers:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
+        compile group: 'com.google.code.gson', name: 'gson', version: '1.7.2'
+        compile name: 'lombok'
     }
 }
 
