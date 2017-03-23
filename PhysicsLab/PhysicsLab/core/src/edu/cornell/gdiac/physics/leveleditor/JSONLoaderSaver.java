@@ -72,4 +72,14 @@ public class JSONLoaderSaver {
         return Optional.of(je.getAsJsonObject());
     }
 
+    public static void saveArbitrary(String s, String text) {
+        try {
+            FileWriter fw = new FileWriter(s);
+            fw.write(text);
+            fw.close();
+        } catch (IOException e) {
+            // Not much we can do, unlikely to happen anyway.
+            e.printStackTrace();
+        }
+    }
 }
