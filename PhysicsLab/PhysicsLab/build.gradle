@@ -49,8 +49,10 @@ project(":desktop") {
         compile "com.badlogicgames.gdx:gdx-tools:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
         // https://mvnrepository.com/artifact/com.google.code.gson/gson
+
     }
 }
+
 
 project(":core") {
     apply plugin: "java"
@@ -62,7 +64,8 @@ project(":core") {
         compile "com.badlogicgames.gdx:gdx-controllers:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
         compile group: 'com.google.code.gson', name: 'gson', version: '1.7.2'
-        compile name: 'lombok'
+        compile files('lib/lombok.jar')
+
     }
 }
 
