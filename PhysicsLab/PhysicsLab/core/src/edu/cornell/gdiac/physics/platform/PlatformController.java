@@ -82,7 +82,7 @@ public class PlatformController extends WorldController implements ContactListen
 	//private static Vector2 DOLL_POS = new Vector2( 2.5f,  6.0f);
 	//private static Vector2 DOLL_POS = new Vector2( 7.5f,  17.0f);
 	//private static Vector2 DOLL_POS = new Vector2( 6.0f,  17.0f);
-	private static Vector2 DOLL_POS = new Vector2( 4.4f,  7.8f);
+	private static Vector2 DOLL_POS = new Vector2( 4.2f,  7.8f);
 	//7.5f,  17.0f
 	//10f, 17.1f
 
