@@ -15,6 +15,7 @@ package edu.cornell.gdiac.physics.desktop;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import edu.cornell.gdiac.physics.GDXRoot;
+import edu.cornell.gdiac.physics.GlobalConfiguration;
 
 /**
  * The main class of the game.
@@ -37,6 +38,7 @@ public class DesktopLauncher {
 		config.width  = 1024;
 		config.height = 576;
 		config.resizable = false;
+		config.fullscreen = GlobalConfiguration.getInstance().getAsBoolean("fullscreen");
 		new LwjglApplication(new GDXRoot(), config);
 	}
 }
