@@ -64,8 +64,7 @@ project(":core") {
         compile "com.badlogicgames.gdx:gdx-controllers:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
         compile group: 'com.google.code.gson', name: 'gson', version: '1.7.2'
-        compile files('lib/lombok.jar')
-
+        compile "org.projectlombok:lombok:1.16.2"
     }
 }
 
