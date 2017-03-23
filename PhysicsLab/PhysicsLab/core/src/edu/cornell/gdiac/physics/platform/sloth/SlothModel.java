@@ -16,6 +16,7 @@ import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
 import com.badlogic.gdx.utils.ObjectSet;
 import com.google.gson.JsonObject;
 import edu.cornell.gdiac.physics.GameCanvas;
+import edu.cornell.gdiac.physics.GlobalConfiguration;
 import edu.cornell.gdiac.physics.leveleditor.FullAssetTracker;
 import edu.cornell.gdiac.physics.obstacle.BoxObstacle;
 import edu.cornell.gdiac.physics.obstacle.ComplexObstacle;
@@ -36,7 +37,7 @@ public class SlothModel extends ComplexObstacle  {
     private static final boolean HANDS_FIXED_ROTATION = true;
     private static final float GRAVITY_SCALE = 0.7f;
     private static final float ARM_MASS = 5.0f;
-    public transient boolean SPIDERMAN_MODE = false;
+    private transient boolean SPIDERMAN_MODE;
 
     /** Indices for the body parts in the bodies array */
     private static final int PART_NONE = -1;
@@ -139,6 +140,7 @@ public class SlothModel extends ComplexObstacle  {
         super(x,y);
         this.x = x;
         this.y = y;
+        this.SPIDERMAN_MODE = GlobalConfiguration.getInstance().getAsBoolean("flowGrabAnything");
         //this.shaper = new ShapeRenderer();
 
     }
