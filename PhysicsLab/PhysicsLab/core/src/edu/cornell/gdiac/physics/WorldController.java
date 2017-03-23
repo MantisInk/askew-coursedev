@@ -399,6 +399,8 @@ public abstract class WorldController implements Screen {
 	 * @param gravity	The gravitational force on this Box2d world
 	 */
 	protected WorldController(Rectangle bounds, Vector2 gravity) {
+		// Reload global configs
+		GlobalConfiguration.update();
 		assets = new Array<String>();
 		world = new World(gravity,false);
 		this.bounds = new Rectangle(bounds);
