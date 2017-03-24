@@ -204,9 +204,17 @@ public abstract class WorldController implements Screen {
 	/** Exit code for quitting the game */
 	public static final int EXIT_QUIT = 0;
 	/** Exit code for advancing to next level */
-	public static final int EXIT_NEXT = 1;
+	public static final int EXIT_MM_GM = 1;
 	/** Exit code for jumping back to previous level */
-	public static final int EXIT_PREV = 2;
+	public static final int EXIT_MM_LE = 2;
+	/** Exit code for advancing to next level */
+	public static final int EXIT_GM_MM = 3;
+	/** Exit code for jumping back to previous level */
+	public static final int EXIT_GM_LE = 4;
+	/** Exit code for advancing to next level */
+	public static final int EXIT_LE_MM = 5;
+	/** Exit code for jumping back to previous level */
+	public static final int EXIT_LE_GM = 6;
     /** How many frames after winning/losing do we continue? */
 	public static final int EXIT_COUNT = 120;
 
@@ -231,7 +239,7 @@ public abstract class WorldController implements Screen {
 	/** Queue for adding objects */
 	protected PooledList<Obstacle> addQueue = new PooledList<Obstacle>();
 	/** Listener that will update the player mode when we are done */
-	private ScreenListener listener;
+	protected ScreenListener listener;
 
 	/** The Box2D world */
 	protected World world;
@@ -502,32 +510,38 @@ public abstract class WorldController implements Screen {
 			reset();
 		}
 
-		// Now it is time to maybe switch screens.
 		else if (input.didBackPressed()) {
 			System.out.println("quit");
 			listener.exitScreen(this, EXIT_QUIT);
 			return false;
-		} else if (input.didLeftButtonPress()) {
-			System.out.println("next");
-			listener.exitScreen(this, EXIT_NEXT);
-			return false;
-		} else if (input.didRightButtonPress()) {
-			System.out.println("prev");
-			listener.exitScreen(this, EXIT_PREV);
-			return false;
-		} else if (countdown > 0) {
-			System.out.println("counting down");
-			countdown--;
-		} else if (countdown == 0) {
-			if (failed) {
-				System.out.println("countdown failed");
-				reset();
-			} else if (complete) {
-				System.out.println("quitting");
-				listener.exitScreen(this, EXIT_NEXT);
-				return false;
-			}
 		}
+
+			// Now it is time to maybe switch screens.
+//		else if (input.didBackPressed()) {
+//			System.out.println("quit");
+//			listener.exitScreen(this, EXIT_QUIT);
+//			return false;
+//		} else if (input.didLeftButtonPress()) {
+//			System.out.println("next");
+//			listener.exitScreen(this, EXIT_NEXT);
+//			return false;
+//		} else if (input.didRightButtonPress()) {
+//			System.out.println("prev");
+//			listener.exitScreen(this, EXIT_PREV);
+//			return false;
+//		} else if (countdown > 0) {
+//			System.out.println("counting down");
+//			countdown--;
+//		} else if (countdown == 0) {
+//			if (failed) {
+//				System.out.println("countdown failed");
+//				reset();
+//			} else if (complete) {
+//				System.out.println("quitting");
+//				listener.exitScreen(this, EXIT_NEXT);
+//				return false;
+//			}
+//		}
 
 		return true;
 	}
@@ -673,7 +687,7 @@ public abstract class WorldController implements Screen {
 	public void resume() {
 		// TODO Auto-generated method stub
 	}
-	
+
 	/**
 	 * Called when this screen becomes the current screen for a Game.
 	 */

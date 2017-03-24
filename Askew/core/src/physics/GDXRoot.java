@@ -44,6 +44,10 @@ public class GDXRoot extends Game implements ScreenListener {
 	private int current;
 	/** List of all WorldControllers */
 	private WorldController[] controllers;
+	public static final int CON_MM = 0;
+	public static final int CON_GM = 1;
+	public static final int CON_LE = 2;
+
 	
 	/**
 	 * Creates a new game from the configuration settings.
@@ -72,13 +76,14 @@ public class GDXRoot extends Game implements ScreenListener {
 		loading = new LoadingMode(canvas,manager,1);
 		
 		// Initialize the three game worlds
-		controllers = new WorldController[2];
-		controllers[0] = new PlatformController();
-		controllers[1] = new LevelEditorController();
+		controllers = new WorldController[3];
+		controllers[0] = new MainMenuController();
+		controllers[1] = new PlatformController();
+		controllers[2] = new LevelEditorController();
 		for(int ii = 0; ii < controllers.length; ii++) {
 			controllers[ii].preLoadContent(manager);
 		}
-		current = 0;
+		current = 1;
 		loading.setScreenListener(this);
 		setScreen(loading);
 	}
@@ -118,7 +123,16 @@ public class GDXRoot extends Game implements ScreenListener {
 		canvas.resize();
 		super.resize(width,height);
 	}
-	
+
+
+	/**
+	 * MM -> game
+	 * MM -> level editor
+	 * game -> MM
+	 * game -> LE
+	 * LE -> MM
+	 * LE -> game
+	 * */
 	/**
 	 * The given screen has made a request to exit its player mode.
 	 *
@@ -139,23 +153,45 @@ public class GDXRoot extends Game implements ScreenListener {
 			
 			loading.dispose();
 			loading = null;
-		} else if (exitCode == WorldController.EXIT_NEXT) {
-			current = (current+1) % controllers.length;
+		} else if (exitCode == WorldController.EXIT_MM_GM) {
+			current = CON_GM;
 			controllers[current].reset();
 			setScreen(controllers[current]);
-		} else if (exitCode == WorldController.EXIT_PREV) {
+
+		} else if (exitCode == WorldController.EXIT_MM_LE) {
+			current = CON_LE;
+			controllers[current].reset();
+			setScreen(controllers[current]);
+
+		} else if (exitCode == WorldController.EXIT_GM_MM) {
+			current = CON_MM;
+			controllers[current].reset();
+			setScreen(controllers[current]);
+
+		} else if (exitCode == WorldController.EXIT_GM_LE) {
+			current = CON_LE;
+			controllers[current].reset();
+			setScreen(controllers[current]);
+
+		} else if (exitCode == WorldController.EXIT_LE_MM) {
+			current = CON_MM;
+			controllers[current].reset();
+			setScreen(controllers[current]);
+
+		} else if (exitCode == WorldController.EXIT_LE_GM) {
+			current = CON_GM;
 			if (controllers[current] instanceof LevelEditorController) {
 				LevelEditorController lec = (LevelEditorController) controllers[current];
 				if (!lec.getTrialLevelName().equals("")) {
-					WorldController next = controllers[(current+1) % controllers.length];
-					if (next instanceof PlatformController) {
-						((PlatformController) next).setLoadLevel(lec.getTrialLevelName());
+					WorldController GM = controllers[CON_GM];
+					if (GM instanceof PlatformController) {
+						((PlatformController) GM).setLoadLevel(lec.getTrialLevelName());
 					}
 				}
 			}
-			current = (current+controllers.length-1) % controllers.length;
 			controllers[current].reset();
 			setScreen(controllers[current]);
+
 		} else if (exitCode == WorldController.EXIT_QUIT) {
 			// We quit the main application
 			Gdx.app.exit();

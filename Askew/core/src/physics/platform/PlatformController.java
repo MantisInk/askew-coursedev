@@ -516,6 +516,18 @@ public class PlatformController extends WorldController {
 		if (!super.preUpdate(dt)) {
 			return false;
 		}
+		InputController input = InputController.getInstance();
+
+		if (input.didLeftButtonPress()) {
+			System.out.println("LE");
+			listener.exitScreen(this, EXIT_GM_LE);
+			return false;
+		} else if (input.didTopButtonPress()) {
+			System.out.println("MM");
+			listener.exitScreen(this, EXIT_GM_MM);
+			return false;
+		}
+
 
 		//Checks to see if player has selected the button on the starting screen
 		if(!playerIsReady){
