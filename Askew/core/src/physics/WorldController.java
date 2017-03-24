@@ -16,22 +16,23 @@
  */
 package physics;
 
+import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader;
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.Array;
+import physics.obstacle.Obstacle;
+import util.FilmStrip;
+import util.PooledList;
+import util.ScreenListener;
+
 import java.util.Iterator;
-
-import com.badlogic.gdx.*;
-import com.badlogic.gdx.math.*;
-import com.badlogic.gdx.utils.*;
-import com.badlogic.gdx.assets.*;
-import com.badlogic.gdx.graphics.*;
-import com.badlogic.gdx.graphics.g2d.*;
-import com.badlogic.gdx.physics.box2d.*;
-import com.badlogic.gdx.graphics.g2d.freetype.*;
-import physics.platform.PlatformController;
-import physics.platform.sloth.SlothModel;
-import util.*;
-import physics.obstacle.*;
-
-import static physics.platform.PlatformController.getSloth;
 
 /**
  * Base class for a world-specific controller.
@@ -359,6 +360,7 @@ public abstract class WorldController implements Screen {
 		this.canvas = canvas;
 		this.scale.x = 1.5f * canvas.getWidth()/bounds.getWidth();
 		this.scale.y = 1.5f * canvas.getHeight()/bounds.getHeight();
+		//System.out.println("SETCANVAS SET SCALE");
 	}
 	
 	/**
@@ -410,6 +412,7 @@ public abstract class WorldController implements Screen {
 		debug  = false;
 		active = false;
 		countdown = -1;
+		//System.out.println("SETTING SCALE IN CONSTRUCTOR");
 	}
 	
 	/**
@@ -639,6 +642,14 @@ public abstract class WorldController implements Screen {
 	 */
 	public void resize(int width, int height) {
 		// IGNORE FOR NOW
+	}
+
+	public void setScale(GameCanvas canvas) {
+		//System.out.println("IN SET SCALE");
+		//System.out.println("pre set ("+scale.x+","+scale.y+")");
+		this.scale.x = canvas.getWidth()/bounds.getWidth()/32f;
+		this.scale.y = canvas.getHeight()/bounds.getHeight()/32f;
+		//System.out.println("post set ("+scale.x+","+scale.y+")");
 	}
 
 	/**

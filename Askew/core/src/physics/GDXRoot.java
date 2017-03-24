@@ -23,6 +23,7 @@ import com.badlogic.gdx.assets.loaders.resolvers.*;
 import physics.leveleditor.LevelEditorController;
 import util.*;
 import physics.platform.*;
+import com.badlogic.gdx.math.Vector2;
 
 /**
  * Root class for a LibGDX.  
@@ -76,9 +77,11 @@ public class GDXRoot extends Game implements ScreenListener {
 		controllers[0] = new PlatformController();
 		controllers[1] = new LevelEditorController();
 		for(int ii = 0; ii < controllers.length; ii++) {
+			controllers[ii].setScale(canvas);
 			controllers[ii].preLoadContent(manager);
 		}
 		current = 0;
+		canv_dim = controllers[current].scale;
 		loading.setScreenListener(this);
 		setScreen(loading);
 	}
@@ -129,13 +132,17 @@ public class GDXRoot extends Game implements ScreenListener {
 	 */
 	public void exitScreen(Screen screen, int exitCode) {
 		if (screen == loading) {
+			//System.out.println("loading");
 			for(int ii = 0; ii < controllers.length; ii++) {
 				controllers[ii].loadContent(manager);
 				controllers[ii].setScreenListener(this);
 				controllers[ii].setCanvas(canvas);
 			}
 			controllers[current].reset();
+			//System.out.println("scale post reset ("+controllers[current].scale.x+","+controllers[current].scale.y+")");
 			setScreen(controllers[current]);
+			controllers[current].setCanvas(canvas);
+			//System.out.println("scale ("+controllers[current].scale.x+","+controllers[current].scale.y+")");
 			
 			loading.dispose();
 			loading = null;
@@ -143,6 +150,7 @@ public class GDXRoot extends Game implements ScreenListener {
 			current = (current+1) % controllers.length;
 			controllers[current].reset();
 			setScreen(controllers[current]);
+			controllers[current].setCanvas(canvas);
 		} else if (exitCode == WorldController.EXIT_PREV) {
 			if (controllers[current] instanceof LevelEditorController) {
 				LevelEditorController lec = (LevelEditorController) controllers[current];
@@ -156,10 +164,10 @@ public class GDXRoot extends Game implements ScreenListener {
 			current = (current+controllers.length-1) % controllers.length;
 			controllers[current].reset();
 			setScreen(controllers[current]);
+			controllers[current].setCanvas(canvas);
 		} else if (exitCode == WorldController.EXIT_QUIT) {
 			// We quit the main application
 			Gdx.app.exit();
 		}
 	}
-
 }

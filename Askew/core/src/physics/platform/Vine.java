@@ -14,16 +14,16 @@
  */
 package physics.platform;
 
-import com.badlogic.gdx.math.*;
-import com.badlogic.gdx.graphics.g2d.*;
-import com.badlogic.gdx.physics.box2d.*;
-import com.badlogic.gdx.physics.box2d.joints.*;
-
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.Joint;
+import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
 import com.google.gson.JsonObject;
 import physics.GlobalConfiguration;
 import physics.leveleditor.FullAssetTracker;
 import physics.obstacle.*;
-import physics.platform.sloth.SlothModel;
 
 /**
  * A bridge with planks connected by revolute joints.
@@ -76,8 +76,8 @@ public class Vine extends ComplexObstacle {
 	 * @param lwidth	The plank length
 	 * @param lheight	The bridge thickness
 	 */
-	public Vine(float x, float y, float width, float lwidth, float lheight) {
-		this(x, y, x+width, y, lwidth, lheight);
+	public Vine(float x, float y, float width, float lwidth, float lheight, Vector2 scale) {
+		this(x, y, x+width, y, lwidth*scale.x/32f, lheight*scale.y/32f);
 		numLinks = width;
 		this.x = x;
 		this.y = y;
@@ -97,16 +97,25 @@ public class Vine extends ComplexObstacle {
 		super(x0,y0);
 		setName(VINE_NAME);
 
+		//System.out.println("x0 "+x0+" y0 "+y0);
+		//System.out.println("x1 "+x1+" y1 "+y1);;
+
 		this.BASIC_DENSITY = GlobalConfiguration.getInstance().getAsFloat("vineDensity");
+
+		//System.out.println("lwidth "+lwidth+" lheight "+lheight);
 		
 		planksize = new Vector2(lwidth,lheight);
 		linksize = planksize.y;
+
+		//System.out.println("linksize before "+linksize);
 		
 	    // Compute the bridge length
 		dimension = new Vector2(x1-x0,y1-y0);
 	    float length = dimension.len();
 	    Vector2 norm = new Vector2(dimension);
 	    norm.nor();
+
+	    //System.out.println("length "+length);
 	    
 	    // If too small, only make one plank.
 	    int nLinks = (int)(length / linksize);
@@ -118,6 +127,9 @@ public class Vine extends ComplexObstacle {
 	        spacing = length - nLinks * linksize;
 	        spacing /= (nLinks-1);
 	    }
+
+	    //System.out.println("links "+nLinks);
+	    //System.out.println("linksize "+linksize);
 	    	    
 	    // Create the planks
 		planksize.y = linksize;
@@ -237,7 +249,7 @@ public class Vine extends ComplexObstacle {
 		float y = instance.get("y").getAsFloat();
 		float numlinks = instance.get("numLinks").getAsFloat();
 		TextureRegion vineTexture = FullAssetTracker.getInstance().getTextureRegion("textures/vine.png");
-		vine = new Vine(x, y, numlinks, vineTexture.getRegionHeight() / scale.x, vineTexture.getRegionHeight() / scale.y);
+		vine = new Vine(x, y, numlinks, vineTexture.getRegionHeight() / scale.x, vineTexture.getRegionHeight() / scale.y, scale);
 		vine.setDrawScale(scale.x, scale.y);
 		vine.setTextures();
 		return vine;

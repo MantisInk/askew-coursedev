@@ -207,15 +207,15 @@ public class LevelEditorController extends WorldController implements ContactLis
 				promptTemplate(sTemplate);
 				break;
 			case ".Vine":
-				Vine vTemplate = new Vine(x,y,5.0f,0.25f,1.0f);
+				Vine vTemplate = new Vine(x,y,5.0f,0.25f,1.0f,scale);
 				promptTemplate(vTemplate);
 				break;
 			case ".Trunk":
-				Trunk tTemplate = new Trunk(x,y, 5.0f, 0.25f, 1.0f, 3.0f);
+				Trunk tTemplate = new Trunk(x,y, 5.0f, 0.25f, 1.0f, 3.0f,scale);
 				promptTemplate(tTemplate);
 				break;
 			case ".StiffBranch":
-				StiffBranch sb = new StiffBranch(x,y, 3.0f, 0.25f, 1.0f);
+				StiffBranch sb = new StiffBranch(x,y, 3.0f, 0.25f, 1.0f,scale);
 				promptTemplate(sb);
 		}
 		inputThresher = THRESHER_RESET;
