@@ -70,7 +70,7 @@ public abstract class WorldController implements Screen {
 	/** File to texture for walls and platforms */
 	private static String EARTH_FILE = "shared/earthtile.png";
 	/** File to texture for the win door */
-	private static String GOAL_FILE = "shared/goaldoor.png";
+	private static String GOAL_FILE = "shared/owl.png";
 	/** Retro font for displaying messages */
 	private static String FONT_FILE = "shared/RetroGame.ttf";
 	private static int FONT_SIZE = 64;
@@ -358,8 +358,8 @@ public abstract class WorldController implements Screen {
 	 */
 	public void setCanvas(GameCanvas canvas) {
 		this.canvas = canvas;
-		this.scale.x = 1.5f * canvas.getWidth()/bounds.getWidth();
-		this.scale.y = 1.5f * canvas.getHeight()/bounds.getHeight();
+		this.scale.x = 1.25f * canvas.getWidth()/bounds.getWidth();
+		this.scale.y = 1.25f * canvas.getHeight()/bounds.getHeight();
 		//System.out.println("SETCANVAS SET SCALE");
 	}
 	

@@ -46,6 +46,8 @@ public class Vine extends ComplexObstacle {
 	// Invisible anchor objects
 	/** The left side of the bridge */
 	private transient WheelObstacle start = null;
+	private transient WheelObstacle finish = null;
+	private boolean pin = false;
 	/** Set damping constant for joint rotation in vines */
 	public static final float DAMPING_ROTATION = 5f;
 
@@ -72,13 +74,20 @@ public class Vine extends ComplexObstacle {
 	 *
 	 * @param x  		The x position of the left anchor
 	 * @param y  		The y position of the left anchor
-	 * @param width		The length of the bridge
+	 * @param length		The length of the bridge
 	 * @param lwidth	The plank length
 	 * @param lheight	The bridge thickness
 	 */
-	public Vine(float x, float y, float width, float lwidth, float lheight, Vector2 scale) {
-		this(x, y, x+width, y, lwidth*scale.x/32f, lheight*scale.y/32f);
-		numLinks = width;
+	public Vine(float x, float y, float length, float lwidth, float lheight, Vector2 scale) {
+		this(x, y, x, y-length, lwidth*scale.x/32f, lheight*scale.y/32f, false, 5f, -450f);
+		numLinks = length;
+		this.x = x;
+		this.y = y;
+	}
+
+	public Vine(float x, float y, float length, float lwidth, float lheight, Vector2 scale, boolean pinned, float angle, float omega) {
+		this(x, y, x+length, y, lwidth*scale.x/32f, lheight*scale.y/32f, pinned, angle, omega);
+		numLinks = length;
 		this.x = x;
 		this.y = y;
 	}
@@ -93,8 +102,9 @@ public class Vine extends ComplexObstacle {
 	 * @param lwidth	The plank length
 	 * @param lheight	The bridge thickness
 	 */
-	public Vine(float x0, float y0, float x1, float y1, float lwidth, float lheight) {
+	public Vine(float x0, float y0, float x1, float y1, float lwidth, float lheight, boolean pinned, float angle, float omega) {
 		super(x0,y0);
+		pin = pinned;
 		setName(VINE_NAME);
 
 		//System.out.println("x0 "+x0+" y0 "+y0);
@@ -114,6 +124,7 @@ public class Vine extends ComplexObstacle {
 	    float length = dimension.len();
 	    Vector2 norm = new Vector2(dimension);
 	    norm.nor();
+	    norm.rotate(angle);
 
 	    //System.out.println("length "+length);
 	    
@@ -142,6 +153,7 @@ public class Vine extends ComplexObstacle {
 	        BoxObstacle plank = new BoxObstacle(pos.x, pos.y, planksize.x, planksize.y);
 	        plank.setName(PLANK_NAME+ii);
 	        plank.setDensity(BASIC_DENSITY);
+	        plank.setAngularVelocity(omega*(nLinks-ii-1)/(nLinks));
 	        bodies.add(plank);
 	    }
 	}
@@ -198,6 +210,28 @@ public class Vine extends ComplexObstacle {
 			joint = world.createJoint(jointDef);
 			joints.add(joint);
 			//#endregion
+		}
+
+		if (pin) {
+			// Create the rightmost anchor
+			Obstacle last = bodies.get(bodies.size-1);
+
+			pos = last.getPosition();
+			pos.y += linksize / 2;
+			finish = new WheelObstacle(pos.x,pos.y,BRIDGE_PIN_RADIUS);
+			finish.setName(BRIDGE_PIN_NAME+1);
+			finish.setDensity(BASIC_DENSITY);
+			finish.setBodyType(BodyDef.BodyType.StaticBody);
+			finish.activatePhysics(world);
+
+			// Final joint
+			anchor2.y = 0;
+			jointDef.bodyA = last.getBody();
+			jointDef.bodyB = finish.getBody();
+			jointDef.localAnchorA.set(anchor1);
+			jointDef.localAnchorB.set(anchor2);
+			joint = world.createJoint(jointDef);
+			joints.add(joint);
 		}
 
 		return true;
