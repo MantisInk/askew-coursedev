@@ -669,10 +669,17 @@ public class PlatformController extends WorldController {
 
 		//Draws the force lines
 		//SlothModel sloth = PlatformController.getSloth();
-		if(debug) {
+		if (debug) {
+			canvas.beginDebug(camTrans);
+			for(Obstacle obj : objects) {
+				obj.drawDebug(canvas);
+			}
+
+			canvas.endDebug();
 			sloth.drawForces(canvas, camTrans);
 		}
-			//sloth.drawForces(canvas.getWidth()/2,canvas.getHeight()/2);
+
+		//sloth.drawForces(canvas.getWidth()/2,canvas.getHeight()/2);
 
 	}
 
