@@ -775,9 +775,7 @@ public abstract class SimpleObstacle extends Obstacle {
 	 * @param canvas Drawing context
 	 */
 	public void draw(GameCanvas canvas) {
-		if (texture != null) {
-			canvas.draw(texture,Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.x,getAngle(),1,1);
-		}
+		draw(canvas, Color.WHITE);
 	}
 
 	/**
@@ -787,7 +785,7 @@ public abstract class SimpleObstacle extends Obstacle {
 	 */
 	public void draw(GameCanvas canvas, Color tint) {
 		if (texture != null) {
-			canvas.draw(texture,tint,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.x,getAngle(),1,1);
+			canvas.draw(texture,tint,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.x,getAngle(),1*drawScale.x/32f,1*drawScale.y/32f);
 		}
 	}
 	
@@ -888,7 +886,7 @@ public abstract class SimpleObstacle extends Obstacle {
 	 * primary purpose is to adjust changes to the fixture, which have to take place 
 	 * after collision.
 	 *
-	 * @param dt Timing values from parent loop
+	 * @param delta Timing values from parent loop
 	 */
 	public void update(float delta) {
 		// Recreate the fixture object if dimensions changed.

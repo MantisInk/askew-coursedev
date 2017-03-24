@@ -13,17 +13,19 @@
  */
  package physics;
 
-import com.badlogic.gdx.*;
-import com.badlogic.gdx.assets.*;
-import com.badlogic.gdx.graphics.g2d.*;
-import com.badlogic.gdx.graphics.g2d.freetype.*;
-import com.badlogic.gdx.assets.loaders.*;
-import com.badlogic.gdx.assets.loaders.resolvers.*;
-
+import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.assets.loaders.FileHandleResolver;
+import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGeneratorLoader;
+import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader;
 import physics.leveleditor.LevelEditorController;
-import util.*;
-import physics.platform.*;
-import com.badlogic.gdx.math.Vector2;
+import physics.platform.PlatformController;
+import util.ScreenListener;
 
 /**
  * Root class for a LibGDX.  
@@ -81,7 +83,6 @@ public class GDXRoot extends Game implements ScreenListener {
 			controllers[ii].preLoadContent(manager);
 		}
 		current = 0;
-		canv_dim = controllers[current].scale;
 		loading.setScreenListener(this);
 		setScreen(loading);
 	}

@@ -867,7 +867,7 @@ public abstract class Obstacle {
      * @param value  the drawing scale for this physics object
      */
     public void setDrawScale(Vector2 value) { 
-    	setDrawScale(value.x,value.y); 
+    	setDrawScale(value.x,value.y);
 	}
     
     /**
