@@ -41,7 +41,7 @@ import java.util.Arrays;
  * This is the purpose of our AssetState variable; it ensures that multiple instances
  * place nicely with the static assets.
  */
-public class PlatformController extends WorldController implements ContactListener {
+public class PlatformController extends WorldController {
 	/** The texture file for the character avatar (no animation) */
 	private static final String DUDE_FILE  = "platform/dude.png";
 	/** The texture file for the spinning barrier */
@@ -62,8 +62,7 @@ public class PlatformController extends WorldController implements ContactListen
 	/** The sound file for a bullet collision */
 	private static final String POP_FILE = "platform/plop.mp3";
 
-	private Body leftBody;
-	private Body rightBody;
+
 
 	Affine2 camTrans = new Affine2();
 
@@ -106,6 +105,8 @@ public class PlatformController extends WorldController implements ContactListen
 
 	@Setter
 	private String loadLevel;
+
+	private PhysicsController collisions;
 
 	/**
 	 * Preloads the assets for this controller.
@@ -318,7 +319,7 @@ public class PlatformController extends WorldController implements ContactListen
 
 	// Physics objects for the game
 	/** Reference to the character avatar */
-	private DudeModel avatar;
+
 	private static SlothModel sloth;
 	/** Reference to the goalDoor (for collision detection) */
 	private BoxObstacle goalDoor;
@@ -336,7 +337,8 @@ public class PlatformController extends WorldController implements ContactListen
 		setDebug(false);
 		setComplete(false);
 		setFailure(false);
-		world.setContactListener(this);
+		collisions = new PhysicsController();
+		world.setContactListener(collisions);
 		sensorFixtures = new ObjectSet<Fixture>();
 		loadLevel = "";
 	}
@@ -348,7 +350,7 @@ public class PlatformController extends WorldController implements ContactListen
 	 */
 	public void reset() {
 		playerIsReady = false;
-		this.clearGrab();
+		collisions.clearGrab();
 		Vector2 gravity = new Vector2(world.getGravity() );
 
 		InputController.getInstance().releaseGrabs();
@@ -362,7 +364,11 @@ public class PlatformController extends WorldController implements ContactListen
 		world.dispose();
 
 		world = new World(gravity,false);
-		world.setContactListener(this);
+		if(collisions == null){
+			collisions = new PhysicsController();
+		}
+		collisions.reset();
+		world.setContactListener(collisions);
 		setComplete(false);
 		setFailure(false);
 		populateLevel();
@@ -387,6 +393,7 @@ public class PlatformController extends WorldController implements ContactListen
 			goalDoor.setTexture(goalTile);
 			goalDoor.setName("goal");
 			addObject(goalDoor);
+			collisions.setGoalDoor(goalDoor);
 
 			String wname = "wall";
 			for (int ii = 0; ii < WALLS.length; ii++) {
@@ -415,14 +422,6 @@ public class PlatformController extends WorldController implements ContactListen
 				obj.setName(pname+ii);
 				addObject(obj);
 			}
-
-			// Create dude
-//		dwidth  = avatarTexture.getRegionWidth()/scale.x;
-//		dheight = avatarTexture.getRegionHeight()/scale.y;
-//		avatar = new DudeModel(DUDE_POS.x, DUDE_POS.y, dwidth, dheight);
-//		avatar.setDrawScale(scale);
-//		avatar.setTexture(avatarTexture);
-//		addObject(avatar);
 
 			// Create rope bridge
 			dwidth  = bridgeTexture.getRegionWidth()/scale.x;
@@ -463,7 +462,7 @@ public class PlatformController extends WorldController implements ContactListen
 			sloth.setPartTextures();
 			addObject(sloth);
 			sloth.activateSlothPhysics(world);
-
+			collisions.setSloth(sloth);
 			// Create vine
 			Vine s_vine;
 			dwidth = vineTexture.getRegionWidth() / scale.x;
@@ -611,16 +610,19 @@ public class PlatformController extends WorldController implements ContactListen
 		sloth.setLeftGrab(InputController.getInstance().getLeftGrab());
 		sloth.setRightGrab(InputController.getInstance().getRightGrab());
 
+		//#TODO Collision states check
+		setComplete(collisions.isComplete());
+
 		// Physics tiem
 		// Gribby grab
 		if (sloth.isLeftGrab()) {
-			sloth.grabLeft(world,leftBody);
+			sloth.grabLeft(world,collisions.getLeftBody());
 		} else {
 			sloth.releaseLeft(world);
 		}
 
 		if (sloth.isRightGrab()) {
-			sloth.grabRight(world,rightBody);
+			sloth.grabRight(world,collisions.getRightBody());
 		} else {
 			sloth.releaseRight(world);
 		}
@@ -653,93 +655,5 @@ public class PlatformController extends WorldController implements ContactListen
 		//sloth.drawForces(canvas.getWidth()/2,canvas.getHeight()/2);
 
 	}
-
-	/**
-	 * Callback method for the start of a collision
-	 *
-	 * This method is called when we first get a collision between two objects.  We use
-	 * this method to test if it is the "right" kind of collision.  In particular, we
-	 * use it to test if we made it to the win door.
-	 *
-	 * But trevor uses it for something else
-	 *
-	 * @param contact The two bodies that collided
-	 */
-	public void beginContact(Contact contact) {
-		Fixture fix1 = contact.getFixtureA();
-		Fixture fix2 = contact.getFixtureB();
-
-		Body body1 = fix1.getBody();
-		Body body2 = fix2.getBody();
-
-		Object fd1 = fix1.getUserData();
-		Object fd2 = fix2.getUserData();
-
-		try {
-			Obstacle bd1 = (Obstacle)body1.getUserData();
-			Obstacle bd2 = (Obstacle)body2.getUserData();
-
-
-			if (fd1 != null && fd1.equals("sloth left hand") && bd2 != avatar && (!sloth.badBodies().contains(bd2)) && (!(bd2 instanceof PolygonObstacle))) {
-				System.out.println(body2);
-				leftBody = body2;
-			}
-			if (fd1 != null && fd1.equals("sloth right hand") && bd2 != avatar && bd2 != sloth && (!sloth.badBodies().contains(bd2))&& (!(bd2 instanceof PolygonObstacle))) {
-				rightBody = body2;
-			}
-
-			if (fd2 != null && fd2.equals("sloth left hand") && bd1 != avatar && bd1 != sloth && (!sloth.badBodies().contains(bd1))&& (!(bd1 instanceof PolygonObstacle))) {
-				leftBody = body1;
-			}
-			if (fd2 != null && fd2.equals("sloth right hand") && bd1 != avatar && bd1 != sloth && (!sloth.badBodies().contains(bd1))&& (!(bd1 instanceof PolygonObstacle))) {
-				rightBody = body1;
-			}
-
-			// Check for win condition
-			if ((bd1 == avatar   && bd2 == goalDoor) ||
-					(bd1 == goalDoor && bd2 == avatar)) {
-				setComplete(true);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-	}
-
-	/**
-	 * Callback method for the start of a collision
-	 *
-	 * This method is called when two objects cease to touch.  The main use of this method
-	 * is to determine when the characer is NOT on the ground.  This is how we prevent
-	 * double jumping.
-	 */
-	public void endContact(Contact contact) {
-		Fixture fix1 = contact.getFixtureA();
-		Fixture fix2 = contact.getFixtureB();
-
-		Body body1 = fix1.getBody();
-		Body body2 = fix2.getBody();
-
-		Object fd1 = fix1.getUserData();
-		Object fd2 = fix2.getUserData();
-
-		Object bd1 = body1.getUserData();
-		Object bd2 = body2.getUserData();
-
-		if (fd1 != null && fd1.equals("sloth left hand") && body2 == leftBody && !sloth.isLeftGrab()) leftBody = null;
-		if (fd2 != null && fd2.equals("sloth left hand") && body1 == leftBody && !sloth.isLeftGrab()) leftBody = null;
-		if (fd1 != null && fd1.equals("sloth right hand") && body2 == rightBody && !sloth.isRightGrab()) rightBody = null;
-		if (fd2 != null && fd2.equals("sloth right hand") && body1 == rightBody && !sloth.isRightGrab()) rightBody = null;
-	}
-
-	// only for forcing release on reset
-	public void clearGrab(){
-		leftBody = null;
-		rightBody = null;
-	}
-	/** Unused ContactListener method */
-	public void postSolve(Contact contact, ContactImpulse impulse) {}
-	/** Unused ContactListener method */
-	public void preSolve(Contact contact, Manifold oldManifold) {}
 
 }
