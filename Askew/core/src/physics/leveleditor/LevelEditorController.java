@@ -285,7 +285,7 @@ public class LevelEditorController extends WorldController implements ContactLis
 			return;
 		}
 
-		if (InputController.getInstance().didTertiary()) {
+		if (InputController.getInstance().isLeftClickPressed()) {
 			float mx = InputController.getInstance().getCrossHair().x;
 			float my = InputController.getInstance().getCrossHair().y;
 			createXY(mx,my);

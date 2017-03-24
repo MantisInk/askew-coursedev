@@ -34,8 +34,23 @@ public class InputController {
 
 	/** The singleton instance of the input controller */
 	private static InputController theController = null;
+
+	/**
+	 * Return the singleton instance of the input controller
+	 *
+	 * @return the singleton instance of the input controller
+	 */
+	public static InputController getInstance() {
+		if (theController == null) {
+			theController = new InputController();
+		}
+		return theController;
+	}
+
 	@Getter
 	private boolean rightClickPressed;
+	@Getter
+	private boolean leftClickPressed;
 
 	// Keyboard keys for the level editor
 	@Getter
@@ -58,42 +73,43 @@ public class InputController {
 	private boolean gKeyPressed;
 
 
-	/**
-	 * Return the singleton instance of the input controller
-	 *
-	 * @return the singleton instance of the input controller
-	 */
-	public static InputController getInstance() {
-		if (theController == null) {
-			theController = new InputController();
-		}
-		return theController;
-	}
+
 
 	// Fields to manage buttons
-	/** Whether the reset button was pressed. */
-	private boolean resetPressed;
-	private boolean resetPrevious;
-	/** Whether the button to advanced worlds was pressed. */
-	private boolean nextPressed;
-	private boolean nextPrevious;
-	/** Whether the button to step back worlds was pressed. */
-	private boolean prevPressed;
-	private boolean prevPrevious;
-	/** Whether the primary action button was pressed. */
-	private boolean primePressed;
-	private boolean primePrevious;
-	/** Whether the secondary action button was pressed. */
-	private boolean secondPressed;
-	private boolean secondPrevious;
-	/** Whether the teritiary action button was pressed. */
-	private boolean tertiaryPressed;
-	/** Whether the debug toggle was pressed. */
-	private boolean debugPressed;
-	private boolean debugPrevious;
-	/** Whether the exit button was pressed. */
-	private boolean exitPressed;
-	private boolean exitPrevious;
+	private boolean startButtonPressed;
+	private boolean startButtonPrevious;
+
+	private boolean leftButtonPressed;
+	private boolean leftButtonPrevious;
+
+	private boolean rightButtonPressed;
+	private boolean rightButtonPrevious;
+
+	private boolean bottomButtonPressed;
+	private boolean bottomButtonPrevious;
+
+	private boolean topButtonPressed;
+	private boolean topButtonPrevious;
+
+	private boolean backButtonPressed;
+	private boolean backButtonPrevious;
+
+	//Fields to manage DPad
+
+	private boolean topDPadPressed;
+	private boolean topDPadPrevious;
+
+	private boolean rightDPadPressed;
+	private boolean rightDPadPrevious;
+
+	private boolean leftDPadPressed;
+	private boolean leftDPadPrevious;
+
+	private boolean bottomDPadPressed;
+	private boolean bottomDPadPrevious;
+
+
+
 
 	/** Whether the right hand is grabbing. */
 	private boolean leftGrabPressed;
@@ -207,86 +223,50 @@ public class InputController {
 		return crosscache.set(crosshair);
 	}
 
+
 	/**
-	 * Returns true if the primary action button was pressed.
+	 * Returns true if the corresponding button was pressed.
 	 *
-	 * This is a one-press button. It only returns true at the moment it was
-	 * pressed, and returns false at any frame afterwards.
-	 *
-	 * @return true if the primary action button was pressed.
+	 * @return true if the corresponding button was pressed.
 	 */
-	public boolean didPrimary() {
-		return primePressed && !primePrevious;
+	public boolean didBottomButtonPress() {
+		return bottomButtonPressed && !bottomButtonPrevious;
+	}
+
+	public boolean didStartPress() {
+		return startButtonPressed && !startButtonPrevious;
+	}
+
+	public boolean didLeftButtonPress() {
+		return leftButtonPressed && !leftButtonPrevious;
+	}
+
+	public boolean didRightButtonPress() {
+		return rightButtonPressed && !rightButtonPrevious;
+	}
+
+	public boolean didTopButtonPress() {
+		return topButtonPressed && !topButtonPrevious;
+	}
+
+	public boolean didBackPressed() {
+		return backButtonPressed && !backButtonPrevious;
 	}
 
 	/**
-	 * Returns true if the secondary action button was pressed.
+	 * Returns true if the corresponding dpad was pressed.
 	 *
-	 * This is a one-press button. It only returns true at the moment it was
-	 * pressed, and returns false at any frame afterwards.
-	 *
-	 * @return true if the secondary action button was pressed.
+	 * @return true if the corresponding dpad was pressed.
 	 */
-	public boolean didSecondary() {
-		return secondPressed && !secondPrevious;
-	}
+	public boolean didTopDPadPress() { return topDPadPressed && !topDPadPrevious; }
 
-	/**
-	 * Returns true if the tertiary action button was pressed.
-	 *
-	 * This is a sustained button. It will returns true as long as the player
-	 * holds it down.
-	 *
-	 * @return true if the secondary action button was pressed.
-	 */
-	public boolean didTertiary() {
-		return tertiaryPressed;
-	}
+	public boolean didRightDPadPress() { return rightDPadPressed && !rightDPadPrevious; }
 
-	/**
-	 * Returns true if the reset button was pressed.
-	 *
-	 * @return true if the reset button was pressed.
-	 */
-	public boolean didReset() {
-		return resetPressed && !resetPrevious;
-	}
+	public boolean didLeftDPadPress() { return leftDPadPressed && !leftDPadPrevious; }
 
-	/**
-	 * Returns true if the player wants to go to the next level.
-	 *
-	 * @return true if the player wants to go to the next level.
-	 */
-	public boolean didAdvance() {
-		return nextPressed && !nextPrevious;
-	}
+	public boolean didBottomDPadPress() { return bottomDPadPressed && !bottomDPadPrevious; }
 
-	/**
-	 * Returns true if the player wants to go to the previous level.
-	 *
-	 * @return true if the player wants to go to the previous level.
-	 */
-	public boolean didRetreat() {
-		return prevPressed && !prevPrevious;
-	}
 
-	/**
-	 * Returns true if the player wants to go toggle the debug mode.
-	 *
-	 * @return true if the player wants to go toggle the debug mode.
-	 */
-	public boolean didDebug() {
-		return debugPressed && !debugPrevious;
-	}
-
-	/**
-	 * Returns true if the exit button was pressed.
-	 *
-	 * @return true if the exit button was pressed.
-	 */
-	public boolean didExit() {
-		return exitPressed && !exitPrevious;
-	}
 
 	/**
 	 * Creates a new input controller
@@ -314,13 +294,18 @@ public class InputController {
 	public void readInput(Rectangle bounds, Vector2 scale) {
 		// Copy state from last animation frame
 		// Helps us ignore buttons that are held down
-		primePrevious  = primePressed;
-		secondPrevious = secondPressed;
-		resetPrevious  = resetPressed;
-		debugPrevious  = debugPressed;
-		exitPrevious = exitPressed;
-		nextPrevious = nextPressed;
-		prevPrevious = prevPressed;
+		bottomButtonPrevious = bottomButtonPressed;
+		startButtonPrevious = startButtonPressed;
+		topButtonPrevious = topButtonPressed;
+		backButtonPrevious = backButtonPressed;
+		leftButtonPrevious = leftButtonPressed;
+		rightButtonPrevious = rightButtonPressed;
+
+		topDPadPrevious = topDPadPressed;
+		rightDPadPrevious = rightDPadPressed;
+		leftDPadPrevious = leftDPadPressed;
+		bottomDPadPrevious = bottomDPadPressed;
+
 
 		// Check to see if a GamePad is connected
 		if (xbox.isConnected()) {
@@ -343,12 +328,17 @@ public class InputController {
 	 * @param scale  The drawing scale
 	 */
 	private void readGamepad(Rectangle bounds, Vector2 scale) {
-		resetPressed = xbox.getStart();
-		exitPressed  = xbox.getBack();
-		nextPressed  = xbox.getX();
-		prevPressed  = xbox.getB();
-		primePressed = xbox.getA();
-		debugPressed  = xbox.getY();
+		startButtonPressed = xbox.getStart();
+		backButtonPressed = xbox.getBack();
+		leftButtonPressed = xbox.getX();
+		rightButtonPressed = xbox.getB();
+		bottomButtonPressed = xbox.getA();
+		topButtonPressed = xbox.getY();
+
+		topDPadPressed = xbox.getDPadUp();
+		rightDPadPressed = xbox.getDPadRight();
+		leftDPadPressed = xbox.getDPadLeft();
+		bottomDPadPressed = xbox.getDPadDown();
 
 		//Check if hands are grabbing
 		//leftGrabPressed = xbox.getLeftTrigger();
@@ -363,11 +353,7 @@ public class InputController {
 		rightHorizontal = xbox.getRightX();
 		rightVertical   = xbox.getRightY();
 
-		// Increase animation frame, but only if trying to move
-		secondPressed = xbox.getRightTrigger() > 0.6f;
 
-		// Move the crosshairs with the right stick.
-		tertiaryPressed = xbox.getA();
 		crosscache.set(xbox.getLeftX(), xbox.getLeftY());
 		if (crosscache.len2() > GP_THRESHOLD) {
 			momentum += GP_ACCELERATE;
@@ -398,13 +384,12 @@ public class InputController {
 	 */
 	private void readKeyboard(Rectangle bounds, Vector2 scale, boolean secondary) {
 		// Give priority to gamepad results
-		resetPressed = (secondary && resetPressed) || (Gdx.input.isKeyPressed(Input.Keys.R));
-		debugPressed = (secondary && debugPressed) || (Gdx.input.isKeyPressed(Input.Keys.D));
-		primePressed = (secondary && primePressed) || (Gdx.input.isKeyPressed(Input.Keys.UP));
-		secondPressed = (secondary && secondPressed) || (Gdx.input.isKeyPressed(Input.Buttons.RIGHT));
-		prevPressed = (secondary && prevPressed) || (Gdx.input.isKeyPressed(Input.Keys.P));
-		nextPressed = (secondary && nextPressed) ;//(Gdx.input.isKeyPressed(Input.Keys.N));
-		exitPressed  = (secondary && exitPressed) || (Gdx.input.isKeyPressed(Input.Keys.ESCAPE));
+		startButtonPressed = (secondary && startButtonPressed) || (Gdx.input.isKeyPressed(Input.Keys.R));
+		topButtonPressed = (secondary && topButtonPressed) || (Gdx.input.isKeyPressed(Input.Keys.D));
+		bottomButtonPressed = (secondary && bottomButtonPressed) || (Gdx.input.isKeyPressed(Input.Keys.UP));
+		rightButtonPressed = (secondary && rightButtonPressed) || (Gdx.input.isKeyPressed(Input.Keys.P));
+		leftButtonPressed = (secondary && leftButtonPressed) ;//(Gdx.input.isKeyPressed(Input.Keys.N));
+		backButtonPressed = (secondary && backButtonPressed) || (Gdx.input.isKeyPressed(Input.Keys.ESCAPE));
 
 		// Directional controls
 		leftHorizontal = (secondary ? leftHorizontal : 0.0f);
@@ -424,7 +409,7 @@ public class InputController {
 		}
 
 		// Mouse results
-		tertiaryPressed = Gdx.input.isButtonPressed(Input.Buttons.LEFT);
+		leftClickPressed = Gdx.input.isButtonPressed(Input.Buttons.LEFT);
 		rightClickPressed = Gdx.input.isButtonPressed(Input.Buttons.RIGHT);
 
 		// Keypresses for level editor hotkeys

@@ -10,23 +10,29 @@
  */
 package physics.platform;
 
-import com.badlogic.gdx.math.*;
-import com.badlogic.gdx.utils.*;
-import com.badlogic.gdx.audio.*;
-import com.badlogic.gdx.assets.*;
-import com.badlogic.gdx.graphics.*;
-import com.badlogic.gdx.graphics.g2d.*;
-import com.badlogic.gdx.physics.box2d.*;
-
+import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Affine2;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.ObjectSet;
+import lombok.Getter;
+import lombok.Setter;
+import physics.InputController;
+import physics.WorldController;
 import physics.leveleditor.FullAssetTracker;
 import physics.leveleditor.JSONLoaderSaver;
 import physics.leveleditor.LevelModel;
+import physics.obstacle.BoxObstacle;
+import physics.obstacle.Obstacle;
+import physics.obstacle.PolygonObstacle;
 import physics.platform.sloth.SlothModel;
-import util.*;
-import physics.*;
-import physics.obstacle.*;
-import lombok.Getter;
-import lombok.Setter;
+import util.SoundController;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -41,7 +47,7 @@ import java.util.Arrays;
  * This is the purpose of our AssetState variable; it ensures that multiple instances
  * place nicely with the static assets.
  */
-public class PlatformController extends WorldController {
+public class PlatformController2 extends WorldController {
 	/** The texture file for the character avatar (no animation) */
 	private static final String DUDE_FILE  = "platform/dude.png";
 	/** The texture file for the spinning barrier */
@@ -332,7 +338,7 @@ public class PlatformController extends WorldController {
 	 *
 	 * The game has default gravity and other settings
 	 */
-	public PlatformController() {
+	public PlatformController2() {
 		super(DEFAULT_WIDTH,DEFAULT_HEIGHT,DEFAULT_GRAVITY);
 		setDebug(false);
 		setComplete(false);
@@ -468,8 +474,8 @@ public class PlatformController extends WorldController {
 			dwidth = vineTexture.getRegionWidth() / scale.x;
 			dheight = vineTexture.getRegionHeight() / scale.y;
 			for (int v = 0; v < VINE_POS.size(); v++) {
-				//System.out.println(dwidth);
-				//System.out.println(dheight);
+				System.out.println(dwidth);
+				System.out.println(dheight);
 				s_vine = new Vine(VINE_POS.get(v).x, VINE_POS.get(v).y, VINE_LENGTH.get(v), dwidth, dheight);
 				s_vine.setTexture(vineTexture);
 				s_vine.setDrawScale(scale);
@@ -477,7 +483,7 @@ public class PlatformController extends WorldController {
 			}
 		} else {
 			JSONLoaderSaver jls = new JSONLoaderSaver();
-			//System.out.println(this.scale);
+			System.out.println(this.scale);
 			jls.setScale(this.scale);
 			try {
 				LevelModel lm = jls.loadLevel(loadLevel);

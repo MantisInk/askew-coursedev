@@ -68,7 +68,7 @@ public class PhysicsController implements ContactListener {
 
 
             if (fd1 != null && fd1.equals("sloth left hand")  && (!sloth.badBodies().contains(bd2)) && (!(bd2 instanceof PolygonObstacle))) {
-                System.out.println(body2);
+                //System.out.println(body2);
                 leftBody = body2;
             }
             if (fd1 != null && fd1.equals("sloth right hand")  && bd2 != sloth && (!sloth.badBodies().contains(bd2))&& (!(bd2 instanceof PolygonObstacle))) {

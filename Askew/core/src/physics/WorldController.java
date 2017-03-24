@@ -26,12 +26,8 @@ import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.graphics.g2d.freetype.*;
-import physics.platform.PlatformController;
-import physics.platform.sloth.SlothModel;
 import util.*;
 import physics.obstacle.*;
-
-import static physics.platform.PlatformController.getSloth;
 
 /**
  * Base class for a world-specific controller.
@@ -497,25 +493,25 @@ public abstract class WorldController implements Screen {
 		}
 
 		// Toggle debug
-		if (input.didDebug()) {
+		if (input.didTopButtonPress()) {
 			debug = !debug;
 		}
 		
 		// Handle resets
-		if (input.didReset()) {
+		if (input.didStartPress()) {
 			reset();
 		}
 
 		// Now it is time to maybe switch screens.
-		else if (input.didExit()) {
+		else if (input.didBackPressed()) {
 			System.out.println("quit");
 			listener.exitScreen(this, EXIT_QUIT);
 			return false;
-		} else if (input.didAdvance()) {
+		} else if (input.didLeftButtonPress()) {
 			System.out.println("next");
 			listener.exitScreen(this, EXIT_NEXT);
 			return false;
-		} else if (input.didRetreat()) {
+		} else if (input.didRightButtonPress()) {
 			System.out.println("prev");
 			listener.exitScreen(this, EXIT_PREV);
 			return false;

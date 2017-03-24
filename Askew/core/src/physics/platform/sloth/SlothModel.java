@@ -504,7 +504,7 @@ public class SlothModel extends ComplexObstacle  {
 
     public void releaseLeft(World world) {
         if (leftGrabJoint != null) {
-            System.err.println("Release");
+            //System.err.println("Release");
             world.destroyJoint(leftGrabJoint);
             //joints.removeValue(leftGrabJoint,true);
         }
@@ -513,7 +513,7 @@ public class SlothModel extends ComplexObstacle  {
 
     public void grabRight(World world, Body target) {
         if (rightGrabJoint != null) return;
-        System.err.println("Grab");
+        //System.err.println("Grab");
         Vector2 anchorHand = new com.badlogic.gdx.math.Vector2(0, 0);
         // TODO: Improve this vector
         Vector2 anchorTarget = new com.badlogic.gdx.math.Vector2(0, 0);
@@ -543,7 +543,7 @@ public class SlothModel extends ComplexObstacle  {
 
     public void releaseRight(World world) {
         if (rightGrabJoint != null) {
-            System.err.println("Release");
+            //System.err.println("Release");
             world.destroyJoint(rightGrabJoint);
             //joints.removeValue(rightGrabJoint,true);
         }
