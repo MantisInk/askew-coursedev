@@ -527,6 +527,12 @@ public class PlatformController extends WorldController {
 			listener.exitScreen(this, EXIT_GM_MM);
 			return false;
 		}
+		else if (input.didBottomButtonPress()) {
+			System.out.println("GM_OLD");
+			reset();
+			return false;
+		}
+
 
 
 		//Checks to see if player has selected the button on the starting screen
@@ -663,8 +669,10 @@ public class PlatformController extends WorldController {
 
 		//Draws the force lines
 		//SlothModel sloth = PlatformController.getSloth();
-		sloth.drawForces(canvas, camTrans);
-		//sloth.drawForces(canvas.getWidth()/2,canvas.getHeight()/2);
+		if(debug) {
+			sloth.drawForces(canvas, camTrans);
+		}
+			//sloth.drawForces(canvas.getWidth()/2,canvas.getHeight()/2);
 
 	}
 

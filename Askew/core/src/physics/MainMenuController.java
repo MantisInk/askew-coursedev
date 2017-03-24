@@ -46,6 +46,11 @@ public class MainMenuController extends WorldController {
             listener.exitScreen(this, EXIT_MM_LE);
             return false;
         }
+        else if (input.didBottomButtonPress()) {
+            System.out.println("GM_OLD");
+            listener.exitScreen(this, EXIT_MM_GM_OLD);
+            return false;
+        }
 
 
 

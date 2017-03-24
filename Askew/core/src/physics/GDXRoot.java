@@ -47,6 +47,7 @@ public class GDXRoot extends Game implements ScreenListener {
 	public static final int CON_MM = 0;
 	public static final int CON_GM = 1;
 	public static final int CON_LE = 2;
+	public static final int CON_GM_OLD = 3;
 
 	
 	/**
@@ -76,10 +77,11 @@ public class GDXRoot extends Game implements ScreenListener {
 		loading = new LoadingMode(canvas,manager,1);
 		
 		// Initialize the three game worlds
-		controllers = new WorldController[3];
+		controllers = new WorldController[4];
 		controllers[0] = new MainMenuController();
-		controllers[1] = new PlatformController();
+		controllers[1] = new PlatformController2();
 		controllers[2] = new LevelEditorController();
+		controllers[3] = new PlatformController();
 		for(int ii = 0; ii < controllers.length; ii++) {
 			controllers[ii].preLoadContent(manager);
 		}
@@ -160,6 +162,11 @@ public class GDXRoot extends Game implements ScreenListener {
 
 		} else if (exitCode == WorldController.EXIT_MM_LE) {
 			current = CON_LE;
+			controllers[current].reset();
+			setScreen(controllers[current]);
+
+		} else if (exitCode == WorldController.EXIT_MM_GM_OLD) {
+			current = CON_GM_OLD;
 			controllers[current].reset();
 			setScreen(controllers[current]);
 

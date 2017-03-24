@@ -203,19 +203,15 @@ public abstract class WorldController implements Screen {
 	
 	/** Exit code for quitting the game */
 	public static final int EXIT_QUIT = 0;
-	/** Exit code for advancing to next level */
 	public static final int EXIT_MM_GM = 1;
-	/** Exit code for jumping back to previous level */
 	public static final int EXIT_MM_LE = 2;
-	/** Exit code for advancing to next level */
 	public static final int EXIT_GM_MM = 3;
-	/** Exit code for jumping back to previous level */
 	public static final int EXIT_GM_LE = 4;
-	/** Exit code for advancing to next level */
 	public static final int EXIT_LE_MM = 5;
-	/** Exit code for jumping back to previous level */
 	public static final int EXIT_LE_GM = 6;
-    /** How many frames after winning/losing do we continue? */
+	public static final int EXIT_MM_GM_OLD = 7;
+
+	/** How many frames after winning/losing do we continue? */
 	public static final int EXIT_COUNT = 120;
 
 	/** The amount of time for a physics engine step. */
@@ -255,7 +251,7 @@ public abstract class WorldController implements Screen {
 	/** Whether we have failed at this world (and need a reset) */
 	private boolean failed;
 	/** Whether or not debug mode is active */
-	private boolean debug;
+	protected boolean debug;
 	/** Countdown active for winning or losing */
 	private int countdown;
 
@@ -501,7 +497,7 @@ public abstract class WorldController implements Screen {
 		}
 
 		// Toggle debug
-		if (input.didTopButtonPress()) {
+		if (input.didRightButtonPress()) {
 			debug = !debug;
 		}
 		
