@@ -13,16 +13,19 @@
  */
  package physics;
 
-import com.badlogic.gdx.*;
-import com.badlogic.gdx.assets.*;
-import com.badlogic.gdx.graphics.g2d.*;
-import com.badlogic.gdx.graphics.g2d.freetype.*;
-import com.badlogic.gdx.assets.loaders.*;
-import com.badlogic.gdx.assets.loaders.resolvers.*;
-
+import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.assets.loaders.FileHandleResolver;
+import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGeneratorLoader;
+import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader;
 import physics.leveleditor.LevelEditorController;
-import util.*;
-import physics.platform.*;
+import physics.platform.PlatformController;
+import util.ScreenListener;
 
 /**
  * Root class for a LibGDX.  
@@ -83,6 +86,7 @@ public class GDXRoot extends Game implements ScreenListener {
 		controllers[2] = new LevelEditorController();
 		controllers[3] = new PlatformController();
 		for(int ii = 0; ii < controllers.length; ii++) {
+			controllers[ii].setScale(canvas);
 			controllers[ii].preLoadContent(manager);
 		}
 		current = 0;
@@ -145,13 +149,17 @@ public class GDXRoot extends Game implements ScreenListener {
 	 */
 	public void exitScreen(Screen screen, int exitCode) {
 		if (screen == loading) {
+			//System.out.println("loading");
 			for(int ii = 0; ii < controllers.length; ii++) {
 				controllers[ii].loadContent(manager);
 				controllers[ii].setScreenListener(this);
 				controllers[ii].setCanvas(canvas);
 			}
 			controllers[current].reset();
+			//System.out.println("scale post reset ("+controllers[current].scale.x+","+controllers[current].scale.y+")");
 			setScreen(controllers[current]);
+			controllers[current].setCanvas(canvas);
+			//System.out.println("scale ("+controllers[current].scale.x+","+controllers[current].scale.y+")");
 			
 			loading.dispose();
 			loading = null;
@@ -168,6 +176,7 @@ public class GDXRoot extends Game implements ScreenListener {
 		} else if (exitCode == WorldController.EXIT_MM_GM_OLD) {
 			current = CON_GM_OLD;
 			controllers[current].reset();
+      controllers[current].setCanvas(canvas);
 			setScreen(controllers[current]);
 
 		} else if (exitCode == WorldController.EXIT_GM_MM) {
@@ -198,11 +207,10 @@ public class GDXRoot extends Game implements ScreenListener {
 			}
 			controllers[current].reset();
 			setScreen(controllers[current]);
-
+			controllers[current].setCanvas(canvas);
 		} else if (exitCode == WorldController.EXIT_QUIT) {
 			// We quit the main application
 			Gdx.app.exit();
 		}
 	}
-
 }

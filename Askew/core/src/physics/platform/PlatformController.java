@@ -81,11 +81,11 @@ public class PlatformController extends WorldController {
 	//private static Vector2 DOLL_POS = new Vector2( 2.5f,  6.0f);
 	//private static Vector2 DOLL_POS = new Vector2( 7.5f,  17.0f);
 	//private static Vector2 DOLL_POS = new Vector2( 6.0f,  17.0f);
-	private static Vector2 DOLL_POS = new Vector2( 4.2f,  7.8f);
+	private static Vector2 DOLL_POS = new Vector2( 4.7f,  6.9f);
 	//7.5f,  17.0f
 	//10f, 17.1f
 
-	//5.5f, 7.9f
+	//5.5f, 7.9ff
 
 
 	/** Track asset loading from all instances and subclasses */
@@ -286,9 +286,9 @@ public class PlatformController extends WorldController {
 					new Vector2(9.8f, 21.5f),
 					//new Vector2(10f, 9.1f),
 					//new Vector2(1.5f, 7.9f),
-					new Vector2(6.5f, 7.9f),
-					new Vector2(14f, 7.9f),
-					new Vector2(22f, 7.9f),
+					new Vector2(6.5f, 8.3f),
+					new Vector2(14f, 8.3f),
+					new Vector2(22f, 8.3f),
 					new Vector2(26f, 13.5f),
 					new Vector2(15.5f, 16.0f)
 
@@ -361,7 +361,11 @@ public class PlatformController extends WorldController {
 
 		objects.clear();
 		addQueue.clear();
+
+		//System.out.println("scale pre dispose ("+scale.x+","+scale.y+")");
 		world.dispose();
+
+		//System.out.println("scale post dispose ("+scale.x+","+scale.y+")");
 
 		world = new World(gravity,false);
 		if(collisions == null){
@@ -379,6 +383,8 @@ public class PlatformController extends WorldController {
 	 * Lays out the game geography.
 	 */
 	private void populateLevel() {
+		//System.out.println("populating");
+		//System.out.println("scale ("+scale.x+","+scale.y+")");
 		if (loadLevel.equals("")) {
 			// Add level goal
 			float dwidth  = goalTile.getRegionWidth()/scale.x;
@@ -424,12 +430,12 @@ public class PlatformController extends WorldController {
 			}
 
 			// Create rope bridge
-			dwidth  = bridgeTexture.getRegionWidth()/scale.x;
-			dheight = bridgeTexture.getRegionHeight()/scale.y;
-			RopeBridge bridge = new RopeBridge(BRIDGE_POS.x, BRIDGE_POS.y, BRIDGE_WIDTH, dwidth, dheight);
-			bridge.setTexture(bridgeTexture);
-			bridge.setDrawScale(scale);
-			addObject(bridge);
+//			dwidth  = bridgeTexture.getRegionWidth()/scale.x;
+//			dheight = bridgeTexture.getRegionHeight()/scale.y;
+//			RopeBridge bridge = new RopeBridge(BRIDGE_POS.x, BRIDGE_POS.y, BRIDGE_WIDTH, dwidth, dheight,scale);
+//			bridge.setTexture(bridgeTexture);
+//			bridge.setDrawScale(scale);
+//			addObject(bridge);
 
 //		// Create branch
 			Trunk trunk;
@@ -441,7 +447,7 @@ public class PlatformController extends WorldController {
 				branchlen = BRANCH_STIFF_LENGTH.get(b);
 				trunklen = BRANCH_LENGTH.get(b);
 				//branch = new Stiff=Branch(BRANCH_POS.get(b).x, BRANCH_POS.get(b).y, BRANCH_LENGTH.get(b), dwidth, dheight);
-				trunk = new Trunk(BRANCH_POS.get(b).x, BRANCH_POS.get(b).y,trunklen, dwidth, dheight, branchlen);
+				trunk = new Trunk(BRANCH_POS.get(b).x, BRANCH_POS.get(b).y,trunklen, dwidth, dheight, branchlen,scale);
 				trunk.setTexture(branchTexture);
 				trunk.setDrawScale(scale);
 				addObject(trunk);
@@ -450,7 +456,7 @@ public class PlatformController extends WorldController {
 				spacing = trunk.spacing;
 				nLinks = trunk.getnLinks();
 				branch_y = BRANCH_POS.get(b).y+((nLinks-branchlen)*linksize+spacing);
-				branch = new StiffBranch(BRANCH_POS.get(b).x, branch_y,branchlen,dwidth,dheight);
+				branch = new StiffBranch(BRANCH_POS.get(b).x, branch_y,branchlen,dwidth,dheight,scale);
 				branch.setTexture(branchTexture);
 				branch.setDrawScale(scale);
 				addObject(branch);
@@ -470,7 +476,8 @@ public class PlatformController extends WorldController {
 			for (int v = 0; v < VINE_POS.size(); v++) {
 				//System.out.println(dwidth);
 				//System.out.println(dheight);
-				s_vine = new Vine(VINE_POS.get(v).x, VINE_POS.get(v).y, VINE_LENGTH.get(v), dwidth, dheight);
+				s_vine = new Vine(VINE_POS.get(v).x, VINE_POS.get(v).y, VINE_LENGTH.get(v), dwidth, dheight, scale);
+
 				s_vine.setTexture(vineTexture);
 				s_vine.setDrawScale(scale);
 				addObject(s_vine);

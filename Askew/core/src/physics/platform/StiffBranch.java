@@ -78,8 +78,8 @@ public class StiffBranch extends ComplexObstacle {
 	 * @param lwidth	The plank length
 	 * @param lheight	The bridge thickness
 	 */
-	public StiffBranch(float x, float y, float width, float lwidth, float lheight) {
-		this(x, y, x, y+width, lwidth, lheight);
+	public StiffBranch(float x, float y, float width, float lwidth, float lheight, Vector2 scale) {
+		this(x, y, x, y+width, lwidth*scale.y/32f, lheight*scale.y/32f);
 		this.numLinks = width;
 		this.x = x;
 		this.y = y;
@@ -265,7 +265,7 @@ public class StiffBranch extends ComplexObstacle {
 		float x = instance.get("x").getAsFloat();
 		float y = instance.get("y").getAsFloat();
 		float stiff = instance.get("stiffLen").getAsFloat();
-		branch = new StiffBranch(x, y, stiff, 0.25f, 0.1f);
+		branch = new StiffBranch(x, y, stiff, 0.25f, 0.1f,scale);
 		branch.setDrawScale(scale.x, scale.y);
 		branch.setTextures();
 		return branch;

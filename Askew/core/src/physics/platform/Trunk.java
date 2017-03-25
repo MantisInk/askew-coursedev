@@ -75,8 +75,8 @@ public class Trunk extends ComplexObstacle {
 	 * @param lwidth	The plank length
 	 * @param lheight	The bridge thickness
 	 */
-	public Trunk(float x, float y, float width, float lwidth, float lheight, float stiffLen) {
-		this(x, y, x, y+width, lwidth, lheight, stiffLen);
+	public Trunk(float x, float y, float width, float lwidth, float lheight, float stiffLen, Vector2 scale) {
+		this(x, y, x, y+width, lwidth*scale.y/32f, lheight*scale.y/32f, stiffLen);
 		numLinks = width;
 		this.x = x;
 		this.y = y;
@@ -274,7 +274,7 @@ public class Trunk extends ComplexObstacle {
 		float y = instance.get("y").getAsFloat();
 		float numlinks = instance.get("numLinks").getAsFloat();
 		float stiff = instance.get("stiffLen").getAsFloat();
-		trunk = new Trunk(x, y, numlinks, 0.25f, 1.0f, stiff);
+		trunk = new Trunk(x, y, numlinks, 0.25f, 1.0f, stiff,scale);
 		trunk.setDrawScale(scale.x, scale.y);
 		trunk.setTextures();
 		return trunk;

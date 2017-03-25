@@ -67,7 +67,7 @@ public class RopeBridge extends ComplexObstacle {
 	 * @param lwidth	The plank length
 	 * @param lheight	The bridge thickness
 	 */
-	public RopeBridge(float x, float y, float width, float lwidth, float lheight) {
+	public RopeBridge(float x, float y, float width, float lwidth, float lheight, Vector2 scale) {
 		this(x, y, x+width, y, lwidth, lheight);
 	}
 
