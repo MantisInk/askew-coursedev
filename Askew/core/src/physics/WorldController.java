@@ -32,7 +32,18 @@ import util.FilmStrip;
 import util.PooledList;
 import util.ScreenListener;
 
+
 import java.util.Iterator;
+import com.badlogic.gdx.*;
+import com.badlogic.gdx.math.*;
+import com.badlogic.gdx.utils.*;
+import com.badlogic.gdx.assets.*;
+import com.badlogic.gdx.graphics.*;
+import com.badlogic.gdx.graphics.g2d.*;
+import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.graphics.g2d.freetype.*;
+import util.*;
+import physics.obstacle.*;
 
 /**
  * Base class for a world-specific controller.
@@ -208,11 +219,15 @@ public abstract class WorldController implements Screen {
 	
 	/** Exit code for quitting the game */
 	public static final int EXIT_QUIT = 0;
-	/** Exit code for advancing to next level */
-	public static final int EXIT_NEXT = 1;
-	/** Exit code for jumping back to previous level */
-	public static final int EXIT_PREV = 2;
-    /** How many frames after winning/losing do we continue? */
+	public static final int EXIT_MM_GM = 1;
+	public static final int EXIT_MM_LE = 2;
+	public static final int EXIT_GM_MM = 3;
+	public static final int EXIT_GM_LE = 4;
+	public static final int EXIT_LE_MM = 5;
+	public static final int EXIT_LE_GM = 6;
+	public static final int EXIT_MM_GM_OLD = 7;
+
+	/** How many frames after winning/losing do we continue? */
 	public static final int EXIT_COUNT = 120;
 
 	/** The amount of time for a physics engine step. */
@@ -236,7 +251,7 @@ public abstract class WorldController implements Screen {
 	/** Queue for adding objects */
 	protected PooledList<Obstacle> addQueue = new PooledList<Obstacle>();
 	/** Listener that will update the player mode when we are done */
-	private ScreenListener listener;
+	protected ScreenListener listener;
 
 	/** The Box2D world */
 	protected World world;
@@ -252,7 +267,7 @@ public abstract class WorldController implements Screen {
 	/** Whether we have failed at this world (and need a reset) */
 	private boolean failed;
 	/** Whether or not debug mode is active */
-	private boolean debug;
+	protected boolean debug;
 	/** Countdown active for winning or losing */
 	private int countdown;
 
@@ -500,41 +515,47 @@ public abstract class WorldController implements Screen {
 		}
 
 		// Toggle debug
-		if (input.didDebug()) {
+		if (input.didRightButtonPress()) {
 			debug = !debug;
 		}
 		
 		// Handle resets
-		if (input.didReset()) {
+		if (input.didStartPress()) {
 			reset();
 		}
 
-		// Now it is time to maybe switch screens.
-		else if (input.didExit()) {
+		else if (input.didBackPressed()) {
 			System.out.println("quit");
 			listener.exitScreen(this, EXIT_QUIT);
 			return false;
-		} else if (input.didAdvance()) {
-			System.out.println("next");
-			listener.exitScreen(this, EXIT_NEXT);
-			return false;
-		} else if (input.didRetreat()) {
-			System.out.println("prev");
-			listener.exitScreen(this, EXIT_PREV);
-			return false;
-		} else if (countdown > 0) {
-			System.out.println("counting down");
-			countdown--;
-		} else if (countdown == 0) {
-			if (failed) {
-				System.out.println("countdown failed");
-				reset();
-			} else if (complete) {
-				System.out.println("quitting");
-				listener.exitScreen(this, EXIT_NEXT);
-				return false;
-			}
 		}
+
+			// Now it is time to maybe switch screens.
+//		else if (input.didBackPressed()) {
+//			System.out.println("quit");
+//			listener.exitScreen(this, EXIT_QUIT);
+//			return false;
+//		} else if (input.didLeftButtonPress()) {
+//			System.out.println("next");
+//			listener.exitScreen(this, EXIT_NEXT);
+//			return false;
+//		} else if (input.didRightButtonPress()) {
+//			System.out.println("prev");
+//			listener.exitScreen(this, EXIT_PREV);
+//			return false;
+//		} else if (countdown > 0) {
+//			System.out.println("counting down");
+//			countdown--;
+//		} else if (countdown == 0) {
+//			if (failed) {
+//				System.out.println("countdown failed");
+//				reset();
+//			} else if (complete) {
+//				System.out.println("quitting");
+//				listener.exitScreen(this, EXIT_NEXT);
+//				return false;
+//			}
+//		}
 
 		return true;
 	}
@@ -688,7 +709,7 @@ public abstract class WorldController implements Screen {
 	public void resume() {
 		// TODO Auto-generated method stub
 	}
-	
+
 	/**
 	 * Called when this screen becomes the current screen for a Game.
 	 */

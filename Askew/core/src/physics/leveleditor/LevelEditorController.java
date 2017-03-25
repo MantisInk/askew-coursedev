@@ -192,6 +192,18 @@ public class LevelEditorController extends WorldController implements ContactLis
 			return false;
 		}
 
+		InputController input = InputController.getInstance();
+
+		if (input.didLeftButtonPress()) {
+			System.out.println("GE");
+			listener.exitScreen(this, EXIT_LE_GM);
+			return false;
+		} else if (input.didTopButtonPress()) {
+			System.out.println("MM");
+			listener.exitScreen(this, EXIT_LE_MM);
+			return false;
+		}
+
 		return true;
 	}
 
@@ -285,7 +297,7 @@ public class LevelEditorController extends WorldController implements ContactLis
 			return;
 		}
 
-		if (InputController.getInstance().didTertiary()) {
+		if (InputController.getInstance().isLeftClickPressed()) {
 			float mx = InputController.getInstance().getCrossHair().x;
 			float my = InputController.getInstance().getCrossHair().y;
 			createXY(mx,my);

@@ -950,7 +950,7 @@ public class GameCanvas {
 		
     	debugRender.begin(ShapeRenderer.ShapeType.Line);
 
-    	//active = DrawPass.DEBUG;
+    	active = DrawPass.DEBUG;
     }
     
 	/**
