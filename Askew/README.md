@@ -23,7 +23,7 @@ _Used to gain momentum on vines to swing yourself across the stage!_
 - _**Left joystick**_: swing **left** arm in whichever diretion you tilt
 - _**Right joystick**_: swing **right** arm in whichever diretion you tilt
 
-_**Note:** 360 degrees of motion are possible here_
+_**Note:** 360 degrees of motion is possible here_
 
 #### ~~Rules for Swinging~~ Not Anymore!
 
