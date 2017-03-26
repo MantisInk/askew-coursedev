@@ -27,7 +27,7 @@ _**Note:** 360 degrees of motion is possible here_
 
 #### ~~Rules for Swinging~~ Not Anymore!
 
-~~Due to a technical issue, there is a specific rule for swinging your arms: _you must be "grabbing" in order to move and arm_ (whether your character is actually grabbing an object/vine or not). **This rule is true at all times.**~~ _NEW: You can now swing your arms at all times! You can even "helicopter" them to fly slightly off the ground!_
+_NEW: You can now swing your arms at all times! You can even "helicopter" them to fly slightly off the ground!_
 
 #### _Tips for Swinging (This is NEW Though)_
 
@@ -47,16 +47,6 @@ Swinging works a little differently this time around compared to the gameplay pr
 
 ## ~~Tip for Leaving the Starting Platform~~ No More Starting Platform!
 _NEW: You now press the right bumper button to start the level, causing you to start to fall onto a vine that you are able to grab._
-~~If the rule for swinging didn't make sense, following these instructions may help you understand what's going on (and be able to leave the starting platform as a result). Once you get going, the rule will make sense and hopefully you'll find that it only causes trouble for gameplay at this particular spot.~~
-
-~~1. Tilt both arms to the bottom left corner of the screen~~
-~~2. Hold down the grab button for either hand (I find myself using the right bumper)~~
-~~3. With the _**opposite arm**_ (the one you're not grabbing with), reach for the first vine and try to grab it (I find myself using the left joystick and left bumper for this)~~
-~~4. If you grabbed it, use the other arm to start swinging on the vine!~~
-
-~~- I recommend waiting until the vine has swung to the left of its swinging cycle two times, it's a bit easier to grab after that point. ~~
-~~- It may take a few tries to get used to this and not keep falling off the platform. If this happens, you should be able to press _**Start**_ to restart the stage (_see Known Issues_). ~~
-
 
 ## Hints for Completing the Stage
 
