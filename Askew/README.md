@@ -29,7 +29,7 @@ _**Note:** 360 degrees of motion are possible here_
 
 ~~Due to a technical issue, there is a specific rule for swinging your arms: _you must be "grabbing" in order to move and arm_ (whether your character is actually grabbing an object/vine or not). **This rule is true at all times.**~~ _NEW: You can now swing your arms at all times! You can even "helicopter" them to fly slightly off the ground!_
 
-#### _Tips for Swinging(This is NEW Though)_
+#### _Tips for Swinging (This is NEW Though)_
 
 Swinging works a little differently this time around compared to the gameplay prototype. There is a steep learning curve, but once you get a hang of the controls, the physics actualy work out very well.
 
