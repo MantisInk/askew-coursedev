@@ -1,0 +1,50 @@
+{
+  "levelModelVersion": 1,
+  "title": "test_save_obstacle",
+  "goalTimeGold": 30,
+  "goalTimeSilver": 45,
+  "goalTimeBronze": 60,
+  "height": 768,
+  "width": 1024,
+  "entities": [
+    {
+      "CLASSNAME": "physics.platform.sloth.SlothModel",
+      "INSTANCE": {
+        "x": 10.0,
+        "y": 10.0
+      }
+    },
+    {
+      "CLASSNAME": "physics.platform.Vine",
+      "INSTANCE": {
+        "numLinks": 5.0,
+        "x": 14.875,
+        "y": 5.78125
+      }
+    },
+    {
+      "CLASSNAME": "physics.platform.Vine",
+      "INSTANCE": {
+        "numLinks": 5.0,
+        "x": 6.71875,
+        "y": 5.6875
+      }
+    },
+    {
+      "CLASSNAME": "physics.platform.Vine",
+      "INSTANCE": {
+        "numLinks": 5.0,
+        "x": 11.8125,
+        "y": 10.71875
+      }
+    },
+    {
+      "CLASSNAME": "physics.platform.Vine",
+      "INSTANCE": {
+        "numLinks": 15.0,
+        "x": 22.0,
+        "y": 10.96875
+      }
+    }
+  ]
+}
