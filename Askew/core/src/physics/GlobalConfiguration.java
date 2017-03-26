@@ -10,7 +10,7 @@ import physics.leveleditor.JSONLoaderSaver;
  */
 public class GlobalConfiguration {
 
-    private static final String CONFIG_PATH = "./config.json";
+    private static final String CONFIG_PATH = "config.json";
     private static GlobalConfiguration instance;
 
     private JsonObject dataBlob;
