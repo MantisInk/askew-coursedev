@@ -3,6 +3,7 @@ package askew.util.json;
 
 import askew.playermode.leveleditor.LevelModel;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.math.Vector2;
 import com.google.gson.*;
 import askew.entity.obstacle.Obstacle;
@@ -60,16 +61,20 @@ public class JSONLoaderSaver {
      * @return the JsonObject optional
      */
     public static Optional<JsonObject> loadArbitrary(String assetPath) {
-        FileReader fr = null;
-        try {
-            fr = new FileReader(assetPath);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            return Optional.empty();
+        FileHandle fileHandle = new FileHandle(assetPath);
+        if (fileHandle.exists() && !fileHandle.isDirectory()) {
+            try {
+                FileReader fr = new FileReader(fileHandle.file());
+                JsonParser jp = new JsonParser();
+                JsonElement je = jp.parse(fr);
+                return Optional.of(je.getAsJsonObject());
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+                return Optional.empty();
+            }
         }
-        JsonParser jp = new JsonParser();
-        JsonElement je = jp.parse(fr);
-        return Optional.of(je.getAsJsonObject());
+
+        return Optional.empty();
     }
 
     public static void saveArbitrary(String s, String text) {
