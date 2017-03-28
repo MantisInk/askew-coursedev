@@ -22,7 +22,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 import com.google.gson.JsonObject;
-import askew.leveleditor.FullAssetTracker;
+import askew.playermode.leveleditor.FullAssetTracker;
 import askew.entity.obstacle.*;
 
 /**

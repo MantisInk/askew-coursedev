@@ -1,4 +1,4 @@
-package askew.leveleditor;
+package askew.playermode.leveleditor;
 
 import askew.entity.obstacle.Obstacle;
 import lombok.Getter;

@@ -1,9 +1,9 @@
-package askew.leveleditor;
+package askew.playermode.leveleditor;
 
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import askew.WorldController;
+import askew.playermode.WorldController;
 
 import java.io.File;
 import java.util.ArrayList;

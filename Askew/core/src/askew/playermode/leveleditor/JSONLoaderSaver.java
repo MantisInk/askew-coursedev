@@ -1,4 +1,4 @@
-package askew.leveleditor;
+package askew.playermode.leveleditor;
 
 
 import com.badlogic.gdx.math.Vector2;

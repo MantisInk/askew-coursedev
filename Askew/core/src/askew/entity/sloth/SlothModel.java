@@ -20,7 +20,7 @@ import askew.GlobalConfiguration;
 import askew.entity.obstacle.BoxObstacle;
 import askew.entity.obstacle.Obstacle;
 import askew.entity.obstacle.SimpleObstacle;
-import askew.leveleditor.FullAssetTracker;
+import askew.playermode.leveleditor.FullAssetTracker;
 import askew.entity.obstacle.ComplexObstacle;
 import lombok.Getter;
 
@@ -442,8 +442,8 @@ public class SlothModel extends ComplexObstacle  {
         //float right_y = right.getY() * drawScale.y;
         float right_y = right.getY();
 
-        //float displace_x = askew.WorldController.getCanvas().getWidth()/2; //1 * bodies.get(PART_BODY).getPosition().x * getDrawScale().x;
-        //float displace_y = askew.WorldController.getCanvas().getHeight()/2; //1 * bodies.get(PART_BODY).getPosition().y * getDrawScale().y;
+        //float displace_x = askew.playermode.WorldController.getCanvas().getWidth()/2; //1 * bodies.get(PART_BODY).getPosition().x * getDrawScale().x;
+        //float displace_y = askew.playermode.WorldController.getCanvas().getHeight()/2; //1 * bodies.get(PART_BODY).getPosition().y * getDrawScale().y;
 
         //float displace_x = x_push*getDrawScale().x;
         //float displace_y = y_push*getDrawScale().y;

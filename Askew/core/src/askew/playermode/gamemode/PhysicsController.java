@@ -1,4 +1,4 @@
-package askew.gamemode;
+package askew.playermode.gamemode;
 
 import com.badlogic.gdx.physics.box2d.*;
 import lombok.Getter;

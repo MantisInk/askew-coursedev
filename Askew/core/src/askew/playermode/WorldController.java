@@ -1,5 +1,5 @@
-package askew;/*
- * askew.WorldController.java
+package askew.playermode;/*
+ * askew.playermode.WorldController.java
  *
  * This is the most important new class in this lab.  This class serves as a combination 
  * of the CollisionController and GameplayController from the previous lab.  There is not 
@@ -15,6 +15,9 @@ package askew;/*
  * LibGDX version, 2/6/2015
  */
 
+import askew.GameCanvas;
+import askew.GlobalConfiguration;
+import askew.InputController;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
@@ -553,7 +556,7 @@ public abstract class WorldController implements Screen {
 	 * The core gameplay loop of this world.
 	 *
 	 * This method contains the specific update code for this mini-game. It does
-	 * not handle collisions, as those are managed by the parent class askew.WorldController.
+	 * not handle collisions, as those are managed by the parent class askew.playermode.WorldController.
 	 * This method is called after input is read, but before collisions are resolved.
 	 * The very last thing that it should do is apply forces to the appropriate objects.
 	 *

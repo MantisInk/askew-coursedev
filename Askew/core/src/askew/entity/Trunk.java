@@ -20,7 +20,7 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.*;
 
 import com.google.gson.JsonObject;
-import askew.leveleditor.FullAssetTracker;
+import askew.playermode.leveleditor.FullAssetTracker;
 import askew.entity.obstacle.*;
 
 /**

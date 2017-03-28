@@ -1,8 +1,8 @@
-import askew.leveleditor.FullAssetTracker;
-import askew.leveleditor.LevelModel;
+import askew.playermode.leveleditor.FullAssetTracker;
+import askew.playermode.leveleditor.LevelModel;
 import askew.entity.obstacle.sloth.SlothModel;
 import org.junit.Test;
-import askew.leveleditor.JSONLoaderSaver;
+import askew.playermode.leveleditor.JSONLoaderSaver;
 
 import java.io.FileNotFoundException;
 

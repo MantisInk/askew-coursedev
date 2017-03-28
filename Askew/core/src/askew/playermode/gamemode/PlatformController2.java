@@ -8,10 +8,10 @@
  * Based on original PhysicsDemo Lab by Don Holden, 2007
  * LibGDX version, 2/6/2015
  */
-package askew.gamemode;
+package askew.playermode.gamemode;
 
 import askew.InputController;
-import askew.WorldController;
+import askew.playermode.WorldController;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.assets.*;
@@ -20,9 +20,9 @@ import com.badlogic.gdx.physics.box2d.*;
 
 import askew.entity.obstacle.BoxObstacle;
 import askew.entity.obstacle.Obstacle;
-import askew.leveleditor.FullAssetTracker;
-import askew.leveleditor.JSONLoaderSaver;
-import askew.leveleditor.LevelModel;
+import askew.playermode.leveleditor.FullAssetTracker;
+import askew.playermode.leveleditor.JSONLoaderSaver;
+import askew.playermode.leveleditor.LevelModel;
 import askew.entity.sloth.SlothModel;
 import askew.util.*;
 import lombok.Getter;
@@ -299,7 +299,7 @@ public class PlatformController2 extends WorldController {
 	 * The core gameplay loop of this world.
 	 *
 	 * This method contains the specific update code for this mini-game. It does
-	 * not handle collisions, as those are managed by the parent class askew.WorldController.
+	 * not handle collisions, as those are managed by the parent class askew.playermode.WorldController.
 	 * This method is called after input is read, but before collisions are resolved.
 	 * The very last thing that it should do is apply forces to the appropriate objects.
 	 *

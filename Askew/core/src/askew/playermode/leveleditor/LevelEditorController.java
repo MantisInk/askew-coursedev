@@ -8,7 +8,7 @@
  * Based on original PhysicsDemo Lab by Don Holden, 2007
  * LibGDX version, 2/6/2015
  */
-package askew.leveleditor;
+package askew.playermode.leveleditor;
 
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.math.Vector2;
@@ -17,7 +17,7 @@ import com.google.gson.JsonObject;
 import askew.GameCanvas;
 import askew.GlobalConfiguration;
 import askew.InputController;
-import askew.WorldController;
+import askew.playermode.WorldController;
 import askew.entity.obstacle.ComplexObstacle;
 import askew.entity.obstacle.Obstacle;
 import askew.entity.Trunk;

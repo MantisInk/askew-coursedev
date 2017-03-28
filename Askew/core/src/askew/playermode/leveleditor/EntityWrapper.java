@@ -1,4 +1,4 @@
-package askew.leveleditor;
+package askew.playermode.leveleditor;
 
 import com.google.gson.*;
 import askew.entity.obstacle.Obstacle;

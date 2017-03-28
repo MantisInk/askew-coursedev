@@ -12,6 +12,7 @@ package askew;/*
  * LibGDX version, 2/6/2015
  */
 
+import askew.playermode.WorldController;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -22,9 +23,9 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGeneratorLoader;
 import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader;
-import askew.leveleditor.LevelEditorController;
-import askew.gamemode.PlatformController;
-import askew.gamemode.PlatformController2;
+import askew.playermode.leveleditor.LevelEditorController;
+import askew.playermode.gamemode.PlatformController;
+import askew.playermode.gamemode.PlatformController2;
 import askew.util.ScreenListener;
 
 /**
