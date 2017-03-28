@@ -18,9 +18,6 @@ public class JSONLoaderSaver {
 
     private Gson gson;
 
-    @Getter
-    private Vector2 scale;
-
     private EntityWrapper wrapper;
 
     public JSONLoaderSaver() {
