@@ -1,7 +1,7 @@
 package askew;
 
+import askew.util.json.JSONLoaderSaver;
 import com.google.gson.JsonObject;
-import askew.playermode.leveleditor.JSONLoaderSaver;
 
 /**
  * A model class containing variables which we set as configurable for faster prototyping and modding.

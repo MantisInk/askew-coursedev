@@ -1,12 +1,12 @@
-package askew.playermode.leveleditor;
+package askew.util.json;
 
 
+import askew.playermode.leveleditor.LevelModel;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.math.Vector2;
 import com.google.gson.*;
 import askew.entity.obstacle.Obstacle;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;

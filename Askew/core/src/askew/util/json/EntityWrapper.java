@@ -1,4 +1,4 @@
-package askew.playermode.leveleditor;
+package askew.util.json;
 
 import askew.entity.JsonEntityFactory;
 import com.badlogic.gdx.assets.AssetManager;

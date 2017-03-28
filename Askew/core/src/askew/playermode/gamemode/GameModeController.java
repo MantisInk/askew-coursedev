@@ -21,7 +21,7 @@ import com.badlogic.gdx.physics.box2d.*;
 
 import askew.entity.obstacle.BoxObstacle;
 import askew.entity.obstacle.Obstacle;
-import askew.playermode.leveleditor.JSONLoaderSaver;
+import askew.util.json.JSONLoaderSaver;
 import askew.playermode.leveleditor.LevelModel;
 import askew.entity.sloth.SlothModel;
 import askew.util.*;

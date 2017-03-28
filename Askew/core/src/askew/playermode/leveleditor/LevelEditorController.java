@@ -10,14 +10,12 @@
  */
 package askew.playermode.leveleditor;
 
-import askew.AssetTraversalController;
+import askew.*;
+import askew.util.json.JSONLoaderSaver;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.google.gson.JsonObject;
-import askew.GameCanvas;
-import askew.GlobalConfiguration;
-import askew.InputController;
 import askew.playermode.WorldController;
 import askew.entity.obstacle.ComplexObstacle;
 import askew.entity.obstacle.Obstacle;
