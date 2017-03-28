@@ -1,5 +1,6 @@
-package askew;
+package askew.playermode.mainmenu;
 
+import askew.InputController;
 import askew.playermode.WorldController;
 import com.badlogic.gdx.graphics.Color;
 import lombok.Setter;

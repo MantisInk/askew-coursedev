@@ -1,5 +1,5 @@
-package askew;/*
- * askew.LoadingMode.java
+package askew.playermode.loading;/*
+ * askew.playermode.loading.LoadingMode.java
  *
  * Asset loading is a really tricky problem.  If you have a lot of sound or images,
  * it can take a long time to decompress them and load them into memory.  If you just
@@ -21,6 +21,7 @@ package askew;/*
  * LibGDX version, 2/6/2015
  */
 
+import askew.GameCanvas;
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.assets.*;
@@ -161,7 +162,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	}
 	
 	/**
-	 * Creates a askew.LoadingMode with the default budget, size and position.
+	 * Creates a askew.playermode.loading.LoadingMode with the default budget, size and position.
 	 *
 	 * @param manager The AssetManager to load in the background
 	 */
@@ -170,7 +171,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	}
 
 	/**
-	 * Creates a askew.LoadingMode with the default size and position.
+	 * Creates a askew.playermode.loading.LoadingMode with the default size and position.
 	 *
 	 * The budget is the number of milliseconds to spend loading assets each animation
 	 * frame.  This allows you to do something other than load assets.  An animation 

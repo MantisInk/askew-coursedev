@@ -12,6 +12,8 @@ package askew;/*
  * LibGDX version, 2/6/2015
  */
 
+import askew.playermode.loading.LoadingMode;
+import askew.playermode.mainmenu.MainMenuController;
 import askew.playermode.WorldController;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
