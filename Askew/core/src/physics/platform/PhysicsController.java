@@ -107,7 +107,7 @@ public class PhysicsController implements ContactListener {
         Body body1 = fix1.getBody();
         Body body2 = fix2.getBody();
 
-        Object fd1 = fix1.getUserData();
+        Object fd1 = fix1.getUserData();    
         Object fd2 = fix2.getUserData();
 
         Object bd1 = body1.getUserData();
