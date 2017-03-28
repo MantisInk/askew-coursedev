@@ -14,6 +14,9 @@
  */
 package askew.entity.vine;
 
+import askew.entity.Entity;
+import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -22,7 +25,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
 import com.google.gson.JsonObject;
 import askew.GlobalConfiguration;
-import askew.playermode.leveleditor.FullAssetTracker;
+import askew.AssetTraversalController;
 import askew.entity.obstacle.*;
 
 /**
@@ -42,6 +45,8 @@ public class Vine extends ComplexObstacle {
 	private static final float BRIDGE_PIN_RADIUS = 0.1f;
 	/** The density of each plank in the bridge */
 	private transient float BASIC_DENSITY;
+
+    private static final String VINE_TEXTURE = "./texture/vine/vine.png";
 
 	// Invisible anchor objects
 	/** The left side of the bridge */
@@ -251,17 +256,6 @@ public class Vine extends ComplexObstacle {
 	}
 	
 	/**
-	 * Sets the texture for the individual planks
-	 *
-	 * @param texture the texture for the individual planks
-	 */
-	public void setTexture(TextureRegion texture) {
-		for(Obstacle body : bodies) {
-			((SimpleObstacle)body).setTexture(texture);
-		}
-	}
-	
-	/**
 	 * Returns the texture for the individual planks
 	 *
 	 * @return the texture for the individual planks
@@ -273,19 +267,12 @@ public class Vine extends ComplexObstacle {
 		return ((SimpleObstacle)bodies.get(0)).getTexture();
 	}
 
-	public void setTextures() {
-		setTexture(FullAssetTracker.getInstance().getTextureRegion("textures/vine.png"));
-	}
-
-	public static Obstacle createFromJson(JsonObject instance, Vector2 scale) {
-		Vine vine;
-		float x = instance.get("x").getAsFloat();
-		float y = instance.get("y").getAsFloat();
-		float numlinks = instance.get("numLinks").getAsFloat();
-		TextureRegion vineTexture = FullAssetTracker.getInstance().getTextureRegion("textures/vine.png");
-		vine = new Vine(x, y, numlinks, vineTexture.getRegionHeight() / scale.x, vineTexture.getRegionHeight() / scale.y, scale);
-		vine.setDrawScale(scale.x, scale.y);
-		vine.setTextures();
-		return vine;
-	}
+    @Override
+    public void setTextures(AssetManager manager) {
+        Texture vineTexture = manager.get("VINE_TEXTURE", Texture.class);
+        TextureRegion regionedTexture = new TextureRegion(vineTexture);
+        for(Obstacle body : bodies) {
+            ((SimpleObstacle)body).setTexture(regionedTexture);
+        }
+    }
 }

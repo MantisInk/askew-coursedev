@@ -12,6 +12,7 @@
 package askew.entity.obstacle;
 
 import askew.GameCanvas;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.physics.box2d.*;
@@ -204,4 +205,8 @@ public class BoxObstacle extends SimpleObstacle {
 	}
 
 
+	@Override
+	public void setTextures(AssetManager manager) {
+		// Do nothing
+	}
 }

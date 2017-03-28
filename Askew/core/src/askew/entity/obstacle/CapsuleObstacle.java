@@ -13,6 +13,7 @@
 package askew.entity.obstacle;
 
 import askew.GameCanvas;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.physics.box2d.*;
@@ -25,8 +26,13 @@ import com.badlogic.gdx.physics.box2d.*;
 public class CapsuleObstacle extends SimpleObstacle {
 	/** Epsilon factor to prevent issues with the fixture seams */
 	private static final float DEFAULT_EPSILON = 0.01f;
-	
-    /** Enum to specify the capsule orientiation */
+
+	@Override
+	public void setTextures(AssetManager manager) {
+		// Do nothing
+	}
+
+	/** Enum to specify the capsule orientiation */
     public enum Orientation {
         /** A half-capsule with a rounded end at the top */
         TOP,

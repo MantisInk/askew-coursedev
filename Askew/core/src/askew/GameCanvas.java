@@ -60,7 +60,7 @@ public class GameCanvas {
 	}	
 
 	
-	/** Drawing context to handle textures AND POLYGONS as sprites */
+	/** Drawing context to handle texture AND POLYGONS as sprites */
 	private PolygonSpriteBatch spriteBatch;
 
 	private SpriteBatch batch;
@@ -93,7 +93,7 @@ public class GameCanvas {
 	/** Affine cache for all sprites this drawing pass */
 	private Matrix4 global;
 	private Vector2 vertex;
-	/** Cache object to handle raw textures */
+	/** Cache object to handle raw texture */
 	private TextureRegion holder;
 
 	/**
@@ -299,7 +299,7 @@ public class GameCanvas {
 	 * Sets the color blending state for this canvas.
 	 *
 	 * Any texture draw subsequent to this call will use the rules of this blend 
-	 * state to composite with other textures.  Unlike the other setters, if it is 
+	 * state to composite with other texture.  Unlike the other setters, if it is
 	 * perfectly safe to use this setter while  drawing is active (e.g. in-between 
 	 * a begin-end pair).  
 	 *
@@ -386,7 +386,7 @@ public class GameCanvas {
     }
 
 	/**
-	 * Ends a drawing sequence, flushing textures to the graphics card.
+	 * Ends a drawing sequence, flushing texture to the graphics card.
 	 */
     public void end() {
     	spriteBatch.end();
@@ -546,7 +546,7 @@ public class GameCanvas {
 	/**
 	 * Draws the tinted texture region (filmstrip) at the given position.
 	 *
-	 * A texture region is a single texture file that can hold one or more textures.
+	 * A texture region is a single texture file that can hold one or more texture.
 	 * It is used for filmstrip animation.
 	 *
 	 * The texture colors will be multiplied by the given color.  This will turn
@@ -633,7 +633,7 @@ public class GameCanvas {
 	/**
 	 * Draws the tinted texture region (filmstrip) with the given transformations
 	 *
-	 * A texture region is a single texture file that can hold one or more textures.
+	 * A texture region is a single texture file that can hold one or more texture.
 	 * It is used for filmstrip animation.
 	 *
 	 * The texture colors will be multiplied by the given color.  This will turn
@@ -984,7 +984,7 @@ public class GameCanvas {
     }
 
 	/**
-	 * Ends the debug drawing sequence, flushing textures to the graphics card.
+	 * Ends the debug drawing sequence, flushing texture to the graphics card.
 	 */
     public void endDebug() {
     	debugRender.end();

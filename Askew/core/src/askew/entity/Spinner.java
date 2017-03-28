@@ -14,6 +14,7 @@
  */
 package askew.entity;
 
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
@@ -122,5 +123,10 @@ public class Spinner extends ComplexObstacle {
 	
 	public TextureRegion getTexture() {
 		return barrier.getTexture();
+	}
+
+	@Override
+	public void setTextures(AssetManager manager) {
+		// Do nothing
 	}
 }

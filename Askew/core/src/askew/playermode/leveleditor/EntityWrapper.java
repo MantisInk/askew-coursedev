@@ -1,5 +1,7 @@
 package askew.playermode.leveleditor;
 
+import askew.entity.JsonEntityFactory;
+import com.badlogic.gdx.assets.AssetManager;
 import com.google.gson.*;
 import askew.entity.obstacle.Obstacle;
 import askew.entity.StiffBranch;
@@ -17,9 +19,11 @@ public class EntityWrapper implements JsonSerializer<Obstacle>, JsonDeserializer
     private static final String CLASSNAME = "CLASSNAME";
     private static final String INSTANCE  = "INSTANCE";
     private JSONLoaderSaver parent;
+    private AssetManager manager;
 
     public EntityWrapper(JSONLoaderSaver parent) {
         this.parent = parent;
+        this.manager = manager;
     }
 
     @Override
@@ -46,13 +50,13 @@ public class EntityWrapper implements JsonSerializer<Obstacle>, JsonDeserializer
         JsonObject instance = jsonObject.get("INSTANCE").getAsJsonObject();
         switch(obstacleClass) {
             case ".SlothModel":
-                return SlothModel.createFromJson(instance, parent.getScale());
+                return JsonEntityFactory.createSloth(manager, instance, parent.getScale());
             case ".Vine":
-                return Vine.createFromJson(instance, parent.getScale());
+                return JsonEntityFactory.createVine(manager, instance, parent.getScale());
             case ".Trunk":
-                return Trunk.createFromJson(instance, parent.getScale());
+                return JsonEntityFactory.createTrunk(manager, instance, parent.getScale());
             case ".StiffBranch":
-                return StiffBranch.createFromJson(instance, parent.getScale());
+                return JsonEntityFactory.createStiffBranch(manager, instance, parent.getScale());
             default:
                 Class<?> klass = null;
                 try {

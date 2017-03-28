@@ -14,13 +14,15 @@
  */
 package askew.entity;
 
+import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.*;
 
 import com.google.gson.JsonObject;
-import askew.playermode.leveleditor.FullAssetTracker;
+import askew.AssetTraversalController;
 import askew.entity.obstacle.*;
 
 /**
@@ -243,17 +245,6 @@ public class Trunk extends ComplexObstacle {
 	}
 
 	/**
-	 * Sets the texture for the individual planks
-	 *
-	 * @param texture the texture for the individual planks
-	 */
-	public void setTexture(TextureRegion texture) {
-		for(Obstacle body : bodies) {
-			((SimpleObstacle)body).setTexture(texture);
-		}
-	}
-
-	/**
 	 * Returns the texture for the individual planks
 	 *
 	 * @return the texture for the individual planks
@@ -265,19 +256,12 @@ public class Trunk extends ComplexObstacle {
 		return ((SimpleObstacle) bodies.get(0)).getTexture();
 	}
 
-	public void setTextures() {
-		setTexture(FullAssetTracker.getInstance().getTextureRegion("textures/branch.png"));
-	}
-
-	public static Obstacle createFromJson(JsonObject instance, Vector2 scale) {
-		Trunk trunk;
-		float x = instance.get("x").getAsFloat();
-		float y = instance.get("y").getAsFloat();
-		float numlinks = instance.get("numLinks").getAsFloat();
-		float stiff = instance.get("stiffLen").getAsFloat();
-		trunk = new Trunk(x, y, numlinks, 0.25f, 1.0f, stiff,scale);
-		trunk.setDrawScale(scale.x, scale.y);
-		trunk.setTextures();
-		return trunk;
+	@Override
+	public void setTextures(AssetManager manager) {
+		Texture managedTexture = manager.get("./texture/branch/branch.png", Texture.class);
+		TextureRegion regionTexture = new TextureRegion(managedTexture);
+		for(Obstacle body : bodies) {
+			((SimpleObstacle)body).setTexture(regionTexture);
+		}
 	}
 }

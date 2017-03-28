@@ -17,6 +17,7 @@
  */
 package askew.entity.obstacle;
 
+import askew.entity.Entity;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
@@ -35,7 +36,7 @@ import askew.GameCanvas;
  * to unify common functionality. In particular, it wraps the body and 
  * and fixture information into a single interface.
  */
-public abstract class Obstacle {
+public abstract class Obstacle extends Entity {
 	/// Initialization structures to store body information
 	/** Stores the body information for this shape */
 	protected transient BodyDef bodyinfo;

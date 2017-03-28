@@ -10,6 +10,7 @@
  */
 package askew.playermode.leveleditor;
 
+import askew.AssetTraversalController;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
@@ -49,7 +50,7 @@ public class LevelEditorController extends WorldController implements ContactLis
 	/** Track asset loading from all instances and subclasses */
 	private AssetState levelEditorAssetState = AssetState.EMPTY;
 
-	private FullAssetTracker fat;
+	private AssetTraversalController fat;
 
 	private JSONLoaderSaver jls;
 
@@ -109,8 +110,6 @@ public class LevelEditorController extends WorldController implements ContactLis
 			return;
 		}
 
-		fat.loadEverything(this,manager);
-
 		super.loadContent(manager);
 		levelEditorAssetState = AssetState.COMPLETE;
 	}
@@ -126,7 +125,6 @@ public class LevelEditorController extends WorldController implements ContactLis
 		setComplete(false);
 		setFailure(false);
 		world.setContactListener(this);
-		fat = FullAssetTracker.getInstance();
 		jls = new JSONLoaderSaver();
 		currentLevel = "test_save_obstacle";
 		createClass = ".SlothModel";

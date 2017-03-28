@@ -7,7 +7,9 @@ package askew.entity.sloth;
  */
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Vector2;
@@ -20,7 +22,7 @@ import askew.GlobalConfiguration;
 import askew.entity.obstacle.BoxObstacle;
 import askew.entity.obstacle.Obstacle;
 import askew.entity.obstacle.SimpleObstacle;
-import askew.playermode.leveleditor.FullAssetTracker;
+import askew.AssetTraversalController;
 import askew.entity.obstacle.ComplexObstacle;
 import lombok.Getter;
 
@@ -90,7 +92,7 @@ public class SlothModel extends ComplexObstacle  {
     /**
      * Returns the texture index for the given body part
      *
-     * As some body parts are symmetrical, we reuse textures.
+     * As some body parts are symmetrical, we reuse texture.
      *
      * @returns the texture index for the given body part
      */
@@ -202,32 +204,6 @@ public class SlothModel extends ComplexObstacle  {
 
         if (partTextures != null && bodies.size == 0) {
             init();
-        }
-    }
-
-    /**
-     * Sets the array of textures for the individual body parts.
-     *
-     * The array should be BODY_TEXTURE_COUNT in size.
-     *
-     * textures the array of textures for the individual body parts.
-     */
-    public void setPartTextures() {
-        //assert textures != null && textures.length > BODY_TEXTURE_COUNT : "Texture array is not large enough";
-
-        partTextures = new TextureRegion[BODY_TEXTURE_COUNT];
-        partTextures[0] = FullAssetTracker.getInstance().getTextureRegion("textures/trevorhand.png");
-        partTextures[1] = FullAssetTracker.getInstance().getTextureRegion("textures/trevorarm.png");
-        partTextures[2] = FullAssetTracker.getInstance().getTextureRegion("textures/dude.png");
-
-        //partTextures = new TextureRegion[BODY_TEXTURE_COUNT];
-        //System.arraycopy(textures, 0, partTextures, 0, BODY_TEXTURE_COUNT);
-        if (bodies.size == 0) {
-            init();
-        } else {
-            for(int ii = 0; ii <= 2; ii++) {
-                ((SimpleObstacle)bodies.get(ii)).setTexture(partTextures[partToAsset(ii)]);
-            }
         }
     }
 
@@ -589,19 +565,31 @@ public class SlothModel extends ComplexObstacle  {
     }
 
     public ObjectSet<Obstacle> badBodies() {
-        ObjectSet<Obstacle> wtfSet = new ObjectSet<Obstacle>();
-        for (Obstacle b : bodies) wtfSet.add(b);
-        return wtfSet;
+        ObjectSet<Obstacle> badSet = new ObjectSet<Obstacle>();
+        for (Obstacle b : bodies) badSet.add(b);
+        return badSet;
     }
 
-    public static Obstacle createFromJson(JsonObject instance, Vector2 scale) {
-        SlothModel ret;
-        ret = new SlothModel(instance.get("x").getAsFloat(), instance.get("y").getAsFloat());
-        ret.setDrawScale(scale.x, scale.y);
-        ret.setPartTextures();
-        return ret;
+    @Override
+    public void setTextures(AssetManager manager) {
+        partTextures = new TextureRegion[BODY_TEXTURE_COUNT];
+        Texture managedHand = manager.get("texture/sloth/trevorhand.png");
+        Texture managedArm = manager.get("texture/sloth/trevorarm.png");
+        Texture managedDude = manager.get("texture/sloth/dude.png");
+        partTextures[0] = new TextureRegion(managedHand);
+        partTextures[1] = new TextureRegion(managedArm);
+        partTextures[2] = new TextureRegion(managedDude);
+
+        if (bodies.size == 0) {
+            init();
+        } else {
+            for(int ii = 0; ii <= 2; ii++) {
+                ((SimpleObstacle)bodies.get(ii)).setTexture(partTextures[partToAsset(ii)]);
+            }
+        }
     }
 
+    @Override
     public void draw(GameCanvas canvas){
         for(int x=0;x<bodies.size;x++){
 

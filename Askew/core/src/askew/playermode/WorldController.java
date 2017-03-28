@@ -196,7 +196,7 @@ public abstract class WorldController implements Screen {
 	/** 
 	 * Unloads the assets for this game.
 	 * 
-	 * This method erases the static variables.  It also deletes the associated textures 
+	 * This method erases the static variables.  It also deletes the associated texture
 	 * from the asset manager. If no assets are loaded, this method does nothing.
 	 * 
 	 * @param manager Reference to global asset manager.

@@ -40,8 +40,10 @@ import askew.util.ScreenListener;
  * and you would draw it as a root class in an architecture specification.  
  */
 public class GDXRoot extends Game implements ScreenListener {
-	/** AssetManager to load game assets (textures, sounds, etc.) */
+	/** AssetManager to load game assets (texture, sounds, etc.) */
 	private AssetManager manager;
+	/** AssetTraversalController tells manager what to load */
+	private AssetTraversalController assetTraversalController;
 	/** Drawing context to display graphics (VIEW CLASS) */
 	private GameCanvas canvas; 
 	/** Player mode for the asset loading screen (CONTROLLER CLASS) */
@@ -65,6 +67,7 @@ public class GDXRoot extends Game implements ScreenListener {
 	public GDXRoot() {
 		// Start loading with the asset manager
 		manager = new AssetManager();
+		assetTraversalController = new AssetTraversalController();
 		
 		// Add font support to the asset manager
 		FileHandleResolver resolver = new InternalFileHandleResolver();
@@ -90,8 +93,9 @@ public class GDXRoot extends Game implements ScreenListener {
 		controllers[3] = new PlatformController();
 		for(int ii = 0; ii < controllers.length; ii++) {
 			controllers[ii].setScale(canvas);
-			controllers[ii].preLoadContent(manager);
+			//controllers[ii].preLoadContent(manager);
 		}
+		assetTraversalController.preLoadEverything(manager);
 		current = 3;
 		loading.setScreenListener(this);
 		setScreen(loading);

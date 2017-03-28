@@ -20,7 +20,7 @@ import com.badlogic.gdx.physics.box2d.*;
 
 import askew.entity.obstacle.BoxObstacle;
 import askew.entity.obstacle.Obstacle;
-import askew.playermode.leveleditor.FullAssetTracker;
+import askew.AssetTraversalController;
 import askew.playermode.leveleditor.JSONLoaderSaver;
 import askew.playermode.leveleditor.LevelModel;
 import askew.entity.sloth.SlothModel;
@@ -71,7 +71,6 @@ public class PlatformController2 extends WorldController {
 			return;
 		}
 		platformAssetState = AssetState.LOADING;
-		FullAssetTracker.getInstance().preLoadEverything(manager);
 		super.preLoadContent(manager);
 	}
 
@@ -91,7 +90,6 @@ public class PlatformController2 extends WorldController {
 		}
 
 		SoundController sounds = SoundController.getInstance();
-		FullAssetTracker.getInstance().loadEverything(this,manager);
 
 		super.loadContent(manager);
 		platformAssetState = AssetState.COMPLETE;

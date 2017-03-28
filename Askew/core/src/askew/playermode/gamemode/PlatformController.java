@@ -23,7 +23,7 @@ import com.badlogic.gdx.physics.box2d.*;
 import askew.entity.obstacle.BoxObstacle;
 import askew.entity.obstacle.Obstacle;
 import askew.entity.obstacle.PolygonObstacle;
-import askew.playermode.leveleditor.FullAssetTracker;
+import askew.AssetTraversalController;
 import askew.playermode.leveleditor.JSONLoaderSaver;
 import askew.playermode.leveleditor.LevelModel;
 import askew.entity.sloth.SlothModel;
@@ -48,18 +48,9 @@ import java.util.Arrays;
  * place nicely with the static assets.
  */
 public class PlatformController extends WorldController {
-	/** The texture file for the character avatar (no animation) */
-	private static final String DUDE_FILE  = "platform/dude.png";
-	/** The texture file for the spinning barrier */
-	private static final String BARRIER_FILE = "platform/barrier.png";
-	/** The texture file for the bullet */
-	private static final String BULLET_FILE  = "platform/bullet.png";
-	/** The texture file for the bridge plank */
-	private static final String ROPE_FILE  = "platform/ropebridge.png";
-	/** The texture file for the vine */
-	private static final String VINE_FILE  = "platform/vine.png";
-	/** The texture file for the branch */
-	private static final String BRANCH_FILE  = "platform/branch.png";
+
+	/** GDXRoot's manager for loading textures */
+	private AssetManager manager;
 
 	/** The sound file for a jump */
 	private static final String JUMP_FILE = "platform/jump.mp3";
@@ -76,7 +67,7 @@ public class PlatformController extends WorldController {
 	private TextureRegion avatarTexture;
 	/** Texture asset for the bridge plank */
 	private TextureRegion bridgeTexture;
-	/** Files for the body textures */
+	/** Files for the body texture */
 	private static final String[] RAGDOLL_FILES = { "ragdoll/trevorhand.png", "ragdoll/ProfWhite.png",
 			"ragdoll/trevorarm.png",  "ragdoll/dude.png",
 			"ragdoll/tux_thigh.png", "ragdoll/tux_shin.png" };
@@ -125,23 +116,12 @@ public class PlatformController extends WorldController {
 	 * @param manager Reference to global asset manager.
 	 */
 	public void preLoadContent(AssetManager manager) {
+		this.manager = manager;
 		if (platformAssetState != AssetState.EMPTY) {
 			return;
 		}
 
 		platformAssetState = AssetState.LOADING;
-		manager.load(DUDE_FILE, Texture.class);
-		assets.add(DUDE_FILE);
-		manager.load(BARRIER_FILE, Texture.class);
-		assets.add(BARRIER_FILE);
-		manager.load(BULLET_FILE, Texture.class);
-		assets.add(BULLET_FILE);
-		manager.load(ROPE_FILE, Texture.class);
-		assets.add(ROPE_FILE);
-		manager.load(VINE_FILE, Texture.class);
-		assets.add(VINE_FILE);
-		manager.load(BRANCH_FILE, Texture.class);
-		assets.add(BRANCH_FILE);
 
 		manager.load(JUMP_FILE, Sound.class);
 		assets.add(JUMP_FILE);
@@ -149,9 +129,6 @@ public class PlatformController extends WorldController {
 		assets.add(PEW_FILE);
 		manager.load(POP_FILE, Sound.class);
 		assets.add(POP_FILE);
-
-		FullAssetTracker.getInstance().preLoadEverything(manager);
-
 
 		// SLOTH
 		for(int ii = 0; ii < RAGDOLL_FILES.length; ii++) {
@@ -177,11 +154,6 @@ public class PlatformController extends WorldController {
 			return;
 		}
 
-		avatarTexture = createTexture(manager,DUDE_FILE,false);
-		bridgeTexture = createTexture(manager,ROPE_FILE,false);
-		vineTexture = createTexture(manager,VINE_FILE,false);
-		branchTexture = createTexture(manager, BRANCH_FILE, false);
-
 		SoundController sounds = SoundController.getInstance();
 		sounds.allocate(manager, JUMP_FILE);
 		sounds.allocate(manager, PEW_FILE);
@@ -192,8 +164,6 @@ public class PlatformController extends WorldController {
 		for(int ii = 0; ii < RAGDOLL_FILES.length; ii++) {
 			bodyTextures[ii] =  createTexture(manager,RAGDOLL_FILES[ii],false);
 		}
-
-		FullAssetTracker.getInstance().loadEverything(this,manager);
 
 		super.loadContent(manager);
 		platformAssetState = AssetState.COMPLETE;
@@ -215,13 +185,6 @@ public class PlatformController extends WorldController {
 	// In an actual game, this information would go in a data file.
 	// Wall vertices
 
-	/*Original Values*/
-//	private static final float[][] WALLS = {
-//			{16.0f, 18.0f, 16.0f, 17.0f,  1.0f, 17.0f,
-//					1.0f,  0.0f,  0.0f,  0.0f,  0.0f, 18.0f},
-//			{32.0f, 18.0f, 32.0f,  0.0f, 31.0f,  0.0f,
-//					31.0f, 17.0f, 16.0f, 17.0f, 16.0f, 18.0f}
-//	};
 	private static final float[][] WALLS = {
 			{16.0f, 28.0f, 16.0f, 27.0f,  1.0f, 27.0f,
 					1.0f,  0.0f,  0.0f,  0.0f,  0.0f, 28.0f},
@@ -229,26 +192,6 @@ public class PlatformController extends WorldController {
 					33.0f, 27.0f, 16.0f, 27.0f, 16.0f, 28.0f}
 	};
 
-	/*Original Values*/
-//	/** The outlines of all of the platforms */
-//	private static final float[][] PLATFORMS = {
-//			//   x1     y1  x2    y2     x3   y3    x4    y4
-//			//{ 1.0f, 3.0f, 3.0f, 3.0f, 3.0f, 2.5f, 1.0f, 2.5f},
-//			{ 1.0f, 2.0f, 3.0f, 2.0f, 3.0f, 1.5f, 1.0f, 1.5f},
-//			//{ 6.0f, 4.0f, 9.0f, 4.0f, 9.0f, 2.5f, 6.0f, 2.5f},
-//			//{23.0f, 4.0f,31.0f, 4.0f,31.0f, 2.5f,23.0f, 2.5f},
-//			//{1.0f, 14.0f,6.0f, 24.0f,31.0f, 12.5f,26.0f, 11.5f},
-//			//{26.0f, 5.5f,28.0f, 5.5f,28.0f, 5.0f,26.0f, 5.0f},
-//			//{29.0f, 7.0f,31.0f, 7.0f,31.0f, 6.5f,29.0f, 6.5f},
-//			//{24.0f, 8.5f,27.0f, 8.5f,27.0f, 8.0f,24.0f, 8.0f},
-//			//{29.0f,10.0f,31.0f,10.0f,31.0f, 9.5f,29.0f, 9.5f},
-//			//{23.0f,11.5f,27.0f,11.5f,27.0f,11.0f,23.0f,11.0f},
-//			//{19.0f,12.5f,23.0f,12.5f,23.0f,12.0f,19.0f,12.0f},
-//			//{ 1.0f,12.5f, 7.0f,12.5f, 7.0f,12.0f, 1.0f,12.0f}
-//			{ 1.0f,8.5f, 23.0f,8.5f, 23.0f,8.0f, 1.0f,8.0f},
-//			//{ 1.0f,10.5f, 7.0f,10.5f, 7.0f,10.0f, 1.0f,10.0f},
-//			//{ 23.0f,10.5f, 31.0f,10.5f, 31.0f,10.0f, 23.0f,10.0f},
-//	};
 
 	/** The outlines of all of the platforms */
 	private static final float[][] PLATFORMS = {
@@ -387,8 +330,6 @@ public class PlatformController extends WorldController {
 	 * Lays out the game geography.
 	 */
 	private void populateLevel() {
-		//System.out.println("populating");
-		//System.out.println("scale ("+scale.x+","+scale.y+")");
 		if (loadLevel.equals("")) {
 			// Add level goal
 			float dwidth  = goalTile.getRegionWidth()/scale.x;
@@ -452,7 +393,7 @@ public class PlatformController extends WorldController {
 				trunklen = BRANCH_LENGTH.get(b);
 				//branch = new Stiff=Branch(BRANCH_POS.get(b).x, BRANCH_POS.get(b).y, BRANCH_LENGTH.get(b), dwidth, dheight);
 				trunk = new Trunk(BRANCH_POS.get(b).x, BRANCH_POS.get(b).y,trunklen, dwidth, dheight, branchlen,scale);
-				trunk.setTexture(branchTexture);
+				trunk.setTextures(manager);
 				trunk.setDrawScale(scale);
 				addObject(trunk);
 
@@ -461,7 +402,7 @@ public class PlatformController extends WorldController {
 				nLinks = trunk.getnLinks();
 				branch_y = BRANCH_POS.get(b).y+((nLinks-branchlen)*linksize+spacing);
 				branch = new StiffBranch(BRANCH_POS.get(b).x, branch_y,branchlen,dwidth,dheight,scale);
-				branch.setTexture(branchTexture);
+				branch.setTextures(manager);
 				branch.setDrawScale(scale);
 				addObject(branch);
 			}
@@ -469,7 +410,7 @@ public class PlatformController extends WorldController {
 			// Create sloth
 			sloth = new SlothModel(DOLL_POS.x, DOLL_POS.y);
 			sloth.setDrawScale(scale.x,scale.y);
-			sloth.setPartTextures();
+			sloth.setTextures(manager);
 			addObject(sloth);
 			sloth.activateSlothPhysics(world);
 			collisions.setSloth(sloth);
@@ -482,7 +423,7 @@ public class PlatformController extends WorldController {
 				//System.out.println(dheight);
 				s_vine = new Vine(VINE_POS.get(v).x, VINE_POS.get(v).y, VINE_LENGTH.get(v), dwidth, dheight, scale);
 
-				s_vine.setTexture(vineTexture);
+				s_vine.setTextures(manager);
 				s_vine.setDrawScale(scale);
 				addObject(s_vine);
 			}

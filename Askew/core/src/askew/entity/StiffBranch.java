@@ -14,6 +14,8 @@
  */
 package askew.entity;
 
+import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -22,7 +24,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 import com.google.gson.JsonObject;
-import askew.playermode.leveleditor.FullAssetTracker;
+import askew.AssetTraversalController;
 import askew.entity.obstacle.*;
 
 /**
@@ -234,17 +236,6 @@ public class StiffBranch extends ComplexObstacle {
 	}
 
 	/**
-	 * Sets the texture for the individual planks
-	 *
-	 * @param texture the texture for the individual planks
-	 */
-	public void setTexture(TextureRegion texture) {
-		for(Obstacle body : bodies) {
-			((SimpleObstacle)body).setTexture(texture);
-		}
-	}
-
-	/**
 	 * Returns the texture for the individual planks
 	 *
 	 * @return the texture for the individual planks
@@ -256,18 +247,12 @@ public class StiffBranch extends ComplexObstacle {
 		return ((SimpleObstacle)bodies.get(0)).getTexture();
 	}
 
-	public void setTextures() {
-		setTexture(FullAssetTracker.getInstance().getTextureRegion("textures/branch.png"));
-	}
-
-	public static Obstacle createFromJson(JsonObject instance, Vector2 scale) {
-		StiffBranch branch;
-		float x = instance.get("x").getAsFloat();
-		float y = instance.get("y").getAsFloat();
-		float stiff = instance.get("stiffLen").getAsFloat();
-		branch = new StiffBranch(x, y, stiff, 0.25f, 0.1f,scale);
-		branch.setDrawScale(scale.x, scale.y);
-		branch.setTextures();
-		return branch;
+	@Override
+	public void setTextures(AssetManager manager) {
+		Texture managedTexture = manager.get("texture/branch/branch.png", Texture.class);
+		TextureRegion regionTexture = new TextureRegion(managedTexture);
+		for(Obstacle body : bodies) {
+			((SimpleObstacle)body).setTexture(regionTexture);
+		}
 	}
 }

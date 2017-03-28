@@ -39,7 +39,7 @@ import askew.util.*;
  * screen to be used at the start of the game or between levels.  Feel free to adopt
  * this to your needs.
  *
- * You will note that this mode has some textures that are not loaded by the AssetManager.
+ * You will note that this mode has some texture that are not loaded by the AssetManager.
  * You are never required to load through the AssetManager.  But doing this will block
  * the application.  That is why we try to have as few resources as possible for this
  * loading screen.

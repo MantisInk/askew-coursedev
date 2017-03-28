@@ -16,6 +16,7 @@
 package askew.entity.obstacle;
 
 import askew.GameCanvas;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.graphics.*;
@@ -356,7 +357,12 @@ public class PolygonObstacle extends SimpleObstacle {
 		}
     	drawScale.set(x,y);
     }
-	
+
+	@Override
+	public void setTextures(AssetManager manager) {
+		// Do nothing
+	}
+
 	/**
 	 * Draws the physics object.
 	 *
