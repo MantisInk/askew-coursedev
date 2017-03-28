@@ -19,8 +19,7 @@ public class JsonEntityFactory {
         float x = instance.get("x").getAsFloat();
         float y = instance.get("y").getAsFloat();
         float numlinks = instance.get("numLinks").getAsFloat();
-        // TODO: Refactor to account for assetmanager
-        Texture managedTexture = manager.get("VINE_TEXTURE", Texture.class);
+        Texture managedTexture = manager.get(Vine.VINE_TEXTURE, Texture.class);
         TextureRegion vineTexture = new TextureRegion(managedTexture);
 		vine = new Vine(x, y, numlinks, vineTexture.getRegionHeight() / scale.x, vineTexture.getRegionHeight() / scale.y, scale);
 		vine.setDrawScale(scale.x, scale.y);

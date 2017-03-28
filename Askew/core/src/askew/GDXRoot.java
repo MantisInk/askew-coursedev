@@ -26,8 +26,7 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGeneratorLoader;
 import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader;
 import askew.playermode.leveleditor.LevelEditorController;
-import askew.playermode.gamemode.PlatformController;
-import askew.playermode.gamemode.PlatformController2;
+import askew.playermode.gamemode.GameModeController;
 import askew.util.ScreenListener;
 
 /**
@@ -86,17 +85,16 @@ public class GDXRoot extends Game implements ScreenListener {
 		loading = new LoadingMode(canvas,manager,1);
 		
 		// Initialize the three game worlds
-		controllers = new WorldController[4];
+		controllers = new WorldController[3];
 		controllers[0] = new MainMenuController();
-		controllers[1] = new PlatformController2();
+		controllers[1] = new GameModeController();
 		controllers[2] = new LevelEditorController();
-		controllers[3] = new PlatformController();
 		for(int ii = 0; ii < controllers.length; ii++) {
 			controllers[ii].setScale(canvas);
-			//controllers[ii].preLoadContent(manager);
+			controllers[ii].preLoadContent(manager);
 		}
 		assetTraversalController.preLoadEverything(manager);
-		current = 3;
+		current = 1;
 		loading.setScreenListener(this);
 		setScreen(loading);
 	}
@@ -207,8 +205,8 @@ public class GDXRoot extends Game implements ScreenListener {
 				LevelEditorController lec = (LevelEditorController) controllers[current];
 				if (!lec.getTrialLevelName().equals("")) {
 					WorldController GM = controllers[CON_GM];
-					if (GM instanceof PlatformController) {
-						((PlatformController) GM).setLoadLevel(lec.getTrialLevelName());
+					if (GM instanceof GameModeController) {
+						((GameModeController) GM).setLoadLevel(lec.getTrialLevelName());
 					}
 				}
 			}

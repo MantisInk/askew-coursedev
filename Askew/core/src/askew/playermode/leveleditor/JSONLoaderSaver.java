@@ -1,6 +1,7 @@
 package askew.playermode.leveleditor;
 
 
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.math.Vector2;
 import com.google.gson.*;
 import askew.entity.obstacle.Obstacle;
@@ -17,20 +18,22 @@ public class JSONLoaderSaver {
 
     private Gson gson;
 
-    @Setter @Getter
+    @Getter
     private Vector2 scale;
 
+    private EntityWrapper wrapper;
+
     public JSONLoaderSaver() {
+        wrapper = new EntityWrapper();
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.setPrettyPrinting();
-        gsonBuilder.registerTypeAdapter(Obstacle.class, new EntityWrapper(this));
+        gsonBuilder.registerTypeAdapter(Obstacle.class, wrapper);
         gson = gsonBuilder.create();
     }
 
     public LevelModel loadLevel(String levelName) throws FileNotFoundException {
         FileReader fr = new FileReader("./levels/" + levelName + ".json");
-        LevelModel loaded = gson.fromJson(fr, LevelModel.class);
-        return loaded;
+        return gson.fromJson(fr, LevelModel.class);
     }
 
     public boolean saveLevel(LevelModel toSave, String levelName) {
@@ -85,5 +88,13 @@ public class JSONLoaderSaver {
 
     public String prettyJson(JsonObject notPrettyJson) {
         return gson.toJson(notPrettyJson);
+    }
+
+    public void setScale(Vector2 scale) {
+        wrapper.setScale(scale);
+    }
+
+    public void setManager(AssetManager manager) {
+        wrapper.setManager(manager);
     }
 }

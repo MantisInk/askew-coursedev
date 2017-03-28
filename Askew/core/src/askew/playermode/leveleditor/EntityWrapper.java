@@ -2,12 +2,14 @@ package askew.playermode.leveleditor;
 
 import askew.entity.JsonEntityFactory;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.math.Vector2;
 import com.google.gson.*;
 import askew.entity.obstacle.Obstacle;
 import askew.entity.StiffBranch;
 import askew.entity.Trunk;
 import askew.entity.vine.Vine;
 import askew.entity.sloth.SlothModel;
+import lombok.Setter;
 
 import java.lang.reflect.Type;
 
@@ -18,12 +20,12 @@ public class EntityWrapper implements JsonSerializer<Obstacle>, JsonDeserializer
 
     private static final String CLASSNAME = "CLASSNAME";
     private static final String INSTANCE  = "INSTANCE";
-    private JSONLoaderSaver parent;
+    @Setter
+    private Vector2 scale;
+    @Setter
     private AssetManager manager;
 
-    public EntityWrapper(JSONLoaderSaver parent) {
-        this.parent = parent;
-        this.manager = manager;
+    public EntityWrapper() {
     }
 
     @Override
@@ -50,13 +52,13 @@ public class EntityWrapper implements JsonSerializer<Obstacle>, JsonDeserializer
         JsonObject instance = jsonObject.get("INSTANCE").getAsJsonObject();
         switch(obstacleClass) {
             case ".SlothModel":
-                return JsonEntityFactory.createSloth(manager, instance, parent.getScale());
+                return JsonEntityFactory.createSloth(manager, instance, scale);
             case ".Vine":
-                return JsonEntityFactory.createVine(manager, instance, parent.getScale());
+                return JsonEntityFactory.createVine(manager, instance, scale);
             case ".Trunk":
-                return JsonEntityFactory.createTrunk(manager, instance, parent.getScale());
+                return JsonEntityFactory.createTrunk(manager, instance, scale);
             case ".StiffBranch":
-                return JsonEntityFactory.createStiffBranch(manager, instance, parent.getScale());
+                return JsonEntityFactory.createStiffBranch(manager, instance, scale);
             default:
                 Class<?> klass = null;
                 try {

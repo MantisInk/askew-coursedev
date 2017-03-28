@@ -43,10 +43,10 @@ public class Vine extends ComplexObstacle {
 	private static final String BRIDGE_PIN_NAME = "pin";
 	/** The radius of each anchor pin */
 	private static final float BRIDGE_PIN_RADIUS = 0.1f;
-	/** The density of each plank in the bridge */
+    /** The density of each plank in the bridge */
 	private transient float BASIC_DENSITY;
 
-    private static final String VINE_TEXTURE = "./texture/vine/vine.png";
+    public static final String VINE_TEXTURE = "./texture/vine/vine.png";
 
 	// Invisible anchor objects
 	/** The left side of the bridge */
@@ -269,7 +269,7 @@ public class Vine extends ComplexObstacle {
 
     @Override
     public void setTextures(AssetManager manager) {
-        Texture vineTexture = manager.get("VINE_TEXTURE", Texture.class);
+        Texture vineTexture = manager.get(VINE_TEXTURE, Texture.class);
         TextureRegion regionedTexture = new TextureRegion(vineTexture);
         for(Obstacle body : bodies) {
             ((SimpleObstacle)body).setTexture(regionedTexture);

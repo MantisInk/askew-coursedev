@@ -10,6 +10,7 @@
  */
 package askew.playermode.gamemode;
 
+import askew.GlobalConfiguration;
 import askew.InputController;
 import askew.playermode.WorldController;
 import com.badlogic.gdx.math.*;
@@ -20,7 +21,6 @@ import com.badlogic.gdx.physics.box2d.*;
 
 import askew.entity.obstacle.BoxObstacle;
 import askew.entity.obstacle.Obstacle;
-import askew.AssetTraversalController;
 import askew.playermode.leveleditor.JSONLoaderSaver;
 import askew.playermode.leveleditor.LevelModel;
 import askew.entity.sloth.SlothModel;
@@ -39,7 +39,7 @@ import java.io.FileNotFoundException;
  * This is the purpose of our AssetState variable; it ensures that multiple instances
  * place nicely with the static assets.
  */
-public class PlatformController2 extends WorldController {
+public class GameModeController extends WorldController {
 
 
 	Affine2 camTrans = new Affine2();
@@ -56,6 +56,8 @@ public class PlatformController2 extends WorldController {
 
 	private PhysicsController collisions;
 
+	private JSONLoaderSaver jsonLoaderSaver;
+
 	/**
 	 * Preloads the assets for this controller.
 	 *
@@ -71,6 +73,7 @@ public class PlatformController2 extends WorldController {
 			return;
 		}
 		platformAssetState = AssetState.LOADING;
+		jsonLoaderSaver.setManager(manager);
 		super.preLoadContent(manager);
 	}
 
@@ -117,7 +120,7 @@ public class PlatformController2 extends WorldController {
 	 *
 	 * The game has default gravity and other settings
 	 */
-	public PlatformController2() {
+	public GameModeController() {
 		super(DEFAULT_WIDTH,DEFAULT_HEIGHT,DEFAULT_GRAVITY);
 		setDebug(false);
 		setComplete(false);
@@ -125,7 +128,8 @@ public class PlatformController2 extends WorldController {
 		collisions = new PhysicsController();
 		world.setContactListener(collisions);
 		sensorFixtures = new ObjectSet<Fixture>();
-		loadLevel = "wtf_level";
+		loadLevel = GlobalConfiguration.getInstance().getAsString("defaultLevel");
+		jsonLoaderSaver = new JSONLoaderSaver();
 	}
 
 	/**
@@ -165,11 +169,9 @@ public class PlatformController2 extends WorldController {
 	 */
 	private void populateLevel() {
 
-			JSONLoaderSaver jls = new JSONLoaderSaver();
-			//System.out.println(this.scale);
-			jls.setScale(this.scale);
+			jsonLoaderSaver.setScale(this.scale);
 			try {
-				LevelModel lm = jls.loadLevel(loadLevel);
+				LevelModel lm = jsonLoaderSaver.loadLevel(loadLevel);
 				if (lm == null) {
 					lm = new LevelModel();
 				}

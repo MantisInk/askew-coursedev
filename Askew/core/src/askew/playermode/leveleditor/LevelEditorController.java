@@ -91,8 +91,8 @@ public class LevelEditorController extends WorldController implements ContactLis
 	 * @param manager Reference to global asset manager.
 	 */
 	public void preLoadContent(AssetManager manager) {
-		fat.preLoadEverything(manager);
 		super.preLoadContent(manager);
+		jls.setManager(manager);
 	}
 
 	/**

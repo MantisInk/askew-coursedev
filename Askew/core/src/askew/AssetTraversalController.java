@@ -36,7 +36,6 @@ public class AssetTraversalController {
         } else {
             String filePath = escapeWindowsFiles(fileHandle.file().toString());
             manager.load(filePath, Texture.class);
-            System.out.println("[debug] loading " + filePath);
         }
     }
 

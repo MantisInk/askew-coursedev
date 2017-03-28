@@ -573,9 +573,9 @@ public class SlothModel extends ComplexObstacle  {
     @Override
     public void setTextures(AssetManager manager) {
         partTextures = new TextureRegion[BODY_TEXTURE_COUNT];
-        Texture managedHand = manager.get("texture/sloth/trevorhand.png");
-        Texture managedArm = manager.get("texture/sloth/trevorarm.png");
-        Texture managedDude = manager.get("texture/sloth/dude.png");
+        Texture managedHand = manager.get("./texture/sloth/trevorhand.png");
+        Texture managedArm = manager.get("./texture/sloth/trevorarm.png");
+        Texture managedDude = manager.get("./texture/sloth/dude.png");
         partTextures[0] = new TextureRegion(managedHand);
         partTextures[1] = new TextureRegion(managedArm);
         partTextures[2] = new TextureRegion(managedDude);
