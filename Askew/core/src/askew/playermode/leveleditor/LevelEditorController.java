@@ -22,7 +22,7 @@ import askew.entity.obstacle.ComplexObstacle;
 import askew.entity.obstacle.Obstacle;
 import askew.entity.Trunk;
 import askew.entity.StiffBranch;
-import askew.entity.Vine;
+import askew.entity.vine.Vine;
 import askew.entity.sloth.SlothModel;
 import askew.util.PooledList;
 import lombok.Getter;

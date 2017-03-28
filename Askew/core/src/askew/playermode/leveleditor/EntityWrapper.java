@@ -4,7 +4,7 @@ import com.google.gson.*;
 import askew.entity.obstacle.Obstacle;
 import askew.entity.StiffBranch;
 import askew.entity.Trunk;
-import askew.entity.Vine;
+import askew.entity.vine.Vine;
 import askew.entity.sloth.SlothModel;
 
 import java.lang.reflect.Type;

@@ -29,7 +29,7 @@ import askew.playermode.leveleditor.LevelModel;
 import askew.entity.sloth.SlothModel;
 import askew.entity.StiffBranch;
 import askew.entity.Trunk;
-import askew.entity.Vine;
+import askew.entity.vine.Vine;
 import askew.util.*;
 import lombok.Getter;
 import lombok.Setter;
