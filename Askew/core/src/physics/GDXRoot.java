@@ -90,7 +90,7 @@ public class GDXRoot extends Game implements ScreenListener {
 			controllers[ii].setScale(canvas);
 			controllers[ii].preLoadContent(manager);
 		}
-		current = 0;
+		current = 3;
 		loading.setScreenListener(this);
 		setScreen(loading);
 	}
@@ -181,12 +181,12 @@ public class GDXRoot extends Game implements ScreenListener {
 			setScreen(controllers[current]);
 
 		} else if (exitCode == WorldController.EXIT_GM_MM) {
-			current = CON_MM;
+			current = CON_GM_OLD;
 			controllers[current].reset();
 			setScreen(controllers[current]);
 
 		} else if (exitCode == WorldController.EXIT_GM_LE) {
-			current = CON_LE;
+			current = CON_GM_OLD;
 			controllers[current].reset();
 			setScreen(controllers[current]);
 
