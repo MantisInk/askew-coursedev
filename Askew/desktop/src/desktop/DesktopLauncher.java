@@ -14,8 +14,8 @@ package desktop;
 
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
-import physics.GDXRoot;
-import physics.GlobalConfiguration;
+import askew.GDXRoot;
+import askew.GlobalConfiguration;
 
 /**
  * The main class of the game.

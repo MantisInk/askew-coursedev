@@ -1,8 +1,8 @@
-import physics.leveleditor.FullAssetTracker;
-import physics.leveleditor.LevelModel;
-import physics.platform.sloth.SlothModel;
+import askew.leveleditor.FullAssetTracker;
+import askew.leveleditor.LevelModel;
+import askew.entity.obstacle.sloth.SlothModel;
 import org.junit.Test;
-import physics.leveleditor.JSONLoaderSaver;
+import askew.leveleditor.JSONLoaderSaver;
 
 import java.io.FileNotFoundException;
 
