@@ -5,10 +5,6 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.math.Vector2;
 import com.google.gson.*;
 import askew.entity.obstacle.Obstacle;
-import askew.entity.StiffBranch;
-import askew.entity.Trunk;
-import askew.entity.vine.Vine;
-import askew.entity.sloth.SlothModel;
 import lombok.Setter;
 
 import java.lang.reflect.Type;

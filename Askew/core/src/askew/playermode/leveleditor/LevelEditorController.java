@@ -19,8 +19,8 @@ import com.google.gson.JsonObject;
 import askew.playermode.WorldController;
 import askew.entity.obstacle.ComplexObstacle;
 import askew.entity.obstacle.Obstacle;
-import askew.entity.Trunk;
-import askew.entity.StiffBranch;
+import askew.entity.trunk.Trunk;
+import askew.entity.stiffbranch.StiffBranch;
 import askew.entity.vine.Vine;
 import askew.entity.sloth.SlothModel;
 import askew.util.PooledList;
@@ -218,7 +218,7 @@ public class LevelEditorController extends WorldController implements ContactLis
 				Vine vTemplate = new Vine(x,y,5.0f,0.25f,1.0f,scale);
 				promptTemplate(vTemplate);
 				break;
-			case ".Trunk":
+			case ".trunk":
 				Trunk tTemplate = new Trunk(x,y, 5.0f, 0.25f, 1.0f, 3.0f,scale);
 				promptTemplate(tTemplate);
 				break;

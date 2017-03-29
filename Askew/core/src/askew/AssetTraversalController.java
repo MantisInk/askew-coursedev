@@ -5,9 +5,6 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import askew.playermode.WorldController;
-
-import java.io.File;
 
 /**
  * Traverses the asset directory to load texture and sounds into the LibGDX asset manager.
@@ -16,7 +13,7 @@ import java.io.File;
  */
 public class AssetTraversalController {
 
-    public static final String TEXTURE_DIRECTORY = "texture";
+    public static final String TEXTURE_MANIFEST = "texture_manifest.txt";
     public static final String SOUND_DIRECTORY = "sounds";
     private boolean preloaded;
     private boolean loaded;
@@ -40,14 +37,13 @@ public class AssetTraversalController {
     public boolean preLoadEverything(AssetManager manager) {
         if (preloaded) return true;
         // Textures
-        FileHandle textureHandle = Gdx.files.internal(TEXTURE_DIRECTORY);
+        FileHandle textureManifestHandle = Gdx.files.internal(TEXTURE_MANIFEST);
+        String[] allPaths = textureManifestHandle.readString().split("\n");
+        System.out.println(allPaths);
 
-        if (textureHandle == null || !textureHandle.exists()) return false;
-
-        for (FileHandle handle : textureHandle.list()) {
-            String filePath = escaleRelativeDot(escapeWindowsFiles(handle.file().toString()));
-            System.err.println("[debug] " + filePath);
-            manager.load(filePath, Texture.class);
+        for (String handleString : allPaths) {
+            System.err.println("[debug] " + handleString);
+            manager.load(handleString, Texture.class);
         }
 
 
