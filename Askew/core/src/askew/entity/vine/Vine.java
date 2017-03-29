@@ -46,7 +46,7 @@ public class Vine extends ComplexObstacle {
     /** The density of each plank in the bridge */
 	private transient float BASIC_DENSITY;
 
-    public static final String VINE_TEXTURE = "./texture/vine/vine.png";
+    public static final String VINE_TEXTURE = "texture/vine/vine.png";
 
 	// Invisible anchor objects
 	/** The left side of the bridge */

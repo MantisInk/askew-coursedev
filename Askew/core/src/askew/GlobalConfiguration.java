@@ -9,7 +9,7 @@ import com.google.gson.JsonObject;
  */
 public class GlobalConfiguration {
 
-    private static final String CONFIG_PATH = "config.json";
+    private static final String CONFIG_PATH = "data/config.json";
     private static GlobalConfiguration instance;
 
     private JsonObject dataBlob;
@@ -26,7 +26,7 @@ public class GlobalConfiguration {
      * Creates a new instance populated with the current values of the config.json.
      */
     public static void update() {
-       JsonObject newBlob = JSONLoaderSaver.loadArbitrary(CONFIG_PATH).orElseGet(JsonObject::new);
+        JsonObject newBlob = JSONLoaderSaver.loadArbitrary(CONFIG_PATH).orElseThrow(RuntimeException::new);
         instance = new GlobalConfiguration();
         instance.dataBlob = newBlob;
     }

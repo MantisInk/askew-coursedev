@@ -38,7 +38,6 @@ repositories {
 project(":desktop") {
     apply plugin: "java"
 
-
     dependencies {
         compile project(":core")
         compile "com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion"
@@ -57,6 +56,9 @@ project(":desktop") {
 project(":core") {
     apply plugin: "java"
 
+    task callCL(type: Exec) {
+        commandLine './jar_precompile.sh'
+    }
 
     dependencies {
         compile "com.badlogicgames.gdx:gdx:$gdxVersion"
