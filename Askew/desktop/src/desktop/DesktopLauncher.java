@@ -14,8 +14,8 @@ package desktop;
 
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
-import physics.GDXRoot;
-import physics.GlobalConfiguration;
+import askew.GDXRoot;
+import askew.GlobalConfiguration;
 
 /**
  * The main class of the game.
@@ -38,7 +38,7 @@ public class DesktopLauncher {
 		config.width  = 1024;
 		config.height = 576;
 		config.resizable = false;
-		config.fullscreen = GlobalConfiguration.getInstance().getAsBoolean("fullscreen");
+//		config.fullscreen = GlobalConfiguration.getInstance().getAsBoolean("fullscreen");
 		new LwjglApplication(new GDXRoot(), config);
 	}
 }
