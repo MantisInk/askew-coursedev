@@ -26,7 +26,7 @@ public class JsonEntityFactory {
 		vine = new Vine(x, y, numlinks, vineTexture.getRegionHeight() / scale.x, vineTexture.getRegionHeight() / scale.y, scale);
 		vine.setDrawScale(scale.x, scale.y);
 		vine.setTextures(manager);
-        return null;
+        return vine;
     }
 
     public static Trunk createTrunk(AssetManager manager, JsonObject instance, Vector2 scale) {

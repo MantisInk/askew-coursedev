@@ -11,6 +11,7 @@
 package askew.playermode.leveleditor;
 
 import askew.*;
+import askew.entity.Entity;
 import askew.util.json.JSONLoaderSaver;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.math.Vector2;
@@ -167,8 +168,12 @@ public class LevelEditorController extends WorldController implements ContactLis
 			lm = new LevelModel();
 		}
 
-		for (Obstacle o : lm.getEntities()) {
-			addObject(o);
+		for (Entity o : lm.getEntities()) {
+			if (o instanceof Obstacle) {
+				addObject((Obstacle) o);
+			} else {
+				System.err.println("UNSUPPORTED: Adding non obstacle entity");
+			}
 		}
 	}
 
@@ -229,7 +234,7 @@ public class LevelEditorController extends WorldController implements ContactLis
 		inputThresher = THRESHER_RESET;
 	}
 
-	private void promptTemplate(Obstacle template) {
+	private void promptTemplate(Entity template) {
 		if (!prompting) {
 			prompting = true;
 			String jsonOfTemplate = jls.gsonToJson(template);
@@ -255,8 +260,13 @@ public class LevelEditorController extends WorldController implements ContactLis
 	}
 
 	private void promptTemplateCallback(String json) {
-		Obstacle toAdd = jls.obstacleFromJson(json);
-		addObject(toAdd);
+		Entity toAdd = jls.entityFromJson(json);
+		if (toAdd instanceof Obstacle) {
+			addObject((Obstacle) toAdd);
+		} else {
+			System.err.println(toAdd);
+			System.err.println("Unsupported nonobstacle entity");
+		}
 		prompting = false;
 	}
 

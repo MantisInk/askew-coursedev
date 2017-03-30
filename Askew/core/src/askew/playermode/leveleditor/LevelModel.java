@@ -1,5 +1,6 @@
 package askew.playermode.leveleditor;
 
+import askew.entity.Entity;
 import askew.entity.obstacle.Obstacle;
 import lombok.Data;
 import lombok.Getter;
@@ -15,7 +16,6 @@ class LevelModel {
 
     int levelModelVersion;
 
-
     String title;
 
     int goalTimeGold;
@@ -24,21 +24,18 @@ class LevelModel {
 
     int goalTimeBronze;
 
-
     String background;
 
     String soundtrack;
 
-
     int height;
-
 
     int width;
 
-    List<Obstacle> entities;
+    List<Entity> entities;
 
     public LevelModel() {
-        this.entities = new ArrayList<Obstacle>();
+        this.entities = new ArrayList<Entity>();
         this.height = 768;
         this.width = 1024;
         this.levelModelVersion = LATEST_LEVEL_MODEL_VERSION;
