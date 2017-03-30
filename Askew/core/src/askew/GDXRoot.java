@@ -202,10 +202,10 @@ public class GDXRoot extends Game implements ScreenListener {
 		} else if (exitCode == WorldController.EXIT_LE_GM) {
 			if (controllers[current] instanceof LevelEditorController) {
 				LevelEditorController lec = (LevelEditorController) controllers[current];
-				if (!lec.getTrialLevelName().equals("")) {
+				if (!lec.getCurrentLevel().equals("")) {
 					WorldController GM = controllers[CON_GM];
 					if (GM instanceof GameModeController) {
-						((GameModeController) GM).setLoadLevel(lec.getTrialLevelName());
+						((GameModeController) GM).setLoadLevel(lec.getCurrentLevel());
 					}
 				}
 			}

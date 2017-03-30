@@ -55,6 +55,7 @@ public class LevelEditorController extends WorldController implements ContactLis
 
 	private LevelModel lm;
 
+	@Getter
 	private String currentLevel;
 
 	private String createClass;
@@ -75,8 +76,6 @@ public class LevelEditorController extends WorldController implements ContactLis
 			".StiffBranch"
 	};
 
-	@Getter
-	private String trialLevelName;
 	private boolean prompting;
 
 	/**
@@ -127,7 +126,6 @@ public class LevelEditorController extends WorldController implements ContactLis
 		jls = new JSONLoaderSaver();
 		currentLevel = "test_save_obstacle";
 		createClass = ".SlothModel";
-		trialLevelName = "";
 	}
 
 	/**
@@ -413,9 +411,6 @@ public class LevelEditorController extends WorldController implements ContactLis
 		if (InputController.getInstance().isEnterKeyPressed()) {
 			actualindex = tentativeIndex;
 			inputThresher = THRESHER_RESET_LONG;
-		}
-		if (InputController.getInstance().isTKeyPressed()) {
-			trialLevelName = currentLevel;
 		}
 
 		if (InputController.getInstance().isGKeyPressed()) {
