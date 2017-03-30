@@ -273,7 +273,9 @@ public class LevelEditorController extends WorldController implements ContactLis
 	private void promptGlobalConfig() {
 		if (!prompting) {
 			prompting = true;
-			String jsonOfConfig = jls.prettyJson(JSONLoaderSaver.loadArbitrary("./config.json").orElseGet(JsonObject::new));
+			String jsonOfConfig = jls.prettyJson(JSONLoaderSaver
+					.loadArbitrary("data/config.json").orElseGet
+							(JsonObject::new));
 			JDialog mainFrame = new JDialog();
 			mainFrame.setSize(600,600);
 			mainFrame.setLocationRelativeTo(null);
@@ -285,7 +287,8 @@ public class LevelEditorController extends WorldController implements ContactLis
 			mainFrame.add(panel);
 			JButton okButton = new JButton("ok");
 			okButton.addActionListener(e -> {
-				JSONLoaderSaver.saveArbitrary("./config.json",commentTextArea.getText());
+				JSONLoaderSaver.saveArbitrary("data/config.json",commentTextArea
+						.getText());
 				GlobalConfiguration.update();
 				mainFrame.setVisible(false);
 				mainFrame.dispose();
