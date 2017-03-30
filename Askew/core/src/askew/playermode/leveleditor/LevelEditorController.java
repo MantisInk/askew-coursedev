@@ -94,6 +94,7 @@ public class LevelEditorController extends WorldController implements ContactLis
 			"S: Save\n" +
 			"X: (xbox controller) switch to playing the level\n" +
 			"H: Toggle this help text";
+	private boolean loadingLevelPrompt;
 
 	/**
 	 * Preloads the assets for this controller.
@@ -398,9 +399,15 @@ public class LevelEditorController extends WorldController implements ContactLis
 			inputThresher = THRESHER_RESET_LONG;
 		}
 
+		// Load level
 		if (InputController.getInstance().isLKeyPressed()) {
-			currentLevel = showInputDialog("What level do you want to load?");
-			reset();
+			if (!loadingLevelPrompt) {
+				loadingLevelPrompt = true;
+				currentLevel = showInputDialog("What level do you want to load?");
+				reset();
+				loadingLevelPrompt = false;
+			}
+			inputThresher = THRESHER_RESET_LONG;
 		}
 
 		if (InputController.getInstance().isSKeyPressed()) {

@@ -217,7 +217,7 @@ public class GameModeController extends WorldController {
 		}
 		InputController input = InputController.getInstance();
 
-		if (input.didLeftButtonPress()) {
+		if (input.didLeftButtonPress() || input.isLKeyPressed()) {
 			System.out.println("LE");
 			listener.exitScreen(this, EXIT_GM_LE);
 			return false;
