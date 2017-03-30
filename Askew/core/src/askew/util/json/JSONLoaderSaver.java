@@ -1,6 +1,7 @@
 package askew.util.json;
 
 
+import askew.entity.Entity;
 import askew.playermode.leveleditor.LevelModel;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
@@ -24,7 +25,7 @@ public class JSONLoaderSaver {
         wrapper = new EntityWrapper();
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.setPrettyPrinting();
-        gsonBuilder.registerTypeAdapter(Obstacle.class, wrapper);
+        gsonBuilder.registerTypeAdapter(Entity.class, wrapper);
         gson = gsonBuilder.create();
     }
 
@@ -33,7 +34,6 @@ public class JSONLoaderSaver {
         if (fileHandle.exists() && !fileHandle.isDirectory()) {
             String contents = fileHandle.readString();
             return gson.fromJson(contents, LevelModel.class);
-
         }
 
         System.err.println("Missing: " + levelName);
@@ -53,12 +53,12 @@ public class JSONLoaderSaver {
         return true;
     }
 
-    public String gsonToJson(Obstacle o) {
-        return gson.toJson(o, Obstacle.class);
+    public String gsonToJson(Entity o) {
+        return gson.toJson(o, Entity.class);
     }
 
-    public Obstacle obstacleFromJson(String s) {
-        return gson.fromJson(s, Obstacle.class);
+    public Entity entityFromJson(String s) {
+        return gson.fromJson(s, Entity.class);
     }
 
     /**

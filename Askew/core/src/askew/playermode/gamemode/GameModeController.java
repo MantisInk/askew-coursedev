@@ -12,6 +12,7 @@ package askew.playermode.gamemode;
 
 import askew.GlobalConfiguration;
 import askew.InputController;
+import askew.entity.Entity;
 import askew.playermode.WorldController;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.utils.*;
@@ -172,12 +173,18 @@ public class GameModeController extends WorldController {
 			jsonLoaderSaver.setScale(this.scale);
 			try {
 				LevelModel lm = jsonLoaderSaver.loadLevel(loadLevel);
+				System.out.println(loadLevel);
 				if (lm == null) {
 					lm = new LevelModel();
 				}
 
-				for (Obstacle o : lm.getEntities()) {
-					addObject(o);
+				for (Entity o : lm.getEntities()) {
+					// drawing
+					if (o instanceof Obstacle) {
+						addObject((Obstacle) o);
+					} else {
+						System.err.println("Trying to add non-obstacle ent!");
+					}
 					if (o instanceof SlothModel) {
 						sloth = (SlothModel) o;
 						sloth.activateSlothPhysics(world);

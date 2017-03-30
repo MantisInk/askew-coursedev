@@ -38,7 +38,7 @@ public class AssetTraversalController {
         if (preloaded) return true;
         // Textures
         FileHandle textureManifestHandle = Gdx.files.internal(TEXTURE_MANIFEST);
-        String[] allPaths = textureManifestHandle.readString().split("\n");
+        String[] allPaths = textureManifestHandle.readString().split("\\R");
         System.out.println(allPaths);
 
         for (String handleString : allPaths) {

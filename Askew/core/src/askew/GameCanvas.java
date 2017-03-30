@@ -123,7 +123,8 @@ public class GameCanvas {
 		global = new Matrix4();
 		vertex = new Vector2();
 
-		background = new Texture(Gdx.files.internal("platform/background.png"));
+		background = new Texture(Gdx.files.internal
+				("texture/background/background.png"));
 		font = new BitmapFont();
 	}
 		

@@ -1,6 +1,6 @@
-texture/background/background.png
-texture/branch/branch.png
-texture/sloth/dude.png
-texture/sloth/hand.png
-texture/sloth/arm.png
-texture/vine/vine.png
+texture\background\background.png
+texture\branch\branch.png
+texture\sloth\arm.png
+texture\sloth\dude.png
+texture\sloth\hand.png
+texture\vine\vine.png

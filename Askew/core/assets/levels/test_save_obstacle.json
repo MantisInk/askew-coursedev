@@ -8,42 +8,37 @@
   "width": 1024,
   "entities": [
     {
-      "CLASSNAME": "physics.platform.sloth.SlothModel",
+      "CLASSNAME": "askew.entity.sloth.SlothModel",
       "INSTANCE": {
         "x": 10.0,
         "y": 10.0
       }
     },
     {
-      "CLASSNAME": "physics.platform.Vine",
+      "CLASSNAME": "askew.entity.vine.Vine",
       "INSTANCE": {
+        "pin": false,
         "numLinks": 5.0,
-        "x": 14.875,
-        "y": 5.78125
+        "x": 17.03125,
+        "y": 10.28125
       }
     },
     {
-      "CLASSNAME": "physics.platform.Vine",
+      "CLASSNAME": "askew.entity.vine.Vine",
       "INSTANCE": {
+        "pin": false,
         "numLinks": 5.0,
-        "x": 6.71875,
-        "y": 5.6875
+        "x": 10.90625,
+        "y": 5.96875
       }
     },
     {
-      "CLASSNAME": "physics.platform.Vine",
+      "CLASSNAME": "askew.entity.vine.Vine",
       "INSTANCE": {
+        "pin": false,
         "numLinks": 5.0,
-        "x": 11.8125,
-        "y": 10.71875
-      }
-    },
-    {
-      "CLASSNAME": "physics.platform.Vine",
-      "INSTANCE": {
-        "numLinks": 15.0,
-        "x": 22.0,
-        "y": 10.96875
+        "x": 11.5,
+        "y": 10.53125
       }
     }
   ]

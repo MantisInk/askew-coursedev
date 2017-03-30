@@ -190,7 +190,7 @@ public class GDXRoot extends Game implements ScreenListener {
 			setScreen(controllers[current]);
 
 		} else if (exitCode == WorldController.EXIT_GM_LE) {
-			current = CON_GM_OLD;
+			current = CON_LE;
 			controllers[current].reset();
 			setScreen(controllers[current]);
 
@@ -200,7 +200,6 @@ public class GDXRoot extends Game implements ScreenListener {
 			setScreen(controllers[current]);
 
 		} else if (exitCode == WorldController.EXIT_LE_GM) {
-			current = CON_GM;
 			if (controllers[current] instanceof LevelEditorController) {
 				LevelEditorController lec = (LevelEditorController) controllers[current];
 				if (!lec.getTrialLevelName().equals("")) {
@@ -210,6 +209,7 @@ public class GDXRoot extends Game implements ScreenListener {
 					}
 				}
 			}
+			current = CON_GM;
 			controllers[current].reset();
 			setScreen(controllers[current]);
 			controllers[current].setCanvas(canvas);
