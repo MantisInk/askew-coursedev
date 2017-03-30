@@ -9,5 +9,5 @@
   "vineDensity": 4.0,
   "fullscreen": false,
   "defaultLevel": "level1",
-  "torqueBasedMovement": falsea
+  "torqueBasedMovement": false
 }
