@@ -77,6 +77,23 @@ public class LevelEditorController extends WorldController implements ContactLis
 	};
 
 	private boolean prompting;
+	private boolean showHelp;
+	private static final String HELP_TEXT = "Welcome to the help screen. You \n" +
+			"can hit H at any time to toggle this screen. Remember to save \n" +
+			"often!\n" +
+			"\n" +
+			"The controls are as follows:\n" +
+			"Left Click: Place currently selected entity\n" +
+			"Right Click: Delete entity under mouse\n" +
+			"Left Arrow Key: Cycle left on selected entity\n" +
+			"Right Arrow Key: Cycle right on selected entity\n" +
+			"Enter: Select entity for placement\n" +
+			"E: Edit entity under mouse\n" +
+			"N: Name level (can be used to make a new level)\n" +
+			"L: Load level (do not include .json in the level name!)\n" +
+			"S: Save\n" +
+			"X: (xbox controller) switch to playing the level\n" +
+			"H: Toggle this help text";
 
 	/**
 	 * Preloads the assets for this controller.
@@ -126,6 +143,7 @@ public class LevelEditorController extends WorldController implements ContactLis
 		jls = new JSONLoaderSaver();
 		currentLevel = "test_save_obstacle";
 		createClass = ".SlothModel";
+		showHelp = true;
 	}
 
 	/**
@@ -375,13 +393,13 @@ public class LevelEditorController extends WorldController implements ContactLis
 		}
 
 		if (InputController.getInstance().isNKeyPressed()) {
-			String name = showInputDialog("what do u wanna call this mess?");
+			String name = showInputDialog("What should we call this level?");
 			currentLevel = name;
 			inputThresher = THRESHER_RESET_LONG;
 		}
 
 		if (InputController.getInstance().isLKeyPressed()) {
-			currentLevel = showInputDialog("what do u wanna load?");
+			currentLevel = showInputDialog("What level do you want to load?");
 			reset();
 		}
 
@@ -397,7 +415,7 @@ public class LevelEditorController extends WorldController implements ContactLis
 			} else {
 				System.err.println("ERROR IN SAVE");
 			}
-			inputThresher = THRESHER_RESET;
+			inputThresher = THRESHER_RESET_LONG;
 		}
 
 		if (InputController.getInstance().isLeftKeyPressed()) {
@@ -410,6 +428,11 @@ public class LevelEditorController extends WorldController implements ContactLis
 		}
 		if (InputController.getInstance().isEnterKeyPressed()) {
 			actualindex = tentativeIndex;
+			inputThresher = THRESHER_RESET_LONG;
+		}
+
+		if (InputController.getInstance().isHKeyPressed()) {
+			showHelp = !showHelp;
 			inputThresher = THRESHER_RESET_LONG;
 		}
 
@@ -431,6 +454,15 @@ public class LevelEditorController extends WorldController implements ContactLis
 
 		// Final message
 		canvas.begin(); // DO NOT SCALE
+		if (showHelp) {
+			String[] splitHelp = HELP_TEXT.split("\\R");
+			float beginY = 500.0f;
+			for (int i = 0; i < splitHelp.length; i++) {
+				canvas.drawTextStandard(splitHelp[i], 90.0f, beginY);
+				beginY -= 20;
+			}
+		}
+
 		canvas.drawTextStandard("Level: " + currentLevel, 10.0f, 100.0f);
 		canvas.drawTextStandard("Creating: " + creationOptions[tentativeIndex], 10.0f, 80.0f);
 		if (tentativeIndex != actualindex) {
