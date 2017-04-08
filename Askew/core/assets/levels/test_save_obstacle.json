@@ -10,8 +10,8 @@
     {
       "CLASSNAME": "askew.entity.sloth.SlothModel",
       "INSTANCE": {
-        "x": 10.0,
-        "y": 10.0
+        "x": 3.875,
+        "y": 9.8125
       }
     },
     {
@@ -19,8 +19,8 @@
       "INSTANCE": {
         "pin": false,
         "numLinks": 5.0,
-        "x": 8.78125,
-        "y": 8.8125
+        "x": 10.78125,
+        "y": 9.5
       }
     },
     {
@@ -28,8 +28,15 @@
       "INSTANCE": {
         "pin": false,
         "numLinks": 5.0,
-        "x": 20.40625,
-        "y": 8.3125
+        "x": 3.40625,
+        "y": 8.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.owl.OwlModel",
+      "INSTANCE": {
+        "x": 5.84375,
+        "y": 6.375
       }
     }
   ]
