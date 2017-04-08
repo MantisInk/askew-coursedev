@@ -14,7 +14,10 @@ import askew.*;
 import askew.entity.Entity;
 import askew.entity.owl.OwlModel;
 import askew.util.json.JSONLoaderSaver;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
@@ -54,6 +57,9 @@ public class LevelEditorController extends WorldController {
 	private JSONLoaderSaver jsonLoaderSaver;
 
 	private LevelModel levelModel;
+
+	private static ShapeRenderer gridLineRenderer = new ShapeRenderer();
+
 
 	Affine2 camTrans;
 	float cxCamera;
@@ -100,10 +106,12 @@ public class LevelEditorController extends WorldController {
 			"N: Name level (can be used to make a new level)\n" +
 			"L: Load level (do not include .json in the level name!)\n" +
 			"S: Save\n" +
-			"X: (xbox controller) switch to playing the level\n" +
 			"B: Set background texture\n" +
+			"T: Draw grid lines\n" +
+			"X: (xbox controller) switch to playing the level\n" +
 			"H: Toggle this help text";
 	private boolean loadingLevelPrompt;
+	private boolean shouldDrawGrid;
 
 	/**
 	 * Preloads the assets for this controller.
@@ -153,6 +161,7 @@ public class LevelEditorController extends WorldController {
 		currentLevel = "test_save_obstacle";
 		createClass = ".SlothModel";
 		showHelp = true;
+		shouldDrawGrid = true;
 		camTrans = new Affine2();
 	}
 
@@ -483,6 +492,12 @@ public class LevelEditorController extends WorldController {
 			inputRateLimiter = UI_WAIT_LONG;
 		}
 
+		// Grid
+		if (InputController.getInstance().isTKeyPressed()) {
+			shouldDrawGrid = !shouldDrawGrid;
+			inputRateLimiter = UI_WAIT_LONG;
+		}
+
 		// Background
 		if (InputController.getInstance().isBKeyPressed()) {
 			levelModel.setBackground(showInputDialog("What texture should the background be set to?"));
@@ -491,6 +506,29 @@ public class LevelEditorController extends WorldController {
 
 		if (InputController.getInstance().isGKeyPressed()) {
 			promptGlobalConfig();
+		}
+	}
+
+	private void drawGridLines() {
+		// debug lines
+		// vertical
+		for (int i = ((int)cxCamera % 32 - 32); i < 1024; i += 32) {
+			Gdx.gl.glLineWidth(1);
+			gridLineRenderer.begin(ShapeRenderer.ShapeType.Line);
+			gridLineRenderer.setColor(Color.FOREST);
+			gridLineRenderer.line(i, 0,i,768);
+			gridLineRenderer.end();
+			Gdx.gl.glLineWidth(1);
+		}
+
+		// horizontal
+		for (int i = ((int)cyCamera % 32 - 32); i < 768; i += 32) {
+			Gdx.gl.glLineWidth(1);
+			gridLineRenderer.begin(ShapeRenderer.ShapeType.Line);
+			gridLineRenderer.setColor(Color.FOREST);
+			gridLineRenderer.line(0, i,1024,i);
+			gridLineRenderer.end();
+			Gdx.gl.glLineWidth(1);
 		}
 	}
 
@@ -506,6 +544,11 @@ public class LevelEditorController extends WorldController {
 		for(Obstacle obj : objects) {
 			obj.draw(canvas);
 		}
+
+		if (shouldDrawGrid) {
+			drawGridLines();
+		}
+
 		canvas.end();
 
 
@@ -520,6 +563,7 @@ public class LevelEditorController extends WorldController {
 			}
 		}
 
+		canvas.drawTextStandard(cxCamera / scale.x + "," + cyCamera / scale.y, 10.0f, 120.0f);
 		canvas.drawTextStandard("Level: " + currentLevel, 10.0f, 100.0f);
 		canvas.drawTextStandard("Creating: " + creationOptions[tentativeEntityIndex], 10.0f, 80.0f);
 		if (tentativeEntityIndex != entityIndex) {

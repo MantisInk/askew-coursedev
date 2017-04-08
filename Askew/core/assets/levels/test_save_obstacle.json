@@ -42,10 +42,19 @@
       }
     },
     {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "pin": false,
+        "numLinks": 50.0,
+        "x": 28.0,
+        "y": 27.8125
+      }
+    },
+    {
       "CLASSNAME": "askew.entity.owl.OwlModel",
       "INSTANCE": {
-        "x": 27.03125,
-        "y": 11.03125
+        "x": 37.75,
+        "y": -22.9375
       }
     }
   ]
