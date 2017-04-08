@@ -8,7 +8,7 @@
   "width": 1024,
   "entities": [
     {
-      "CLASSNAME": "physics.platform.sloth.SlothModel",
+      "CLASSNAME": "askew.entity.sloth.SlothModel",
       "INSTANCE": {
         "x": 2.9375,
         "y": 15.9375

@@ -21,6 +21,7 @@ package askew.playermode.loading;/*
  * LibGDX version, 2/6/2015
  */
 
+import askew.GDXRoot;
 import askew.GameCanvas;
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.math.*;
@@ -321,7 +322,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 
 			// We are are ready, notify our listener
 			if (isReady() && listener != null) {
-				listener.exitScreen(this, 0);
+				listener.exitScreen(this, GDXRoot.CON_LE);
 			}
 		}
 	}

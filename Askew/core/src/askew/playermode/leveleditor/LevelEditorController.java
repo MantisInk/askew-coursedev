@@ -11,8 +11,14 @@
 package askew.playermode.leveleditor;
 
 import askew.*;
+import askew.entity.Entity;
+import askew.entity.owl.OwlModel;
 import askew.util.json.JSONLoaderSaver;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.google.gson.JsonObject;
@@ -43,27 +49,36 @@ import static javax.swing.JOptionPane.showInputDialog;
  * This is the purpose of our AssetState variable; it ensures that multiple instances
  * place nicely with the static assets.
  */
-public class LevelEditorController extends WorldController implements ContactListener {
+public class LevelEditorController extends WorldController {
 
 	/** Track asset loading from all instances and subclasses */
 	private AssetState levelEditorAssetState = AssetState.EMPTY;
 
-	private AssetTraversalController fat;
+	private JSONLoaderSaver jsonLoaderSaver;
 
-	private JSONLoaderSaver jls;
+	private LevelModel levelModel;
 
-	private LevelModel lm;
+	private static ShapeRenderer gridLineRenderer = new ShapeRenderer();
 
+
+	Affine2 camTrans;
+	float cxCamera;
+	float cyCamera;
+
+
+	@Getter
 	private String currentLevel;
 
 	private String createClass;
 
-	int inputThresher = 0;
-	int tentativeIndex = 0;
-	int actualindex = 0;
+	/** A decrementing int that helps prevent accidental repeats of actions through an arbitrary countdown */
+	private int inputRateLimiter = 0;
 
-	public static final int THRESHER_RESET = 2;
-	public static final int THRESHER_RESET_LONG = 15;
+	private int tentativeEntityIndex = 0;
+	private int entityIndex = 0;
+
+	public static final int UI_WAIT_SHORT = 2;
+	public static final int UI_WAIT_LONG = 15;
 
 
 	public static final String[] creationOptions = {
@@ -71,12 +86,32 @@ public class LevelEditorController extends WorldController implements ContactLis
 			".Vine",
 			".Platform",
 			".Trunk",
-			".StiffBranch"
+			".StiffBranch",
+			".OwlModel"
 	};
 
-	@Getter
-	private String trialLevelName;
 	private boolean prompting;
+	private boolean showHelp;
+	private static final String HELP_TEXT = "Welcome to the help screen. You \n" +
+			"can hit H at any time to toggle this screen. Remember to save \n" +
+			"often!\n" +
+			"\n" +
+			"The controls are as follows:\n" +
+			"Left Click: Place currently selected entity\n" +
+			"Right Click: Delete entity under mouse\n" +
+			"Left Arrow Key: Cycle left on selected entity\n" +
+			"Right Arrow Key: Cycle right on selected entity\n" +
+			"Enter: Select entity for placement\n" +
+			"E: Edit entity under mouse\n" +
+			"N: Name level (can be used to make a new level)\n" +
+			"L: Load level (do not include .json in the level name!)\n" +
+			"S: Save\n" +
+			"B: Set background texture\n" +
+			"T: Draw grid lines\n" +
+			"X: (xbox controller) switch to playing the level\n" +
+			"H: Toggle this help text";
+	private boolean loadingLevelPrompt;
+	private boolean shouldDrawGrid;
 
 	/**
 	 * Preloads the assets for this controller.
@@ -90,7 +125,7 @@ public class LevelEditorController extends WorldController implements ContactLis
 	 */
 	public void preLoadContent(AssetManager manager) {
 		super.preLoadContent(manager);
-		jls.setManager(manager);
+		jsonLoaderSaver.setManager(manager);
 	}
 
 	/**
@@ -122,11 +157,12 @@ public class LevelEditorController extends WorldController implements ContactLis
 		setDebug(false);
 		setComplete(false);
 		setFailure(false);
-		world.setContactListener(this);
-		jls = new JSONLoaderSaver();
+		jsonLoaderSaver = new JSONLoaderSaver();
 		currentLevel = "test_save_obstacle";
 		createClass = ".SlothModel";
-		trialLevelName = "";
+		showHelp = true;
+		shouldDrawGrid = true;
+		camTrans = new Affine2();
 	}
 
 	/**
@@ -147,10 +183,11 @@ public class LevelEditorController extends WorldController implements ContactLis
 		world.dispose();
 
 		world = new World(gravity,false);
-		world.setContactListener(this);
 		setComplete(false);
 		setFailure(false);
 		populateLevel();
+		cxCamera = -canvas.getWidth() / 2;
+		cyCamera = -canvas.getHeight() / 2;
 	}
 
 	/**
@@ -158,17 +195,21 @@ public class LevelEditorController extends WorldController implements ContactLis
 	 */
 	private void populateLevel() {
 		try {
-			lm = jls.loadLevel(currentLevel);
+			levelModel = jsonLoaderSaver.loadLevel(currentLevel);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
 
-		if (lm == null) {
-			lm = new LevelModel();
+		if (levelModel == null) {
+			levelModel = new LevelModel();
 		}
 
-		for (Obstacle o : lm.getEntities()) {
-			addObject(o);
+		for (Entity o : levelModel.getEntities()) {
+			if (o instanceof Obstacle) {
+				addObject((Obstacle) o);
+			} else {
+				System.err.println("UNSUPPORTED: Adding non obstacle entity");
+			}
 		}
 	}
 
@@ -209,7 +250,7 @@ public class LevelEditorController extends WorldController implements ContactLis
 	 * @param y
      */
 	private void createXY(float x, float y) {
-		switch (creationOptions[actualindex]) {
+		switch (creationOptions[entityIndex]) {
 			case ".SlothModel":
 				SlothModel sTemplate = new SlothModel(x,y);
 				promptTemplate(sTemplate);
@@ -225,14 +266,22 @@ public class LevelEditorController extends WorldController implements ContactLis
 			case ".StiffBranch":
 				StiffBranch sb = new StiffBranch(x,y, 3.0f, 0.25f, 1.0f,scale);
 				promptTemplate(sb);
+				break;
+			case ".OwlModel":
+				OwlModel owl = new OwlModel(x,y);
+				promptTemplate(owl);
+				break;
+			default:
+				System.err.println("UNKNOWN ENT");
+				break;
 		}
-		inputThresher = THRESHER_RESET;
+		inputRateLimiter = UI_WAIT_SHORT;
 	}
 
-	private void promptTemplate(Obstacle template) {
+	private void promptTemplate(Entity template) {
 		if (!prompting) {
 			prompting = true;
-			String jsonOfTemplate = jls.gsonToJson(template);
+			String jsonOfTemplate = jsonLoaderSaver.gsonToJson(template);
 			// flipping swing
 			JDialog mainFrame = new JDialog();
 			mainFrame.setSize(600,600);
@@ -255,15 +304,22 @@ public class LevelEditorController extends WorldController implements ContactLis
 	}
 
 	private void promptTemplateCallback(String json) {
-		Obstacle toAdd = jls.obstacleFromJson(json);
-		addObject(toAdd);
+		Entity toAdd = jsonLoaderSaver.entityFromJson(json);
+		if (toAdd instanceof Obstacle) {
+			addObject((Obstacle) toAdd);
+		} else {
+			System.err.println(toAdd);
+			System.err.println("Unsupported nonobstacle entity");
+		}
 		prompting = false;
 	}
 
 	private void promptGlobalConfig() {
 		if (!prompting) {
 			prompting = true;
-			String jsonOfConfig = jls.prettyJson(JSONLoaderSaver.loadArbitrary("./config.json").orElseGet(JsonObject::new));
+			String jsonOfConfig = jsonLoaderSaver.prettyJson(JSONLoaderSaver
+					.loadArbitrary("data/config.json").orElseGet
+							(JsonObject::new));
 			JDialog mainFrame = new JDialog();
 			mainFrame.setSize(600,600);
 			mainFrame.setLocationRelativeTo(null);
@@ -275,7 +331,8 @@ public class LevelEditorController extends WorldController implements ContactLis
 			mainFrame.add(panel);
 			JButton okButton = new JButton("ok");
 			okButton.addActionListener(e -> {
-				JSONLoaderSaver.saveArbitrary("./config.json",commentTextArea.getText());
+				JSONLoaderSaver.saveArbitrary("data/config.json",commentTextArea
+						.getText());
 				GlobalConfiguration.update();
 				mainFrame.setVisible(false);
 				mainFrame.dispose();
@@ -288,92 +345,114 @@ public class LevelEditorController extends WorldController implements ContactLis
 
 	public void update(float dt) {
 
-		if (inputThresher > 0) {
-			inputThresher--;
+		// Decrement rate limiter to allow new input
+		if (inputRateLimiter > 0) {
+			inputRateLimiter--;
 			return;
 		}
 
+		// Allow access to mouse coordinates for multiple inputs
+		float mouseX = InputController.getInstance().getCrossHair().x;
+		float mouseY = InputController.getInstance().getCrossHair().y;
+		float adjustedMouseX = mouseX - (cxCamera + canvas.getWidth()/2) / scale.x;
+		float adjustedMouseY = mouseY - (cyCamera + canvas.getHeight()/2) / scale.y;
+
+
+		// Check for pan
+		if (mouseX < 1) {
+			// Pan left
+			cxCamera+= 10;
+		}
+		if (mouseY < 1) {
+			// down
+			cyCamera+= 10;
+		}
+		if (mouseX > (canvas.getWidth() / scale.x) - 1) {
+			cxCamera-= 10;
+		}
+		if (mouseY > (canvas.getHeight() / scale.y) - 1) {
+			cyCamera-= 10;
+		}
+
+		// Create
 		if (InputController.getInstance().isLeftClickPressed()) {
-			float mx = InputController.getInstance().getCrossHair().x;
-			float my = InputController.getInstance().getCrossHair().y;
-			createXY(mx,my);
+			createXY(adjustedMouseX,adjustedMouseY);
 		}
 
+		// Delete
 		if (InputController.getInstance().isRightClickPressed()) {
-			float mx = InputController.getInstance().getCrossHair().x;
-			float my = InputController.getInstance().getCrossHair().y;
 
-			QueryCallback qc = new QueryCallback() {
-				@Override
-				public boolean reportFixture(Fixture fixture) {
-					Object userData = fixture.getBody().getUserData();
-					for (Obstacle o : objects) {
-						if (o == userData) {
-							objects.remove(o);
-							return false;
-						}
+			QueryCallback qc = fixture -> {
+                Object userData = fixture.getBody().getUserData();
+                for (Obstacle o : objects) {
+                    if (o == userData) {
+                        objects.remove(o);
+                        return false;
+                    }
 
-						if (o instanceof ComplexObstacle) {
-							for (Obstacle oo : ((ComplexObstacle) o).getBodies()) {
-								if (oo == userData) {
-									objects.remove(o);
-									return false;
-								}
-							}
-						}
-					}
-					return true;
-				}
-			};
+                    if (o instanceof ComplexObstacle) {
+                        for (Obstacle oo : ((ComplexObstacle) o).getBodies()) {
+                            if (oo == userData) {
+                                objects.remove(o);
+                                return false;
+                            }
+                        }
+                    }
+                }
+                return true;
+            };
 
-			world.QueryAABB(qc,mx,my,mx,my);
-			inputThresher = THRESHER_RESET;
+			world.QueryAABB(qc,adjustedMouseX,adjustedMouseY,adjustedMouseX,adjustedMouseY);
+			inputRateLimiter = UI_WAIT_SHORT;
 		}
 
+		// Edit
 		if (InputController.getInstance().isEKeyPressed()) {
-			float mx = InputController.getInstance().getCrossHair().x;
-			float my = InputController.getInstance().getCrossHair().y;
 
-			QueryCallback qc = new QueryCallback() {
-				@Override
-				public boolean reportFixture(Fixture fixture) {
-					Object userData = fixture.getBody().getUserData();
-					for (Obstacle o : objects) {
-						if (o == userData) {
-							promptTemplate(o);
-							objects.remove(o);
-							return false;
-						}
+			QueryCallback qc = fixture -> {
+                Object userData = fixture.getBody().getUserData();
+                for (Obstacle o : objects) {
+                    if (o == userData) {
+                        promptTemplate(o);
+                        objects.remove(o);
+                        return false;
+                    }
 
-						if (o instanceof ComplexObstacle) {
-							for (Obstacle oo : ((ComplexObstacle) o).getBodies()) {
-								if (oo == userData) {
-									promptTemplate(o);
-									objects.remove(o);
-									return false;
-								}
-							}
-						}
-					}
-					return true;
-				}
-			};
+                    if (o instanceof ComplexObstacle) {
+                        for (Obstacle oo : ((ComplexObstacle) o).getBodies()) {
+                            if (oo == userData) {
+                                promptTemplate(o);
+                                objects.remove(o);
+                                return false;
+                            }
+                        }
+                    }
+                }
+                return true;
+            };
 
-			world.QueryAABB(qc,mx,my,mx,my);
-			inputThresher = THRESHER_RESET;
+			world.QueryAABB(qc,adjustedMouseX,adjustedMouseY,adjustedMouseX,adjustedMouseY);
+			inputRateLimiter = UI_WAIT_SHORT;
 		}
 
+		// Name level
 		if (InputController.getInstance().isNKeyPressed()) {
-			String name = showInputDialog("what do u wanna call this mess?");
-			currentLevel = name;
-			inputThresher = THRESHER_RESET_LONG;
+			currentLevel = showInputDialog("What should we call this level?");
+			inputRateLimiter = UI_WAIT_LONG;
 		}
 
+		// Load level
 		if (InputController.getInstance().isLKeyPressed()) {
-			currentLevel = showInputDialog("what do u wanna load?");
-			reset();
+			if (!loadingLevelPrompt) {
+				loadingLevelPrompt = true;
+				currentLevel = showInputDialog("What level do you want to load?");
+				reset();
+				loadingLevelPrompt = false;
+			}
+			inputRateLimiter = UI_WAIT_LONG;
 		}
 
+		// Save
 		if (InputController.getInstance().isSKeyPressed()) {
 			System.out.println("Saving...");
 			LevelModel timeToSave = new LevelModel();
@@ -381,28 +460,48 @@ public class LevelEditorController extends WorldController implements ContactLis
 			for (Obstacle o : objects) {
 				timeToSave.addEntity(o);
 			}
-			if (jls.saveLevel(timeToSave, currentLevel)) {
+			if (jsonLoaderSaver.saveLevel(timeToSave, currentLevel)) {
 				System.out.println("Saved!");
 			} else {
 				System.err.println("ERROR IN SAVE");
 			}
-			inputThresher = THRESHER_RESET;
+			inputRateLimiter = UI_WAIT_LONG;
 		}
 
+		// Scroll backward ent
 		if (InputController.getInstance().isLeftKeyPressed()) {
-			tentativeIndex = (tentativeIndex + 1 + creationOptions.length) % creationOptions.length;
-			inputThresher = THRESHER_RESET_LONG;
+			tentativeEntityIndex = (tentativeEntityIndex + 1 + creationOptions.length) % creationOptions.length;
+			inputRateLimiter = UI_WAIT_LONG;
 		}
+
+		// Scroll forward ent
 		if (InputController.getInstance().isRightKeyPressed()) {
-			tentativeIndex = (tentativeIndex - 1 + creationOptions.length) % creationOptions.length;
-			inputThresher = THRESHER_RESET_LONG;
+			tentativeEntityIndex = (tentativeEntityIndex - 1 + creationOptions.length) % creationOptions.length;
+			inputRateLimiter = UI_WAIT_LONG;
 		}
+
+		// Select ent
 		if (InputController.getInstance().isEnterKeyPressed()) {
-			actualindex = tentativeIndex;
-			inputThresher = THRESHER_RESET_LONG;
+			entityIndex = tentativeEntityIndex;
+			inputRateLimiter = UI_WAIT_LONG;
 		}
+
+		// Help
+		if (InputController.getInstance().isHKeyPressed()) {
+			showHelp = !showHelp;
+			inputRateLimiter = UI_WAIT_LONG;
+		}
+
+		// Grid
 		if (InputController.getInstance().isTKeyPressed()) {
-			trialLevelName = currentLevel;
+			shouldDrawGrid = !shouldDrawGrid;
+			inputRateLimiter = UI_WAIT_LONG;
+		}
+
+		// Background
+		if (InputController.getInstance().isBKeyPressed()) {
+			levelModel.setBackground(showInputDialog("What texture should the background be set to?"));
+			// TODO: Update the drawn background (after henry implements the engine)
 		}
 
 		if (InputController.getInstance().isGKeyPressed()) {
@@ -410,51 +509,67 @@ public class LevelEditorController extends WorldController implements ContactLis
 		}
 	}
 
+	private void drawGridLines() {
+		// debug lines
+		// vertical
+		for (int i = ((int)cxCamera % 32 - 32); i < 1024; i += 32) {
+			Gdx.gl.glLineWidth(1);
+			gridLineRenderer.begin(ShapeRenderer.ShapeType.Line);
+			gridLineRenderer.setColor(Color.FOREST);
+			gridLineRenderer.line(i, 0,i,768);
+			gridLineRenderer.end();
+			Gdx.gl.glLineWidth(1);
+		}
+
+		// horizontal
+		for (int i = ((int)cyCamera % 32 - 32); i < 768; i += 32) {
+			Gdx.gl.glLineWidth(1);
+			gridLineRenderer.begin(ShapeRenderer.ShapeType.Line);
+			gridLineRenderer.setColor(Color.FOREST);
+			gridLineRenderer.line(0, i,1024,i);
+			gridLineRenderer.end();
+			Gdx.gl.glLineWidth(1);
+		}
+	}
+
 	@Override
 	public void draw(float delta) {
 		canvas.clear();
 
-		canvas.begin();
+		// Translate camera to cx, cy
+		camTrans.setToTranslation(cxCamera, cyCamera);
+		camTrans.translate(canvas.getWidth()/2, canvas.getHeight()/2);
+
+		canvas.begin(camTrans);
 		for(Obstacle obj : objects) {
 			obj.draw(canvas);
 		}
+
+		if (shouldDrawGrid) {
+			drawGridLines();
+		}
+
 		canvas.end();
 
 
-		// Final message
+		// Text- independent of where you scroll
 		canvas.begin(); // DO NOT SCALE
+		if (showHelp) {
+			String[] splitHelp = HELP_TEXT.split("\\R");
+			float beginY = 500.0f;
+			for (int i = 0; i < splitHelp.length; i++) {
+				canvas.drawTextStandard(splitHelp[i], 90.0f, beginY);
+				beginY -= 20;
+			}
+		}
+
+		canvas.drawTextStandard(cxCamera / scale.x + "," + cyCamera / scale.y, 10.0f, 120.0f);
 		canvas.drawTextStandard("Level: " + currentLevel, 10.0f, 100.0f);
-		canvas.drawTextStandard("Creating: " + creationOptions[tentativeIndex], 10.0f, 80.0f);
-		if (tentativeIndex != actualindex) {
+		canvas.drawTextStandard("Creating: " + creationOptions[tentativeEntityIndex], 10.0f, 80.0f);
+		if (tentativeEntityIndex != entityIndex) {
 			canvas.drawTextStandard("Hit Enter to Select New Object Type.", 10.0f, 60.0f);
 		}
 		canvas.end();
-	}
-
-	/**
-	 * Callback method for the start of a collision
-	 *
-	 * This method is called when we first get a collision between two objects.  We use
-	 * this method to test if it is the "right" kind of collision.  In particular, we
-	 * use it to test if we made it to the win door.
-	 *
-	 * But trevor uses it for something else
-	 *
-	 * @param contact The two bodies that collided
-	 */
-	public void beginContact(Contact contact) {
-
-	}
-
-	/**
-	 * Callback method for the start of a collision
-	 *
-	 * This method is called when two objects cease to touch.  The main use of this method
-	 * is to determine when the characer is NOT on the ground.  This is how we prevent
-	 * double jumping.
-	 */
-	public void endContact(Contact contact) {
-
 	}
 
 	@Override
@@ -495,6 +610,6 @@ public class LevelEditorController extends WorldController implements ContactLis
 		this.canvas = canvas;
 		this.scale.x = 1.0f * canvas.getWidth()/bounds.getWidth();
 		this.scale.y = 1.0f * canvas.getHeight()/bounds.getHeight();
-		jls.setScale(this.scale);
+		jsonLoaderSaver.setScale(this.scale);
 	}
 }

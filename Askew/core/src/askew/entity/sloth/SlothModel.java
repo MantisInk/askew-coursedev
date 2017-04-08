@@ -41,6 +41,7 @@ public class SlothModel extends ComplexObstacle  {
     private transient boolean SPIDERMAN_MODE;
     private transient boolean GRABBING_HAND_HAS_TORQUE;
     private transient float OMEGA_NORMALIZER;
+    private transient boolean TORQUE_BASED_MOVEMENT = false;
 
     /** Indices for the body parts in the bodies array */
     private static final int PART_NONE = -1;
@@ -150,6 +151,8 @@ public class SlothModel extends ComplexObstacle  {
         this.GRABBING_HAND_HAS_TORQUE = GlobalConfiguration.getInstance().getAsBoolean("flowCanMoveGrabbingHand");
         this.OMEGA_NORMALIZER = GlobalConfiguration.getInstance().getAsFloat("flowOmegaNormalizer");
         this.ARM_DENSITY = GlobalConfiguration.getInstance().getAsFloat("flowArmDensity");
+        this.TORQUE_BASED_MOVEMENT = GlobalConfiguration.getInstance()
+                .getAsBoolean("torqueBasedMovement");
         //this.shaper = new ShapeRenderer();
 
     }
@@ -159,7 +162,7 @@ public class SlothModel extends ComplexObstacle  {
         BoxObstacle part;
 
         // Body
-        part = makePart(PART_BODY, PART_NONE, x, y, BODY_DENSITY,true);
+        part = makePart(PART_BODY, PART_NONE, x, y, BODY_DENSITY,false);
         part.setFixedRotation(BODY_FIXED_ROTATION);
         part.setGravityScale(GRAVITY_SCALE);
 
@@ -327,71 +330,121 @@ public class SlothModel extends ComplexObstacle  {
         return (float)((10.0 / (1 + Math.exp(omega + (deltaTheta *4)))) - 5);//#MAGIC 4, DELTA THETA NORMALIZER
     }
 
+    public float calculateTorqueOld(float deltaTheta){
+        return (float) Math.max(-1.0f,Math.min(1.0f, 1.2 * Math.sin(deltaTheta)));
+    }
+
     /**
      * DOES EVERYTHING!!
      */
 
 
     public void doThePhysics() {
-        Obstacle rightHand = bodies.get(PART_RIGHT_HAND);
-        Obstacle leftHand = bodies.get(PART_LEFT_HAND);
+        if (TORQUE_BASED_MOVEMENT) {
+            Obstacle rightHand = bodies.get(PART_RIGHT_HAND);
+            Obstacle leftHand = bodies.get(PART_LEFT_HAND);
 
-        Obstacle rightArm = bodies.get(PART_RIGHT_ARM);
-        Obstacle leftArm = bodies.get(PART_LEFT_ARM);
-        //TODO REDUCE MAGIC NUMBERS ( HENRY )
-        // Apply forces
-        float dLTheta = 0f;
-        float lcTheta = (float)Math.atan2(leftVert,leftHori); // correct
-        float lTheta = (-leftArm.getAngle());
-        lTheta = ((lTheta%(2*PI)) + (2*PI)) % (2*PI) - PI; //ltheta is correct
-        float lav = leftArm.getAngularVelocity() * 2;
-        float lLength = (float)Math.sqrt((leftVert * leftVert) + (leftHori * leftHori));
-        dLTheta = (float)(lcTheta - lTheta);
-        if(dLTheta > PI){ dLTheta -= (PI + PI);}
-        if(dLTheta < -PI){ dLTheta += (PI + PI);}
+            Obstacle rightArm = bodies.get(PART_RIGHT_ARM);
+            Obstacle leftArm = bodies.get(PART_LEFT_ARM);
+            //TODO REDUCE MAGIC NUMBERS ( HENRY )
+            // Apply forces
+            float dLTheta = 0f;
+            float lcTheta = (float)Math.atan2(leftVert,leftHori); // correct
+            float lTheta = (-leftArm.getAngle());
+            lTheta = ((lTheta%(2*PI)) + (2*PI)) % (2*PI) - PI; //ltheta is correct
+            float lav = leftArm.getAngularVelocity() * 2;
+            float lLength = (float)Math.sqrt((leftVert * leftVert) + (leftHori * leftHori));
+            dLTheta = (float)(lcTheta - lTheta);
+            if(dLTheta > PI){ dLTheta -= (PI + PI);}
+            if(dLTheta < -PI){ dLTheta += (PI + PI);}
 
 
-        float dRTheta = 0f;
-        float rcTheta = (float)Math.atan2(rightVert,rightHori);
-        float rTheta = -rightArm.getAngle() + PI;
-        rTheta = ((rTheta%(2*PI)) + (2*PI)) % (2*PI) - PI;
-        float rav = rightArm.getAngularVelocity() * 2;
-        float rLength = (float)Math.sqrt((rightVert * rightVert) + (rightHori * rightHori));
-        dRTheta = (float)(rcTheta - rTheta);
-        if(dRTheta > PI){ dRTheta -= (PI + PI);}
-        if(dRTheta < -PI){ dRTheta += (PI + PI);}
+            float dRTheta = 0f;
+            float rcTheta = (float)Math.atan2(rightVert,rightHori);
+            float rTheta = -rightArm.getAngle() + PI;
+            rTheta = ((rTheta%(2*PI)) + (2*PI)) % (2*PI) - PI;
+            float rav = rightArm.getAngularVelocity() * 2;
+            float rLength = (float)Math.sqrt((rightVert * rightVert) + (rightHori * rightHori));
+            dRTheta = (float)(rcTheta - rTheta);
+            if(dRTheta > PI){ dRTheta -= (PI + PI);}
+            if(dRTheta < -PI){ dRTheta += (PI + PI);}
 
-        float forceLeft =  calculateTorque(dLTheta,lav/OMEGA_NORMALIZER); //#MAGIC 20f default, omega normalizer
+            float forceLeft =  calculateTorque(dLTheta,lav/OMEGA_NORMALIZER); //#MAGIC 20f default, omega normalizer
 //        float lx = (float) (TORQUE * -Math.sin(lTheta) * forceLeft * lLength);
 //        float ly = (float) (TORQUE * -Math.cos(lTheta) * forceLeft * lLength);
 //        forceL.set(lx,ly);
 
-        float forceRight = calculateTorque(dRTheta,rav/OMEGA_NORMALIZER);
+            float forceRight = calculateTorque(dRTheta,rav/OMEGA_NORMALIZER);
 //        float rx = (float) (TORQUE * -Math.sin(rTheta) * forceRight * rLength);
 //        float ry = (float) (TORQUE * -Math.cos(rTheta) * forceRight * rLength);
 //        forceR.set(rx,ry);
 
-        float ltorque = TORQUE * forceLeft * lLength;
-        float rtorque = TORQUE * forceRight * rLength;
-        forceL.set((float) (ltorque * Math.sin(lTheta)),(float) (ltorque * Math.cos(lTheta)));
-        forceR.set((float) (rtorque * Math.sin(rTheta)),(float) (rtorque * Math.cos(rTheta)));
+            float ltorque = TORQUE * forceLeft * lLength;
+            float rtorque = TORQUE * forceRight * rLength;
+            forceL.set((float) (ltorque * Math.sin(lTheta)),(float) (ltorque * Math.cos(lTheta)));
+            forceR.set((float) (rtorque * Math.sin(rTheta)),(float) (rtorque * Math.cos(rTheta)));
 
-        if (GRABBING_HAND_HAS_TORQUE || !leftGrab)
-            leftArm
-                    .getBody()
-                    .applyTorque(ltorque,true);
-        if (GRABBING_HAND_HAS_TORQUE || !rightGrab)
-            rightArm
-                    .getBody()
-                    .applyTorque(rtorque, true);
+            if (GRABBING_HAND_HAS_TORQUE || !leftGrab)
+                leftArm
+                        .getBody()
+                        .applyTorque(ltorque,true);
+            if (GRABBING_HAND_HAS_TORQUE || !rightGrab)
+                rightArm
+                        .getBody()
+                        .applyTorque(rtorque, true);
 
-        //Draw the lines for the forces
+            //Draw the lines for the forces
 
-        float left_x = leftHori*TWO_FREE_FORCE_MULTIPLIER;
-        float left_y = -leftVert*TWO_FREE_FORCE_MULTIPLIER;
+            float left_x = leftHori*TWO_FREE_FORCE_MULTIPLIER;
+            float left_y = -leftVert*TWO_FREE_FORCE_MULTIPLIER;
 
-        float right_x = rightHori*TWO_FREE_FORCE_MULTIPLIER;
-        float right_y = -rightVert*TWO_FREE_FORCE_MULTIPLIER;
+            float right_x = rightHori*TWO_FREE_FORCE_MULTIPLIER;
+            float right_y = -rightVert*TWO_FREE_FORCE_MULTIPLIER;
+        } else {
+            Obstacle rightHand = bodies.get(PART_RIGHT_HAND);
+            Obstacle leftHand = bodies.get(PART_LEFT_HAND);
+
+            Obstacle rightArm = bodies.get(PART_RIGHT_ARM);
+            Obstacle leftArm = bodies.get(PART_LEFT_ARM);
+            //TODO CALCULATE TORQUE
+            // Apply forces
+            float dLTheta = 0f;
+            float dRTheta = 0f;
+
+
+            float lcTheta = (float)Math.atan2(leftVert,leftHori);
+            float lTheta = leftArm.getAngle();
+            lTheta = -(lTheta+PI)%(2*PI)-PI;
+            float lLength = (float)Math.sqrt((leftVert * leftVert) + (leftHori * leftHori));
+            dLTheta = (float)(lTheta - lcTheta);
+            dLTheta = (dLTheta+PI)%(2*PI)-PI;
+
+            float rcTheta = (float)Math.atan2(rightVert,rightHori);
+            float rTheta = rightArm.getAngle();
+            rTheta = -(rTheta+PI)%(2*PI)-PI;
+            float rLength = (float)Math.sqrt((rightVert * rightVert) + (rightHori * rightHori));
+            dRTheta = (float)(rTheta - rcTheta);
+            dRTheta = (dRTheta+PI)%(2*PI)-PI;
+
+            float forceLeft = calculateTorqueOld(-dLTheta);
+            float lx = (float) (TORQUE * -Math.sin(lTheta) * forceLeft * lLength);
+            float ly = (float) (TORQUE * -Math.cos(lTheta) * forceLeft * lLength);
+            forceL.set(lx,ly);
+
+            float forceRight = calculateTorqueOld(-dRTheta);
+            float rx = (float) (TORQUE * -Math.sin(rTheta) * forceRight * rLength);
+            float ry = (float) (TORQUE * -Math.cos(rTheta) * forceRight * rLength);
+            forceR.set(rx,ry);
+
+            if (isRightGrab() && !isLeftGrab())
+                leftHand
+                        .getBody()
+                        .applyForce(lx, ly, leftHand.getX(), leftHand.getY(), true);
+            if (!isRightGrab() && isLeftGrab())
+                rightHand
+                        .getBody()
+                        .applyForce(rx, ry, rightHand.getX(), rightHand.getY(), true);
+        }
     }
 
     public void drawForces(GameCanvas canvas, Affine2 camTrans){
@@ -448,80 +501,65 @@ public class SlothModel extends ComplexObstacle  {
         this.rightGrab = rightGrab;
     }
 
-    public void grabLeft(World world, Body target) {
-        if (leftGrabJoint != null) return;
+    public void grab(World world, Body target, boolean leftHand) {
+        Joint grabJoint;
+        RevoluteJointDef grabJointDef;
+        Obstacle hand;
+
+        if (leftHand) {
+            grabJoint = leftGrabJoint;
+            hand =  bodies.get(PART_LEFT_HAND);
+
+        } else {
+            grabJoint = rightGrabJoint;
+            hand =  bodies.get(PART_RIGHT_HAND);
+
+        }
+
+        if (grabJoint != null || target == null) return;
         Vector2 anchorHand = new com.badlogic.gdx.math.Vector2(0, 0);
         // TODO: Improve this vector
         Vector2 anchorTarget = new com.badlogic.gdx.math.Vector2(0, 0);
-        if (SPIDERMAN_MODE)
-            grabPointL.setTransform(bodies.get(PART_LEFT_HAND).getPosition(), 0);
+
+        anchorTarget = anchorTarget.add(target.getPosition());
+        anchorTarget = anchorTarget.sub(hand.getPosition());
+
         //RevoluteJointDef jointDef = new RevoluteJointDef();
-        leftGrabJointDef = new RevoluteJointDef();
-        leftGrabJointDef.bodyA = bodies.get(PART_LEFT_HAND).getBody(); // barrier
+        grabJointDef = new RevoluteJointDef();
+        grabJointDef.bodyA = hand.getBody(); // barrier
 
         if (target == null) {
-            if (SPIDERMAN_MODE) {
-                leftGrabJointDef.bodyB = grabPointL; // pin
-            } else{
-                return;
-            }
+            return;
+        } else {
+            grabJointDef.bodyB = target;
         }
-        else
-            leftGrabJointDef.bodyB = target;
-        leftGrabJointDef.localAnchorA.set(anchorHand);
-        leftGrabJointDef.localAnchorB.set(anchorTarget);
-        leftGrabJointDef.collideConnected = false;
+        grabJointDef.localAnchorA.set(anchorHand);
+        grabJointDef.localAnchorB.set(anchorTarget);
+        grabJointDef.collideConnected = false;
         //jointDef.lowerAngle = (float) (- Math.PI/4);
         //jointDef.upperAngle = (float) (Math.PI/4);
         //jointDef.enableLimit = true;
-        leftGrabJoint = world.createJoint(leftGrabJointDef);
-        joints.add(leftGrabJoint);
+        grabJoint = world.createJoint(grabJointDef);
+        if (leftHand) {
+            leftGrabJoint = grabJoint;
+        } else {
+            rightGrabJoint = grabJoint;
+        }
+
+        joints.add(grabJoint);
     }
 
     public void releaseLeft(World world) {
         if (leftGrabJoint != null) {
-            //System.err.println("Release");
             world.destroyJoint(leftGrabJoint);
-            //joints.removeValue(leftGrabJoint,true);
         }
         leftGrabJoint = null;
     }
 
-    public void grabRight(World world, Body target) {
-        if (rightGrabJoint != null) return;
-        //System.err.println("Grab");
-        Vector2 anchorHand = new com.badlogic.gdx.math.Vector2(0, 0);
-        // TODO: Improve this vector
-        Vector2 anchorTarget = new com.badlogic.gdx.math.Vector2(0, 0);
-        if (SPIDERMAN_MODE)
-                grabPointR.setTransform(bodies.get(PART_RIGHT_HAND).getPosition(), 0);
-        //RevoluteJointDef jointDef = new RevoluteJointDef();
-        rightGrabJointDef = new RevoluteJointDef();
-        rightGrabJointDef.bodyA = bodies.get(PART_RIGHT_HAND).getBody(); // barrier
-        if (target == null) {
-            if (SPIDERMAN_MODE) {
-                rightGrabJointDef.bodyB = grabPointR; // pin
-            } else{
-                return;
-            }
-        }
-        else
-            rightGrabJointDef.bodyB = target;
-        rightGrabJointDef.localAnchorA.set(anchorHand);
-        rightGrabJointDef.localAnchorB.set(anchorTarget);
-        rightGrabJointDef.collideConnected = false;
-        //jointDef.lowerAngle = (float) (- Math.PI/4);
-        //jointDef.upperAngle = (float) (Math.PI/4);
-        //jointDef.enableLimit = true;
-        rightGrabJoint = world.createJoint(rightGrabJointDef);
-        joints.add(rightGrabJoint);
-    }
 
     public void releaseRight(World world) {
         if (rightGrabJoint != null) {
-            //System.err.println("Release");
             world.destroyJoint(rightGrabJoint);
-            //joints.removeValue(rightGrabJoint,true);
         }
         rightGrabJoint = null;
     }

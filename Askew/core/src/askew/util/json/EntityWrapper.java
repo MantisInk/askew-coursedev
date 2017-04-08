@@ -1,5 +1,6 @@
 package askew.util.json;
 
+import askew.entity.Entity;
 import askew.entity.JsonEntityFactory;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.math.Vector2;
@@ -12,7 +13,7 @@ import java.lang.reflect.Type;
 /**
  * Wraps entities so we can serialize them over level loaders
  */
-public class EntityWrapper implements JsonSerializer<Obstacle>, JsonDeserializer<Obstacle> {
+public class EntityWrapper implements JsonSerializer<Entity>, JsonDeserializer<Entity> {
 
     private static final String CLASSNAME = "CLASSNAME";
     private static final String INSTANCE  = "INSTANCE";
@@ -25,9 +26,8 @@ public class EntityWrapper implements JsonSerializer<Obstacle>, JsonDeserializer
     }
 
     @Override
-    public JsonElement serialize(Obstacle src, Type typeOfSrc,
+    public JsonElement serialize(Entity src, Type typeOfSrc,
                                  JsonSerializationContext context) {
-
         JsonObject retValue = new JsonObject();
         String className = src.getClass().getName();
         retValue.addProperty(CLASSNAME, className);
@@ -37,7 +37,7 @@ public class EntityWrapper implements JsonSerializer<Obstacle>, JsonDeserializer
     }
 
     @Override
-    public Obstacle deserialize(JsonElement json, Type typeOfT,
+    public Entity deserialize(JsonElement json, Type typeOfT,
                                JsonDeserializationContext context) throws JsonParseException  {
         JsonObject jsonObject = json.getAsJsonObject();
         JsonPrimitive prim = (JsonPrimitive) jsonObject.get(CLASSNAME);
@@ -55,7 +55,10 @@ public class EntityWrapper implements JsonSerializer<Obstacle>, JsonDeserializer
                 return JsonEntityFactory.createTrunk(manager, instance, scale);
             case ".StiffBranch":
                 return JsonEntityFactory.createStiffBranch(manager, instance, scale);
+            case ".OwlModel":
+                return JsonEntityFactory.createOwl(manager, instance, scale);
             default:
+                System.err.println("Unrecognized in wrapper: " + obstacleClass);
                 Class<?> klass = null;
                 try {
                     klass = Class.forName(className);

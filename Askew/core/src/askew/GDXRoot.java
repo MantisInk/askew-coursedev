@@ -54,7 +54,6 @@ public class GDXRoot extends Game implements ScreenListener {
 	public static final int CON_MM = 0;
 	public static final int CON_GM = 1;
 	public static final int CON_LE = 2;
-	public static final int CON_GM_OLD = 3;
 
 	
 	/**
@@ -154,21 +153,20 @@ public class GDXRoot extends Game implements ScreenListener {
 	 */
 	public void exitScreen(Screen screen, int exitCode) {
 		if (screen == loading) {
-			//System.out.println("loading");
 			for(int ii = 0; ii < controllers.length; ii++) {
 				controllers[ii].loadContent(manager);
 				controllers[ii].setScreenListener(this);
 				controllers[ii].setCanvas(canvas);
 			}
-			controllers[current].reset();
-			//System.out.println("scale post reset ("+controllers[current].scale.x+","+controllers[current].scale.y+")");
-			setScreen(controllers[current]);
-			controllers[current].setCanvas(canvas);
-			//System.out.println("scale ("+controllers[current].scale.x+","+controllers[current].scale.y+")");
-			
+//			controllers[current].reset();
+//			setScreen(controllers[current]);
+//			controllers[current].setCanvas(canvas);
+
 			loading.dispose();
 			loading = null;
-		} else if (exitCode == WorldController.EXIT_MM_GM) {
+		}
+		// Intentional fallthrough
+		if (exitCode == WorldController.EXIT_MM_GM) {
 			current = CON_GM;
 			controllers[current].reset();
 			setScreen(controllers[current]);
@@ -178,19 +176,13 @@ public class GDXRoot extends Game implements ScreenListener {
 			controllers[current].reset();
 			setScreen(controllers[current]);
 
-		} else if (exitCode == WorldController.EXIT_MM_GM_OLD) {
-			current = CON_GM_OLD;
-			controllers[current].reset();
-      controllers[current].setCanvas(canvas);
-			setScreen(controllers[current]);
-
-		} else if (exitCode == WorldController.EXIT_GM_MM) {
-			current = CON_GM_OLD;
+		}  else if (exitCode == WorldController.EXIT_GM_MM) {
+			current = CON_MM;
 			controllers[current].reset();
 			setScreen(controllers[current]);
 
 		} else if (exitCode == WorldController.EXIT_GM_LE) {
-			current = CON_GM_OLD;
+			current = CON_LE;
 			controllers[current].reset();
 			setScreen(controllers[current]);
 
@@ -200,16 +192,16 @@ public class GDXRoot extends Game implements ScreenListener {
 			setScreen(controllers[current]);
 
 		} else if (exitCode == WorldController.EXIT_LE_GM) {
-			current = CON_GM;
 			if (controllers[current] instanceof LevelEditorController) {
 				LevelEditorController lec = (LevelEditorController) controllers[current];
-				if (!lec.getTrialLevelName().equals("")) {
+				if (!lec.getCurrentLevel().equals("")) {
 					WorldController GM = controllers[CON_GM];
 					if (GM instanceof GameModeController) {
-						((GameModeController) GM).setLoadLevel(lec.getTrialLevelName());
+						((GameModeController) GM).setLoadLevel(lec.getCurrentLevel());
 					}
 				}
 			}
+			current = CON_GM;
 			controllers[current].reset();
 			setScreen(controllers[current]);
 			controllers[current].setCanvas(canvas);

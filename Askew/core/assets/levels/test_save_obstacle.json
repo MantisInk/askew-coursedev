@@ -4,46 +4,57 @@
   "goalTimeGold": 30,
   "goalTimeSilver": 45,
   "goalTimeBronze": 60,
-  "height": 768,
-  "width": 1024,
+  "height": 10,
+  "width": 10,
   "entities": [
     {
-      "CLASSNAME": "physics.platform.sloth.SlothModel",
+      "CLASSNAME": "askew.entity.vine.Vine",
       "INSTANCE": {
-        "x": 10.0,
-        "y": 10.0
-      }
-    },
-    {
-      "CLASSNAME": "physics.platform.Vine",
-      "INSTANCE": {
+        "pin": false,
         "numLinks": 5.0,
-        "x": 14.875,
-        "y": 5.78125
+        "x": 3.625,
+        "y": 14.75
       }
     },
     {
-      "CLASSNAME": "physics.platform.Vine",
+      "CLASSNAME": "askew.entity.vine.Vine",
       "INSTANCE": {
+        "pin": false,
         "numLinks": 5.0,
-        "x": 6.71875,
-        "y": 5.6875
+        "x": 11.03125,
+        "y": 14.625
       }
     },
     {
-      "CLASSNAME": "physics.platform.Vine",
+      "CLASSNAME": "askew.entity.vine.Vine",
       "INSTANCE": {
+        "pin": false,
         "numLinks": 5.0,
-        "x": 11.8125,
-        "y": 10.71875
+        "x": 18.34375,
+        "y": 14.46875
       }
     },
     {
-      "CLASSNAME": "physics.platform.Vine",
+      "CLASSNAME": "askew.entity.sloth.SlothModel",
       "INSTANCE": {
-        "numLinks": 15.0,
-        "x": 22.0,
-        "y": 10.96875
+        "x": 3.6875,
+        "y": 16.25
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "pin": false,
+        "numLinks": 50.0,
+        "x": 28.0,
+        "y": 27.8125
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.owl.OwlModel",
+      "INSTANCE": {
+        "x": 37.75,
+        "y": -22.9375
       }
     }
   ]

@@ -34,13 +34,13 @@ import askew.GameCanvas;
  */
 public abstract class SimpleObstacle extends Obstacle {
 	/** The physics body for Box2D. */
-	protected Body body;
+	protected transient Body body;
 
 	/** The texture for the shape. */
-	protected TextureRegion texture;
+	protected transient TextureRegion texture;
 
 	/** The texture origin for drawing */
-	protected Vector2 origin;
+	protected transient Vector2 origin;
 	
 	/// BodyDef Methods
 	/**

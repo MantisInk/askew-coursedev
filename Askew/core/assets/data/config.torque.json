@@ -6,5 +6,8 @@
   "flowOmegaNormalizer": 20.0,
   "flowGravityScale": 0.7,
   "flowCanMoveGrabbingHand": true,
-  "vineDensity": 1.9
+  "vineDensity": 4.0,
+  "fullscreen": false,
+  "defaultLevel": "level1",
+  "torqueBasedMovement": true
 }
