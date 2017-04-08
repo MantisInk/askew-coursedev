@@ -53,19 +53,21 @@ public class LevelEditorController extends WorldController implements ContactLis
 
 	private JSONLoaderSaver jls;
 
-	private LevelModel lm;
+	private LevelModel levelModel;
 
 	@Getter
 	private String currentLevel;
 
 	private String createClass;
 
-	int inputThresher = 0;
-	int tentativeIndex = 0;
-	int actualindex = 0;
+	/** A decrementing int that helps prevent accidental repeats of actions through an arbitrary countdown */
+	private int inputRateLimiter = 0;
 
-	public static final int THRESHER_RESET = 2;
-	public static final int THRESHER_RESET_LONG = 15;
+	private int tentativeEntityIndex = 0;
+	private int entityIndex = 0;
+
+	public static final int UI_WAIT_SHORT = 2;
+	public static final int UI_WAIT_LONG = 15;
 
 
 	public static final String[] creationOptions = {
@@ -176,16 +178,16 @@ public class LevelEditorController extends WorldController implements ContactLis
 	 */
 	private void populateLevel() {
 		try {
-			lm = jls.loadLevel(currentLevel);
+			levelModel = jls.loadLevel(currentLevel);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
 
-		if (lm == null) {
-			lm = new LevelModel();
+		if (levelModel == null) {
+			levelModel = new LevelModel();
 		}
 
-		for (Entity o : lm.getEntities()) {
+		for (Entity o : levelModel.getEntities()) {
 			if (o instanceof Obstacle) {
 				addObject((Obstacle) o);
 			} else {
@@ -231,7 +233,7 @@ public class LevelEditorController extends WorldController implements ContactLis
 	 * @param y
      */
 	private void createXY(float x, float y) {
-		switch (creationOptions[actualindex]) {
+		switch (creationOptions[entityIndex]) {
 			case ".SlothModel":
 				SlothModel sTemplate = new SlothModel(x,y);
 				promptTemplate(sTemplate);
@@ -248,7 +250,7 @@ public class LevelEditorController extends WorldController implements ContactLis
 				StiffBranch sb = new StiffBranch(x,y, 3.0f, 0.25f, 1.0f,scale);
 				promptTemplate(sb);
 		}
-		inputThresher = THRESHER_RESET;
+		inputRateLimiter = UI_WAIT_SHORT;
 	}
 
 	private void promptTemplate(Entity template) {
@@ -318,17 +320,19 @@ public class LevelEditorController extends WorldController implements ContactLis
 
 	public void update(float dt) {
 
-		if (inputThresher > 0) {
-			inputThresher--;
+		if (inputRateLimiter > 0) {
+			inputRateLimiter--;
 			return;
 		}
 
+		// Create
 		if (InputController.getInstance().isLeftClickPressed()) {
 			float mx = InputController.getInstance().getCrossHair().x;
 			float my = InputController.getInstance().getCrossHair().y;
 			createXY(mx,my);
 		}
 
+		// Delete
 		if (InputController.getInstance().isRightClickPressed()) {
 			float mx = InputController.getInstance().getCrossHair().x;
 			float my = InputController.getInstance().getCrossHair().y;
@@ -357,9 +361,10 @@ public class LevelEditorController extends WorldController implements ContactLis
 			};
 
 			world.QueryAABB(qc,mx,my,mx,my);
-			inputThresher = THRESHER_RESET;
+			inputRateLimiter = UI_WAIT_SHORT;
 		}
 
+		// Edit
 		if (InputController.getInstance().isEKeyPressed()) {
 			float mx = InputController.getInstance().getCrossHair().x;
 			float my = InputController.getInstance().getCrossHair().y;
@@ -390,13 +395,13 @@ public class LevelEditorController extends WorldController implements ContactLis
 			};
 
 			world.QueryAABB(qc,mx,my,mx,my);
-			inputThresher = THRESHER_RESET;
+			inputRateLimiter = UI_WAIT_SHORT;
 		}
 
+		// Name level
 		if (InputController.getInstance().isNKeyPressed()) {
-			String name = showInputDialog("What should we call this level?");
-			currentLevel = name;
-			inputThresher = THRESHER_RESET_LONG;
+			currentLevel = showInputDialog("What should we call this level?");
+			inputRateLimiter = UI_WAIT_LONG;
 		}
 
 		// Load level
@@ -407,9 +412,10 @@ public class LevelEditorController extends WorldController implements ContactLis
 				reset();
 				loadingLevelPrompt = false;
 			}
-			inputThresher = THRESHER_RESET_LONG;
+			inputRateLimiter = UI_WAIT_LONG;
 		}
 
+		// Save
 		if (InputController.getInstance().isSKeyPressed()) {
 			System.out.println("Saving...");
 			LevelModel timeToSave = new LevelModel();
@@ -422,25 +428,37 @@ public class LevelEditorController extends WorldController implements ContactLis
 			} else {
 				System.err.println("ERROR IN SAVE");
 			}
-			inputThresher = THRESHER_RESET_LONG;
+			inputRateLimiter = UI_WAIT_LONG;
 		}
 
+		// Scroll backward ent
 		if (InputController.getInstance().isLeftKeyPressed()) {
-			tentativeIndex = (tentativeIndex + 1 + creationOptions.length) % creationOptions.length;
-			inputThresher = THRESHER_RESET_LONG;
-		}
-		if (InputController.getInstance().isRightKeyPressed()) {
-			tentativeIndex = (tentativeIndex - 1 + creationOptions.length) % creationOptions.length;
-			inputThresher = THRESHER_RESET_LONG;
-		}
-		if (InputController.getInstance().isEnterKeyPressed()) {
-			actualindex = tentativeIndex;
-			inputThresher = THRESHER_RESET_LONG;
+			tentativeEntityIndex = (tentativeEntityIndex + 1 + creationOptions.length) % creationOptions.length;
+			inputRateLimiter = UI_WAIT_LONG;
 		}
 
+		// Scroll forward ent
+		if (InputController.getInstance().isRightKeyPressed()) {
+			tentativeEntityIndex = (tentativeEntityIndex - 1 + creationOptions.length) % creationOptions.length;
+			inputRateLimiter = UI_WAIT_LONG;
+		}
+
+		// Select ent
+		if (InputController.getInstance().isEnterKeyPressed()) {
+			entityIndex = tentativeEntityIndex;
+			inputRateLimiter = UI_WAIT_LONG;
+		}
+
+		// Help
 		if (InputController.getInstance().isHKeyPressed()) {
 			showHelp = !showHelp;
-			inputThresher = THRESHER_RESET_LONG;
+			inputRateLimiter = UI_WAIT_LONG;
+		}
+
+		// Background
+		if (InputController.getInstance().isBKeyPressed()) {
+			levelModel.setBackground(showInputDialog("What texture should the background be set to?"));
+			// TODO: Update the drawn background (after henry implements the engine)
 		}
 
 		if (InputController.getInstance().isGKeyPressed()) {
@@ -471,37 +489,11 @@ public class LevelEditorController extends WorldController implements ContactLis
 		}
 
 		canvas.drawTextStandard("Level: " + currentLevel, 10.0f, 100.0f);
-		canvas.drawTextStandard("Creating: " + creationOptions[tentativeIndex], 10.0f, 80.0f);
-		if (tentativeIndex != actualindex) {
+		canvas.drawTextStandard("Creating: " + creationOptions[tentativeEntityIndex], 10.0f, 80.0f);
+		if (tentativeEntityIndex != entityIndex) {
 			canvas.drawTextStandard("Hit Enter to Select New Object Type.", 10.0f, 60.0f);
 		}
 		canvas.end();
-	}
-
-	/**
-	 * Callback method for the start of a collision
-	 *
-	 * This method is called when we first get a collision between two objects.  We use
-	 * this method to test if it is the "right" kind of collision.  In particular, we
-	 * use it to test if we made it to the win door.
-	 *
-	 * But trevor uses it for something else
-	 *
-	 * @param contact The two bodies that collided
-	 */
-	public void beginContact(Contact contact) {
-
-	}
-
-	/**
-	 * Callback method for the start of a collision
-	 *
-	 * This method is called when two objects cease to touch.  The main use of this method
-	 * is to determine when the characer is NOT on the ground.  This is how we prevent
-	 * double jumping.
-	 */
-	public void endContact(Contact contact) {
-
 	}
 
 	@Override

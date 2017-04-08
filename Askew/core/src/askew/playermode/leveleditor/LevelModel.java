@@ -3,8 +3,6 @@ package askew.playermode.leveleditor;
 import askew.entity.Entity;
 import askew.entity.obstacle.Obstacle;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,18 +24,21 @@ class LevelModel {
 
     String background;
 
+    // UNIMPLEMENTED
     String soundtrack;
 
+    /** Meters. Height of level, not player view. */
     int height;
 
+    /** Meters. Width of level, not player view. */
     int width;
 
     List<Entity> entities;
 
     public LevelModel() {
         this.entities = new ArrayList<Entity>();
-        this.height = 768;
-        this.width = 1024;
+        this.height = 10;
+        this.width = 10;
         this.levelModelVersion = LATEST_LEVEL_MODEL_VERSION;
         this.goalTimeGold = 30;
         this.goalTimeSilver = 45;

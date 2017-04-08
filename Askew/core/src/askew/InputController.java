@@ -72,8 +72,8 @@ public class InputController {
 	private boolean gKeyPressed;
 	@Getter
 	private boolean hKeyPressed;
-
-
+	@Getter
+	private boolean bKeyPressed;
 
 
 	// Fields to manage buttons
@@ -425,6 +425,7 @@ public class InputController {
 		rightKeyPressed =  Gdx.input.isKeyPressed(Input.Keys.RIGHT);
 		enterKeyPressed =  Gdx.input.isKeyPressed(Input.Keys.ENTER);
 		tKeyPressed =  Gdx.input.isKeyPressed(Input.Keys.T);
+		bKeyPressed = Gdx.input.isKeyPressed(Input.Keys.B);
 		crosshair.set(Gdx.input.getX(), Gdx.input.getY());
 		crosshair.scl(1/scale.x,-1/scale.y);
 		crosshair.y += bounds.height;
@@ -441,4 +442,5 @@ public class InputController {
 		crosshair.x = Math.max(bounds.x, Math.min(bounds.x+bounds.width, crosshair.x));
 		crosshair.y = Math.max(bounds.y, Math.min(bounds.y+bounds.height, crosshair.y));
 	}
+
 }
