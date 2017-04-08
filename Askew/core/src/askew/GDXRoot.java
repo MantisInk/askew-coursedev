@@ -153,21 +153,20 @@ public class GDXRoot extends Game implements ScreenListener {
 	 */
 	public void exitScreen(Screen screen, int exitCode) {
 		if (screen == loading) {
-			//System.out.println("loading");
 			for(int ii = 0; ii < controllers.length; ii++) {
 				controllers[ii].loadContent(manager);
 				controllers[ii].setScreenListener(this);
 				controllers[ii].setCanvas(canvas);
 			}
-			controllers[current].reset();
-			//System.out.println("scale post reset ("+controllers[current].scale.x+","+controllers[current].scale.y+")");
-			setScreen(controllers[current]);
-			controllers[current].setCanvas(canvas);
-			//System.out.println("scale ("+controllers[current].scale.x+","+controllers[current].scale.y+")");
-			
+//			controllers[current].reset();
+//			setScreen(controllers[current]);
+//			controllers[current].setCanvas(canvas);
+
 			loading.dispose();
 			loading = null;
-		} else if (exitCode == WorldController.EXIT_MM_GM) {
+		}
+		// Intentional fallthrough
+		if (exitCode == WorldController.EXIT_MM_GM) {
 			current = CON_GM;
 			controllers[current].reset();
 			setScreen(controllers[current]);
