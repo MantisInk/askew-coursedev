@@ -13,6 +13,7 @@ package askew.playermode.gamemode;
 import askew.GlobalConfiguration;
 import askew.InputController;
 import askew.entity.Entity;
+import askew.entity.owl.OwlModel;
 import askew.playermode.WorldController;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.utils.*;
@@ -110,6 +111,8 @@ public class GameModeController extends WorldController {
 	/** Reference to the character avatar */
 
 	private static SlothModel sloth;
+	private static OwlModel owl;
+
 	/** Reference to the goalDoor (for collision detection) */
 	private BoxObstacle goalDoor;
 
@@ -189,6 +192,9 @@ public class GameModeController extends WorldController {
 						sloth = (SlothModel) o;
 						sloth.activateSlothPhysics(world);
 						collisions.setSloth(sloth);
+					}
+					if (o instanceof OwlModel) {
+						owl = (OwlModel) o;
 					}
 				}
 			} catch (FileNotFoundException e) {
@@ -324,16 +330,24 @@ public class GameModeController extends WorldController {
 		//#TODO Collision states check
 		setComplete(collisions.isComplete());
 
+		Body leftCollisionBody = collisions.getLeftBody();
+		Body rightCollisionBody = collisions.getLeftBody();
+
+		if ((leftCollisionBody != null && leftCollisionBody.getUserData() == owl) || (rightCollisionBody != null && rightCollisionBody.getUserData() == owl)) {
+			System.out.println("VICTORY");
+			listener.exitScreen(this, EXIT_GM_LE);
+		}
+
 		// Physics tiem
 		// Gribby grab
 		if (sloth.isLeftGrab()) {
-			sloth.grab(world,collisions.getLeftBody(), true);
+			sloth.grab(world,leftCollisionBody, true);
 		} else {
 			sloth.releaseLeft(world);
 		}
 
 		if (sloth.isRightGrab()) {
-			sloth.grab(world,collisions.getRightBody(), false);
+			sloth.grab(world,rightCollisionBody, false);
 		} else {
 			sloth.releaseRight(world);
 		}
