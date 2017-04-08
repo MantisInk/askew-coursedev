@@ -55,7 +55,10 @@ public class EntityWrapper implements JsonSerializer<Entity>, JsonDeserializer<E
                 return JsonEntityFactory.createTrunk(manager, instance, scale);
             case ".StiffBranch":
                 return JsonEntityFactory.createStiffBranch(manager, instance, scale);
+            case ".OwlModel":
+                return JsonEntityFactory.createOwl(manager, instance, scale);
             default:
+                System.err.println("Unrecognized in wrapper: " + obstacleClass);
                 Class<?> klass = null;
                 try {
                     klass = Class.forName(className);

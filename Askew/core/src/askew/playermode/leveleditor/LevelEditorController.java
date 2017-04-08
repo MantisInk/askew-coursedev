@@ -12,6 +12,7 @@ package askew.playermode.leveleditor;
 
 import askew.*;
 import askew.entity.Entity;
+import askew.entity.owl.OwlModel;
 import askew.util.json.JSONLoaderSaver;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.math.Affine2;
@@ -79,7 +80,8 @@ public class LevelEditorController extends WorldController {
 			".Vine",
 			".Platform",
 			".Trunk",
-			".StiffBranch"
+			".StiffBranch",
+			".OwlModel"
 	};
 
 	private boolean prompting;
@@ -254,6 +256,14 @@ public class LevelEditorController extends WorldController {
 			case ".StiffBranch":
 				StiffBranch sb = new StiffBranch(x,y, 3.0f, 0.25f, 1.0f,scale);
 				promptTemplate(sb);
+				break;
+			case ".OwlModel":
+				OwlModel owl = new OwlModel(x,y);
+				promptTemplate(owl);
+				break;
+			default:
+				System.err.println("UNKNOWN ENT");
+				break;
 		}
 		inputRateLimiter = UI_WAIT_SHORT;
 	}

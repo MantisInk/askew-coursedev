@@ -40,7 +40,7 @@ public abstract class SimpleObstacle extends Obstacle {
 	protected TextureRegion texture;
 
 	/** The texture origin for drawing */
-	protected Vector2 origin;
+	protected transient Vector2 origin;
 	
 	/// BodyDef Methods
 	/**
