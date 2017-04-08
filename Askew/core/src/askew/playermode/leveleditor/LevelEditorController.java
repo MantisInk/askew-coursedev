@@ -335,28 +335,25 @@ public class LevelEditorController extends WorldController {
 			float mx = InputController.getInstance().getCrossHair().x;
 			float my = InputController.getInstance().getCrossHair().y;
 
-			QueryCallback qc = new QueryCallback() {
-				@Override
-				public boolean reportFixture(Fixture fixture) {
-					Object userData = fixture.getBody().getUserData();
-					for (Obstacle o : objects) {
-						if (o == userData) {
-							objects.remove(o);
-							return false;
-						}
+			QueryCallback qc = fixture -> {
+                Object userData = fixture.getBody().getUserData();
+                for (Obstacle o : objects) {
+                    if (o == userData) {
+                        objects.remove(o);
+                        return false;
+                    }
 
-						if (o instanceof ComplexObstacle) {
-							for (Obstacle oo : ((ComplexObstacle) o).getBodies()) {
-								if (oo == userData) {
-									objects.remove(o);
-									return false;
-								}
-							}
-						}
-					}
-					return true;
-				}
-			};
+                    if (o instanceof ComplexObstacle) {
+                        for (Obstacle oo : ((ComplexObstacle) o).getBodies()) {
+                            if (oo == userData) {
+                                objects.remove(o);
+                                return false;
+                            }
+                        }
+                    }
+                }
+                return true;
+            };
 
 			world.QueryAABB(qc,mx,my,mx,my);
 			inputRateLimiter = UI_WAIT_SHORT;
