@@ -101,6 +101,7 @@ public class LevelEditorController extends WorldController {
 			"L: Load level (do not include .json in the level name!)\n" +
 			"S: Save\n" +
 			"X: (xbox controller) switch to playing the level\n" +
+			"B: Set background texture\n" +
 			"H: Toggle this help text";
 	private boolean loadingLevelPrompt;
 
