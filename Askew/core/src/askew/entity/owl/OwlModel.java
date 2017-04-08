@@ -3,6 +3,7 @@ package askew.entity.owl;
 import askew.GameCanvas;
 import askew.entity.obstacle.BoxObstacle;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -15,8 +16,9 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 public class OwlModel extends BoxObstacle  {
 
     public static final String OWL_TEXTURE = "texture/owl/owl.png";
-    public static final float OWL_WIDTH = 1.0f;
-    public static final float OWL_HEIGHT = 1.0f;
+    public static final float OWL_WIDTH = 2.2f;
+    // determined at runtime to preserve aspect ratio from designers
+    private transient float owlHeight;
 
     private transient TextureRegion owlTextureRegion;
 
@@ -31,7 +33,7 @@ public class OwlModel extends BoxObstacle  {
      * @param y  Initial y position of the ragdoll head
      */
     public OwlModel(float x, float y) {
-        super(x,y, OWL_WIDTH, OWL_HEIGHT);
+        super(x,y, OWL_WIDTH, OWL_WIDTH);
         this.x = x;
         this.y = y;
         this.setBodyType(BodyDef.BodyType.StaticBody);
@@ -42,16 +44,8 @@ public class OwlModel extends BoxObstacle  {
         this.setName("owl");
     }
 
-    private void init() {
-
-    }
-
     public void setDrawScale(float x, float y) {
         super.setDrawScale(x,y);
-
-        if (owlTextureRegion != null && body == null) {
-            init();
-        }
     }
 
 
@@ -65,19 +59,19 @@ public class OwlModel extends BoxObstacle  {
     public void setTextures(AssetManager manager) {
         Texture owlTexture = manager.get(OWL_TEXTURE);
         owlTextureRegion = new TextureRegion(owlTexture);
-
-
-        if (body == null) {
-            init();
-        } else {
-            setTexture(owlTextureRegion);
-        }
+        // aspect ratio scaling
+        this.owlHeight = getWidth() * ( owlTextureRegion.getRegionHeight() / owlTextureRegion.getRegionWidth());
+        setTexture(owlTextureRegion);
     }
 
     @Override
     public void draw(GameCanvas canvas) {
-        super.draw(canvas);
-        // TODO
+        // TODO: Help me figure out the draw scaling someone please
+        float thirtyTwoPixelDensityScale = 32f /owlTextureRegion.getRegionWidth();
+
+        if (texture != null) {
+            canvas.draw(texture, Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.x,getAngle(), thirtyTwoPixelDensityScale * OWL_WIDTH, thirtyTwoPixelDensityScale * owlHeight);
+        }
     }
 }
 
