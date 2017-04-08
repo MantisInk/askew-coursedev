@@ -8,35 +8,44 @@
   "width": 10,
   "entities": [
     {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "pin": false,
+        "numLinks": 5.0,
+        "x": 3.625,
+        "y": 14.75
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "pin": false,
+        "numLinks": 5.0,
+        "x": 11.03125,
+        "y": 14.625
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "pin": false,
+        "numLinks": 5.0,
+        "x": 18.34375,
+        "y": 14.46875
+      }
+    },
+    {
       "CLASSNAME": "askew.entity.sloth.SlothModel",
       "INSTANCE": {
-        "x": 3.875,
-        "y": 9.8125
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.vine.Vine",
-      "INSTANCE": {
-        "pin": false,
-        "numLinks": 5.0,
-        "x": 10.78125,
-        "y": 9.5
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.vine.Vine",
-      "INSTANCE": {
-        "pin": false,
-        "numLinks": 5.0,
-        "x": 3.40625,
-        "y": 8.0
+        "x": 3.6875,
+        "y": 16.25
       }
     },
     {
       "CLASSNAME": "askew.entity.owl.OwlModel",
       "INSTANCE": {
-        "x": 15.0,
-        "y": 8.625
+        "x": 27.03125,
+        "y": 11.03125
       }
     }
   ]

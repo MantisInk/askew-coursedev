@@ -331,7 +331,7 @@ public class GameModeController extends WorldController {
 		setComplete(collisions.isComplete());
 
 		Body leftCollisionBody = collisions.getLeftBody();
-		Body rightCollisionBody = collisions.getLeftBody();
+		Body rightCollisionBody = collisions.getRightBody();
 
 		if ((leftCollisionBody != null && leftCollisionBody.getUserData() == owl) || (rightCollisionBody != null && rightCollisionBody.getUserData() == owl)) {
 			System.out.println("VICTORY");
