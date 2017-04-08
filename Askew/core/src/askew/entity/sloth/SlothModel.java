@@ -501,80 +501,65 @@ public class SlothModel extends ComplexObstacle  {
         this.rightGrab = rightGrab;
     }
 
-    public void grabLeft(World world, Body target) {
-        if (leftGrabJoint != null) return;
+    public void grab(World world, Body target, boolean leftHand) {
+        Joint grabJoint;
+        RevoluteJointDef grabJointDef;
+        Obstacle hand;
+
+        if (leftHand) {
+            grabJoint = leftGrabJoint;
+            hand =  bodies.get(PART_LEFT_HAND);
+
+        } else {
+            grabJoint = rightGrabJoint;
+            hand =  bodies.get(PART_RIGHT_HAND);
+
+        }
+
+        if (grabJoint != null || target == null) return;
         Vector2 anchorHand = new com.badlogic.gdx.math.Vector2(0, 0);
         // TODO: Improve this vector
         Vector2 anchorTarget = new com.badlogic.gdx.math.Vector2(0, 0);
-        if (SPIDERMAN_MODE)
-            grabPointL.setTransform(bodies.get(PART_LEFT_HAND).getPosition(), 0);
+
+        anchorTarget = anchorTarget.add(target.getPosition());
+        anchorTarget = anchorTarget.sub(hand.getPosition());
+
         //RevoluteJointDef jointDef = new RevoluteJointDef();
-        leftGrabJointDef = new RevoluteJointDef();
-        leftGrabJointDef.bodyA = bodies.get(PART_LEFT_HAND).getBody(); // barrier
+        grabJointDef = new RevoluteJointDef();
+        grabJointDef.bodyA = hand.getBody(); // barrier
 
         if (target == null) {
-            if (SPIDERMAN_MODE) {
-                leftGrabJointDef.bodyB = grabPointL; // pin
-            } else{
-                return;
-            }
+            return;
+        } else {
+            grabJointDef.bodyB = target;
         }
-        else
-            leftGrabJointDef.bodyB = target;
-        leftGrabJointDef.localAnchorA.set(anchorHand);
-        leftGrabJointDef.localAnchorB.set(anchorTarget);
-        leftGrabJointDef.collideConnected = false;
+        grabJointDef.localAnchorA.set(anchorHand);
+        grabJointDef.localAnchorB.set(anchorTarget);
+        grabJointDef.collideConnected = false;
         //jointDef.lowerAngle = (float) (- Math.PI/4);
         //jointDef.upperAngle = (float) (Math.PI/4);
         //jointDef.enableLimit = true;
-        leftGrabJoint = world.createJoint(leftGrabJointDef);
-        joints.add(leftGrabJoint);
+        grabJoint = world.createJoint(grabJointDef);
+        if (leftHand) {
+            leftGrabJoint = grabJoint;
+        } else {
+            rightGrabJoint = grabJoint;
+        }
+
+        joints.add(grabJoint);
     }
 
     public void releaseLeft(World world) {
         if (leftGrabJoint != null) {
-            //System.err.println("Release");
             world.destroyJoint(leftGrabJoint);
-            //joints.removeValue(leftGrabJoint,true);
         }
         leftGrabJoint = null;
     }
 
-    public void grabRight(World world, Body target) {
-        if (rightGrabJoint != null) return;
-        //System.err.println("Grab");
-        Vector2 anchorHand = new com.badlogic.gdx.math.Vector2(0, 0);
-        // TODO: Improve this vector
-        Vector2 anchorTarget = new com.badlogic.gdx.math.Vector2(0, 0);
-        if (SPIDERMAN_MODE)
-                grabPointR.setTransform(bodies.get(PART_RIGHT_HAND).getPosition(), 0);
-        //RevoluteJointDef jointDef = new RevoluteJointDef();
-        rightGrabJointDef = new RevoluteJointDef();
-        rightGrabJointDef.bodyA = bodies.get(PART_RIGHT_HAND).getBody(); // barrier
-        if (target == null) {
-            if (SPIDERMAN_MODE) {
-                rightGrabJointDef.bodyB = grabPointR; // pin
-            } else{
-                return;
-            }
-        }
-        else
-            rightGrabJointDef.bodyB = target;
-        rightGrabJointDef.localAnchorA.set(anchorHand);
-        rightGrabJointDef.localAnchorB.set(anchorTarget);
-        rightGrabJointDef.collideConnected = false;
-        //jointDef.lowerAngle = (float) (- Math.PI/4);
-        //jointDef.upperAngle = (float) (Math.PI/4);
-        //jointDef.enableLimit = true;
-        rightGrabJoint = world.createJoint(rightGrabJointDef);
-        joints.add(rightGrabJoint);
-    }
 
     public void releaseRight(World world) {
         if (rightGrabJoint != null) {
-            //System.err.println("Release");
             world.destroyJoint(rightGrabJoint);
-            //joints.removeValue(rightGrabJoint,true);
         }
         rightGrabJoint = null;
     }

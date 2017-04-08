@@ -327,13 +327,13 @@ public class GameModeController extends WorldController {
 		// Physics tiem
 		// Gribby grab
 		if (sloth.isLeftGrab()) {
-			sloth.grabLeft(world,collisions.getLeftBody());
+			sloth.grab(world,collisions.getLeftBody(), true);
 		} else {
 			sloth.releaseLeft(world);
 		}
 
 		if (sloth.isRightGrab()) {
-			sloth.grabRight(world,collisions.getRightBody());
+			sloth.grab(world,collisions.getRightBody(), false);
 		} else {
 			sloth.releaseRight(world);
 		}
