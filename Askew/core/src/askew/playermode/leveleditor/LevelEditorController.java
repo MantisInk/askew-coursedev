@@ -14,6 +14,7 @@ import askew.*;
 import askew.entity.Entity;
 import askew.util.json.JSONLoaderSaver;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.google.gson.JsonObject;
@@ -49,11 +50,14 @@ public class LevelEditorController extends WorldController {
 	/** Track asset loading from all instances and subclasses */
 	private AssetState levelEditorAssetState = AssetState.EMPTY;
 
-	private AssetTraversalController fat;
-
-	private JSONLoaderSaver jls;
+	private JSONLoaderSaver jsonLoaderSaver;
 
 	private LevelModel levelModel;
+
+	Affine2 camTrans;
+	float cxCamera;
+	float cyCamera;
+
 
 	@Getter
 	private String currentLevel;
@@ -110,7 +114,7 @@ public class LevelEditorController extends WorldController {
 	 */
 	public void preLoadContent(AssetManager manager) {
 		super.preLoadContent(manager);
-		jls.setManager(manager);
+		jsonLoaderSaver.setManager(manager);
 	}
 
 	/**
@@ -142,10 +146,11 @@ public class LevelEditorController extends WorldController {
 		setDebug(false);
 		setComplete(false);
 		setFailure(false);
-		jls = new JSONLoaderSaver();
+		jsonLoaderSaver = new JSONLoaderSaver();
 		currentLevel = "test_save_obstacle";
 		createClass = ".SlothModel";
 		showHelp = true;
+		camTrans = new Affine2();
 	}
 
 	/**
@@ -169,6 +174,8 @@ public class LevelEditorController extends WorldController {
 		setComplete(false);
 		setFailure(false);
 		populateLevel();
+		cxCamera = -canvas.getWidth() / 2;
+		cyCamera = -canvas.getHeight() / 2;
 	}
 
 	/**
@@ -176,7 +183,7 @@ public class LevelEditorController extends WorldController {
 	 */
 	private void populateLevel() {
 		try {
-			levelModel = jls.loadLevel(currentLevel);
+			levelModel = jsonLoaderSaver.loadLevel(currentLevel);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -254,7 +261,7 @@ public class LevelEditorController extends WorldController {
 	private void promptTemplate(Entity template) {
 		if (!prompting) {
 			prompting = true;
-			String jsonOfTemplate = jls.gsonToJson(template);
+			String jsonOfTemplate = jsonLoaderSaver.gsonToJson(template);
 			// flipping swing
 			JDialog mainFrame = new JDialog();
 			mainFrame.setSize(600,600);
@@ -277,7 +284,7 @@ public class LevelEditorController extends WorldController {
 	}
 
 	private void promptTemplateCallback(String json) {
-		Entity toAdd = jls.entityFromJson(json);
+		Entity toAdd = jsonLoaderSaver.entityFromJson(json);
 		if (toAdd instanceof Obstacle) {
 			addObject((Obstacle) toAdd);
 		} else {
@@ -290,7 +297,7 @@ public class LevelEditorController extends WorldController {
 	private void promptGlobalConfig() {
 		if (!prompting) {
 			prompting = true;
-			String jsonOfConfig = jls.prettyJson(JSONLoaderSaver
+			String jsonOfConfig = jsonLoaderSaver.prettyJson(JSONLoaderSaver
 					.loadArbitrary("data/config.json").orElseGet
 							(JsonObject::new));
 			JDialog mainFrame = new JDialog();
@@ -318,22 +325,42 @@ public class LevelEditorController extends WorldController {
 
 	public void update(float dt) {
 
+		// Decrement rate limiter to allow new input
 		if (inputRateLimiter > 0) {
 			inputRateLimiter--;
 			return;
 		}
 
+		// Allow access to mouse coordinates for multiple inputs
+		float mouseX = InputController.getInstance().getCrossHair().x;
+		float mouseY = InputController.getInstance().getCrossHair().y;
+		float adjustedMouseX = mouseX - (cxCamera + canvas.getWidth()/2) / scale.x;
+		float adjustedMouseY = mouseY - (cyCamera + canvas.getHeight()/2) / scale.y;
+
+
+		// Check for pan
+		if (mouseX < 1) {
+			// Pan left
+			cxCamera+= 10;
+		}
+		if (mouseY < 1) {
+			// down
+			cyCamera+= 10;
+		}
+		if (mouseX > (canvas.getWidth() / scale.x) - 1) {
+			cxCamera-= 10;
+		}
+		if (mouseY > (canvas.getHeight() / scale.y) - 1) {
+			cyCamera-= 10;
+		}
+
 		// Create
 		if (InputController.getInstance().isLeftClickPressed()) {
-			float mx = InputController.getInstance().getCrossHair().x;
-			float my = InputController.getInstance().getCrossHair().y;
-			createXY(mx,my);
+			createXY(adjustedMouseX,adjustedMouseY);
 		}
 
 		// Delete
 		if (InputController.getInstance().isRightClickPressed()) {
-			float mx = InputController.getInstance().getCrossHair().x;
-			float my = InputController.getInstance().getCrossHair().y;
 
 			QueryCallback qc = fixture -> {
                 Object userData = fixture.getBody().getUserData();
@@ -355,41 +382,36 @@ public class LevelEditorController extends WorldController {
                 return true;
             };
 
-			world.QueryAABB(qc,mx,my,mx,my);
+			world.QueryAABB(qc,adjustedMouseX,adjustedMouseY,adjustedMouseX,adjustedMouseY);
 			inputRateLimiter = UI_WAIT_SHORT;
 		}
 
 		// Edit
 		if (InputController.getInstance().isEKeyPressed()) {
-			float mx = InputController.getInstance().getCrossHair().x;
-			float my = InputController.getInstance().getCrossHair().y;
 
-			QueryCallback qc = new QueryCallback() {
-				@Override
-				public boolean reportFixture(Fixture fixture) {
-					Object userData = fixture.getBody().getUserData();
-					for (Obstacle o : objects) {
-						if (o == userData) {
-							promptTemplate(o);
-							objects.remove(o);
-							return false;
-						}
+			QueryCallback qc = fixture -> {
+                Object userData = fixture.getBody().getUserData();
+                for (Obstacle o : objects) {
+                    if (o == userData) {
+                        promptTemplate(o);
+                        objects.remove(o);
+                        return false;
+                    }
 
-						if (o instanceof ComplexObstacle) {
-							for (Obstacle oo : ((ComplexObstacle) o).getBodies()) {
-								if (oo == userData) {
-									promptTemplate(o);
-									objects.remove(o);
-									return false;
-								}
-							}
-						}
-					}
-					return true;
-				}
-			};
+                    if (o instanceof ComplexObstacle) {
+                        for (Obstacle oo : ((ComplexObstacle) o).getBodies()) {
+                            if (oo == userData) {
+                                promptTemplate(o);
+                                objects.remove(o);
+                                return false;
+                            }
+                        }
+                    }
+                }
+                return true;
+            };
 
-			world.QueryAABB(qc,mx,my,mx,my);
+			world.QueryAABB(qc,adjustedMouseX,adjustedMouseY,adjustedMouseX,adjustedMouseY);
 			inputRateLimiter = UI_WAIT_SHORT;
 		}
 
@@ -418,7 +440,7 @@ public class LevelEditorController extends WorldController {
 			for (Obstacle o : objects) {
 				timeToSave.addEntity(o);
 			}
-			if (jls.saveLevel(timeToSave, currentLevel)) {
+			if (jsonLoaderSaver.saveLevel(timeToSave, currentLevel)) {
 				System.out.println("Saved!");
 			} else {
 				System.err.println("ERROR IN SAVE");
@@ -465,14 +487,18 @@ public class LevelEditorController extends WorldController {
 	public void draw(float delta) {
 		canvas.clear();
 
-		canvas.begin();
+		// Translate camera to cx, cy
+		camTrans.setToTranslation(cxCamera, cyCamera);
+		camTrans.translate(canvas.getWidth()/2, canvas.getHeight()/2);
+
+		canvas.begin(camTrans);
 		for(Obstacle obj : objects) {
 			obj.draw(canvas);
 		}
 		canvas.end();
 
 
-		// Final message
+		// Text- independent of where you scroll
 		canvas.begin(); // DO NOT SCALE
 		if (showHelp) {
 			String[] splitHelp = HELP_TEXT.split("\\R");
@@ -529,6 +555,6 @@ public class LevelEditorController extends WorldController {
 		this.canvas = canvas;
 		this.scale.x = 1.0f * canvas.getWidth()/bounds.getWidth();
 		this.scale.y = 1.0f * canvas.getHeight()/bounds.getHeight();
-		jls.setScale(this.scale);
+		jsonLoaderSaver.setScale(this.scale);
 	}
 }

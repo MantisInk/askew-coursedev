@@ -4,8 +4,8 @@
   "goalTimeGold": 30,
   "goalTimeSilver": 45,
   "goalTimeBronze": 60,
-  "height": 768,
-  "width": 1024,
+  "height": 10,
+  "width": 10,
   "entities": [
     {
       "CLASSNAME": "askew.entity.sloth.SlothModel",
