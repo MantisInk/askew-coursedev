@@ -44,7 +44,7 @@ import static javax.swing.JOptionPane.showInputDialog;
  * This is the purpose of our AssetState variable; it ensures that multiple instances
  * place nicely with the static assets.
  */
-public class LevelEditorController extends WorldController implements ContactListener {
+public class LevelEditorController extends WorldController {
 
 	/** Track asset loading from all instances and subclasses */
 	private AssetState levelEditorAssetState = AssetState.EMPTY;
@@ -142,7 +142,6 @@ public class LevelEditorController extends WorldController implements ContactLis
 		setDebug(false);
 		setComplete(false);
 		setFailure(false);
-		world.setContactListener(this);
 		jls = new JSONLoaderSaver();
 		currentLevel = "test_save_obstacle";
 		createClass = ".SlothModel";
@@ -167,7 +166,6 @@ public class LevelEditorController extends WorldController implements ContactLis
 		world.dispose();
 
 		world = new World(gravity,false);
-		world.setContactListener(this);
 		setComplete(false);
 		setFailure(false);
 		populateLevel();
