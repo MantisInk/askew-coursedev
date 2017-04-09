@@ -14,6 +14,7 @@
  */
 package askew.entity.vine;
 
+import askew.MantisAssetManager;
 import askew.entity.Entity;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
@@ -268,7 +269,7 @@ public class Vine extends ComplexObstacle {
 	}
 
     @Override
-    public void setTextures(AssetManager manager) {
+    public void setTextures(MantisAssetManager manager) {
         Texture vineTexture = manager.get(VINE_TEXTURE, Texture.class);
         TextureRegion regionedTexture = new TextureRegion(vineTexture);
         for(Obstacle body : bodies) {

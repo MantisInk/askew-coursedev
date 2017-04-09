@@ -13,6 +13,7 @@
 package askew.entity.obstacle;
 
 import askew.GameCanvas;
+import askew.MantisAssetManager;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.graphics.*;
@@ -28,7 +29,7 @@ public class CapsuleObstacle extends SimpleObstacle {
 	private static final float DEFAULT_EPSILON = 0.01f;
 
 	@Override
-	public void setTextures(AssetManager manager) {
+	public void setTextures(MantisAssetManager manager) {
 		// Do nothing
 	}
 

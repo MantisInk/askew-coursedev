@@ -18,6 +18,7 @@ package askew.playermode;/*
 import askew.GameCanvas;
 import askew.GlobalConfiguration;
 import askew.InputController;
+import askew.MantisAssetManager;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
@@ -89,7 +90,7 @@ public abstract class WorldController implements Screen {
 	 * 
 	 * @param manager Reference to global asset manager.
 	 */
-	public void preLoadContent(AssetManager manager) {
+	public void preLoadContent(MantisAssetManager manager) {
 		if (worldAssetState != AssetState.EMPTY) {
 			return;
 		}
@@ -113,10 +114,12 @@ public abstract class WorldController implements Screen {
 	 * 
 	 * @param manager Reference to global asset manager.
 	 */
-	public void loadContent(AssetManager manager) {
+	public void loadContent(MantisAssetManager manager) {
 		if (worldAssetState != AssetState.LOADING) {
 			return;
 		}
+
+		manager.loadProcess();
 
 		// Allocate the font
 		if (manager.isLoaded(FONT_FILE)) {
@@ -126,30 +129,6 @@ public abstract class WorldController implements Screen {
 		}
 
 		worldAssetState = AssetState.COMPLETE;
-	}
-	
-	/**
-	 * Returns a newly loaded texture region for the given file.
-	 *
-	 * This helper methods is used to set texture settings (such as scaling, and
-	 * whether or not the texture should repeat) after loading.
-	 *
-	 * @param manager 	Reference to global asset manager.
-	 * @param file		The texture (region) file
-	 * @param repeat	Whether the texture should be repeated
-	 *
-	 * @return a newly loaded texture region for the given file.
-	 */
-	public TextureRegion createTexture(AssetManager manager, String file, boolean repeat) {
-		if (manager.isLoaded(file)) {
-			TextureRegion region = new TextureRegion(manager.get(file, Texture.class));
-			region.getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
-			if (repeat) {
-				region.getTexture().setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
-			}
-			return region;
-		}
-		return null;
 	}
 	
 	/**

@@ -5,3 +5,4 @@ texture/sloth/dude.png
 texture/sloth/hand.png
 texture/sloth/arm.png
 texture/vine/vine.png
+texture/wall/wall.png

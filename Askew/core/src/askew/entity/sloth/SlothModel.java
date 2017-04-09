@@ -6,6 +6,7 @@ package askew.entity.sloth;
  * This the sloth!
  */
 
+import askew.MantisAssetManager;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
@@ -609,7 +610,7 @@ public class SlothModel extends ComplexObstacle  {
     }
 
     @Override
-    public void setTextures(AssetManager manager) {
+    public void setTextures(MantisAssetManager manager) {
         partTextures = new TextureRegion[BODY_TEXTURE_COUNT];
         Texture managedHand = manager.get("texture/sloth/hand.png");
         Texture managedArm = manager.get("texture/sloth/arm.png");

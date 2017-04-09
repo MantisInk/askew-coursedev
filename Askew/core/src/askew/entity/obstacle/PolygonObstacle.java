@@ -16,6 +16,7 @@
 package askew.entity.obstacle;
 
 import askew.GameCanvas;
+import askew.MantisAssetManager;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.math.*;
@@ -36,23 +37,23 @@ public class PolygonObstacle extends SimpleObstacle {
 	private static final EarClippingTriangulator TRIANGULATOR = new EarClippingTriangulator();
 	
 	/** Shape information for this physics object */
-	protected PolygonShape[] shapes;
+	protected transient PolygonShape[] shapes;
 	/** Texture information for this object */
-	protected PolygonRegion region;
+	protected transient PolygonRegion region;
 	
 	/** The polygon vertices, scaled for drawing */
-	private float[] scaled;
+	private transient float[] scaled;
 	/** The triangle indices, used for drawing */
-	private short[] tridx;
+	private transient short[] tridx;
 
 	/** A cache value for the fixtures (for resizing) */
-	private Fixture[] geoms;
+	private transient Fixture[] geoms;
 	/** The polygon bounding box (for resizing purposes) */
-	private Vector2 dimension;
+	private transient Vector2 dimension;
 	/** A cache value for when the user wants to access the dimensions */
-	private Vector2 sizeCache;
+	private transient  Vector2 sizeCache;
 	/** Cache of the polygon vertices (for resizing) */
-	private float[] vertices;
+	private transient float[] vertices;
 	
 	/** 
 	 * Returns the dimensions of this box
@@ -359,7 +360,7 @@ public class PolygonObstacle extends SimpleObstacle {
     }
 
 	@Override
-	public void setTextures(AssetManager manager) {
+	public void setTextures(MantisAssetManager manager) {
 		// Do nothing
 	}
 

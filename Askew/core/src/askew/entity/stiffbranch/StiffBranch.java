@@ -14,6 +14,7 @@
  */
 package askew.entity.stiffbranch;
 
+import askew.MantisAssetManager;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -248,7 +249,7 @@ public class StiffBranch extends ComplexObstacle {
 	}
 
 	@Override
-	public void setTextures(AssetManager manager) {
+	public void setTextures(MantisAssetManager manager) {
 		Texture managedTexture = manager.get("texture/branch/branch.png", Texture.class);
 		TextureRegion regionTexture = new TextureRegion(managedTexture);
 		for(Obstacle body : bodies) {

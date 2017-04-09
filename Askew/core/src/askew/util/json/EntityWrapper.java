@@ -1,5 +1,6 @@
 package askew.util.json;
 
+import askew.MantisAssetManager;
 import askew.entity.Entity;
 import askew.entity.JsonEntityFactory;
 import com.badlogic.gdx.assets.AssetManager;
@@ -17,10 +18,12 @@ public class EntityWrapper implements JsonSerializer<Entity>, JsonDeserializer<E
 
     private static final String CLASSNAME = "CLASSNAME";
     private static final String INSTANCE  = "INSTANCE";
+
     @Setter
     private Vector2 scale;
+
     @Setter
-    private AssetManager manager;
+    private MantisAssetManager manager;
 
     public EntityWrapper() {
     }
@@ -57,6 +60,8 @@ public class EntityWrapper implements JsonSerializer<Entity>, JsonDeserializer<E
                 return JsonEntityFactory.createStiffBranch(manager, instance, scale);
             case ".OwlModel":
                 return JsonEntityFactory.createOwl(manager, instance, scale);
+            case ".WallModel":
+                return JsonEntityFactory.createWall(manager, instance, scale);
             default:
                 System.err.println("Unrecognized in wrapper: " + obstacleClass);
                 Class<?> klass = null;

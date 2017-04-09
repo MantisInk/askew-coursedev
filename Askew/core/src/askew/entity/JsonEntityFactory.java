@@ -1,15 +1,20 @@
 package askew.entity;
 
+import askew.MantisAssetManager;
 import askew.entity.owl.OwlModel;
 import askew.entity.stiffbranch.StiffBranch;
 import askew.entity.trunk.Trunk;
 import askew.entity.sloth.SlothModel;
 import askew.entity.vine.Vine;
+import askew.entity.wall.WallModel;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.google.gson.JsonObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Since we cannot create a static method on Entity to create an instance of a particular entity from a JSON instance,
@@ -17,7 +22,7 @@ import com.google.gson.JsonObject;
  */
 public class JsonEntityFactory {
 
-    public static Vine createVine(AssetManager manager, JsonObject instance, Vector2 scale) {
+    public static Vine createVine(MantisAssetManager manager, JsonObject instance, Vector2 scale) {
         Vine vine;
         float x = instance.get("x").getAsFloat();
         float y = instance.get("y").getAsFloat();
@@ -30,7 +35,7 @@ public class JsonEntityFactory {
         return vine;
     }
 
-    public static Trunk createTrunk(AssetManager manager, JsonObject instance, Vector2 scale) {
+    public static Trunk createTrunk(MantisAssetManager manager, JsonObject instance, Vector2 scale) {
         Trunk trunk;
         float x = instance.get("x").getAsFloat();
         float y = instance.get("y").getAsFloat();
@@ -42,7 +47,7 @@ public class JsonEntityFactory {
         return trunk;
     }
 
-    public static SlothModel createSloth(AssetManager manager, JsonObject instance, Vector2 scale) {
+    public static SlothModel createSloth(MantisAssetManager manager, JsonObject instance, Vector2 scale) {
         SlothModel ret;
         ret = new SlothModel(instance.get("x").getAsFloat(), instance.get("y").getAsFloat());
         ret.setDrawScale(scale.x, scale.y);
@@ -50,7 +55,7 @@ public class JsonEntityFactory {
         return ret;
     }
 
-    public static StiffBranch createStiffBranch(AssetManager manager, JsonObject instance, Vector2 scale) {
+    public static StiffBranch createStiffBranch(MantisAssetManager manager, JsonObject instance, Vector2 scale) {
         StiffBranch branch;
         float x = instance.get("x").getAsFloat();
         float y = instance.get("y").getAsFloat();
@@ -61,7 +66,7 @@ public class JsonEntityFactory {
         return branch;
     }
 
-    public static OwlModel createOwl(AssetManager manager, JsonObject instance, Vector2 scale) {
+    public static OwlModel createOwl(MantisAssetManager manager, JsonObject instance, Vector2 scale) {
         OwlModel owl;
         float x = instance.get("x").getAsFloat();
         float y = instance.get("y").getAsFloat();
@@ -69,5 +74,22 @@ public class JsonEntityFactory {
         owl.setDrawScale(scale.x, scale.y);
         owl.setTextures(manager);
         return owl;
+    }
+
+    public static WallModel createWall(MantisAssetManager manager, JsonObject instance, Vector2 scale) {
+        WallModel wall;
+        float x = instance.get("x").getAsFloat();
+        float y = instance.get("y").getAsFloat();
+        List<Float> points = new ArrayList<>();
+        instance.get("points").getAsJsonArray().forEach(pt->points.add(pt.getAsFloat()));
+        Float[] arrayPoints = points.toArray(new Float[points.size()]);
+        float[] copy = new float[arrayPoints.length];
+        for (int i = 0; i < arrayPoints.length; i++) {
+            copy[i] = arrayPoints[i];
+        }
+        wall = new WallModel(x, y, copy);
+        wall.setDrawScale(scale.x, scale.y);
+        wall.setTextures(manager);
+        return wall;
     }
 }

@@ -12,6 +12,7 @@
 package askew.entity.obstacle;
 
 import askew.GameCanvas;
+import askew.MantisAssetManager;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.physics.box2d.*;
@@ -118,7 +119,7 @@ public class WheelObstacle extends SimpleObstacle {
 	}
 
 	@Override
-	public void setTextures(AssetManager manager) {
+	public void setTextures(MantisAssetManager manager) {
 		// No textures to set
 	}
 }
