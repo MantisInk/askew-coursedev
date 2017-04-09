@@ -7,6 +7,7 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.Filter;
 
 /**
  * Wall to obstruct Flow's movement. This is a polygon, so you can get
@@ -46,7 +47,11 @@ public class WallModel extends PolygonObstacle {
         this.setDensity(0);
         this.setFriction(WALL_FRICTION);
         this.setRestitution(WALL_RESTITUTION);
-        this.setSensor(true);
+        Filter f = new Filter();
+        f.maskBits = 0x0100;
+        f.categoryBits = 0x0100;
+        this.setFilterData(f);
+//        this.setSensor(true);
     }
 
     public void setDrawScale(float x, float y) {

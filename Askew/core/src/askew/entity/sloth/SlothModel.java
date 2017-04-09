@@ -238,7 +238,8 @@ public class SlothModel extends ComplexObstacle  {
         if(!collides){
             body = new BoxObstacle(partCache.x, partCache.y, dwidth, dheight);
             Filter f = new Filter();
-            f.maskBits = 0x0000;
+            f.maskBits = 0x0100;
+            f.categoryBits = 0x0100;
             body.setFilterData(f);
         }
         else{
