@@ -94,21 +94,12 @@
       }
     },
     {
-      "CLASSNAME": "askew.entity.wall.WallModel",
+      "CLASSNAME": "askew.entity.ghost.GhostModel",
       "INSTANCE": {
-        "x": 2.09375,
-        "y": 9.09375,
-        "thorn": true,
-        "points": [
-          0.0,
-          0.0,
-          0.0,
-          1.0,
-          1.0,
-          1.0,
-          1.0,
-          0.0
-        ]
+        "x": 14.9375,
+        "y": 11.8125,
+        "patroldx": 16.9375,
+        "patroldy": 13.8125
       }
     }
   ]

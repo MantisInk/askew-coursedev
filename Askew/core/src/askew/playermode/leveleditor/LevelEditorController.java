@@ -12,6 +12,7 @@ package askew.playermode.leveleditor;
 
 import askew.*;
 import askew.entity.Entity;
+import askew.entity.ghost.GhostModel;
 import askew.entity.owl.OwlModel;
 import askew.entity.wall.WallModel;
 import askew.util.json.JSONLoaderSaver;
@@ -92,7 +93,8 @@ public class LevelEditorController extends WorldController {
 			".OwlModel",
 			".WallModel",
 			".Tree",
-			".OwlModel"
+			".OwlModel",
+			".GhostModel"
 	};
 
 	private boolean prompting;
@@ -283,6 +285,10 @@ public class LevelEditorController extends WorldController {
 			case ".WallModel":
 				WallModel wall = new WallModel(x,y,new float[] {0,0,0f,1f,1f,1f,1f,0f}, false);
 				promptTemplate(wall);
+				break;
+			case ".GhostModel":
+				GhostModel ghost = new GhostModel(x,y,x+2,y+2);
+				promptTemplate(ghost);
 				break;
 			default:
 				System.err.println("UNKNOWN ENT");
@@ -606,7 +612,7 @@ public class LevelEditorController extends WorldController {
 				entry.remove();
 			} else {
 				// Note that update is called last!
-				obj.update(dt);
+//				obj.update(dt);
 			}
 		}
 	}

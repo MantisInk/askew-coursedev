@@ -1,6 +1,7 @@
 package askew.entity;
 
 import askew.MantisAssetManager;
+import askew.entity.ghost.GhostModel;
 import askew.entity.owl.OwlModel;
 import askew.entity.tree.StiffBranch;
 import askew.entity.tree.Trunk;
@@ -92,5 +93,17 @@ public class JsonEntityFactory {
         wall.setDrawScale(scale.x, scale.y);
         wall.setTextures(manager);
         return wall;
+    }
+
+    public static GhostModel createGhost(MantisAssetManager manager, JsonObject instance, Vector2 scale) {
+        GhostModel ghost;
+        float x = instance.get("x").getAsFloat();
+        float y = instance.get("y").getAsFloat();
+        float patroldx = instance.get("patroldx").getAsFloat();
+        float patroldy = instance.get("patroldy").getAsFloat();
+        ghost = new GhostModel(x, y, patroldx, patroldy);
+        ghost.setDrawScale(scale.x, scale.y);
+        ghost.setTextures(manager);
+        return ghost;
     }
 }

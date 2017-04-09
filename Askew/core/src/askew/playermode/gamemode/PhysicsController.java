@@ -84,7 +84,7 @@ public class PhysicsController implements ContactListener {
             if (bd1 != null && bd2 != null && (bd1.getName().equals("slothpart") || bd2.getName().equals("slothpart"))) {
                 Obstacle slothy;
                 Obstacle other;
-                if (bd1.getName().equals("slothpart")) {
+                if (bd1.getName() != null && bd1.getName().equals("slothpart")) {
                     slothy = bd1;
                     other = bd2;
                 } else {
@@ -92,7 +92,7 @@ public class PhysicsController implements ContactListener {
                     other = bd1;
                 }
 
-                if (other.getName().equals("thorns")) {
+                if (other.getName() != null && (other.getName().equals("thorns") || other.getName().equals("ghost") )) {
                     System.out.println("GG TODO KILL FLOW");
                     isFlowKill = true;
                 }
