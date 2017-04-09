@@ -2,8 +2,8 @@ package askew.entity;
 
 import askew.MantisAssetManager;
 import askew.entity.owl.OwlModel;
-import askew.entity.stiffbranch.StiffBranch;
-import askew.entity.trunk.Trunk;
+import askew.entity.tree.StiffBranch;
+import askew.entity.tree.Trunk;
 import askew.entity.sloth.SlothModel;
 import askew.entity.vine.Vine;
 import askew.entity.wall.WallModel;

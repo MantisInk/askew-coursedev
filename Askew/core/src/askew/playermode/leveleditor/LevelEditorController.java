@@ -25,8 +25,9 @@ import com.google.gson.JsonObject;
 import askew.playermode.WorldController;
 import askew.entity.obstacle.ComplexObstacle;
 import askew.entity.obstacle.Obstacle;
-import askew.entity.trunk.Trunk;
-import askew.entity.stiffbranch.StiffBranch;
+import askew.entity.tree.Trunk;
+import askew.entity.tree.StiffBranch;
+import askew.entity.tree.Tree;
 import askew.entity.vine.Vine;
 import askew.entity.sloth.SlothModel;
 import askew.util.PooledList;
@@ -87,7 +88,9 @@ public class LevelEditorController extends WorldController {
 			".Trunk",
 			".StiffBranch",
 			".OwlModel",
-			".WallModel"
+			".WallModel",
+			".Tree",
+			".OwlModel"
 	};
 
 	private boolean prompting;
@@ -266,6 +269,10 @@ public class LevelEditorController extends WorldController {
 			case ".StiffBranch":
 				StiffBranch sb = new StiffBranch(x,y, 3.0f, 0.25f, 1.0f,scale);
 				promptTemplate(sb);
+				break;
+			case ".Tree":
+				Tree tr = new Tree(new Vector2(x,y), 5f, 3f, 0.25f, 1.0f, scale);
+				promptTemplate(tr);
 				break;
 			case ".OwlModel":
 				OwlModel owl = new OwlModel(x,y);

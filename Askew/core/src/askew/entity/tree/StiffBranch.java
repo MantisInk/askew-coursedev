@@ -12,17 +12,18 @@
  * Based on original PhysicsDemo Lab by Don Holden, 2007
  * LibGDX version, 2/6/2015
  */
-package askew.entity.trunk;
+package askew.entity.tree;
 
 import askew.MantisAssetManager;
-import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.math.*;
-import com.badlogic.gdx.graphics.g2d.*;
-import com.badlogic.gdx.physics.box2d.*;
-import com.badlogic.gdx.physics.box2d.joints.*;
-
 import askew.entity.obstacle.*;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.Joint;
+import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
+import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 
 /**
  * A bridge with planks connected by revolute joints.
@@ -30,40 +31,40 @@ import askew.entity.obstacle.*;
  * Note that this class returns to static loading.  That is because there are
  * no other subclasses that we might loop through.
  */
-public class Trunk extends ComplexObstacle {
+public class StiffBranch extends ComplexObstacle {
 	/** The debug name for the entire obstacle */
-	private static final String VINE_NAME = "plank";
+	private static final String VINE_NAME = "branch";
 	/** The debug name for each plank */
-	private static final String PLANK_NAME = "driftwood";
+	private static final String PLANK_NAME = "barrier";
 	/** The debug name for each anchor pin */
 	private static final String BRIDGE_PIN_NAME = "pin";
 	/** The radius of each anchor pin */
 	private static final float BRIDGE_PIN_RADIUS = 0.1f;
 	/** The density of each plank in the bridge */
-	private static final float BASIC_DENSITY = 13f;
-
-	private int nLinks;
-	private float x,y,stiffLen,width,height;
+	private static final float BASIC_DENSITY = 0.8f;
+	private static final float BASIC_MASS = 0.03f;
+	private static final float LOWER_LIMIT = 0-(float)Math.PI/3;
+	private static final float UPPER_LIMIT = (float)Math.PI/3;
 
 	// Invisible anchor objects
 	/** The left side of the bridge */
-	private WheelObstacle start = null;
-	private WheelObstacle finish = null;
+	private transient WheelObstacle start = null;
 	/** Set damping constant for joint rotation in vines */
 	public static final float DAMPING_ROTATION = 5f;
 
 	// Dimension information
 	/** The size of the entire bridge */
-	protected Vector2 dimension;
+	protected transient Vector2 dimension;
 	/** The size of a single plank */
-	protected Vector2 planksize;
+	protected transient Vector2 planksize;
 	/* The length of each link */
-	protected float linksize = 1.0f;
+	protected transient float linksize = 1.0f;
 	/** The spacing between each link */
-	// TODO: Fix this from being public (refactor artifact)
-	public float spacing = 0.0f;
+	protected transient float spacing = 0.0f;
 
-	protected float numLinks;
+	private float numLinks;
+	private float x;
+	private float y;
 
 	/**
 	 * Creates a new rope bridge at the given position.
@@ -77,9 +78,16 @@ public class Trunk extends ComplexObstacle {
 	 * @param lwidth	The plank length
 	 * @param lheight	The bridge thickness
 	 */
-	public Trunk(float x, float y, float width, float lwidth, float lheight, float stiffLen, Vector2 scale) {
-		this(x, y, x, y+width, lwidth*scale.y/32f, lheight*scale.y/32f, stiffLen);
-		numLinks = width;
+	public StiffBranch(float x, float y, float width, float lwidth, float lheight, Vector2 scale) {
+		this(x, y, x, y+width, lwidth*scale.y/32f, lheight*scale.y/32f, 0f);
+		this.numLinks = width;
+		this.x = x;
+		this.y = y;
+	}
+
+	public StiffBranch(float x, float y, float width, float lwidth, float lheight, Vector2 scale, float angle) {
+		this(x, y, x, y+width, lwidth*scale.y/32f, lheight*scale.y/32f, angle);
+		this.numLinks = width;
 		this.x = x;
 		this.y = y;
 	}
@@ -94,9 +102,8 @@ public class Trunk extends ComplexObstacle {
 	 * @param lwidth	The plank length
 	 * @param lheight	The bridge thickness
 	 */
-	public Trunk(float x0, float y0, float x1, float y1, float lwidth, float lheight, float stiffLen) {
+	public StiffBranch(float x0, float y0, float x1, float y1, float lwidth, float lheight, float angle) {
 		super(x0,y0);
-		this.x = x0;	this.y = y0;	this.stiffLen = stiffLen;	this.width = lwidth; this.height = lheight;
 		setName(VINE_NAME);
 
 		planksize = new Vector2(lwidth,lheight);
@@ -107,9 +114,10 @@ public class Trunk extends ComplexObstacle {
 		float length = dimension.len();
 		Vector2 norm = new Vector2(dimension);
 		norm.nor();
+		norm.rotate(angle);
 
 		// If too small, only make one plank.
-		nLinks = (int)(length / linksize);
+		int nLinks = (int)(length / linksize);
 		if (nLinks <= 1) {
 			nLinks = 1;
 			linksize = length;
@@ -122,7 +130,7 @@ public class Trunk extends ComplexObstacle {
 		// Create the planks
 		planksize.y = linksize;
 		Vector2 pos = new Vector2();
-		for (int ii = 0; ii < nLinks-stiffLen; ii++) {
+		for (int ii = 0; ii < nLinks; ii++) {
 			float t = ii*(linksize+spacing) + linksize/2.0f;
 			pos.set(norm);
 			pos.scl(t);
@@ -130,6 +138,7 @@ public class Trunk extends ComplexObstacle {
 			BoxObstacle plank = new BoxObstacle(pos.x, pos.y, planksize.x, planksize.y);
 			plank.setName(PLANK_NAME+ii);
 			plank.setDensity(BASIC_DENSITY);
+			plank.setMass(BASIC_MASS);
 			bodies.add(plank);
 		}
 	}
@@ -167,24 +176,27 @@ public class Trunk extends ComplexObstacle {
 		// Initial joint
 		// uncomment section to stand up
 		// comment section to fall over
-		jointDef.bodyA = start.getBody();
-		jointDef.bodyB = bodies.get(0).getBody();
-		jointDef.localAnchorA.set(anchor1);
-		jointDef.localAnchorB.set(anchor2);
-		jointDef.collideConnected = false;
-		Joint joint = world.createJoint(jointDef );
-		joints.add(joint);
+//		jointDef.bodyA = start.getBody();
+//		jointDef.bodyB = bodies.get(0).getBody();
+//		jointDef.localAnchorA.set(anchor1);
+//		jointDef.localAnchorB.set(anchor2);
+//		jointDef.collideConnected = false;
+//		Joint joint = world.createJoint(jointDef );
+//		joints.add(joint);
 
 		// uncomment to fall over
 		// comment to stand up
-//		RevoluteJointDef flexJointDef = new RevoluteJointDef();
-//		flexJointDef.bodyA = start.getBody();
-//		flexJointDef.bodyB = bodies.get(0).getBody();
-//		flexJointDef.localAnchorA.set(anchor1);
-//		flexJointDef.localAnchorB.set(anchor2);
-//		flexJointDef.collideConnected = false;
-//		Joint joint = world.createJoint(flexJointDef);
-//		joints.add(joint);
+		RevoluteJointDef flexJointDef = new RevoluteJointDef();
+		flexJointDef.bodyA = start.getBody();
+		flexJointDef.bodyB = bodies.get(0).getBody();
+		flexJointDef.localAnchorA.set(anchor1);
+		flexJointDef.localAnchorB.set(anchor2);
+		flexJointDef.collideConnected = false;
+		flexJointDef.enableLimit = true;
+		flexJointDef.lowerAngle = LOWER_LIMIT;
+		flexJointDef.upperAngle = UPPER_LIMIT;
+		Joint joint = world.createJoint(flexJointDef);
+		joints.add(joint);
 
 		//Joint joint;
 		// Link the planks together
@@ -203,32 +215,18 @@ public class Trunk extends ComplexObstacle {
 			//#endregion
 		}
 
-		// Create the rightmost anchor
-		Obstacle last = bodies.get(bodies.size-1);
+//		RevoluteJointDef flexJointDef = new RevoluteJointDef();
+//		flexJointDef.bodyA = bodies.get(bodies.size-2).getBody();
+//		flexJointDef.bodyB = bodies.get(bodies.size-1).getBody();
+//		flexJointDef.localAnchorA.set(anchor1);
+//		flexJointDef.localAnchorB.set(anchor2);
+//		flexJointDef.collideConnected = false;
+//		joint = world.createJoint(flexJointDef);
+//		joints.add(joint);
 
-		pos = last.getPosition();
-		pos.y += linksize / 2;
-		finish = new WheelObstacle(pos.x,pos.y,BRIDGE_PIN_RADIUS);
-		finish.setName(BRIDGE_PIN_NAME+1);
-		finish.setDensity(BASIC_DENSITY);
-		finish.setBodyType(BodyDef.BodyType.StaticBody);
-		finish.activatePhysics(world);
-
-		// Final joint
-		anchor2.y = 0;
-		jointDef.bodyA = last.getBody();
-		jointDef.bodyB = finish.getBody();
-		jointDef.localAnchorA.set(anchor1);
-		jointDef.localAnchorB.set(anchor2);
-		joint = world.createJoint(jointDef);
-		joints.add(joint);
 
 		return true;
 	}
-
-	public int getnLinks() {return nLinks;}
-
-	public float getLinksize() {return linksize;}
 
 	/**
 	 * Destroys the physics Body(s) of this object if applicable,
@@ -252,12 +250,12 @@ public class Trunk extends ComplexObstacle {
 		if (bodies.size == 0) {
 			return null;
 		}
-		return ((SimpleObstacle) bodies.get(0)).getTexture();
+		return ((SimpleObstacle)bodies.get(0)).getTexture();
 	}
 
 	@Override
 	public void setTextures(MantisAssetManager manager) {
-		Texture managedTexture = manager.get("./texture/branch/branch.png", Texture.class);
+		Texture managedTexture = manager.get("texture/branch/branch.png", Texture.class);
 		TextureRegion regionTexture = new TextureRegion(managedTexture);
 		for(Obstacle body : bodies) {
 			((SimpleObstacle)body).setTexture(regionTexture);
