@@ -49,22 +49,19 @@ public class Tree extends ComplexObstacle {
      *
      * @param world Box2D world that stores body
      */
+
     public void deactivatePhysics(World world) {
         super.deactivatePhysics(world);
         treeTrunk.deactivatePhysics(world);
         treeBranch.deactivatePhysics(world);
     }
 
-    public void setTextures(AssetManager manager) {
+    @Override
+    public void setTextures(MantisAssetManager manager) {
         Texture managedTexture = manager.get("./texture/branch/branch.png", Texture.class);
         TextureRegion regionTexture = new TextureRegion(managedTexture);
         for(Obstacle body : bodies) {
             ((SimpleObstacle)body).setTexture(regionTexture);
         }
-    }
-
-    @Override
-    public void setTextures(MantisAssetManager manager) {
-        // ???? TODO liz
     }
 }
