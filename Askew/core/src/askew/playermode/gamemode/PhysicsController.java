@@ -15,7 +15,7 @@ public class PhysicsController implements ContactListener {
     @Getter
     private Body rightBody;
     @Getter
-    private boolean isComplete;
+    private boolean isFlowKill;
     @Getter @Setter
     private SlothModel sloth;
     @Getter @Setter
@@ -35,7 +35,7 @@ public class PhysicsController implements ContactListener {
     public void reset(){
         sloth = null;
         goalDoor = null;
-        isComplete = false;
+        isFlowKill = false;
         clearGrab();
     }
 
@@ -66,9 +66,7 @@ public class PhysicsController implements ContactListener {
             Obstacle bd1 = (Obstacle)body1.getUserData();
             Obstacle bd2 = (Obstacle)body2.getUserData();
 
-
             if (fd1 != null && fd1.equals("sloth left hand")  && (!sloth.badBodies().contains(bd2)) && (!(bd2 instanceof PolygonObstacle))) {
-                //System.out.println(body2);
                 leftBody = body2;
             }
             if (fd1 != null && fd1.equals("sloth right hand")  && bd2 != sloth && (!sloth.badBodies().contains(bd2))&& (!(bd2 instanceof PolygonObstacle))) {
@@ -82,10 +80,23 @@ public class PhysicsController implements ContactListener {
                 rightBody = body1;
             }
 
-            // Check for win condition
-            if ((bd1 == sloth   && bd2 == goalDoor) ||
-                    (bd1 == goalDoor && bd2 == sloth)) {
-                isComplete = true;
+            // Check for thorns
+            if (bd1 != null && bd2 != null && (bd1.getName().equals("slothpart") || bd2.getName().equals("slothpart"))) {
+                Obstacle slothy;
+                Obstacle other;
+                if (bd1.getName().equals("slothpart")) {
+                    slothy = bd1;
+                    other = bd2;
+                } else {
+                    slothy = bd2;
+                    other = bd1;
+                }
+
+                if (other.getName().equals("thorns")) {
+                    System.out.println("GG TODO KILL FLOW");
+                    isFlowKill = true;
+                }
+
             }
         } catch (Exception e) {
             e.printStackTrace();

@@ -18,7 +18,6 @@ import askew.entity.owl.OwlModel;
 import askew.playermode.WorldController;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.utils.*;
-import com.badlogic.gdx.assets.*;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.physics.box2d.*;
 
@@ -329,14 +328,14 @@ public class GameModeController extends WorldController {
 		sloth.setRightGrab(InputController.getInstance().getRightGrab());
 
 		//#TODO Collision states check
-		setComplete(collisions.isComplete());
+		setComplete(collisions.isFlowKill());
 
 		Body leftCollisionBody = collisions.getLeftBody();
 		Body rightCollisionBody = collisions.getRightBody();
 
 		if ((leftCollisionBody != null && leftCollisionBody.getUserData() == owl) || (rightCollisionBody != null && rightCollisionBody.getUserData() == owl)) {
 			System.out.println("VICTORY");
-			listener.exitScreen(this, EXIT_GM_LE);
+			setComplete(true);
 		}
 
 		// Physics tiem
@@ -358,6 +357,11 @@ public class GameModeController extends WorldController {
 
 		// If we use sound, we must remember this.
 		SoundController.getInstance().update();
+
+		if (isComplete()) {
+			System.out.println("GG");
+			listener.exitScreen(this, EXIT_GM_LE);
+		}
 	}
 
 	public void draw(float delta){

@@ -249,6 +249,7 @@ public class SlothModel extends ComplexObstacle  {
         body.setDrawScale(drawScale);
         body.setTexture(texture);
         body.setDensity(density);
+        body.setName("slothpart");
 
         bodies.add(body);
         return body;
