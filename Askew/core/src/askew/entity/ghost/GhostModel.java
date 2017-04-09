@@ -96,8 +96,6 @@ public class GhostModel extends BoxObstacle  {
         dPos = dPos.sub(myPos); // Direction now faces the destination
         float distanceToMove = dPos.len();
         float actualMoveDistance = GHOST_SPEED * dtime;
-        System.out.println("dm" + distanceToMove);
-        System.out.println(actualMoveDistance);
 
 
         if (distanceToMove < actualMoveDistance) {
