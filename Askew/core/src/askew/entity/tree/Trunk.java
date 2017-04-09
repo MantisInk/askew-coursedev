@@ -12,7 +12,7 @@
  * Based on original PhysicsDemo Lab by Don Holden, 2007
  * LibGDX version, 2/6/2015
  */
-package askew.entity.trunk;
+package askew.entity.tree;
 
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
@@ -77,7 +77,14 @@ public class Trunk extends ComplexObstacle {
 	 * @param lheight	The bridge thickness
 	 */
 	public Trunk(float x, float y, float width, float lwidth, float lheight, float stiffLen, Vector2 scale) {
-		this(x, y, x, y+width, lwidth*scale.y/32f, lheight*scale.y/32f, stiffLen);
+		this(x, y, x, y+width, lwidth*scale.y/32f, lheight*scale.y/32f, stiffLen, 0f);
+		numLinks = width;
+		this.x = x;
+		this.y = y;
+	}
+
+	public Trunk(float x, float y, float width, float lwidth, float lheight, float stiffLen, Vector2 scale, float angle) {
+		this(x, y, x, y+width, lwidth*scale.y/32f, lheight*scale.y/32f, stiffLen, angle);
 		numLinks = width;
 		this.x = x;
 		this.y = y;
@@ -93,7 +100,7 @@ public class Trunk extends ComplexObstacle {
 	 * @param lwidth	The plank length
 	 * @param lheight	The bridge thickness
 	 */
-	public Trunk(float x0, float y0, float x1, float y1, float lwidth, float lheight, float stiffLen) {
+	public Trunk(float x0, float y0, float x1, float y1, float lwidth, float lheight, float stiffLen, float angle) {
 		super(x0,y0);
 		this.x = x0;	this.y = y0;	this.stiffLen = stiffLen;	this.width = lwidth; this.height = lheight;
 		setName(VINE_NAME);
@@ -106,6 +113,7 @@ public class Trunk extends ComplexObstacle {
 		float length = dimension.len();
 		Vector2 norm = new Vector2(dimension);
 		norm.nor();
+		norm.rotate(angle);
 
 		// If too small, only make one plank.
 		nLinks = (int)(length / linksize);

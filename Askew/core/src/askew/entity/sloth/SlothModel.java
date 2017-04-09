@@ -6,6 +6,12 @@ package askew.entity.sloth;
  * This the sloth!
  */
 
+import askew.GameCanvas;
+import askew.GlobalConfiguration;
+import askew.entity.obstacle.BoxObstacle;
+import askew.entity.obstacle.ComplexObstacle;
+import askew.entity.obstacle.Obstacle;
+import askew.entity.obstacle.SimpleObstacle;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
@@ -16,14 +22,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
 import com.badlogic.gdx.utils.ObjectSet;
-import com.google.gson.JsonObject;
-import askew.GameCanvas;
-import askew.GlobalConfiguration;
-import askew.entity.obstacle.BoxObstacle;
-import askew.entity.obstacle.Obstacle;
-import askew.entity.obstacle.SimpleObstacle;
-import askew.AssetTraversalController;
-import askew.entity.obstacle.ComplexObstacle;
 import lombok.Getter;
 
 public class SlothModel extends ComplexObstacle  {

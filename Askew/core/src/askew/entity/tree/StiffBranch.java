@@ -12,8 +12,9 @@
  * Based on original PhysicsDemo Lab by Don Holden, 2007
  * LibGDX version, 2/6/2015
  */
-package askew.entity.stiffbranch;
+package askew.entity.tree;
 
+import askew.entity.obstacle.*;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -23,9 +24,6 @@ import com.badlogic.gdx.physics.box2d.Joint;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
-import com.google.gson.JsonObject;
-import askew.AssetTraversalController;
-import askew.entity.obstacle.*;
 
 /**
  * A bridge with planks connected by revolute joints.
@@ -81,7 +79,14 @@ public class StiffBranch extends ComplexObstacle {
 	 * @param lheight	The bridge thickness
 	 */
 	public StiffBranch(float x, float y, float width, float lwidth, float lheight, Vector2 scale) {
-		this(x, y, x, y+width, lwidth*scale.y/32f, lheight*scale.y/32f);
+		this(x, y, x, y+width, lwidth*scale.y/32f, lheight*scale.y/32f, 0f);
+		this.numLinks = width;
+		this.x = x;
+		this.y = y;
+	}
+
+	public StiffBranch(float x, float y, float width, float lwidth, float lheight, Vector2 scale, float angle) {
+		this(x, y, x, y+width, lwidth*scale.y/32f, lheight*scale.y/32f, angle);
 		this.numLinks = width;
 		this.x = x;
 		this.y = y;
@@ -97,7 +102,7 @@ public class StiffBranch extends ComplexObstacle {
 	 * @param lwidth	The plank length
 	 * @param lheight	The bridge thickness
 	 */
-	public StiffBranch(float x0, float y0, float x1, float y1, float lwidth, float lheight) {
+	public StiffBranch(float x0, float y0, float x1, float y1, float lwidth, float lheight, float angle) {
 		super(x0,y0);
 		setName(VINE_NAME);
 
@@ -109,6 +114,7 @@ public class StiffBranch extends ComplexObstacle {
 		float length = dimension.len();
 		Vector2 norm = new Vector2(dimension);
 		norm.nor();
+		norm.rotate(angle);
 
 		// If too small, only make one plank.
 		int nLinks = (int)(length / linksize);
