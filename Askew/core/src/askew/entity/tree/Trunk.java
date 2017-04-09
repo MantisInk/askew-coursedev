@@ -14,7 +14,7 @@
  */
 package askew.entity.tree;
 
-import com.badlogic.gdx.assets.AssetManager;
+import  com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.graphics.g2d.*;
@@ -44,6 +44,8 @@ public class Trunk extends ComplexObstacle {
 	private int nLinks;
 	private float x,y,stiffLen,width,height;
 
+	Vector2 final_norm = null;
+
 	// Invisible anchor objects
 	/** The left side of the bridge */
 	private WheelObstacle start = null;
@@ -60,7 +62,7 @@ public class Trunk extends ComplexObstacle {
 	protected float linksize = 1.0f;
 	/** The spacing between each link */
 	// TODO: Fix this from being public (refactor artifact)
-	public float spacing = 0.0f;
+	private float spacing = 0.0f;
 
 	protected float numLinks;
 
@@ -72,19 +74,21 @@ public class Trunk extends ComplexObstacle {
 	 *
 	 * @param x  		The x position of the left anchor
 	 * @param y  		The y position of the left anchor
-	 * @param width		The length of the bridge
+	 * @param length	The length of the trunk
 	 * @param lwidth	The plank length
 	 * @param lheight	The bridge thickness
+	 *
+	 *
 	 */
-	public Trunk(float x, float y, float width, float lwidth, float lheight, float stiffLen, Vector2 scale) {
-		this(x, y, x, y+width, lwidth*scale.y/32f, lheight*scale.y/32f, stiffLen, 0f);
+	public Trunk(float x, float y, float length, float lwidth, float lheight, float stiffLen, Vector2 scale) {
+		this(x, y, x, y+length, lwidth*scale.y/32f, lheight*scale.y/32f, stiffLen, 0f);
 		numLinks = width;
 		this.x = x;
 		this.y = y;
 	}
 
-	public Trunk(float x, float y, float width, float lwidth, float lheight, float stiffLen, Vector2 scale, float angle) {
-		this(x, y, x, y+width, lwidth*scale.y/32f, lheight*scale.y/32f, stiffLen, angle);
+	public Trunk(float x, float y, float length, float lwidth, float lheight, float stiffLen, Vector2 scale, float angle) {
+		this(x, y, x, y+length, lwidth*scale.y/32f, lheight*scale.y/32f, stiffLen, angle);
 		numLinks = width;
 		this.x = x;
 		this.y = y;
@@ -139,6 +143,8 @@ public class Trunk extends ComplexObstacle {
 			plank.setDensity(BASIC_DENSITY);
 			bodies.add(plank);
 		}
+		final_norm = new Vector2(pos);
+		final_norm.add(x0,y0);
 	}
 
 	/**

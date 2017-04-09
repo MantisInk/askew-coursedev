@@ -14,7 +14,8 @@
  */
 package askew.entity.vine;
 
-import askew.entity.Entity;
+import askew.GlobalConfiguration;
+import askew.entity.obstacle.*;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -23,10 +24,6 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Joint;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
-import com.google.gson.JsonObject;
-import askew.GlobalConfiguration;
-import askew.AssetTraversalController;
-import askew.entity.obstacle.*;
 
 /**
  * A bridge with planks connected by revolute joints.

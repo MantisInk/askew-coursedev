@@ -33,7 +33,7 @@ import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
  */
 public class StiffBranch extends ComplexObstacle {
 	/** The debug name for the entire obstacle */
-	private static final String VINE_NAME = "vine";
+	private static final String VINE_NAME = "branch";
 	/** The debug name for each plank */
 	private static final String PLANK_NAME = "barrier";
 	/** The debug name for each anchor pin */
