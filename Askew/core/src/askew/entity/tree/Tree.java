@@ -26,14 +26,13 @@ public class Tree extends ComplexObstacle {
     protected float x;
     protected float y;
 
-    public Tree (TextureRegion branchTexture, Vector2 trunk_pos, float trunklen, float branchlen, Vector2 branch_pos, Vector2 scale){
-        float dwidth  = branchTexture.getRegionWidth()/scale.x;
-        float dheight = branchTexture.getRegionHeight()/scale.y;
+    public Tree (Vector2 trunk_pos, float trunklen, float branchlen, float dwidth, float dheight, Vector2 scale){
         treeTrunk = new Trunk(trunk_pos.x, trunk_pos.y,trunklen, dwidth, dheight, branchlen, scale);
         treeTrunk.setDrawScale(scale);
         bodies.add(treeTrunk);
 
-        treeBranch = new StiffBranch(branch_pos.x, branch_pos.y+(treeTrunk.linksize*(trunklen-branchlen)),branchlen,dwidth,dheight, scale);
+        //treeBranch = new StiffBranch(branch_pos.x, branch_pos.y+(treeTrunk.linksize*(trunklen-branchlen)),branchlen,dwidth,dheight, scale);
+        treeBranch = new StiffBranch(treeTrunk.final_norm.x, treeTrunk.final_norm.y, branchlen,dwidth,dheight, scale);
         treeBranch.setDrawScale(scale);
         bodies.add(treeBranch);
     }
@@ -41,6 +40,18 @@ public class Tree extends ComplexObstacle {
     @Override
     protected boolean createJoints(World world) {
         return true;
+    }
+
+    /**
+     * Destroys the physics Body(s) of this object if applicable,
+     * removing them from the world.
+     *
+     * @param world Box2D world that stores body
+     */
+    public void deactivatePhysics(World world) {
+        super.deactivatePhysics(world);
+        treeTrunk.deactivatePhysics(world);
+        treeBranch.deactivatePhysics(world);
     }
 
     public void setTextures(AssetManager manager) {
