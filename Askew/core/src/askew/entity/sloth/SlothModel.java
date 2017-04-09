@@ -519,11 +519,7 @@ public class SlothModel extends ComplexObstacle  {
 
         if (grabJoint != null || target == null) return;
         Vector2 anchorHand = new com.badlogic.gdx.math.Vector2(0, 0);
-        // TODO: Improve this vector
-        Vector2 anchorTarget = new com.badlogic.gdx.math.Vector2(0, 0);
-
-        anchorTarget = anchorTarget.add(target.getPosition());
-        anchorTarget = anchorTarget.sub(hand.getPosition());
+        Vector2 anchorTarget = target.getLocalPoint(hand.getPosition());
 
         //RevoluteJointDef jointDef = new RevoluteJointDef();
         grabJointDef = new RevoluteJointDef();
