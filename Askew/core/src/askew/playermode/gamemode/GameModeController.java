@@ -233,7 +233,6 @@ public class GameModeController extends WorldController {
 			return false;
 		}
 
-
 		//Checks to see if player has selected the button on the starting screen
 		if(!playerIsReady){
 			if(checkReady()){
@@ -243,14 +242,6 @@ public class GameModeController extends WorldController {
 				return false;
 			}
 		}
-		//System.out.println("Boop");
-
-		//Put here?
-
-//		if (!isFailure() && avatar.getY() < -1) {
-//			setFailure(true);
-//			return false;
-//		}
 
 		return true;
 	}
@@ -264,31 +255,16 @@ public class GameModeController extends WorldController {
 	public boolean checkReady(){
 		InputController the_controller = InputController.getInstance();
 
-		//If the player pressed "A"
-		if(the_controller.didBottomButtonPress()){
+		//If the player pressed "RB"
+		if(the_controller.getRightGrab()){
 			return true;
 		}
-		//If the player pressed "X"
-//		else if(the_controller.didLeftButtonPress()){
-//			return true;
-//		}
-		//If the player pressed "B"
-		else if(the_controller.didRightButtonPress()){
-			return true;
-		}
-		//If the player pressed "Y"
-//		else if(the_controller.didTopButtonPress()){
-//			return true;
-//		}
-		else if(the_controller.getRightGrab()){
-			return true;
-		}
+		//If the player pressed "LB"
 		else if(the_controller.getLeftGrab()){
 			return true;
 		}
 
 		return false;
-		//return true;
 	}
 
 	public void printHelp(){
@@ -303,7 +279,7 @@ public class GameModeController extends WorldController {
 //			float y_pos = -1 * sloth.getBody().getPosition().y * sloth.getDrawScale().y;
 		float x_pos = sloth.getBody().getPosition().x;
 		float y_pos = sloth.getBody().getPosition().y;
-		canvas.drawText("Hold R \n to start!", displayFont, 0.0f, 550.0f);
+		canvas.drawText("Hold RB/LB \n to start!", displayFont, 0.0f, 550.0f);
 //			canvas.end();
 		//}
 	}

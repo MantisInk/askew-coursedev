@@ -31,6 +31,7 @@ import askew.entity.vine.Vine;
 import askew.entity.sloth.SlothModel;
 import askew.util.PooledList;
 import lombok.Getter;
+import lombok.Setter;
 
 import javax.swing.*;
 import java.awt.*;
@@ -91,6 +92,7 @@ public class LevelEditorController extends WorldController {
 	};
 
 	private boolean prompting;
+	private boolean guiPrompt;
 	private boolean showHelp;
 	private static final String HELP_TEXT = "Welcome to the help screen. You \n" +
 			"can hit H at any time to toggle this screen. Remember to save \n" +
@@ -112,6 +114,18 @@ public class LevelEditorController extends WorldController {
 			"H: Toggle this help text";
 	private boolean loadingLevelPrompt;
 	private boolean shouldDrawGrid;
+
+	@Getter
+	@Setter
+	private boolean vimMode;
+
+	@Getter
+	@Setter
+	private boolean selectedEntity;
+
+	@Getter
+	@Setter
+	private boolean scrollEnabled;
 
 	/**
 	 * Preloads the assets for this controller.
@@ -163,6 +177,9 @@ public class LevelEditorController extends WorldController {
 		showHelp = true;
 		shouldDrawGrid = true;
 		camTrans = new Affine2();
+
+		vimMode = false;
+		selectedEntity = false;
 	}
 
 	/**
@@ -278,6 +295,93 @@ public class LevelEditorController extends WorldController {
 		inputRateLimiter = UI_WAIT_SHORT;
 	}
 
+	private void deleteEntity(float adjustedMouseX, float adjustedMouseY){
+		QueryCallback qc = fixture -> {
+			Object userData = fixture.getBody().getUserData();
+			for (Obstacle o : objects) {
+				if (o == userData) {
+					objects.remove(o);
+					return false;
+				}
+
+				if (o instanceof ComplexObstacle) {
+					for (Obstacle oo : ((ComplexObstacle) o).getBodies()) {
+						if (oo == userData) {
+							objects.remove(o);
+							return false;
+						}
+					}
+				}
+			}
+			return true;
+		};
+
+		world.QueryAABB(qc,adjustedMouseX,adjustedMouseY,adjustedMouseX,adjustedMouseY);
+		inputRateLimiter = UI_WAIT_SHORT;
+	}
+
+	private void editEntity(float adjustedMouseX, float adjustedMouseY){
+		QueryCallback qc = fixture -> {
+			Object userData = fixture.getBody().getUserData();
+			for (Obstacle o : objects) {
+				if (o == userData) {
+					promptTemplate(o);
+					objects.remove(o);
+					return false;
+				}
+
+				if (o instanceof ComplexObstacle) {
+					for (Obstacle oo : ((ComplexObstacle) o).getBodies()) {
+						if (oo == userData) {
+							promptTemplate(o);
+							objects.remove(o);
+							return false;
+						}
+					}
+				}
+			}
+			return true;
+		};
+
+		world.QueryAABB(qc,adjustedMouseX,adjustedMouseY,adjustedMouseX,adjustedMouseY);
+		inputRateLimiter = UI_WAIT_SHORT;
+	}
+
+	private void saveLevel(){
+		System.out.println("Saving...");
+		LevelModel timeToSave = new LevelModel();
+		timeToSave.setTitle(currentLevel);
+		for (Obstacle o : objects) {
+			timeToSave.addEntity(o);
+		}
+		if (jsonLoaderSaver.saveLevel(timeToSave, currentLevel)) {
+			System.out.println("Saved!");
+		} else {
+			System.err.println("ERROR IN SAVE");
+		}
+		inputRateLimiter = UI_WAIT_LONG;
+	}
+
+	private void loadLevel(){
+		if (!loadingLevelPrompt) {
+			loadingLevelPrompt = true;
+			currentLevel = showInputDialog("What level do you want to load?");
+			reset();
+			loadingLevelPrompt = false;
+		}
+		inputRateLimiter = UI_WAIT_LONG;
+	}
+
+	private void setLevelName(){
+		String prevLevel = currentLevel;
+		currentLevel = showInputDialog("What should we call this level?");
+
+		//If action cancelled or entry is empty
+		if(currentLevel.isEmpty()) currentLevel = prevLevel; // TODO Check if currentLevel == null
+
+		inputRateLimiter = UI_WAIT_LONG;
+	}
+
 	private void promptTemplate(Entity template) {
 		if (!prompting) {
 			prompting = true;
@@ -357,155 +461,338 @@ public class LevelEditorController extends WorldController {
 		float adjustedMouseX = mouseX - (cxCamera + canvas.getWidth()/2) / scale.x;
 		float adjustedMouseY = mouseY - (cyCamera + canvas.getHeight()/2) / scale.y;
 
+		//Toggle scrolling flag
+		setScrollEnabled(InputController.getInstance().isRShiftKeyPressed() ||
+				InputController.getInstance().isLShiftKeyPressed());
 
-		// Check for pan
-		if (mouseX < 1) {
-			// Pan left
-			cxCamera+= 10;
-		}
-		if (mouseY < 1) {
-			// down
-			cyCamera+= 10;
-		}
-		if (mouseX > (canvas.getWidth() / scale.x) - 1) {
-			cxCamera-= 10;
-		}
-		if (mouseY > (canvas.getHeight() / scale.y) - 1) {
-			cyCamera-= 10;
-		}
-
-		// Create
-		if (InputController.getInstance().isLeftClickPressed()) {
-			createXY(adjustedMouseX,adjustedMouseY);
-		}
-
-		// Delete
-		if (InputController.getInstance().isRightClickPressed()) {
-
-			QueryCallback qc = fixture -> {
-                Object userData = fixture.getBody().getUserData();
-                for (Obstacle o : objects) {
-                    if (o == userData) {
-                        objects.remove(o);
-                        return false;
-                    }
-
-                    if (o instanceof ComplexObstacle) {
-                        for (Obstacle oo : ((ComplexObstacle) o).getBodies()) {
-                            if (oo == userData) {
-                                objects.remove(o);
-                                return false;
-                            }
-                        }
-                    }
-                }
-                return true;
-            };
-
-			world.QueryAABB(qc,adjustedMouseX,adjustedMouseY,adjustedMouseX,adjustedMouseY);
-			inputRateLimiter = UI_WAIT_SHORT;
-		}
-
-		// Edit
-		if (InputController.getInstance().isEKeyPressed()) {
-
-			QueryCallback qc = fixture -> {
-                Object userData = fixture.getBody().getUserData();
-                for (Obstacle o : objects) {
-                    if (o == userData) {
-                        promptTemplate(o);
-                        objects.remove(o);
-                        return false;
-                    }
-
-                    if (o instanceof ComplexObstacle) {
-                        for (Obstacle oo : ((ComplexObstacle) o).getBodies()) {
-                            if (oo == userData) {
-                                promptTemplate(o);
-                                objects.remove(o);
-                                return false;
-                            }
-                        }
-                    }
-                }
-                return true;
-            };
-
-			world.QueryAABB(qc,adjustedMouseX,adjustedMouseY,adjustedMouseX,adjustedMouseY);
-			inputRateLimiter = UI_WAIT_SHORT;
-		}
-
-		// Name level
-		if (InputController.getInstance().isNKeyPressed()) {
-			currentLevel = showInputDialog("What should we call this level?");
+		//Toggle "VIM" mode
+		if(InputController.getInstance().isVKeyPressed()){
+			if(isVimMode()) setVimMode(false);
+			else setVimMode(true);
 			inputRateLimiter = UI_WAIT_LONG;
 		}
 
-		// Load level
-		if (InputController.getInstance().isLKeyPressed()) {
-			if (!loadingLevelPrompt) {
-				loadingLevelPrompt = true;
-				currentLevel = showInputDialog("What level do you want to load?");
-				reset();
-				loadingLevelPrompt = false;
+		//Allows user to move the camera/view of the level
+		if(isScrollEnabled()){
+			// Check for pan
+			if (mouseX < 1) {
+				// Pan left
+				cxCamera += 10;
 			}
-			inputRateLimiter = UI_WAIT_LONG;
-		}
-
-		// Save
-		if (InputController.getInstance().isSKeyPressed()) {
-			System.out.println("Saving...");
-			LevelModel timeToSave = new LevelModel();
-			timeToSave.setTitle(currentLevel);
-			for (Obstacle o : objects) {
-				timeToSave.addEntity(o);
+			if (mouseY < 1) {
+				// down
+				cyCamera += 10;
 			}
-			if (jsonLoaderSaver.saveLevel(timeToSave, currentLevel)) {
-				System.out.println("Saved!");
-			} else {
-				System.err.println("ERROR IN SAVE");
+			if (mouseX > (canvas.getWidth() / scale.x) - 1) {
+				cxCamera -= 10;
 			}
-			inputRateLimiter = UI_WAIT_LONG;
+			if (mouseY > (canvas.getHeight() / scale.y) - 1) {
+				cyCamera -= 10;
+			}
 		}
 
-		// Scroll backward ent
-		if (InputController.getInstance().isLeftKeyPressed()) {
-			tentativeEntityIndex = (tentativeEntityIndex + 1 + creationOptions.length) % creationOptions.length;
-			inputRateLimiter = UI_WAIT_LONG;
-		}
+		//If "VIM" mode is enabled
+		if(isVimMode()) {
+			//Dispose of GUI because VIM
+			//editor_window.setVisible(false);
+			//editor_window.dispose();
+			//guiPrompt = false;
 
-		// Scroll forward ent
-		if (InputController.getInstance().isRightKeyPressed()) {
-			tentativeEntityIndex = (tentativeEntityIndex - 1 + creationOptions.length) % creationOptions.length;
-			inputRateLimiter = UI_WAIT_LONG;
-		}
+			// Create
+			if (InputController.getInstance().isLeftClickPressed()) {
+				createXY(adjustedMouseX, adjustedMouseY);
+			}
 
-		// Select ent
-		if (InputController.getInstance().isEnterKeyPressed()) {
-			entityIndex = tentativeEntityIndex;
-			inputRateLimiter = UI_WAIT_LONG;
-		}
+			// Delete
+			if (InputController.getInstance().isRightClickPressed()) {
+				deleteEntity(adjustedMouseX, adjustedMouseY);
+			}
 
-		// Help
-		if (InputController.getInstance().isHKeyPressed()) {
-			showHelp = !showHelp;
-			inputRateLimiter = UI_WAIT_LONG;
-		}
+			// Edit
+			if (InputController.getInstance().isEKeyPressed()) {
+				editEntity(adjustedMouseX, adjustedMouseY);
+			}
 
-		// Grid
-		if (InputController.getInstance().isTKeyPressed()) {
-			shouldDrawGrid = !shouldDrawGrid;
-			inputRateLimiter = UI_WAIT_LONG;
-		}
+			// Name level
+			if (InputController.getInstance().isNKeyPressed()) {
+				setLevelName();
+//				currentLevel = showInputDialog("What should we call this level?");
+//				inputRateLimiter = UI_WAIT_LONG;
+			}
 
-		// Background
-		if (InputController.getInstance().isBKeyPressed()) {
-			levelModel.setBackground(showInputDialog("What texture should the background be set to?"));
-			// TODO: Update the drawn background (after henry implements the engine)
-		}
+			// Load level
+			if (InputController.getInstance().isLKeyPressed()) {
+				loadLevel();
+			}
 
-		if (InputController.getInstance().isGKeyPressed()) {
-			promptGlobalConfig();
+			// Save
+			if (InputController.getInstance().isSKeyPressed()) {
+				saveLevel();
+			}
+
+			// Scroll backward ent
+			if (InputController.getInstance().isLeftKeyPressed()) {
+				tentativeEntityIndex = (tentativeEntityIndex + 1 + creationOptions.length) % creationOptions.length;
+				inputRateLimiter = UI_WAIT_LONG;
+			}
+
+			// Scroll forward ent
+			if (InputController.getInstance().isRightKeyPressed()) {
+				tentativeEntityIndex = (tentativeEntityIndex - 1 + creationOptions.length) % creationOptions.length;
+				inputRateLimiter = UI_WAIT_LONG;
+			}
+
+			// Select ent
+			if (InputController.getInstance().isEnterKeyPressed()) {
+				entityIndex = tentativeEntityIndex;
+				inputRateLimiter = UI_WAIT_LONG;
+			}
+
+			// Help
+			if (InputController.getInstance().isHKeyPressed()) {
+				showHelp = !showHelp;
+				inputRateLimiter = UI_WAIT_LONG;
+			}
+
+			// Grid
+			if (InputController.getInstance().isTKeyPressed()) {
+				shouldDrawGrid = !shouldDrawGrid;
+				inputRateLimiter = UI_WAIT_LONG;
+			}
+
+			// Background
+			if (InputController.getInstance().isBKeyPressed()) {
+				levelModel.setBackground(showInputDialog("What texture should the background be set to?"));
+				// TODO: Update the drawn background (after henry implements the engine)
+			}
+
+			if (InputController.getInstance().isGKeyPressed()) {
+				promptGlobalConfig();
+			}
+		}
+		//GUI Mode Enabled
+		else{
+			if(!guiPrompt) {
+				//Prevent multiple windows from being created
+				guiPrompt = true;
+				//Window Settings
+				JFrame editor_window = new JFrame();
+				//JFrame entity_window = new JFrame();
+
+				//TODO Add scaling
+				int button_width = 75;
+				int button_height = 30;
+				int buffer = 6;
+				int text_length = 175;
+				int text_height = 20;
+				//int field_length = 150;
+				//int field_height= text_height;
+
+				editor_window.setSize(canvas.getWidth()*3/5, canvas.getHeight() + 100);
+//				JButton okButton = new JButton("ok");
+//				okButton.addActionListener(e -> {
+//					editor_window.setVisible(false);
+//					editor_window.dispose();
+//					guiPrompt = false;
+//				});
+
+				//System.out.println("X: "+editor_window.getWidth());
+				//System.out.println("Y: "+editor_window.getHeight());
+
+
+				//"File Properties" Stuff
+				//JLabel file_text = new JLabel("File Name: "+"Temp");
+				JLabel file_text = new JLabel("File Name: ");
+				//JLabel level_text = new JLabel("Level Name: "+currentLevel);
+				JLabel level_text = new JLabel("Level Name: ");
+				//JButton file_button = new JButton("Edit");
+				//JButton level_button = new JButton("Edit");
+
+				JTextField file_name = new JTextField("Temp");
+				JTextField level_name = new JTextField(currentLevel);
+				//file_button.setBounds(100*scale.x,100*scale.y,100*scale.x,100*scale.y);
+
+				//file_text.setBounds(buffer, buffer, text_length, text_height);
+				file_text.setBounds(buffer, buffer, 65, text_height);
+				//file_button.setBounds(text_length+buffer, buffer, button_width-20, button_height);
+				file_name.setBounds(65+buffer, buffer, text_length, text_height);
+				//level_text.setBounds(text_length+button_width+(buffer*5), buffer, text_length, text_height);
+				level_text.setBounds(65+text_length+(buffer*2), buffer, 75, text_height);
+				level_name.setBounds(65+75+text_length+(buffer*2), buffer, text_length, text_height);
+				//level_button.setBounds(button_width +(text_length*2)+(buffer*5), buffer, button_width-20, button_height);
+
+				//Load/Save Button
+				JButton load_button = new JButton("Load");
+				JButton save_button = new JButton("Save");
+
+				load_button.setBounds(65+75+(2*text_length)+(buffer*3), buffer, button_width, button_height);
+				save_button.setBounds(65+75+(2*text_length)+(buffer*3), (2*buffer)+button_height, button_width, button_height);
+
+				load_button.addActionListener(e -> {
+					loadLevel();
+					//System.out.println("BAP");
+				});
+
+				save_button.addActionListener(e -> {
+					//editor_window.setVisible(false);
+					//editor_window.dispose();
+					//guiPrompt = false;
+
+					//currentFile = file_name.getText(); ?!?!?!?
+					currentLevel = level_name.getText();
+					saveLevel();
+					//System.out.println("BOOP");
+				});
+
+//				file_button.addActionListener(e -> {
+//					//editor_window.setVisible(false);
+//					//editor_window.dispose();
+//					//guiPrompt = false;
+//					System.out.println("BOOP");
+//				});
+//
+//				level_button.addActionListener(e -> {
+//					//editor_window.setVisible(false);
+//					//editor_window.dispose();
+//					//guiPrompt = false;
+//					setLevelName();
+//				});
+
+				//Add all file properties to the editor window
+				editor_window.add(file_text);
+				editor_window.add(file_name);
+				//editor_window.add(file_button);
+				editor_window.add(level_text);
+				editor_window.add(level_name);
+				//editor_window.add(level_button);
+				editor_window.add(load_button);
+				editor_window.add(save_button);
+
+				//Starting/Ending Fields
+
+				JLabel sg_header_text = new JLabel("Start and Goal Positions");
+				JLabel start_text = new JLabel("Start:");
+				JLabel start_x_text = new JLabel("X: ");
+				JLabel start_y_text = new JLabel("Y: ");
+				JLabel goal_text = new JLabel("Goal:");
+				JLabel goal_x_text = new JLabel("X: ");
+				JLabel goal_y_text = new JLabel("Y: ");
+
+				JTextField start_x_pos = new JTextField();
+				JTextField start_y_pos = new JTextField();
+				JTextField goal_x_pos = new JTextField();
+				JTextField goal_y_pos = new JTextField();
+
+				JButton start_button = new JButton("Edit");
+				JButton goal_button = new JButton("Edit");
+
+				sg_header_text.setBounds(buffer, text_height+(3*buffer), 175, text_height);
+				start_text.setBounds(buffer, (text_height*2)+(3*buffer), 50, text_height);
+				start_button.setBounds((2*buffer)+35, (text_height*2)+(3*buffer), 60, text_height);
+				start_x_text.setBounds((3*buffer), (text_height*3)+(4*buffer), 25, text_height);
+				start_x_pos.setBounds((3*buffer)+25, (text_height*3)+(4*buffer), 50, text_height);
+				start_y_text.setBounds((3*buffer), (text_height*4)+(5*buffer), 25, text_height);
+				start_y_pos.setBounds((3*buffer)+25, (text_height*4)+(5*buffer), 50, text_height);
+
+				int col_buffer = 125;
+				goal_text.setBounds(buffer+col_buffer , (text_height*2)+(3*buffer), 50, text_height);
+				goal_button.setBounds((2*buffer)+35+col_buffer, (text_height*2)+(3*buffer), 60, text_height);
+				goal_x_text.setBounds((3*buffer)+col_buffer , (text_height*3)+(4*buffer), 25, text_height);
+				goal_x_pos.setBounds((3*buffer)+25+col_buffer , (text_height*3)+(4*buffer), 50, text_height);
+				goal_y_text.setBounds((3*buffer)+col_buffer , (text_height*4)+(5*buffer), 25, text_height);
+				goal_y_pos.setBounds((3*buffer)+25+col_buffer , (text_height*4)+(5*buffer), 50, text_height);
+
+				start_button.addActionListener(e -> {
+					//TODO Enable manual selection of start position
+					System.out.println("BAP");
+				});
+
+				goal_button.addActionListener(e -> {
+					//TODO Enable manual selection of goal position
+					System.out.println("BLAH");
+				});
+
+				//Add all Starting/Ending Fields to the editor window
+				editor_window.add(sg_header_text);
+				editor_window.add(start_text);
+				editor_window.add(start_x_text);
+				editor_window.add(start_y_text);
+				editor_window.add(goal_text);
+				editor_window.add(goal_x_text);
+				editor_window.add(goal_y_text);
+
+				editor_window.add(start_x_pos);
+				editor_window.add(start_y_pos);
+				editor_window.add(goal_x_pos);
+				editor_window.add(goal_y_pos);
+
+				editor_window.add(start_button);
+				editor_window.add(goal_button);
+
+				//Goal Time Properties
+
+				JLabel rank_header_text = new JLabel("Ranking Thresholds (Seconds)");
+				//JLabel rank_text = new JLabel("Time ");
+				JLabel rank_g_text = new JLabel("Gold: ");
+				JLabel rank_s_text = new JLabel("Silver: ");
+				JLabel rank_b_text = new JLabel("Bronze: ");
+
+				JTextField rank_g_time = new JTextField();
+				JTextField rank_s_time = new JTextField();
+				JTextField rank_b_time = new JTextField();
+
+				int col2_buffer = 175;
+				rank_header_text.setBounds(buffer+col_buffer+col2_buffer, text_height+(3*buffer), 200, text_height);
+				//rank_text.setBounds(buffer+col_buffer+col2_buffer , (text_height*2)+(3*buffer), 100, text_height);
+				rank_g_text.setBounds((3*buffer)+col_buffer+col2_buffer , (text_height*2)+(3*buffer), 50, text_height);
+				rank_g_time.setBounds((3*buffer)+50+col_buffer+col2_buffer , (text_height*2)+(3*buffer), 50, text_height);
+				rank_s_text.setBounds((3*buffer)+col_buffer+col2_buffer , (text_height*3)+(4*buffer), 50, text_height);
+				rank_s_time.setBounds((3*buffer)+50+col_buffer+col2_buffer , (text_height*3)+(4*buffer), 50, text_height);
+				rank_b_text.setBounds((3*buffer)+col_buffer+col2_buffer , (text_height*4)+(5*buffer), 50, text_height);
+				rank_b_time.setBounds((3*buffer)+50+col_buffer+col2_buffer , (text_height*4)+(5*buffer), 50, text_height);
+				//rank_b_text.setBounds((3*buffer)+col_buffer+col2_buffer , (text_height*5)+(6*buffer), 50, text_height);
+				//rank_b_time.setBounds((3*buffer)+50+col_buffer+col2_buffer , (text_height*5)+(6*buffer), 50, text_height);
+
+				editor_window.add(rank_header_text);
+				//editor_window.add(rank_text);
+				editor_window.add(rank_g_text);
+				editor_window.add(rank_s_text);
+				editor_window.add(rank_b_text);
+
+				editor_window.add(rank_g_time);
+				editor_window.add(rank_s_time);
+				editor_window.add(rank_b_time);
+
+				//Adding Entities
+
+				JLabel add_entity_header = new JLabel("Choose Entity to Add");
+				JComboBox entity_types = new JComboBox(creationOptions);
+				JButton entity_button = new JButton("Add Entity");
+
+				add_entity_header.setBounds(buffer, (text_height*5)+(7*buffer), 175, text_height);
+				entity_types.setBounds(buffer, (text_height*6)+(8*buffer), 100, text_height);
+				entity_button.setBounds(100+(2*buffer), (text_height*6)+(8*buffer), 100, text_height);
+
+				entity_button.addActionListener(e -> {
+					//TODO Add object to center of screen
+
+					//entityIndex = entity_types.getSelectedIndex();
+					//createXY(canvas.getWidth(),canvas.getHeight());
+					System.out.println("BAP");
+				});
+
+				editor_window.add(add_entity_header);
+				editor_window.add(entity_types);
+				editor_window.add(entity_button);
+
+				//TODO Add ability to edit entity parameters (on click/selecting only?)
+
+				//Display Everything
+				editor_window.setLayout(null);
+				editor_window.setVisible(true);
+
+				//TODO Add mouse interactions with level
+			}
 		}
 	}
 
@@ -554,21 +841,32 @@ public class LevelEditorController extends WorldController {
 
 		// Text- independent of where you scroll
 		canvas.begin(); // DO NOT SCALE
-		if (showHelp) {
-			String[] splitHelp = HELP_TEXT.split("\\R");
-			float beginY = 500.0f;
-			for (int i = 0; i < splitHelp.length; i++) {
-				canvas.drawTextStandard(splitHelp[i], 90.0f, beginY);
-				beginY -= 20;
+		float x_pos = canvas.getWidth()-425;
+		float y_pos = canvas.getHeight() - 15;
+
+		canvas.drawTextStandard("HOLD SHIFT + MOVE CURSOR TO ADJUST THE CAMERA", x_pos, y_pos);
+
+		if (isVimMode()) {
+			//float x_pos = (canvas.getWidth()/2)-100;
+			canvas.drawTextStandard("VIM MODE ENABLED (Press V to toggle)", 5, canvas.getHeight() - 15);
+
+			if (showHelp) {
+				String[] splitHelp = HELP_TEXT.split("\\R");
+				float beginY = 500.0f;
+				for (int i = 0; i < splitHelp.length; i++) {
+					canvas.drawTextStandard(splitHelp[i], 90.0f, beginY);
+					beginY -= 20;
+				}
+			}
+
+			canvas.drawTextStandard(cxCamera / scale.x + "," + cyCamera / scale.y, 10.0f, 120.0f);
+			canvas.drawTextStandard("Level: " + currentLevel, 10.0f, 100.0f);
+			canvas.drawTextStandard("Creating: " + creationOptions[tentativeEntityIndex], 10.0f, 80.0f);
+			if (tentativeEntityIndex != entityIndex) {
+				canvas.drawTextStandard("Hit Enter to Select New Object Type.", 10.0f, 60.0f);
 			}
 		}
-
-		canvas.drawTextStandard(cxCamera / scale.x + "," + cyCamera / scale.y, 10.0f, 120.0f);
-		canvas.drawTextStandard("Level: " + currentLevel, 10.0f, 100.0f);
-		canvas.drawTextStandard("Creating: " + creationOptions[tentativeEntityIndex], 10.0f, 80.0f);
-		if (tentativeEntityIndex != entityIndex) {
-			canvas.drawTextStandard("Hit Enter to Select New Object Type.", 10.0f, 60.0f);
-		}
+		//else canvas.drawTextStandard("VIM MODE DISABLED (Press V to toggle)", x_pos, y_pos);
 		canvas.end();
 	}
 
