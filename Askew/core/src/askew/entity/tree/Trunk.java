@@ -31,7 +31,7 @@ import askew.entity.obstacle.*;
  */
 public class Trunk extends ComplexObstacle {
 
-	private static final String VINE_NAME = "plank";			/** The debug name for the entire obstacle */
+	private static final String TRUNK_NAME = "trunk";			/** The debug name for the entire obstacle */
 	private static final String PLANK_NAME = "driftwood";		/** The debug name for each plank */
 	private static final String TRUNK_PIN_NAME = "pin";			/** The debug name for each anchor pin */
 	private static final float TRUNK_PIN_RADIUS = 0.1f;			/** The radius of each anchor pin */
@@ -95,7 +95,7 @@ public class Trunk extends ComplexObstacle {
 	public Trunk(float x0, float y0, float x1, float y1, float lwidth, float lheight, float stiffLen, float angle) {
 		super(x0,y0);
 		this.x = x0;	this.y = y0;	this.stiffLen = stiffLen;
-		setName(VINE_NAME);
+		setName(TRUNK_NAME);
 
 		planksize = new Vector2(lwidth,lheight);
 		linksize = planksize.y;
