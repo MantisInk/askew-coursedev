@@ -15,6 +15,7 @@ import java.util.Map;
 public class MantisAssetManager extends AssetManager {
 
     public static final String WALL_TEXTURE = "texture/wall/wall.png";
+    public static final String THORN_TEXTURE = "texture/wall/thorn.png";
     private boolean loaded;
     private boolean preloaded;
 
@@ -29,6 +30,7 @@ public class MantisAssetManager extends AssetManager {
     public void preloadProcess() {
         if (!preloaded) {
             load(WALL_TEXTURE, Texture.class);
+            load(THORN_TEXTURE, Texture.class);
         }
 
         preloaded = true;
@@ -37,6 +39,7 @@ public class MantisAssetManager extends AssetManager {
     public void loadProcess() {
         if (!loaded) {
             createTexture(WALL_TEXTURE,true);
+            createTexture(THORN_TEXTURE,true);
         }
         loaded = true;
     }

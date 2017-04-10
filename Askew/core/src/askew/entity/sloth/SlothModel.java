@@ -261,7 +261,8 @@ public class SlothModel extends ComplexObstacle  {
         if(!collides){
             body = new BoxObstacle(partCache.x, partCache.y, dwidth, dheight);
             Filter f = new Filter();
-            f.maskBits = 0x0000;
+            f.maskBits = 0x0100;
+            f.categoryBits = 0x0100;
             body.setFilterData(f);
         }
         else{
@@ -271,6 +272,7 @@ public class SlothModel extends ComplexObstacle  {
         body.setDrawScale(drawScale);
         body.setTexture(texture);
         body.setDensity(density);
+        body.setName("slothpart");
 
         bodies.add(body);
         return body;
@@ -548,11 +550,7 @@ public class SlothModel extends ComplexObstacle  {
 
         if (grabJoint != null || target == null) return;
         Vector2 anchorHand = new com.badlogic.gdx.math.Vector2(0, 0);
-        // TODO: Improve this vector
-        Vector2 anchorTarget = new com.badlogic.gdx.math.Vector2(0, 0);
-
-        anchorTarget = anchorTarget.add(target.getPosition());
-        anchorTarget = anchorTarget.sub(hand.getPosition());
+        Vector2 anchorTarget = target.getLocalPoint(hand.getPosition());
 
         //RevoluteJointDef jointDef = new RevoluteJointDef();
         grabJointDef = new RevoluteJointDef();

@@ -344,14 +344,14 @@ public class GameModeController extends WorldController {
 		sloth.setRightStickPressed(InputController.getInstance().getRightStickPressed());
 
 		//#TODO Collision states check
-		setComplete(collisions.isComplete());
+		setComplete(collisions.isFlowKill());
 
 		Body leftCollisionBody = collisions.getLeftBody();
 		Body rightCollisionBody = collisions.getRightBody();
 
 		if ((leftCollisionBody != null && leftCollisionBody.getUserData() == owl) || (rightCollisionBody != null && rightCollisionBody.getUserData() == owl)) {
 			System.out.println("VICTORY");
-			listener.exitScreen(this, EXIT_GM_LE);
+			setComplete(true);
 		}
 
 		// Physics tiem
@@ -373,6 +373,11 @@ public class GameModeController extends WorldController {
 
 		// If we use sound, we must remember this.
 		SoundController.getInstance().update();
+
+		if (isComplete()) {
+			System.out.println("GG");
+			listener.exitScreen(this, EXIT_GM_LE);
+		}
 	}
 
 	public void draw(float delta){
@@ -401,6 +406,10 @@ public class GameModeController extends WorldController {
 			}
 
 			canvas.endDebug();
+			canvas.begin();
+			// text
+			canvas.drawTextStandard("FPS: " + 1f/delta, 10.0f, 100.0f);
+			canvas.end();
 			sloth.drawForces(canvas, camTrans);
 		}
 
