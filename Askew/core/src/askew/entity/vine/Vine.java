@@ -109,22 +109,17 @@ public class Vine extends ComplexObstacle {
 	 */
 	public Vine(float x0, float y0, float x1, float y1, float lwidth, float lheight, boolean pinned, float angle, float omega) {
 		super(x0,y0);
-		System.out.println(lheight);
 		pin = pinned;
 		setName(VINE_NAME);
 
-		//System.out.println("x0 "+x0+" y0 "+y0);
-		//System.out.println("x1 "+x1+" y1 "+y1);;
 
 		this.BASIC_DENSITY = GlobalConfiguration.getInstance().getAsFloat("vineDensity");
 
-		//System.out.println("lwidth "+lwidth+" lheight "+lheight);
-		
+
 		planksize = new Vector2(lwidth,lheight);
 		linksize = lheight;
 
-		//System.out.println("linksize before "+linksize);
-		
+
 	    // Compute the bridge length
 		dimension = new Vector2(x1-x0,y1-y0);
 	    float length = dimension.len();
@@ -132,8 +127,7 @@ public class Vine extends ComplexObstacle {
 	    norm.nor();
 	    norm.rotate(angle);
 
-	    //System.out.println("length "+length);
-	    
+
 	    // If too small, only make one plank.
 	    int nLinks = (int)(length / linksize);
 	    if (nLinks <= 1) {
@@ -145,12 +139,9 @@ public class Vine extends ComplexObstacle {
 	        spacing /= (nLinks-1);
 	    }
 
-	    //System.out.println("links "+nLinks);
-	    //System.out.println("linksize "+linksize);
 	    	    
 	    // Create the planks
 		planksize.y = lheight;
-	    System.out.println(planksize);
 	    Vector2 pos = new Vector2();
 	    for (int ii = 0; ii < nLinks; ii++) {
 	        float t = ii*(linksize+spacing) + linksize/2.0f;

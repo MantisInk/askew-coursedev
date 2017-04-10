@@ -85,15 +85,6 @@
       }
     },
     {
-      "CLASSNAME": "askew.entity.ghost.GhostModel",
-      "INSTANCE": {
-        "x": 14.9375,
-        "y": 11.8125,
-        "patroldx": 16.9375,
-        "patroldy": 13.8125
-      }
-    },
-    {
       "CLASSNAME": "askew.entity.vine.Vine",
       "INSTANCE": {
         "pin": false,

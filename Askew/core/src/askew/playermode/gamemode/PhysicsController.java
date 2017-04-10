@@ -124,10 +124,19 @@ public class PhysicsController implements ContactListener {
         Object bd1 = body1.getUserData();
         Object bd2 = body2.getUserData();
 
-        if (fd1 != null && fd1.equals("sloth left hand") && body2 == leftBody && !sloth.isLeftGrab()) leftBody = null;
-        if (fd2 != null && fd2.equals("sloth left hand") && body1 == leftBody && !sloth.isLeftGrab()) leftBody = null;
-        if (fd1 != null && fd1.equals("sloth right hand") && body2 == rightBody && !sloth.isRightGrab()) rightBody = null;
-        if (fd2 != null && fd2.equals("sloth right hand") && body1 == rightBody && !sloth.isRightGrab()) rightBody = null;
+        if (fd1 != null && fd1.equals("sloth left hand") && body2 == leftBody) {
+            leftBody = null;
+
+        }
+        if (fd2 != null && fd2.equals("sloth left hand") && body1 == leftBody) {
+            leftBody = null;
+        }
+        if (fd1 != null && fd1.equals("sloth right hand") && body2 == rightBody) {
+            rightBody = null;
+        }
+        if (fd2 != null && fd2.equals("sloth right hand") && body1 == rightBody) {
+            rightBody = null;
+        }
     }
 
     // only for forcing release on reset
