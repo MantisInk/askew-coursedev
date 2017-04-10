@@ -126,7 +126,7 @@ public class GameCanvas {
 		background = new Texture(Gdx.files.internal
 				("texture/background/background.png"));
 		font = new BitmapFont();
-		font.setColor(new Color(255,0,0,255));
+		font.setColor(new Color(255,0,100,255));
 	}
 		
     /**

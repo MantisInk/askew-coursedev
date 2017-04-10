@@ -1,6 +1,7 @@
 package askew.entity;
 
 import askew.MantisAssetManager;
+import askew.entity.ghost.GhostModel;
 import askew.entity.owl.OwlModel;
 import askew.entity.sloth.SlothModel;
 import askew.entity.tree.StiffBranch;
@@ -102,6 +103,7 @@ public class JsonEntityFactory {
         WallModel wall;
         float x = instance.get("x").getAsFloat();
         float y = instance.get("y").getAsFloat();
+        boolean thorn = instance.get("thorn").getAsBoolean();
         List<Float> points = new ArrayList<>();
         instance.get("points").getAsJsonArray().forEach(pt->points.add(pt.getAsFloat()));
         Float[] arrayPoints = points.toArray(new Float[points.size()]);
@@ -109,9 +111,21 @@ public class JsonEntityFactory {
         for (int i = 0; i < arrayPoints.length; i++) {
             copy[i] = arrayPoints[i];
         }
-        wall = new WallModel(x, y, copy);
+        wall = new WallModel(x, y, copy, thorn);
         wall.setDrawScale(scale.x, scale.y);
         wall.setTextures(manager);
         return wall;
+    }
+
+    public static GhostModel createGhost(MantisAssetManager manager, JsonObject instance, Vector2 scale) {
+        GhostModel ghost;
+        float x = instance.get("x").getAsFloat();
+        float y = instance.get("y").getAsFloat();
+        float patroldx = instance.get("patroldx").getAsFloat();
+        float patroldy = instance.get("patroldy").getAsFloat();
+        ghost = new GhostModel(x, y, patroldx, patroldy);
+        ghost.setDrawScale(scale.x, scale.y);
+        ghost.setTextures(manager);
+        return ghost;
     }
 }

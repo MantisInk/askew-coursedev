@@ -12,6 +12,7 @@ package askew.playermode.leveleditor;
 
 import askew.*;
 import askew.entity.Entity;
+import askew.entity.ghost.GhostModel;
 import askew.entity.owl.OwlModel;
 import askew.entity.wall.WallModel;
 import askew.util.json.JSONLoaderSaver;
@@ -64,6 +65,8 @@ public class LevelEditorController extends WorldController {
 	Affine2 camTrans;
 	float cxCamera;
 	float cyCamera;
+	float adjustedMouseX;
+	float adjustedMouseY;
 
 
 	@Getter
@@ -90,7 +93,8 @@ public class LevelEditorController extends WorldController {
 			".OwlModel",
 			".WallModel",
 			".Tree",
-			".OwlModel"
+			".OwlModel",
+			".GhostModel"
 	};
 
 	private boolean prompting;
@@ -282,8 +286,12 @@ public class LevelEditorController extends WorldController {
 				promptTemplate(owl);
 				break;
 			case ".WallModel":
-				WallModel wall = new WallModel(x,y,new float[] {0,0,0f,1f,1f,1f,1f,0f});
+				WallModel wall = new WallModel(x,y,new float[] {0,0,0f,1f,1f,1f,1f,0f}, false);
 				promptTemplate(wall);
+				break;
+			case ".GhostModel":
+				GhostModel ghost = new GhostModel(x,y,x+2,y+2);
+				promptTemplate(ghost);
 				break;
 			default:
 				System.err.println("UNKNOWN ENT");
@@ -368,8 +376,8 @@ public class LevelEditorController extends WorldController {
 		// Allow access to mouse coordinates for multiple inputs
 		float mouseX = InputController.getInstance().getCrossHair().x;
 		float mouseY = InputController.getInstance().getCrossHair().y;
-		float adjustedMouseX = mouseX - (cxCamera + canvas.getWidth()/2) / scale.x;
-		float adjustedMouseY = mouseY - (cyCamera + canvas.getHeight()/2) / scale.y;
+		adjustedMouseX = mouseX - (cxCamera + canvas.getWidth()/2) / scale.x;
+		adjustedMouseY = mouseY - (cyCamera + canvas.getHeight()/2) / scale.y;
 
 
 		// Check for pan
@@ -575,7 +583,8 @@ public class LevelEditorController extends WorldController {
 			}
 		}
 
-		canvas.drawTextStandard(cxCamera / scale.x + "," + cyCamera / scale.y, 10.0f, 120.0f);
+		canvas.drawTextStandard("MOUSE: " + adjustedMouseX + " , " + adjustedMouseY, 10.0f, 140.0f);
+		canvas.drawTextStandard(cxCamera / scale.x + " , " + cyCamera / scale.y, 10.0f, 120.0f);
 		canvas.drawTextStandard("Level: " + currentLevel, 10.0f, 100.0f);
 		canvas.drawTextStandard("Creating: " + creationOptions[tentativeEntityIndex], 10.0f, 80.0f);
 		if (tentativeEntityIndex != entityIndex) {
@@ -606,7 +615,7 @@ public class LevelEditorController extends WorldController {
 				entry.remove();
 			} else {
 				// Note that update is called last!
-				obj.update(dt);
+//				obj.update(dt);
 			}
 		}
 	}
