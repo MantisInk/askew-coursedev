@@ -51,6 +51,7 @@ public abstract class Obstacle extends Entity {
 	/** Drawing scale to convert physics units to pixels */
 	protected transient Vector2 drawScale;
 
+	protected transient Vector2 objectScale;
 	/// Track garbage collection status
 	/** Whether the object should be removed from the world on next pass */
 	private transient boolean toRemove;
@@ -65,9 +66,9 @@ public abstract class Obstacle extends Entity {
 	/** A cache value for when the user wants to access the center of mass */
 	protected transient Vector2 centroidCache = new Vector2();
 	/** A cache value for when the user wants to access the drawing scale */
-	protected transient Vector2 scaleCache = new Vector2();
+	protected transient Vector2 drawScaleCache = new Vector2();
 
-
+	protected transient Vector2 objectScaleCache = new Vector2();
 	/// BodyDef Methods
 	/**
 	 * Returns the body type for Box2D physics
@@ -850,8 +851,8 @@ public abstract class Obstacle extends Entity {
      * @return the drawing scale for this physics object
      */
     public Vector2 getDrawScale() { 
-    	scaleCache.set(drawScale);
-    	return scaleCache; 
+    	drawScaleCache.set(drawScale);
+    	return drawScaleCache;
     }
     
     /**
@@ -886,7 +887,20 @@ public abstract class Obstacle extends Entity {
     public void setDrawScale(float x, float y) {
     	drawScale.set(x,y);
     }
-    	
+
+	public Vector2 getObjectScale() {
+		objectScaleCache.set(objectScale);
+		return objectScaleCache;
+	}
+	public void setObjectScale(Vector2 value) {
+		setObjectScale(value.x,value.y);
+	}
+
+	public void setObjectScale(float x, float y) {
+		objectScale.set(x,y);
+	}
+
+
 	/// DEBUG METHODS
 	/**
      * Returns the physics object tag.
@@ -947,6 +961,7 @@ public abstract class Obstacle extends Entity {
 		
 		// Set the default drawing scale
 		drawScale = new Vector2(1,1);
+		objectScale = new Vector2(1,1);
 	}
 
 	/// Abstract Methods

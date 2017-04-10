@@ -88,7 +88,7 @@ public class GDXRoot extends Game implements ScreenListener {
 		controllers[1] = new GameModeController();
 		controllers[2] = new LevelEditorController();
 		for(int ii = 0; ii < controllers.length; ii++) {
-			controllers[ii].setScale(canvas);
+			controllers[ii].setWorldScale(canvas);
 			controllers[ii].preLoadContent(manager);
 		}
 

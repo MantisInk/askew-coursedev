@@ -210,4 +210,27 @@ public class BoxObstacle extends SimpleObstacle {
 	public void setTextures(MantisAssetManager manager) {
 		// Do nothing
 	}
+
+	/**
+	 * Draws the physics object.
+	 *
+	 * @param canvas Drawing context
+	 */
+	public void draw(GameCanvas canvas) {
+		draw(canvas, Color.WHITE);
+	}
+
+	/**
+	 * Draws the physics object with a tint
+	 *
+	 * @param canvas Drawing context
+	 */
+	public void draw(GameCanvas canvas, Color tint) {
+		if (texture != null) {
+			canvas.draw(texture,tint,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.x,getAngle(),
+					(1.0f/texture.getRegionWidth()) *   getWidth() * getDrawScale().x * objectScale.x,
+					(1.0f/texture.getRegionHeight()  * getHeight()* getDrawScale().y * objectScale.y));
+		}
+	}
+
 }

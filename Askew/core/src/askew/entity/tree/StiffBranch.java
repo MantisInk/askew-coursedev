@@ -79,17 +79,20 @@ public class StiffBranch extends ComplexObstacle {
 	 * @param lheight	The bridge thickness
 	 */
 	public StiffBranch(float x, float y, float width, float lwidth, float lheight, Vector2 scale) {
-		this(x, y, x, y+width, lwidth*scale.y/32f, lheight*scale.y/32f, 0f);
+		this(x, y, x, y+width, lwidth, lheight, 0f);
 		this.stiffLen = width;
 		this.x = x;
 		this.y = y;
+		this.setObjectScale(scale);
+
 	}
 
 	public StiffBranch(float x, float y, float width, float lwidth, float lheight, Vector2 scale, float angle) {
-		this(x, y, x, y+width, lwidth*scale.y/32f, lheight*scale.y/32f, angle);
+		this(x, y, x, y+width, lwidth, lheight, angle);
 		this.stiffLen = width;
 		this.x = x;
 		this.y = y;
+		this.setObjectScale(scale);
 	}
 
 	/**

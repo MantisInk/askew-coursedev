@@ -30,7 +30,7 @@ public class JsonEntityFactory {
         float numlinks = instance.get("numLinks").getAsFloat();
         Texture managedTexture = manager.get(Vine.VINE_TEXTURE, Texture.class);
         TextureRegion vineTexture = new TextureRegion(managedTexture);
-		vine = new Vine(x, y, numlinks, vineTexture.getRegionHeight() / scale.x, vineTexture.getRegionHeight() / scale.y, scale);
+		vine = new Vine(x, y, numlinks, .25f, 1.0f, scale);
 		vine.setDrawScale(scale.x, scale.y);
 		vine.setTextures(manager);
         return vine;

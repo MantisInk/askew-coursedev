@@ -209,7 +209,7 @@ public abstract class WorldController implements Screen {
 	/** The boundary of the world */
 	protected Rectangle bounds;
 	/** The world scale */
-	protected Vector2 scale;
+	protected Vector2 worldScale;
 	
 	/** Whether or not this is an active controller */
 	private boolean active;
@@ -324,8 +324,8 @@ public abstract class WorldController implements Screen {
 	 */
 	public void setCanvas(GameCanvas canvas) {
 		this.canvas = canvas;
-		this.scale.x = 1.25f * canvas.getWidth()/bounds.getWidth();
-		this.scale.y = 1.25f * canvas.getHeight()/bounds.getHeight();
+		this.worldScale.x = canvas.getWidth()/bounds.getWidth();
+		this.worldScale.y = canvas.getHeight()/bounds.getHeight();
 		//System.out.println("SETCANVAS SET SCALE");
 	}
 	
@@ -372,7 +372,7 @@ public abstract class WorldController implements Screen {
 		assets = new Array<String>();
 		world = new World(gravity,false);
 		this.bounds = new Rectangle(bounds);
-		this.scale = new Vector2(1,1);
+		this.worldScale = new Vector2(1,1);
 		complete = false;
 		failed = false;
 		debug  = false;
@@ -394,7 +394,7 @@ public abstract class WorldController implements Screen {
 		objects = null;
 		addQueue = null;
 		bounds = null;
-		scale  = null;
+		worldScale = null;
 		world  = null;
 		canvas = null;
 	}
@@ -460,7 +460,7 @@ public abstract class WorldController implements Screen {
 	public boolean preUpdate(float dt) {
 		InputController input = InputController.getInstance();
 
-		input.readInput(bounds, scale);
+		input.readInput(bounds, worldScale);
 		if (listener == null) {
 			return true;
 		}
@@ -616,11 +616,11 @@ public abstract class WorldController implements Screen {
 		// IGNORE FOR NOW
 	}
 
-	public void setScale(GameCanvas canvas) {
+	public void setWorldScale(GameCanvas canvas) {
 		//System.out.println("IN SET SCALE");
 		//System.out.println("pre set ("+scale.x+","+scale.y+")");
-		this.scale.x = canvas.getWidth()/bounds.getWidth()/32f;
-		this.scale.y = canvas.getHeight()/bounds.getHeight()/32f;
+		this.worldScale.x = canvas.getWidth()/bounds.getWidth();
+		this.worldScale.y = canvas.getHeight()/bounds.getHeight();
 		//System.out.println("post set ("+scale.x+","+scale.y+")");
 	}
 

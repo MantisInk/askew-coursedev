@@ -117,6 +117,9 @@ public class InputController {
 	/** Whether the left hand is grabbing. */
 	private boolean rightGrabPressed;
 
+	private boolean leftStickPressed;
+	private boolean rightStickPressed;
+
 	/** How much did left arm move horizontally? */
 	private float leftHorizontal;
 	/** How much did left arm move move vertically? */
@@ -208,6 +211,8 @@ public class InputController {
 		return rightGrabPressed;
 	}
 
+	public boolean getLeftStickPressed() {return leftStickPressed;}
+	public boolean getRightStickPressed() {return  rightStickPressed;}
 
 	/**
 	 * Returns the current position of the crosshairs on the screen.
@@ -335,7 +340,6 @@ public class InputController {
 		rightButtonPressed = xbox.getB();
 		bottomButtonPressed = xbox.getA();
 		topButtonPressed = xbox.getY();
-
 		topDPadPressed = xbox.getDPadUp();
 		rightDPadPressed = xbox.getDPadRight();
 		leftDPadPressed = xbox.getDPadLeft();
@@ -346,6 +350,9 @@ public class InputController {
 		leftGrabPressed = xbox.getLB();
 		//rightGrabPressed = xbox.getRightTrigger();
 		rightGrabPressed = xbox.getRB();
+
+		leftStickPressed = xbox.getL3();
+		rightStickPressed = xbox.getR3();
 
 
 		//Get positions of joysticks/arms
