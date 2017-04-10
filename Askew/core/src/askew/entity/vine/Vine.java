@@ -68,8 +68,8 @@ public class Vine extends ComplexObstacle {
 	 * @param x  		The x position of the left anchor
 	 * @param y  		The y position of the left anchor
 	 * @param length		The length of the bridge
-	 * @param lwidth	The plank length
-	 * @param lheight	The bridge thickness
+	 * @param lwidth	The vine piece thickness
+	 * @param lheight	The vine piece length
 	 */
 	public Vine(float x, float y, float length, float lwidth, float lheight, Vector2 scale) {
 		this(x, y, x, y-length, lwidth*scale.x/32f, lheight*scale.y/32f, false, 5f, -450f);
@@ -92,8 +92,8 @@ public class Vine extends ComplexObstacle {
 	 * @param y0  		The y position of the left anchor
 	 * @param x1  		The x position of the right anchor
 	 * @param y1  		The y position of the right anchor
-	 * @param lwidth	The plank length
-	 * @param lheight	The bridge thickness
+	 * @param lwidth	The vine piece thickness
+	 * @param lheight	The vine piece length
 	 */
 	public Vine(float x0, float y0, float x1, float y1, float lwidth, float lheight, boolean pinned, float angle, float omega) {
 		super(x0,y0);

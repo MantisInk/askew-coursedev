@@ -24,60 +24,47 @@ import com.badlogic.gdx.physics.box2d.joints.*;
 import askew.entity.obstacle.*;
 
 /**
- * A bridge with planks connected by revolute joints.
+ * A tree trunk with planks connected by weld joints.
  *
  * Note that this class returns to static loading.  That is because there are
  * no other subclasses that we might loop through.
  */
 public class Trunk extends ComplexObstacle {
-	/** The debug name for the entire obstacle */
-	private static final String VINE_NAME = "plank";
-	/** The debug name for each plank */
-	private static final String PLANK_NAME = "driftwood";
-	/** The debug name for each anchor pin */
-	private static final String BRIDGE_PIN_NAME = "pin";
-	/** The radius of each anchor pin */
-	private static final float BRIDGE_PIN_RADIUS = 0.1f;
-	/** The density of each plank in the bridge */
-	private static final float BASIC_DENSITY = 13f;
 
-	private transient int nLinks;
-	private float x,y,stiffLen;
-	private transient float width,height;
+	private static final String VINE_NAME = "plank";			/** The debug name for the entire obstacle */
+	private static final String PLANK_NAME = "driftwood";		/** The debug name for each plank */
+	private static final String TRUNK_PIN_NAME = "pin";			/** The debug name for each anchor pin */
+	private static final float TRUNK_PIN_RADIUS = 0.1f;			/** The radius of each anchor pin */
+	private static final float BASIC_DENSITY = 13f;				/** The density of each plank in the bridge */
 
-	public transient Vector2 final_norm = null;
+	private float x,y,stiffLen; 								/** starting coords of bottom anchor and length for branch */
+	public transient Vector2 final_norm = null;					/** coords for starting branch off this trunk */
 
 	// Invisible anchor objects
-	/** The left side of the bridge */
-	private transient WheelObstacle start = null;
-	private transient WheelObstacle finish = null;
-	/** Set damping constant for joint rotation in vines */
-	public transient static final float DAMPING_ROTATION = 5f;
+	private transient WheelObstacle start = null;				/** The bottom of the trunk */
+	private transient WheelObstacle finish = null;				/** The top of the trunk */
+	public transient static final float DAMPING_ROTATION = 5f;	/** Set damping constant for joint rotation in vines */
 
 	// Dimension information
-	/** The size of the entire bridge */
-	protected transient Vector2 dimension;
-	/** The size of a single plank */
-	protected transient Vector2 planksize;
-	/* The length of each link */
-	protected transient float linksize = 1.0f;
-	/** The spacing between each link */
-	// TODO: Fix this from being public (refactor artifact)
-	private transient float spacing = 0.0f;
+	protected transient Vector2 dimension;						/** The size of the entire bridge */
+	protected transient Vector2 planksize;						/** The size of a single plank */
+	protected transient float linksize = 1.0f;					/** The length of each link */
+	// TODO: Fix this from being public (refactor artifact) ?
+	private transient float spacing = 0.0f;						/** The spacing between each link */
 
-	protected float numLinks;
+	protected float numLinks;									// param for json constructor
 
 	/**
-	 * Creates a new rope bridge at the given position.
+	 * Creates a new tree trunk at the given position.
 	 *
-	 * This bridge is straight horizontal. The coordinates given are the
-	 * position of the leftmost anchor.
+	 * This trunk is default vertical, but you can set an angle in degrees.
+	 * The top planks designated by stiffLen will not be created as part of the trunk.
 	 *
 	 * @param x  		The x position of the left anchor
 	 * @param y  		The y position of the left anchor
 	 * @param length	The length of the trunk
-	 * @param lwidth	The plank length
-	 * @param lheight	The bridge thickness
+	 * @param lwidth	The plank thickness
+	 * @param lheight	The plank length
 	 *
 	 *
 	 */
@@ -96,18 +83,18 @@ public class Trunk extends ComplexObstacle {
 	}
 
 	/**
-	 * Creates a new rope bridge with the given anchors.
+	 * Creates a new tree trunk with the given anchors and other params.
 	 *
 	 * @param x0  		The x position of the left anchor
 	 * @param y0  		The y position of the left anchor
 	 * @param x1  		The x position of the right anchor
 	 * @param y1  		The y position of the right anchor
-	 * @param lwidth	The plank length
-	 * @param lheight	The bridge thickness
+	 * @param lwidth	The plank thickness
+	 * @param lheight	The plank length
 	 */
 	public Trunk(float x0, float y0, float x1, float y1, float lwidth, float lheight, float stiffLen, float angle) {
 		super(x0,y0);
-		this.x = x0;	this.y = y0;	this.stiffLen = stiffLen;	this.width = lwidth; this.height = lheight;
+		this.x = x0;	this.y = y0;	this.stiffLen = stiffLen;
 		setName(VINE_NAME);
 
 		planksize = new Vector2(lwidth,lheight);
@@ -121,7 +108,7 @@ public class Trunk extends ComplexObstacle {
 		norm.rotate(angle);
 
 		// If too small, only make one plank.
-		nLinks = (int)(length / linksize);
+		int nLinks = (int)(length / linksize);
 		if (nLinks <= 1) {
 			nLinks = 1;
 			linksize = length;
@@ -164,13 +151,13 @@ public class Trunk extends ComplexObstacle {
 		Vector2 anchor1 = new Vector2();
 		Vector2 anchor2 = new Vector2(0, -linksize / 2);
 
-		// Create the leftmost anchor
+		// Create the bottom anchor
 		// Normally, we would do this in constructor, but we have
 		// reasons to not add the anchor to the bodies list.
 		Vector2 pos = bodies.get(0).getPosition();
 		pos.y -= linksize / 2;
-		start = new WheelObstacle(pos.x,pos.y,BRIDGE_PIN_RADIUS);
-		start.setName(BRIDGE_PIN_NAME+0);
+		start = new WheelObstacle(pos.x,pos.y,TRUNK_PIN_RADIUS);
+		start.setName(TRUNK_PIN_NAME+0);
 		start.setDensity(BASIC_DENSITY);
 		start.setBodyType(BodyDef.BodyType.StaticBody);
 		start.activatePhysics(world);
@@ -204,8 +191,7 @@ public class Trunk extends ComplexObstacle {
 		// Link the planks together
 		anchor1.y = linksize / 2;
 		for (int ii = 0; ii < bodies.size-1; ii++) {
-			//#region INSERT CODE HERE
-			// Look at what we did above and join the planks
+			// join the planks
 			jointDef = new WeldJointDef();
 			jointDef.bodyA = bodies.get(ii).getBody();
 			jointDef.bodyB = bodies.get(ii+1).getBody();
@@ -214,16 +200,15 @@ public class Trunk extends ComplexObstacle {
 			jointDef.collideConnected = false;
 			joint = world.createJoint(jointDef);
 			joints.add(joint);
-			//#endregion
 		}
 
-		// Create the rightmost anchor
+		// Create the top anchor
 		Obstacle last = bodies.get(bodies.size-1);
 
 		pos = last.getPosition();
 		pos.y += linksize / 2;
-		finish = new WheelObstacle(pos.x,pos.y,BRIDGE_PIN_RADIUS);
-		finish.setName(BRIDGE_PIN_NAME+1);
+		finish = new WheelObstacle(pos.x,pos.y,TRUNK_PIN_RADIUS);
+		finish.setName(TRUNK_PIN_NAME+1);
 		finish.setDensity(BASIC_DENSITY);
 		finish.setBodyType(BodyDef.BodyType.StaticBody);
 		finish.activatePhysics(world);
@@ -239,8 +224,6 @@ public class Trunk extends ComplexObstacle {
 
 		return true;
 	}
-
-	public int getnLinks() {return nLinks;}
 
 	public float getLinksize() {return linksize;}
 
