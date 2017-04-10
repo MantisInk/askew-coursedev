@@ -65,6 +65,8 @@ public class LevelEditorController extends WorldController {
 	float cxCamera;
 	float cyCamera;
 
+	protected Vector2 oneScale;
+
 
 	@Getter
 	private String currentLevel;
@@ -166,6 +168,8 @@ public class LevelEditorController extends WorldController {
 		showHelp = true;
 		shouldDrawGrid = true;
 		camTrans = new Affine2();
+		oneScale = new Vector2(1,1);
+
 	}
 
 	/**
@@ -259,19 +263,19 @@ public class LevelEditorController extends WorldController {
 				promptTemplate(sTemplate);
 				break;
 			case ".Vine":
-				Vine vTemplate = new Vine(x,y,5.0f,0.25f,1.0f,scale);
+				Vine vTemplate = new Vine(x,y,5.0f,0.25f,1.0f,oneScale);
 				promptTemplate(vTemplate);
 				break;
 			case ".Trunk":
-				Trunk tTemplate = new Trunk(x,y, 5.0f, 0.25f, 1.0f, 3.0f,scale);
+				Trunk tTemplate = new Trunk(x,y, 5.0f, 0.25f, 1.0f, 3.0f,oneScale);
 				promptTemplate(tTemplate);
 				break;
 			case ".StiffBranch":
-				StiffBranch sb = new StiffBranch(x,y, 3.0f, 0.25f, 1.0f,scale);
+				StiffBranch sb = new StiffBranch(x,y, 3.0f, 0.25f, 1.0f,oneScale);
 				promptTemplate(sb);
 				break;
 			case ".Tree":
-				Tree tr = new Tree(x,y,5f, 3f, 0.25f, 1.0f, scale);
+				Tree tr = new Tree(x,y,5f, 3f, 0.25f, 1.0f, oneScale);
 				promptTemplate(tr);
 				break;
 			case ".OwlModel":
@@ -365,8 +369,8 @@ public class LevelEditorController extends WorldController {
 		// Allow access to mouse coordinates for multiple inputs
 		float mouseX = InputController.getInstance().getCrossHair().x;
 		float mouseY = InputController.getInstance().getCrossHair().y;
-		float adjustedMouseX = mouseX - (cxCamera + canvas.getWidth()/2) / scale.x;
-		float adjustedMouseY = mouseY - (cyCamera + canvas.getHeight()/2) / scale.y;
+		float adjustedMouseX = mouseX - (cxCamera + canvas.getWidth()/2) / worldScale.x;
+		float adjustedMouseY = mouseY - (cyCamera + canvas.getHeight()/2) / worldScale.y;
 
 
 		// Check for pan
@@ -378,10 +382,10 @@ public class LevelEditorController extends WorldController {
 			// down
 			cyCamera+= 10;
 		}
-		if (mouseX > (canvas.getWidth() / scale.x) - 1) {
+		if (mouseX > (canvas.getWidth() / worldScale.x) - 1) {
 			cxCamera-= 10;
 		}
-		if (mouseY > (canvas.getHeight() / scale.y) - 1) {
+		if (mouseY > (canvas.getHeight() / worldScale.y) - 1) {
 			cyCamera-= 10;
 		}
 
@@ -572,7 +576,7 @@ public class LevelEditorController extends WorldController {
 			}
 		}
 
-		canvas.drawTextStandard(cxCamera / scale.x + "," + cyCamera / scale.y, 10.0f, 120.0f);
+		canvas.drawTextStandard(cxCamera / worldScale.x + "," + cyCamera / worldScale.y, 10.0f, 120.0f);
 		canvas.drawTextStandard("Level: " + currentLevel, 10.0f, 100.0f);
 		canvas.drawTextStandard("Creating: " + creationOptions[tentativeEntityIndex], 10.0f, 80.0f);
 		if (tentativeEntityIndex != entityIndex) {
@@ -617,8 +621,8 @@ public class LevelEditorController extends WorldController {
 	public void setCanvas(GameCanvas canvas) {
 		// unscale
 		this.canvas = canvas;
-		this.scale.x = 1.0f * canvas.getWidth()/bounds.getWidth();
-		this.scale.y = 1.0f * canvas.getHeight()/bounds.getHeight();
-		jsonLoaderSaver.setScale(this.scale);
+		this.worldScale.x = 1.0f * canvas.getWidth()/bounds.getWidth();
+		this.worldScale.y = 1.0f * canvas.getHeight()/bounds.getHeight();
+		jsonLoaderSaver.setScale(this.worldScale);
 	}
 }

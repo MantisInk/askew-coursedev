@@ -1,6 +1,7 @@
 package askew.entity;
 
 import askew.GameCanvas;
+import askew.MantisAssetManager;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.math.Vector2;
 
@@ -13,7 +14,7 @@ public abstract class BackgroundEntity extends Entity{
     protected transient float zdepth;
 
     @Override
-    public void setTextures(AssetManager manager) {
+    public void setTextures(MantisAssetManager manager) {
 
     }
 

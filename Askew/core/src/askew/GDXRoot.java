@@ -18,7 +18,6 @@ import askew.playermode.WorldController;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -89,7 +88,7 @@ public class GDXRoot extends Game implements ScreenListener {
 		controllers[1] = new GameModeController();
 		controllers[2] = new LevelEditorController();
 		for(int ii = 0; ii < controllers.length; ii++) {
-			controllers[ii].setScale(canvas);
+			controllers[ii].setWorldScale(canvas);
 			controllers[ii].preLoadContent(manager);
 		}
 

@@ -81,17 +81,20 @@ public class Vine extends ComplexObstacle {
 	 * @param lheight	The bridge thickness
 	 */
 	public Vine(float x, float y, float length, float lwidth, float lheight, Vector2 scale) {
-		this(x, y, x, y-length, lwidth*scale.x/32f, lheight*scale.y/32f, false, 5f, -450f);
+		this(x, y, x, y-length, lwidth, lheight, false, 5f, -450f);
 		numLinks = length;
 		this.x = x;
 		this.y = y;
+		this.setObjectScale(scale);
+
 	}
 
 	public Vine(float x, float y, float length, float lwidth, float lheight, Vector2 scale, boolean pinned, float angle, float omega) {
-		this(x, y, x+length, y, lwidth*scale.x/32f, lheight*scale.y/32f, pinned, angle, omega);
+		this(x, y, x, y-length, lwidth, lheight, pinned, angle, omega);
 		numLinks = length;
 		this.x = x;
 		this.y = y;
+		this.setObjectScale(scale);
 	}
 
     /**
