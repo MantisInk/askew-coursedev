@@ -171,6 +171,9 @@ public class LevelEditorController extends WorldController {
 		shouldDrawGrid = true;
 		camTrans = new Affine2();
 	}
+	public void setLevel(String levelName) {
+		currentLevel = levelName;
+	}
 
 	/**
 	 * Resets the status of the game so that we can play again.
@@ -239,7 +242,7 @@ public class LevelEditorController extends WorldController {
 		InputController input = InputController.getInstance();
 
 		if (input.didLeftButtonPress()) {
-			System.out.println("GE");
+			System.out.println("GM");
 			listener.exitScreen(this, EXIT_LE_GM);
 			return false;
 		} else if (input.didTopButtonPress()) {
@@ -266,7 +269,7 @@ public class LevelEditorController extends WorldController {
 				Vine vTemplate = new Vine(x,y,5.0f,0.25f,1.0f,scale);
 				promptTemplate(vTemplate);
 				break;
-			case ".trunk":
+			case ".Trunk":
 				Trunk tTemplate = new Trunk(x,y, 5.0f, 0.25f, 1.0f, 3.0f,scale);
 				promptTemplate(tTemplate);
 				break;
@@ -275,7 +278,7 @@ public class LevelEditorController extends WorldController {
 				promptTemplate(sb);
 				break;
 			case ".Tree":
-				Tree tr = new Tree(new Vector2(x,y), 5f, 3f, 0.25f, 1.0f, scale);
+				Tree tr = new Tree(x,y,5f, 3f, 0.25f, 1.0f, scale);
 				promptTemplate(tr);
 				break;
 			case ".OwlModel":
@@ -550,7 +553,7 @@ public class LevelEditorController extends WorldController {
 
 	@Override
 	public void draw(float delta) {
-		canvas.clear();
+		canvas.clear("LE");
 
 		// Translate camera to cx, cy
 		camTrans.setToTranslation(cxCamera, cyCamera);

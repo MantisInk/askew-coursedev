@@ -41,28 +41,29 @@ public class Trunk extends ComplexObstacle {
 	/** The density of each plank in the bridge */
 	private static final float BASIC_DENSITY = 13f;
 
-	private int nLinks;
-	private float x,y,stiffLen,width,height;
+	private transient int nLinks;
+	private float x,y,stiffLen;
+	private transient float width,height;
 
-	Vector2 final_norm = null;
+	public transient Vector2 final_norm = null;
 
 	// Invisible anchor objects
 	/** The left side of the bridge */
-	private WheelObstacle start = null;
-	private WheelObstacle finish = null;
+	private transient WheelObstacle start = null;
+	private transient WheelObstacle finish = null;
 	/** Set damping constant for joint rotation in vines */
-	public static final float DAMPING_ROTATION = 5f;
+	public transient static final float DAMPING_ROTATION = 5f;
 
 	// Dimension information
 	/** The size of the entire bridge */
-	protected Vector2 dimension;
+	protected transient Vector2 dimension;
 	/** The size of a single plank */
-	protected Vector2 planksize;
+	protected transient Vector2 planksize;
 	/* The length of each link */
-	protected float linksize = 1.0f;
+	protected transient float linksize = 1.0f;
 	/** The spacing between each link */
 	// TODO: Fix this from being public (refactor artifact)
-	private float spacing = 0.0f;
+	private transient float spacing = 0.0f;
 
 	protected float numLinks;
 
@@ -82,14 +83,14 @@ public class Trunk extends ComplexObstacle {
 	 */
 	public Trunk(float x, float y, float length, float lwidth, float lheight, float stiffLen, Vector2 scale) {
 		this(x, y, x, y+length, lwidth*scale.y/32f, lheight*scale.y/32f, stiffLen, 0f);
-		numLinks = width;
+		numLinks = length;
 		this.x = x;
 		this.y = y;
 	}
 
 	public Trunk(float x, float y, float length, float lwidth, float lheight, float stiffLen, Vector2 scale, float angle) {
 		this(x, y, x, y+length, lwidth*scale.y/32f, lheight*scale.y/32f, stiffLen, angle);
-		numLinks = width;
+		numLinks = length;
 		this.x = x;
 		this.y = y;
 	}
@@ -144,7 +145,7 @@ public class Trunk extends ComplexObstacle {
 			bodies.add(plank);
 		}
 		final_norm = new Vector2(pos);
-		final_norm.add(x0,y0);
+		final_norm.add(0,linksize/2);
 	}
 
 	/**
@@ -270,7 +271,7 @@ public class Trunk extends ComplexObstacle {
 
 	@Override
 	public void setTextures(MantisAssetManager manager) {
-		Texture managedTexture = manager.get("./texture/branch/branch.png", Texture.class);
+		Texture managedTexture = manager.get("texture/branch/branch.png", Texture.class);
 		TextureRegion regionTexture = new TextureRegion(managedTexture);
 		for(Obstacle body : bodies) {
 			((SimpleObstacle)body).setTexture(regionTexture);
