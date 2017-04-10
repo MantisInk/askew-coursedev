@@ -62,7 +62,7 @@ public class StiffBranch extends ComplexObstacle {
 	/** The spacing between each link */
 	protected transient float spacing = 0.0f;
 
-	private float numLinks;
+	private float stiffLen;
 	private float x;
 	private float y;
 
@@ -80,14 +80,14 @@ public class StiffBranch extends ComplexObstacle {
 	 */
 	public StiffBranch(float x, float y, float width, float lwidth, float lheight, Vector2 scale) {
 		this(x, y, x, y+width, lwidth*scale.y/32f, lheight*scale.y/32f, 0f);
-		this.numLinks = width;
+		this.stiffLen = width;
 		this.x = x;
 		this.y = y;
 	}
 
 	public StiffBranch(float x, float y, float width, float lwidth, float lheight, Vector2 scale, float angle) {
 		this(x, y, x, y+width, lwidth*scale.y/32f, lheight*scale.y/32f, angle);
-		this.numLinks = width;
+		this.stiffLen = width;
 		this.x = x;
 		this.y = y;
 	}

@@ -271,7 +271,7 @@ public class LevelEditorController extends WorldController {
 				promptTemplate(sb);
 				break;
 			case ".Tree":
-				Tree tr = new Tree(new Vector2(x,y), 5f, 3f, 0.25f, 1.0f, scale);
+				Tree tr = new Tree(x,y,5f, 3f, 0.25f, 1.0f, scale);
 				promptTemplate(tr);
 				break;
 			case ".OwlModel":

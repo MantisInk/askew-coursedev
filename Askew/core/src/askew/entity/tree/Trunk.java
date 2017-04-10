@@ -44,7 +44,7 @@ public class Trunk extends ComplexObstacle {
 	private int nLinks;
 	private float x,y,stiffLen,width,height;
 
-	Vector2 final_norm = null;
+	public Vector2 final_norm = null;
 
 	// Invisible anchor objects
 	/** The left side of the bridge */
