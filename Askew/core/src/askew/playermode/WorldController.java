@@ -19,6 +19,10 @@ import askew.GameCanvas;
 import askew.GlobalConfiguration;
 import askew.InputController;
 import askew.MantisAssetManager;
+import askew.entity.obstacle.Obstacle;
+import askew.util.FilmStrip;
+import askew.util.PooledList;
+import askew.util.ScreenListener;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
@@ -29,11 +33,6 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
-import askew.entity.obstacle.Obstacle;
-import askew.util.FilmStrip;
-import askew.util.PooledList;
-import askew.util.ScreenListener;
-
 
 import java.util.Iterator;
 

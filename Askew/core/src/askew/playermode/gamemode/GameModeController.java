@@ -23,10 +23,19 @@ import com.badlogic.gdx.physics.box2d.*;
 
 import askew.entity.obstacle.BoxObstacle;
 import askew.entity.obstacle.Obstacle;
-import askew.util.json.JSONLoaderSaver;
-import askew.playermode.leveleditor.LevelModel;
+import askew.entity.owl.OwlModel;
 import askew.entity.sloth.SlothModel;
-import askew.util.*;
+import askew.playermode.WorldController;
+import askew.playermode.leveleditor.LevelModel;
+import askew.util.SoundController;
+import askew.util.json.JSONLoaderSaver;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.Affine2;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.ObjectSet;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -136,6 +145,10 @@ public class GameModeController extends WorldController {
 		jsonLoaderSaver = new JSONLoaderSaver();
 	}
 
+	public void setLevel(String levelName) {
+		loadLevel = levelName;
+	}
+
 	/**
 	 * Resets the status of the game so that we can play again.
 	 *
@@ -161,6 +174,7 @@ public class GameModeController extends WorldController {
 			collisions = new PhysicsController();
 		}
 		collisions.reset();
+
 		world.setContactListener(collisions);
 		setComplete(false);
 		setFailure(false);
@@ -172,8 +186,8 @@ public class GameModeController extends WorldController {
 	 * Lays out the game geography.
 	 */
 	private void populateLevel() {
-
 			jsonLoaderSaver.setScale(this.worldScale);
+
 			try {
 				LevelModel lm = jsonLoaderSaver.loadLevel(loadLevel);
 				System.out.println(loadLevel);
@@ -365,7 +379,8 @@ public class GameModeController extends WorldController {
 		canvas.clear();
 		camTrans.setToTranslation(-1 * sloth.getBody().getPosition().x * worldScale.x
 				, -1 * sloth.getBody().getPosition().y * worldScale.y);
-		camTrans.translate(canvas.getWidth()/2,canvas.getHeight()/2);
+
+    camTrans.translate(canvas.getWidth()/2,canvas.getHeight()/2);
 		canvas.begin(camTrans);
 
 		for(Obstacle obj : objects) {
