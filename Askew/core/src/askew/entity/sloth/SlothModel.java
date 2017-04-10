@@ -42,6 +42,8 @@ public class SlothModel extends ComplexObstacle  {
     private transient float OMEGA_NORMALIZER;
     private transient boolean TORQUE_BASED_MOVEMENT = false;
 
+
+
     /** Indices for the body parts in the bodies array */
     private static final int PART_NONE = -1;
     private static final int PART_BODY = 0;
@@ -127,6 +129,15 @@ public class SlothModel extends ComplexObstacle  {
     private static final float HAND_XOFFSET    = .70f;
     private static final float HAND_YOFFSET    = 0;
 
+    private static final float BODY_WIDTH = 1.5f;
+    private static final float BODY_HEIGHT = 1.5f;
+
+    private static final float ARM_WIDTH = 1.25f;
+    private static final float ARM_HEIGHT = 0.3125f;
+
+    private static final float HAND_WIDTH = 0.3125f;
+    private static final float HAND_HEIGHT = 0.3125f;
+
     /** Texture assets for the body parts */
     private transient TextureRegion[] partTextures;
 
@@ -163,29 +174,29 @@ public class SlothModel extends ComplexObstacle  {
 
 
         // Body
-        part = makePart(PART_BODY, PART_NONE, x, y, BODY_DENSITY,false);
+        part = makePart(PART_BODY, PART_NONE, x, y,BODY_WIDTH,BODY_HEIGHT, BODY_DENSITY,false);
         part.setFixedRotation(BODY_FIXED_ROTATION);
         part.setGravityScale(GRAVITY_SCALE);
 
         // ARMS
         // Right arm
-        part = makePart(PART_RIGHT_ARM, PART_BODY, SHOULDER_XOFFSET + ARM_XOFFSET, SHOULDER_YOFFSET + ARM_YOFFSET, ARM_DENSITY,false);
+        part = makePart(PART_RIGHT_ARM, PART_BODY, SHOULDER_XOFFSET + ARM_XOFFSET, SHOULDER_YOFFSET + ARM_YOFFSET,ARM_WIDTH,ARM_HEIGHT, ARM_DENSITY,false);
         part.setGravityScale(GRAVITY_SCALE);
         //part.setMass(ARM_MASS);
 
         // Left arm
-        part = makePart(PART_LEFT_ARM, PART_BODY, -ARM_XOFFSET, -ARM_YOFFSET, ARM_DENSITY,false);
+        part = makePart(PART_LEFT_ARM, PART_BODY, -ARM_XOFFSET, -ARM_YOFFSET,ARM_WIDTH,ARM_HEIGHT, ARM_DENSITY,false);
         part.setAngle((float)Math.PI);
         part.setGravityScale(GRAVITY_SCALE);
         //part.setMass(ARM_MASS);
 
         // HANDS
         // Left hand
-        part = makePart(PART_LEFT_HAND, PART_LEFT_ARM, ARM_XOFFSET, ARM_YOFFSET, HAND_DENSITY,false);
+        part = makePart(PART_LEFT_HAND, PART_LEFT_ARM, ARM_XOFFSET, ARM_YOFFSET, HAND_WIDTH, HAND_HEIGHT, HAND_DENSITY,false);
         part.setFixedRotation(HANDS_FIXED_ROTATION);
         part.setGravityScale(GRAVITY_SCALE);
         // Right hand
-        part = makePart(PART_RIGHT_HAND, PART_RIGHT_ARM, ARM_XOFFSET, ARM_YOFFSET, HAND_DENSITY,false);
+        part = makePart(PART_RIGHT_HAND, PART_RIGHT_ARM, ARM_XOFFSET, ARM_YOFFSET, HAND_WIDTH, HAND_HEIGHT, HAND_DENSITY,false);
         part.setFixedRotation(HANDS_FIXED_ROTATION);
         part.setGravityScale(GRAVITY_SCALE);
     }
@@ -225,7 +236,7 @@ public class SlothModel extends ComplexObstacle  {
      *
      * @return the newly created part
      */
-    private BoxObstacle makePart(int part, int connect, float x, float y, float density, boolean collides) {
+    private BoxObstacle makePart(int part, int connect, float x, float y, float width, float height, float density, boolean collides) {
         TextureRegion texture = partTextures[partToAsset(part)];
 
         partCache.set(x,y);
@@ -233,8 +244,16 @@ public class SlothModel extends ComplexObstacle  {
             partCache.add(bodies.get(connect).getPosition());
         }
 
-        float dwidth  = texture.getRegionWidth()/drawScale.x*objectScale.x;
-        float dheight = texture.getRegionHeight()/drawScale.y*objectScale.x;
+        //float dwidth  = texture.getRegionWidth()/drawScale.x*objectScale.x;
+        //float dheight = texture.getRegionHeight()/drawScale.y*objectScale.x;
+        //System.out.print(dwidth);
+        //System.out.print("         :        ");
+        //System.out.println(dheight);
+
+        //width and height are in box2d units
+        float dwidth  = width*objectScale.x;
+        float dheight = height*objectScale.x;
+
 
         BoxObstacle body;
         if(!collides){
