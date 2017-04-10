@@ -145,7 +145,7 @@ public class Trunk extends ComplexObstacle {
 			bodies.add(plank);
 		}
 		final_norm = new Vector2(pos);
-		final_norm.add(x0,y0);
+		final_norm.add(0,linksize/2);
 	}
 
 	/**

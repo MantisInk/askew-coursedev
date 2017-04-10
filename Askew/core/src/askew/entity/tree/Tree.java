@@ -1,5 +1,6 @@
 package askew.entity.tree;
 
+import askew.GameCanvas;
 import askew.MantisAssetManager;
 import askew.entity.obstacle.ComplexObstacle;
 import askew.entity.obstacle.Obstacle;
@@ -33,6 +34,7 @@ public class Tree extends ComplexObstacle {
 
     public Tree (Trunk trunk, float branchlen, float dwidth, float dheight, Vector2 scale) {
         treeTrunk = trunk;
+        bodies.add(treeTrunk);
 
         treeBranch = new StiffBranch(treeTrunk.final_norm.x, treeTrunk.final_norm.y, branchlen,dwidth,dheight, scale);
         treeBranch.setDrawScale(scale);
@@ -41,8 +43,9 @@ public class Tree extends ComplexObstacle {
 
     public Tree (Trunk trunk, StiffBranch branch) {
         treeTrunk = trunk;
-
         treeBranch = branch;
+        bodies.add(treeTrunk);
+        bodies.add(treeBranch);
     }
 
     @Override
@@ -61,6 +64,11 @@ public class Tree extends ComplexObstacle {
         super.deactivatePhysics(world);
         treeTrunk.deactivatePhysics(world);
         treeBranch.deactivatePhysics(world);
+    }
+
+    public void draw(GameCanvas canvas) {
+        treeTrunk.draw(canvas);
+        treeBranch.draw(canvas);
     }
 
     @Override
