@@ -1,0 +1,18 @@
+{
+  "levelModelVersion": 1,
+  "title": "aaa",
+  "goalTimeGold": 30,
+  "goalTimeSilver": 45,
+  "goalTimeBronze": 60,
+  "height": 10,
+  "width": 10,
+  "entities": [
+    {
+      "CLASSNAME": "askew.entity.sloth.SlothModel",
+      "INSTANCE": {
+        "x": 16.40625,
+        "y": 12.03125
+      }
+    }
+  ]
+}

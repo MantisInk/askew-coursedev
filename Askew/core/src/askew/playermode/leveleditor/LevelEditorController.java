@@ -381,8 +381,8 @@ public class LevelEditorController extends WorldController {
 		float mouseX = InputController.getInstance().getCrossHair().x;
 		float mouseY = InputController.getInstance().getCrossHair().y;
 
-		float adjustedMouseX = mouseX - (cxCamera + canvas.getWidth()/2) / worldScale.x;
-		float adjustedMouseY = mouseY - (cyCamera + canvas.getHeight()/2) / worldScale.y;
+		adjustedMouseX = mouseX - (cxCamera + canvas.getWidth()/2) / worldScale.x;
+		adjustedMouseY = mouseY - (cyCamera + canvas.getHeight()/2) / worldScale.y;
 
 
 		// Check for pan

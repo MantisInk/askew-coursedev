@@ -3,8 +3,11 @@ package askew.entity.ghost;
 import askew.GameCanvas;
 import askew.MantisAssetManager;
 import askew.entity.obstacle.BoxObstacle;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -14,9 +17,9 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
  */
 public class GhostModel extends BoxObstacle  {
 
-    public static final String GHOST_TEXTURE = "texture/ghost/Ghosty1.png";
     public static final float GHOST_SPEED = 1f;
-    public static final float GHOST_WIDTH = 2.2f;
+    public static final float GHOST_WIDTH = 1.6f;
+
     // determined at runtime to preserve aspect ratio from designers
     private transient float ghostHeight;
 
@@ -31,6 +34,12 @@ public class GhostModel extends BoxObstacle  {
 
     private transient boolean secondDestination;
 
+    private transient Animation walkAnimation;
+
+    private transient float elapseTime;
+
+    private transient boolean faceRight;
+    private transient boolean lastFace;
 
     /**
      * Creates a new ragdoll with its head at the given position.
@@ -50,6 +59,7 @@ public class GhostModel extends BoxObstacle  {
         this.setRestitution(0);
         this.setSensor(true);
         this.setName("ghost");
+        elapseTime = 1;
     }
 
     public void setDrawScale(float x, float y) {
@@ -65,21 +75,37 @@ public class GhostModel extends BoxObstacle  {
 
     @Override
     public void setTextures(MantisAssetManager manager) {
-        Texture ghostTexture = manager.get(GHOST_TEXTURE);
-        ghostTextureRegion = new TextureRegion(ghostTexture);
-        // aspect ratio scaling
-        this.ghostHeight = getWidth() * ( ghostTextureRegion.getRegionHeight() / ghostTextureRegion.getRegionWidth());
+        walkAnimation = new Animation(0.127f, manager.getTextureAtlas().findRegions("Ghosty"), Animation.PlayMode.LOOP);
+        if (walkAnimation.getKeyFrames().length == 0)
+            System.err.println("did not find ghost");
+        ghostTextureRegion = walkAnimation.getKeyFrame(0);
+        this.ghostHeight = getWidth() * ((float) ghostTextureRegion.getRegionHeight() / (float) ghostTextureRegion.getRegionWidth());
         thirtyTwoPixelDensityScale = 32f / ghostTextureRegion.getRegionWidth();
+        this.setHeight(ghostHeight);
         setTexture(ghostTextureRegion);
     }
 
     @Override
     public void draw(GameCanvas canvas) {
         // TODO: Help me figure out the draw scaling someone please
+        elapseTime += Gdx.graphics.getDeltaTime();
 
-        if (texture != null) {
-            canvas.draw(texture, Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.x,getAngle(), thirtyTwoPixelDensityScale * GHOST_WIDTH, thirtyTwoPixelDensityScale * ghostHeight);
+        if (elapseTime == 0) return;
+
+        TextureRegion drawFrame = walkAnimation.getKeyFrame(elapseTime, true);
+        if (faceRight) {
+            if (!drawFrame.isFlipX())
+                drawFrame.flip(true,false);
+            canvas.draw(drawFrame, Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.x,getAngle(), thirtyTwoPixelDensityScale * GHOST_WIDTH, thirtyTwoPixelDensityScale * ghostHeight);
+        } else {
+            if (drawFrame.isFlipX())
+                drawFrame.flip(true,false);
+            canvas.draw(drawFrame, Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.x,getAngle(), thirtyTwoPixelDensityScale * GHOST_WIDTH, thirtyTwoPixelDensityScale * ghostHeight);
         }
+
+//        if (texture != null) {
+//            canvas.draw(texture, Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.x,getAngle(), thirtyTwoPixelDensityScale * GHOST_WIDTH, thirtyTwoPixelDensityScale * ghostHeight);
+//        }
     }
 
     @Override
@@ -113,6 +139,7 @@ public class GhostModel extends BoxObstacle  {
         double moveX = Math.cos(dPos.angleRad());
         double moveY = Math.sin(dPos.angleRad());
 
+        faceRight = moveX > 0;
 
         // Move toward destination
         this.setX(this.getX() + (float) moveX * actualMoveDistance);
