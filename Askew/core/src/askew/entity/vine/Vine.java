@@ -14,8 +14,9 @@
  */
 package askew.entity.vine;
 
-import askew.entity.Entity;
-import com.badlogic.gdx.assets.AssetManager;
+import askew.MantisAssetManager;
+import askew.GlobalConfiguration;
+import askew.entity.obstacle.*;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
@@ -23,10 +24,6 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Joint;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
-import com.google.gson.JsonObject;
-import askew.GlobalConfiguration;
-import askew.AssetTraversalController;
-import askew.entity.obstacle.*;
 
 /**
  * A bridge with planks connected by revolute joints.
@@ -268,7 +265,7 @@ public class Vine extends ComplexObstacle {
 	}
 
     @Override
-    public void setTextures(AssetManager manager) {
+    public void setTextures(MantisAssetManager manager) {
         Texture vineTexture = manager.get(VINE_TEXTURE, Texture.class);
         TextureRegion regionedTexture = new TextureRegion(vineTexture);
         for(Obstacle body : bodies) {

@@ -13,9 +13,9 @@ package askew.playermode.leveleditor;
 import askew.*;
 import askew.entity.Entity;
 import askew.entity.owl.OwlModel;
+import askew.entity.wall.WallModel;
 import askew.util.json.JSONLoaderSaver;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Affine2;
@@ -25,8 +25,9 @@ import com.google.gson.JsonObject;
 import askew.playermode.WorldController;
 import askew.entity.obstacle.ComplexObstacle;
 import askew.entity.obstacle.Obstacle;
-import askew.entity.trunk.Trunk;
-import askew.entity.stiffbranch.StiffBranch;
+import askew.entity.tree.Trunk;
+import askew.entity.tree.StiffBranch;
+import askew.entity.tree.Tree;
 import askew.entity.vine.Vine;
 import askew.entity.sloth.SlothModel;
 import askew.util.PooledList;
@@ -60,7 +61,6 @@ public class LevelEditorController extends WorldController {
 
 	private static ShapeRenderer gridLineRenderer = new ShapeRenderer();
 
-
 	Affine2 camTrans;
 	float cxCamera;
 	float cyCamera;
@@ -87,6 +87,9 @@ public class LevelEditorController extends WorldController {
 			".Platform",
 			".Trunk",
 			".StiffBranch",
+			".OwlModel",
+			".WallModel",
+			".Tree",
 			".OwlModel"
 	};
 
@@ -123,7 +126,7 @@ public class LevelEditorController extends WorldController {
 	 *
 	 * @param manager Reference to global asset manager.
 	 */
-	public void preLoadContent(AssetManager manager) {
+	public void preLoadContent(MantisAssetManager manager) {
 		super.preLoadContent(manager);
 		jsonLoaderSaver.setManager(manager);
 	}
@@ -138,7 +141,7 @@ public class LevelEditorController extends WorldController {
 	 *
 	 * @param manager Reference to global asset manager.
 	 */
-	public void loadContent(AssetManager manager) {
+	public void loadContent(MantisAssetManager manager) {
 		if (levelEditorAssetState != AssetState.LOADING) {
 			return;
 		}
@@ -259,7 +262,7 @@ public class LevelEditorController extends WorldController {
 				Vine vTemplate = new Vine(x,y,5.0f,0.25f,1.0f,scale);
 				promptTemplate(vTemplate);
 				break;
-			case ".trunk":
+			case ".Trunk":
 				Trunk tTemplate = new Trunk(x,y, 5.0f, 0.25f, 1.0f, 3.0f,scale);
 				promptTemplate(tTemplate);
 				break;
@@ -267,9 +270,17 @@ public class LevelEditorController extends WorldController {
 				StiffBranch sb = new StiffBranch(x,y, 3.0f, 0.25f, 1.0f,scale);
 				promptTemplate(sb);
 				break;
+			case ".Tree":
+				Tree tr = new Tree(x,y,5f, 3f, 0.25f, 1.0f, scale);
+				promptTemplate(tr);
+				break;
 			case ".OwlModel":
 				OwlModel owl = new OwlModel(x,y);
 				promptTemplate(owl);
+				break;
+			case ".WallModel":
+				WallModel wall = new WallModel(x,y,new float[] {0,0,0f,1f,1f,1f,1f,0f});
+				promptTemplate(wall);
 				break;
 			default:
 				System.err.println("UNKNOWN ENT");
@@ -511,24 +522,21 @@ public class LevelEditorController extends WorldController {
 
 	private void drawGridLines() {
 		// debug lines
+		Gdx.gl.glLineWidth(1);
 		// vertical
 		for (int i = ((int)cxCamera % 32 - 32); i < 1024; i += 32) {
-			Gdx.gl.glLineWidth(1);
 			gridLineRenderer.begin(ShapeRenderer.ShapeType.Line);
 			gridLineRenderer.setColor(Color.FOREST);
 			gridLineRenderer.line(i, 0,i,768);
 			gridLineRenderer.end();
-			Gdx.gl.glLineWidth(1);
 		}
 
 		// horizontal
 		for (int i = ((int)cyCamera % 32 - 32); i < 768; i += 32) {
-			Gdx.gl.glLineWidth(1);
 			gridLineRenderer.begin(ShapeRenderer.ShapeType.Line);
 			gridLineRenderer.setColor(Color.FOREST);
 			gridLineRenderer.line(0, i,1024,i);
 			gridLineRenderer.end();
-			Gdx.gl.glLineWidth(1);
 		}
 	}
 
@@ -544,11 +552,12 @@ public class LevelEditorController extends WorldController {
 		for(Obstacle obj : objects) {
 			obj.draw(canvas);
 		}
+		canvas.end();
 
+		canvas.begin(camTrans);
 		if (shouldDrawGrid) {
 			drawGridLines();
 		}
-
 		canvas.end();
 
 

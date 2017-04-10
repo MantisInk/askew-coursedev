@@ -12,9 +12,10 @@
  * Based on original PhysicsDemo Lab by Don Holden, 2007
  * LibGDX version, 2/6/2015
  */
-package askew.entity.stiffbranch;
+package askew.entity.tree;
 
-import com.badlogic.gdx.assets.AssetManager;
+import askew.MantisAssetManager;
+import askew.entity.obstacle.*;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
@@ -23,9 +24,6 @@ import com.badlogic.gdx.physics.box2d.Joint;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
-import com.google.gson.JsonObject;
-import askew.AssetTraversalController;
-import askew.entity.obstacle.*;
 
 /**
  * A bridge with planks connected by revolute joints.
@@ -35,7 +33,7 @@ import askew.entity.obstacle.*;
  */
 public class StiffBranch extends ComplexObstacle {
 	/** The debug name for the entire obstacle */
-	private static final String VINE_NAME = "vine";
+	private static final String VINE_NAME = "branch";
 	/** The debug name for each plank */
 	private static final String PLANK_NAME = "barrier";
 	/** The debug name for each anchor pin */
@@ -64,7 +62,7 @@ public class StiffBranch extends ComplexObstacle {
 	/** The spacing between each link */
 	protected transient float spacing = 0.0f;
 
-	private float numLinks;
+	private float stiffLen;
 	private float x;
 	private float y;
 
@@ -81,8 +79,15 @@ public class StiffBranch extends ComplexObstacle {
 	 * @param lheight	The bridge thickness
 	 */
 	public StiffBranch(float x, float y, float width, float lwidth, float lheight, Vector2 scale) {
-		this(x, y, x, y+width, lwidth*scale.y/32f, lheight*scale.y/32f);
-		this.numLinks = width;
+		this(x, y, x, y+width, lwidth*scale.y/32f, lheight*scale.y/32f, 0f);
+		this.stiffLen = width;
+		this.x = x;
+		this.y = y;
+	}
+
+	public StiffBranch(float x, float y, float width, float lwidth, float lheight, Vector2 scale, float angle) {
+		this(x, y, x, y+width, lwidth*scale.y/32f, lheight*scale.y/32f, angle);
+		this.stiffLen = width;
 		this.x = x;
 		this.y = y;
 	}
@@ -97,7 +102,7 @@ public class StiffBranch extends ComplexObstacle {
 	 * @param lwidth	The plank length
 	 * @param lheight	The bridge thickness
 	 */
-	public StiffBranch(float x0, float y0, float x1, float y1, float lwidth, float lheight) {
+	public StiffBranch(float x0, float y0, float x1, float y1, float lwidth, float lheight, float angle) {
 		super(x0,y0);
 		setName(VINE_NAME);
 
@@ -109,6 +114,7 @@ public class StiffBranch extends ComplexObstacle {
 		float length = dimension.len();
 		Vector2 norm = new Vector2(dimension);
 		norm.nor();
+		norm.rotate(angle);
 
 		// If too small, only make one plank.
 		int nLinks = (int)(length / linksize);
@@ -248,7 +254,7 @@ public class StiffBranch extends ComplexObstacle {
 	}
 
 	@Override
-	public void setTextures(AssetManager manager) {
+	public void setTextures(MantisAssetManager manager) {
 		Texture managedTexture = manager.get("texture/branch/branch.png", Texture.class);
 		TextureRegion regionTexture = new TextureRegion(managedTexture);
 		for(Obstacle body : bodies) {

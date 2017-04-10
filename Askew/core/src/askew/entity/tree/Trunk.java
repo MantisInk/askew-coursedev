@@ -12,9 +12,9 @@
  * Based on original PhysicsDemo Lab by Don Holden, 2007
  * LibGDX version, 2/6/2015
  */
-package askew.entity.trunk;
+package askew.entity.tree;
 
-import com.badlogic.gdx.assets.AssetManager;
+import askew.MantisAssetManager;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.graphics.g2d.*;
@@ -41,26 +41,29 @@ public class Trunk extends ComplexObstacle {
 	/** The density of each plank in the bridge */
 	private static final float BASIC_DENSITY = 13f;
 
-	private int nLinks;
-	private float x,y,stiffLen,width,height;
+	private transient int nLinks;
+	private float x,y,stiffLen;
+	private transient float width,height;
+
+	public transient Vector2 final_norm = null;
 
 	// Invisible anchor objects
 	/** The left side of the bridge */
-	private WheelObstacle start = null;
-	private WheelObstacle finish = null;
+	private transient WheelObstacle start = null;
+	private transient WheelObstacle finish = null;
 	/** Set damping constant for joint rotation in vines */
-	public static final float DAMPING_ROTATION = 5f;
+	public transient static final float DAMPING_ROTATION = 5f;
 
 	// Dimension information
 	/** The size of the entire bridge */
-	protected Vector2 dimension;
+	protected transient Vector2 dimension;
 	/** The size of a single plank */
-	protected Vector2 planksize;
+	protected transient Vector2 planksize;
 	/* The length of each link */
-	protected float linksize = 1.0f;
+	protected transient float linksize = 1.0f;
 	/** The spacing between each link */
 	// TODO: Fix this from being public (refactor artifact)
-	public float spacing = 0.0f;
+	private transient float spacing = 0.0f;
 
 	protected float numLinks;
 
@@ -72,13 +75,22 @@ public class Trunk extends ComplexObstacle {
 	 *
 	 * @param x  		The x position of the left anchor
 	 * @param y  		The y position of the left anchor
-	 * @param width		The length of the bridge
+	 * @param length	The length of the trunk
 	 * @param lwidth	The plank length
 	 * @param lheight	The bridge thickness
+	 *
+	 *
 	 */
-	public Trunk(float x, float y, float width, float lwidth, float lheight, float stiffLen, Vector2 scale) {
-		this(x, y, x, y+width, lwidth*scale.y/32f, lheight*scale.y/32f, stiffLen);
-		numLinks = width;
+	public Trunk(float x, float y, float length, float lwidth, float lheight, float stiffLen, Vector2 scale) {
+		this(x, y, x, y+length, lwidth*scale.y/32f, lheight*scale.y/32f, stiffLen, 0f);
+		numLinks = length;
+		this.x = x;
+		this.y = y;
+	}
+
+	public Trunk(float x, float y, float length, float lwidth, float lheight, float stiffLen, Vector2 scale, float angle) {
+		this(x, y, x, y+length, lwidth*scale.y/32f, lheight*scale.y/32f, stiffLen, angle);
+		numLinks = length;
 		this.x = x;
 		this.y = y;
 	}
@@ -93,7 +105,7 @@ public class Trunk extends ComplexObstacle {
 	 * @param lwidth	The plank length
 	 * @param lheight	The bridge thickness
 	 */
-	public Trunk(float x0, float y0, float x1, float y1, float lwidth, float lheight, float stiffLen) {
+	public Trunk(float x0, float y0, float x1, float y1, float lwidth, float lheight, float stiffLen, float angle) {
 		super(x0,y0);
 		this.x = x0;	this.y = y0;	this.stiffLen = stiffLen;	this.width = lwidth; this.height = lheight;
 		setName(VINE_NAME);
@@ -106,6 +118,7 @@ public class Trunk extends ComplexObstacle {
 		float length = dimension.len();
 		Vector2 norm = new Vector2(dimension);
 		norm.nor();
+		norm.rotate(angle);
 
 		// If too small, only make one plank.
 		nLinks = (int)(length / linksize);
@@ -131,6 +144,8 @@ public class Trunk extends ComplexObstacle {
 			plank.setDensity(BASIC_DENSITY);
 			bodies.add(plank);
 		}
+		final_norm = new Vector2(pos);
+		final_norm.add(0,linksize/2);
 	}
 
 	/**
@@ -255,8 +270,8 @@ public class Trunk extends ComplexObstacle {
 	}
 
 	@Override
-	public void setTextures(AssetManager manager) {
-		Texture managedTexture = manager.get("./texture/branch/branch.png", Texture.class);
+	public void setTextures(MantisAssetManager manager) {
+		Texture managedTexture = manager.get("texture/branch/branch.png", Texture.class);
 		TextureRegion regionTexture = new TextureRegion(managedTexture);
 		for(Obstacle body : bodies) {
 			((SimpleObstacle)body).setTexture(regionTexture);

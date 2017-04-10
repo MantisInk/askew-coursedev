@@ -12,6 +12,7 @@ package askew.playermode.gamemode;
 
 import askew.GlobalConfiguration;
 import askew.InputController;
+import askew.MantisAssetManager;
 import askew.entity.Entity;
 import askew.entity.owl.OwlModel;
 import askew.playermode.WorldController;
@@ -70,7 +71,7 @@ public class GameModeController extends WorldController {
 	 *
 	 * @param manager Reference to global asset manager.
 	 */
-	public void preLoadContent(AssetManager manager) {
+	public void preLoadContent(MantisAssetManager manager) {
 		if (platformAssetState != AssetState.EMPTY) {
 			return;
 		}
@@ -89,7 +90,7 @@ public class GameModeController extends WorldController {
 	 *
 	 * @param manager Reference to global asset manager.
 	 */
-	public void loadContent(AssetManager manager) {
+	public void loadContent(MantisAssetManager manager) {
 		if (platformAssetState != AssetState.LOADING) {
 			return;
 		}

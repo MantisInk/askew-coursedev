@@ -56,6 +56,74 @@
         "x": 37.75,
         "y": -22.9375
       }
+    },
+    {
+      "CLASSNAME": "askew.entity.wall.WallModel",
+      "INSTANCE": {
+        "x": 16.15625,
+        "y": 10.71875,
+        "points": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.wall.WallModel",
+      "INSTANCE": {
+        "x": 4.8125,
+        "y": 13.34375,
+        "points": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.wall.WallModel",
+      "INSTANCE": {
+        "x": 8.1875,
+        "y": 14.96875,
+        "points": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.wall.WallModel",
+      "INSTANCE": {
+        "x": 7.375,
+        "y": 14.78125,
+        "points": [
+          0.0,
+          0.0,
+          0.0,
+          4.0,
+          4.0,
+          4.0,
+          4.0,
+          0.0
+        ]
+      }
     }
   ]
 }

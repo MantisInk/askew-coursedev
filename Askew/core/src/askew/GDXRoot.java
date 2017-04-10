@@ -40,7 +40,7 @@ import askew.util.ScreenListener;
  */
 public class GDXRoot extends Game implements ScreenListener {
 	/** AssetManager to load game assets (texture, sounds, etc.) */
-	private AssetManager manager;
+	private MantisAssetManager manager;
 	/** AssetTraversalController tells manager what to load */
 	private AssetTraversalController assetTraversalController;
 	/** Drawing context to display graphics (VIEW CLASS) */
@@ -64,7 +64,7 @@ public class GDXRoot extends Game implements ScreenListener {
 	 */
 	public GDXRoot() {
 		// Start loading with the asset manager
-		manager = new AssetManager();
+		manager = new MantisAssetManager();
 		assetTraversalController = new AssetTraversalController();
 		
 		// Add font support to the asset manager
@@ -92,7 +92,9 @@ public class GDXRoot extends Game implements ScreenListener {
 			controllers[ii].setScale(canvas);
 			controllers[ii].preLoadContent(manager);
 		}
+
 		assetTraversalController.preLoadEverything(manager);
+		manager.preloadProcess();
 		current = 1;
 		loading.setScreenListener(this);
 		setScreen(loading);
