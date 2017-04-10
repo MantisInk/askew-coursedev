@@ -143,6 +143,7 @@ public class SlothModel extends ComplexObstacle  {
         super(x,y);
         this.x = x;
         this.y = y;
+        this.setObjectScale(1.0f/1.5f,1.0f/1.5f);
         this.SPIDERMAN_MODE = GlobalConfiguration.getInstance().getAsBoolean("flowGrabAnything");
         this.TWO_FREE_FORCE_MULTIPLIER = GlobalConfiguration.getInstance().getAsFloat("flowTwoFreeForceMultiplier");
         this.TORQUE = GlobalConfiguration.getInstance().getAsFloat("flowTorque");
@@ -159,6 +160,7 @@ public class SlothModel extends ComplexObstacle  {
     private void init() {
         // We do not do anything yet.
         BoxObstacle part;
+
 
         // Body
         part = makePart(PART_BODY, PART_NONE, x, y, BODY_DENSITY,false);
@@ -231,8 +233,8 @@ public class SlothModel extends ComplexObstacle  {
             partCache.add(bodies.get(connect).getPosition());
         }
 
-        float dwidth  = texture.getRegionWidth()/drawScale.x;
-        float dheight = texture.getRegionHeight()/drawScale.y;
+        float dwidth  = texture.getRegionWidth()/drawScale.x*objectScale.x;
+        float dheight = texture.getRegionHeight()/drawScale.y*objectScale.x;
 
         BoxObstacle body;
         if(!collides){
