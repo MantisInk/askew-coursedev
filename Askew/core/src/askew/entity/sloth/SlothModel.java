@@ -246,12 +246,6 @@ public class SlothModel extends ComplexObstacle  {
             partCache.add(bodies.get(connect).getPosition());
         }
 
-        //float dwidth  = texture.getRegionWidth()/drawScale.x*objectScale.x;
-        //float dheight = texture.getRegionHeight()/drawScale.y*objectScale.x;
-        //System.out.print(dwidth);
-        //System.out.print("         :        ");
-        //System.out.println(dheight);
-
         //width and height are in box2d units
         float dwidth  = width*objectScale.x;
         float dheight = height*objectScale.x;
