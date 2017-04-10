@@ -5,9 +5,6 @@ import askew.MantisAssetManager;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.math.Vector2;
 
-/**
- * Created by arklian on 4/8/2017.
- */
 public abstract class BackgroundEntity extends Entity{
 
     protected transient Vector2 drawScale;
