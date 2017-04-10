@@ -2,12 +2,12 @@ package askew.entity;
 
 import askew.MantisAssetManager;
 import askew.entity.owl.OwlModel;
+import askew.entity.sloth.SlothModel;
 import askew.entity.tree.StiffBranch;
 import askew.entity.tree.Trunk;
-import askew.entity.sloth.SlothModel;
+import askew.entity.tree.Tree;
 import askew.entity.vine.Vine;
 import askew.entity.wall.WallModel;
-import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
@@ -60,11 +60,33 @@ public class JsonEntityFactory {
         float x = instance.get("x").getAsFloat();
         float y = instance.get("y").getAsFloat();
         float stiff = instance.get("stiffLen").getAsFloat();
-        branch = new StiffBranch(x, y, stiff, 0.25f, 0.1f,scale);
+        branch = new StiffBranch(x, y, stiff, 0.25f, 1f,scale);
         branch.setDrawScale(scale.x, scale.y);
         branch.setTextures(manager);
         return branch;
     }
+
+    public static StiffBranch createBranchforTree(MantisAssetManager manager, JsonObject instance, Vector2 scale, Trunk tr) {
+        StiffBranch branch;
+        float x = instance.get("x").getAsFloat();
+        float y = instance.get("y").getAsFloat();
+        float stiff = instance.get("stiffLen").getAsFloat();
+        branch = new StiffBranch(tr.final_norm.x, tr.final_norm.y, stiff, 0.25f, 1f,scale);
+        branch.setDrawScale(scale.x, scale.y);
+        branch.setTextures(manager);
+        return branch;
+        }
+
+    public static Tree createTree(MantisAssetManager manager, JsonObject instance, Vector2 scale) {
+        Tree treeeeeee;
+        JsonObject twunk = instance.getAsJsonObject("treeTrunk");
+        JsonObject bwanch = instance.getAsJsonObject("treeBranch");
+        Trunk tr = createTrunk(manager, twunk, scale);
+        StiffBranch br = createBranchforTree(manager, bwanch, scale, tr);
+        treeeeeee = new Tree(tr, br);
+        return treeeeeee;
+    }
+
 
     public static OwlModel createOwl(MantisAssetManager manager, JsonObject instance, Vector2 scale) {
         OwlModel owl;
