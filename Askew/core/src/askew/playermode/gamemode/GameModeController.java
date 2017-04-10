@@ -401,6 +401,10 @@ public class GameModeController extends WorldController {
 			}
 
 			canvas.endDebug();
+			canvas.begin();
+			// text
+			canvas.drawTextStandard("FPS: " + 1f/delta, 10.0f, 100.0f);
+			canvas.end();
 			sloth.drawForces(canvas, camTrans);
 		}
 

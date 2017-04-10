@@ -1,6 +1,7 @@
 package askew.playermode.mainmenu;
 
 import askew.InputController;
+import askew.MantisAssetManager;
 import askew.playermode.WorldController;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -39,8 +40,15 @@ public class MainMenuController extends WorldController {
     // player selected another mode
     private String nextCon = "";
 
-    Texture fern = new Texture(Gdx.files.internal
-						("texture/background/fern.png"));
+    Texture fern;
+
+    @Override
+    public void loadContent(MantisAssetManager manager) {
+        fern = new Texture(Gdx.files.internal
+                ("texture/background/fern.png"));
+    }
+
+
 
     public MainMenuController() {
         mode = PLAY_BUTTON;
