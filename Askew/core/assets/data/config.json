@@ -2,11 +2,11 @@
   "flowGrabAnything": false,
   "flowArmDensity": 1.1,
   "flowTwoFreeForceMultiplier": 5.0,
-  "flowTorque": 10.0,
+  "flowTorque": 15.0,
   "flowOmegaNormalizer": 20.0,
   "flowGravityScale": 0.7,
   "flowCanMoveGrabbingHand": true,
-  "vineDensity": 1.0,
+  "vineDensity": 4.0,
   "fullscreen": false,
   "defaultLevel": "level1",
   "torqueBasedMovement": true

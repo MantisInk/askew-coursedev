@@ -326,6 +326,8 @@ public class GameModeController extends WorldController {
 		sloth.setRightVert(InputController.getInstance().getRightVertical());
 		sloth.setLeftGrab(InputController.getInstance().getLeftGrab());
 		sloth.setRightGrab(InputController.getInstance().getRightGrab());
+		sloth.setLeftStickPressed(InputController.getInstance().getLeftStickPressed());
+		sloth.setRightStickPressed(InputController.getInstance().getRightStickPressed());
 
 		//#TODO Collision states check
 		setComplete(collisions.isComplete());

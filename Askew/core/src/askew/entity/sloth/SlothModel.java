@@ -90,6 +90,9 @@ public class SlothModel extends ComplexObstacle  {
     private transient boolean leftGrab;
     @Getter
     private transient boolean rightGrab;
+    private transient boolean leftStickPressed;
+    private transient boolean rightStickPressed;
+
 
     /**
      * Returns the texture index for the given body part
@@ -403,11 +406,11 @@ public class SlothModel extends ComplexObstacle  {
             forceL.set((float) (ltorque * Math.sin(lTheta)),(float) (ltorque * Math.cos(lTheta)));
             forceR.set((float) (rtorque * Math.sin(rTheta)),(float) (rtorque * Math.cos(rTheta)));
 
-            if (GRABBING_HAND_HAS_TORQUE || !leftGrab)
+            if ((GRABBING_HAND_HAS_TORQUE || !leftGrab) || leftStickPressed )
                 leftArm
                         .getBody()
                         .applyTorque(ltorque,true);
-            if (GRABBING_HAND_HAS_TORQUE || !rightGrab)
+            if ((GRABBING_HAND_HAS_TORQUE || !rightGrab) || rightStickPressed )
                 rightArm
                         .getBody()
                         .applyTorque(rtorque, true);
@@ -518,6 +521,14 @@ public class SlothModel extends ComplexObstacle  {
 
     public void setRightGrab(boolean rightGrab) {
         this.rightGrab = rightGrab;
+    }
+
+    public void setLeftStickPressed(boolean leftStickPressed) {
+        this.leftStickPressed = leftStickPressed;
+    }
+
+    public void setRightStickPressed(boolean rightStickPressed) {
+        this.rightStickPressed = rightStickPressed;
     }
 
     public void grab(World world, Body target, boolean leftHand) {
