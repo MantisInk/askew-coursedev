@@ -171,9 +171,7 @@ public class GDXRoot extends Game implements ScreenListener {
 			current = CON_GM;
 			GameModeController gm =(GameModeController) controllers[CON_GM];
 			MainMenuController mm = (MainMenuController) controllers[CON_MM];
-			System.out.println("gm set level");
 			gm.setLevel(mm.getLevel());
-			System.out.println("reset GM");
 			controllers[current].reset();
 			setScreen(controllers[current]);
 
