@@ -37,18 +37,22 @@ public class MainMenuController extends WorldController {
     private int select_button = CHOOSE_LEVEL;
     private Vector2[] select_button_locs = {new Vector2(365f, 230f), new Vector2(630f, 125f)};
 
+    private static final String FERN_TEXTURE = "texture/background/fern.png";
+    private static final String MENU_BACKGROUND1_TEXTURE = "texture/background/menu1.png";
+    private static final String MENU_BACKGROUND2_TEXTURE = "texture/background/menu2.png";
+
+    private Texture fern, menu1, menu2;
+
     // player selected another mode
     private String nextCon = "";
 
-    Texture fern;
-
     @Override
     public void loadContent(MantisAssetManager manager) {
-        fern = new Texture(Gdx.files.internal
-                ("texture/background/fern.png"));
+        super.loadContent(manager);
+        fern = new Texture(Gdx.files.internal(FERN_TEXTURE));
+        menu1 = manager.get(MENU_BACKGROUND1_TEXTURE);
+        menu2 = manager.get(MENU_BACKGROUND2_TEXTURE);
     }
-
-
 
     public MainMenuController() {
         mode = PLAY_BUTTON;
@@ -87,10 +91,10 @@ public class MainMenuController extends WorldController {
     @Override
     public void draw(float delta) {
         if(mode == HOME_SCREEN) {
-            canvas.clear("MM1");
+            canvas.clear(menu1);
         }
         else if (mode == LEVEL_SELECT) {
-            canvas.clear("MM2");
+            canvas.clear(menu2);
             displayFont.setColor(Color.GREEN);
         }
 

@@ -76,6 +76,7 @@ public class GameCanvas {
 	private BlendState blend;
 
 	private Texture background;
+	private Texture DEFAULT_BACKGROUND;
 	
 	/** Camera for the underlying SpriteBatch */
 	private OrthographicCamera camera;
@@ -123,8 +124,9 @@ public class GameCanvas {
 		global = new Matrix4();
 		vertex = new Vector2();
 
-		background = new Texture(Gdx.files.internal
+		DEFAULT_BACKGROUND= new Texture(Gdx.files.internal
 				("texture/background/background.png"));
+		background = DEFAULT_BACKGROUND;
 		font = new BitmapFont();
 		font.setColor(new Color(255,0,100,255));
 	}
@@ -335,17 +337,18 @@ public class GameCanvas {
     	// Clear the screen
 		Gdx.gl.glClearColor(0.81f, 0.81f, 0.83f, 1.0f);  // Homage to the XNA years
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		background = DEFAULT_BACKGROUND;
 		spriteBatch.begin();
 		spriteBatch.draw(background, -1000f,-300f, 4000f,2000f);
 		spriteBatch.end();
 	}
 
-	public void clear(String mode) {
+	public void clear(Texture bg) {
 		// Clear the screen
 		Gdx.gl.glClearColor(0.81f, 0.81f, 0.83f, 1.0f);  // Homage to the XNA years
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		background = bg;
 		spriteBatch.begin();
-		//spriteBatch.draw(background,0,-50f);
 		spriteBatch.draw(background, 0,0);
 		spriteBatch.end();
 	}
