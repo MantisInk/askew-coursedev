@@ -167,6 +167,9 @@ public class LevelEditorController extends WorldController {
 		shouldDrawGrid = true;
 		camTrans = new Affine2();
 	}
+	public void setLevel(String levelName) {
+		currentLevel = levelName;
+	}
 
 	/**
 	 * Resets the status of the game so that we can play again.
@@ -235,7 +238,7 @@ public class LevelEditorController extends WorldController {
 		InputController input = InputController.getInstance();
 
 		if (input.didLeftButtonPress()) {
-			System.out.println("GE");
+			System.out.println("GM");
 			listener.exitScreen(this, EXIT_LE_GM);
 			return false;
 		} else if (input.didTopButtonPress()) {
@@ -542,7 +545,7 @@ public class LevelEditorController extends WorldController {
 
 	@Override
 	public void draw(float delta) {
-		canvas.clear();
+		canvas.clear("LE");
 
 		// Translate camera to cx, cy
 		camTrans.setToTranslation(cxCamera, cyCamera);

@@ -12,22 +12,21 @@ package askew;/*
  * LibGDX version, 2/6/2015
  */
 
+import askew.playermode.WorldController;
+import askew.playermode.gamemode.GameModeController;
+import askew.playermode.leveleditor.LevelEditorController;
 import askew.playermode.loading.LoadingMode;
 import askew.playermode.mainmenu.MainMenuController;
-import askew.playermode.WorldController;
+import askew.util.ScreenListener;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGeneratorLoader;
 import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader;
-import askew.playermode.leveleditor.LevelEditorController;
-import askew.playermode.gamemode.GameModeController;
-import askew.util.ScreenListener;
 
 /**
  * Root class for a LibGDX.  
@@ -44,7 +43,7 @@ public class GDXRoot extends Game implements ScreenListener {
 	/** AssetTraversalController tells manager what to load */
 	private AssetTraversalController assetTraversalController;
 	/** Drawing context to display graphics (VIEW CLASS) */
-	private GameCanvas canvas; 
+	private GameCanvas canvas;
 	/** Player mode for the asset loading screen (CONTROLLER CLASS) */
 	private LoadingMode loading;
 	/** Player mode for the the game proper (CONTROLLER CLASS) */
@@ -95,7 +94,7 @@ public class GDXRoot extends Game implements ScreenListener {
 
 		assetTraversalController.preLoadEverything(manager);
 		manager.preloadProcess();
-		current = 1;
+		current = CON_MM;
 		loading.setScreenListener(this);
 		setScreen(loading);
 	}
@@ -171,6 +170,9 @@ public class GDXRoot extends Game implements ScreenListener {
 		if (exitCode == WorldController.EXIT_MM_GM) {
 			current = CON_GM;
 			controllers[current].reset();
+			GameModeController gm =(GameModeController) controllers[CON_GM];
+			MainMenuController mm = (MainMenuController) controllers[CON_MM];
+			gm.setLevel(mm.getLevel());
 			setScreen(controllers[current]);
 
 		} else if (exitCode == WorldController.EXIT_MM_LE) {
