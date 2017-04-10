@@ -139,7 +139,7 @@ public class GameModeController extends WorldController {
 	}
 
 	public void setLevel(String levelName) {
-		loadLevel = GlobalConfiguration.getInstance().getAsString(levelName);
+		loadLevel = levelName;
 	}
 
 	/**
@@ -167,6 +167,7 @@ public class GameModeController extends WorldController {
 			collisions = new PhysicsController();
 		}
 		collisions.reset();
+
 		world.setContactListener(collisions);
 		setComplete(false);
 		setFailure(false);
@@ -178,7 +179,6 @@ public class GameModeController extends WorldController {
 	 * Lays out the game geography.
 	 */
 	private void populateLevel() {
-
 			jsonLoaderSaver.setScale(this.scale);
 			try {
 				LevelModel lm = jsonLoaderSaver.loadLevel(loadLevel);

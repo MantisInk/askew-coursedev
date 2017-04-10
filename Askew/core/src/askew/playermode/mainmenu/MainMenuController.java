@@ -36,6 +36,9 @@ public class MainMenuController extends WorldController {
     private int select_button = CHOOSE_LEVEL;
     private Vector2[] select_button_locs = {new Vector2(365f, 230f), new Vector2(630f, 125f)};
 
+    // player selected another mode
+    private String nextCon = "";
+
     Texture fern = new Texture(Gdx.files.internal
 						("texture/background/fern.png"));
 
@@ -51,7 +54,7 @@ public class MainMenuController extends WorldController {
 
         InputController input = InputController.getInstance();
 
-        if (input.didLeftButtonPress()) {
+        if (input.didLeftButtonPress() || nextCon.equals("GM")) {
             System.out.println("GM");
             listener.exitScreen(this, EXIT_MM_GM);
             return false;
@@ -96,6 +99,7 @@ public class MainMenuController extends WorldController {
 
     @Override
     public void reset() {
+        nextCon = "";
     }
 
     @Override
@@ -113,8 +117,7 @@ public class MainMenuController extends WorldController {
 
             if(input.didBottomButtonPress() && home_button == PLAY_BUTTON) {
                 selected = 1;
-                System.out.println("GM");
-                listener.exitScreen(this, EXIT_MM_GM);
+                nextCon = "GM";
                 return;
             }
             else if(input.didBottomButtonPress() && home_button == LEVEL_SELECT_BUTTON) {
@@ -148,8 +151,7 @@ public class MainMenuController extends WorldController {
             }
             else if(input.didBottomButtonPress() && select_button == CHOOSE_LEVEL){
                     System.out.println("selected level");
-                    System.out.println("GM");
-                    listener.exitScreen(this, EXIT_MM_GM);
+                    nextCon = "GM";
                     return;
             }
         }
