@@ -109,6 +109,7 @@ public class Vine extends ComplexObstacle {
 	 */
 	public Vine(float x0, float y0, float x1, float y1, float lwidth, float lheight, boolean pinned, float angle, float omega) {
 		super(x0,y0);
+		System.out.println(lheight);
 		pin = pinned;
 		setName(VINE_NAME);
 
@@ -120,7 +121,7 @@ public class Vine extends ComplexObstacle {
 		//System.out.println("lwidth "+lwidth+" lheight "+lheight);
 		
 		planksize = new Vector2(lwidth,lheight);
-		linksize = planksize.y;
+		linksize = lheight;
 
 		//System.out.println("linksize before "+linksize);
 		
@@ -148,7 +149,8 @@ public class Vine extends ComplexObstacle {
 	    //System.out.println("linksize "+linksize);
 	    	    
 	    // Create the planks
-		planksize.y = linksize;
+		planksize.y = lheight;
+	    System.out.println(planksize);
 	    Vector2 pos = new Vector2();
 	    for (int ii = 0; ii < nLinks; ii++) {
 	        float t = ii*(linksize+spacing) + linksize/2.0f;

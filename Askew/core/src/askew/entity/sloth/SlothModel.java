@@ -122,7 +122,6 @@ public class SlothModel extends ComplexObstacle  {
     private static final float SHOULDER_XOFFSET    = 0.00f;
     private static final float SHOULDER_YOFFSET    = 0.00f;
 
-
     private static final float ARM_XOFFSET    = 1.00f;
     private static final float ARM_YOFFSET    = 0;
 
@@ -585,16 +584,15 @@ public class SlothModel extends ComplexObstacle  {
     }
 
     public void activateSlothPhysics(World world) {
-        float MN_HEIGHT = 5.0f;
-        float MN_SENSOR_HEIGHT = .4f;
-        float MN_WIDTH = .4f;
+        float MN_SENSOR_HEIGHT = .2f;
+        float MN_SENSOR_WIDTH = .2f;
         //float MN_SHRINK = 0.6f;
         Vector2 sensorCenter = new Vector2(0, 0);
         FixtureDef sensorDef = new FixtureDef();
         sensorDef.density = 0.0f;
         sensorDef.isSensor = true;
         sensorShape = new PolygonShape();
-        sensorShape.setAsBox(MN_WIDTH, MN_SENSOR_HEIGHT, sensorCenter, 0.0f);
+        sensorShape.setAsBox(MN_SENSOR_WIDTH, MN_SENSOR_HEIGHT, sensorCenter, 0.0f);
         sensorDef.shape = sensorShape;
 
         sensorFixture1 = bodies.get(PART_LEFT_HAND).getBody().createFixture(sensorDef);
