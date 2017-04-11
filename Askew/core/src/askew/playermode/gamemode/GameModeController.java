@@ -22,7 +22,9 @@ import askew.playermode.WorldController;
 import askew.playermode.leveleditor.LevelModel;
 import askew.util.SoundController;
 import askew.util.json.JSONLoaderSaver;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -61,6 +63,9 @@ public class GameModeController extends WorldController {
 	private PhysicsController collisions;
 
 	private JSONLoaderSaver jsonLoaderSaver;
+	private float initFlowX;
+	private float initFlowY;
+	private Texture background;
 
 	/**
 	 * Preloads the assets for this controller.
@@ -76,6 +81,7 @@ public class GameModeController extends WorldController {
 		if (platformAssetState != AssetState.EMPTY) {
 			return;
 		}
+		manager.load("sound/music/askew.wav", Sound.class);
 		platformAssetState = AssetState.LOADING;
 		jsonLoaderSaver.setManager(manager);
 		super.preLoadContent(manager);
@@ -97,6 +103,8 @@ public class GameModeController extends WorldController {
 		}
 
 		//SoundController sounds = SoundController.getInstance();
+		SoundController.getInstance().allocate(manager, "sound/music/askew.wav");
+		background = manager.get("texture/background/background1.png", Texture.class);
 
 		super.loadContent(manager);
 		platformAssetState = AssetState.COMPLETE;
@@ -161,6 +169,7 @@ public class GameModeController extends WorldController {
 		objects.clear();
 		addQueue.clear();
 		world.dispose();
+		SoundController.getInstance().stop("bgmusic");
 
 		world = new World(gravity,false);
 		if(collisions == null){
@@ -172,7 +181,7 @@ public class GameModeController extends WorldController {
 		setComplete(false);
 		setFailure(false);
 		populateLevel();
-
+		SoundController.getInstance().play("bgmusic","sound/music/askew.wav",true);
 	}
 
 	/**
@@ -199,6 +208,8 @@ public class GameModeController extends WorldController {
 						sloth = (SlothModel) o;
 						sloth.activateSlothPhysics(world);
 						collisions.setSloth(sloth);
+						initFlowX = sloth.getX();
+						initFlowY = sloth.getY();
 					}
 					if (o instanceof OwlModel) {
 						owl = (OwlModel) o;
@@ -381,19 +392,18 @@ public class GameModeController extends WorldController {
 
     	camTrans.translate(canvas.getWidth()/2,canvas.getHeight()/2);
 
-		sloth.drawGrab(canvas, camTrans);
 		canvas.begin(camTrans);
-
+		canvas.draw(background, Color.WHITE, .25f*background.getWidth(),.75f * background.getHeight(),initFlowX*worldScale.x,initFlowY*worldScale.y,background.getWidth(), background.getHeight());
 		for(Entity obj : objects) {
 			obj.setDrawScale(worldScale);
 			obj.draw(canvas);
 		}
 
-
-
 		if (!playerIsReady)
 			printHelp();
 		canvas.end();
+		sloth.drawGrab(canvas, camTrans);
+
 
 		if (debug) {
 			canvas.beginDebug(camTrans);
