@@ -29,13 +29,13 @@ public class MainMenuController extends WorldController {
     private final int LEVEL_SELECT_BUTTON = 1;
     private final int QUIT_BUTTON = 2;
     private int home_button = PLAY_BUTTON;
-    private Vector2[] home_button_locs = {new Vector2(780f,260f), new Vector2(545f,193f), new Vector2(780f,130f)};
+    private Vector2[] home_button_locs = {new Vector2(620f,257f), new Vector2(620f,204f), new Vector2(620f,155f)};
 
     // level select mode options
     private final int CHOOSE_LEVEL = 0;
     private final int RETURN_HOME = 1;
     private int select_button = CHOOSE_LEVEL;
-    private Vector2[] select_button_locs = {new Vector2(365f, 230f), new Vector2(630f, 125f)};
+    private Vector2[] select_button_locs = {new Vector2(630f, 230f), new Vector2(625f, 170f)};
 
     private static final String FERN_TEXTURE = "texture/background/fern.png";
     private static final String MENU_BACKGROUND1_TEXTURE = "texture/background/menu1.png";
@@ -103,7 +103,7 @@ public class MainMenuController extends WorldController {
             canvas.draw(fern, home_button_locs[home_button].x, home_button_locs[home_button].y);
         }
         else if(mode == LEVEL_SELECT) {
-            canvas.drawText("         " + selected, displayFont, 450f, 280f);
+            canvas.drawText("         " + selected, displayFont, 300f, 280f);
             canvas.draw(fern, select_button_locs[select_button].x, select_button_locs[select_button].y);
         }
         canvas.end();

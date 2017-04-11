@@ -185,7 +185,7 @@ public class StiffBranch extends ComplexObstacle {
 		flexJointDef.upperAngle = UPPER_LIMIT;
 		Joint joint = world.createJoint(flexJointDef);
 		joints.add(joint);
-		
+
 		// Link the planks together
 		anchor1.y = linksize / 2;
 		for (int ii = 0; ii < bodies.size-1; ii++) {
