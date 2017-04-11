@@ -2,12 +2,14 @@ package askew.entity.owl;
 
 import askew.GameCanvas;
 import askew.MantisAssetManager;
+import askew.entity.FilterGroup;
 import askew.entity.obstacle.BoxObstacle;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.Filter;
 
 /**
  * The owl which must be reached at the end of every level.
@@ -43,6 +45,10 @@ public class OwlModel extends BoxObstacle  {
         this.setFriction(0);
         this.setRestitution(0);
         this.setSensor(true);
+        Filter f = new Filter();
+        f.maskBits = FilterGroup.SLOTH;
+        f.categoryBits = FilterGroup.WALL;
+        this.setFilterData(f);
         this.setName("owl");
     }
 

@@ -162,7 +162,8 @@ public class LevelEditorController extends WorldController {
 	 * The game has default gravity and other settings
 	 */
 	public LevelEditorController() {
-		super(36,18,0);
+//		super(36,18,0); I want this scale but for the sake of alpha:
+		super(DEFAULT_WIDTH,DEFAULT_HEIGHT,0);
 		setDebug(false);
 		setComplete(false);
 		setFailure(false);
