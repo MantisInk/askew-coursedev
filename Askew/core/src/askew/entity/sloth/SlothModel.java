@@ -181,7 +181,7 @@ public class SlothModel extends ComplexObstacle  {
         BoxObstacle part;
 
         // Body
-        part = makePart(PART_BODY, PART_NONE, x, y,BODY_WIDTH,BODY_HEIGHT, BODY_DENSITY,false);
+        part = makePart(PART_BODY, PART_NONE, x, y,BODY_WIDTH,BODY_HEIGHT, BODY_DENSITY,true);
         part.setFixedRotation(BODY_FIXED_ROTATION);
         part.setGravityScale(GRAVITY_SCALE);
 
@@ -259,7 +259,7 @@ public class SlothModel extends ComplexObstacle  {
 
 
         BoxObstacle body;
-        if(!collides){
+        if(collides){
             body = new BoxObstacle(partCache.x, partCache.y, dwidth, dheight);
             Filter f = new Filter();
             f.maskBits = FilterGroup.WALL;
@@ -269,6 +269,10 @@ public class SlothModel extends ComplexObstacle  {
         else{
             body = new BoxObstacle(partCache.x, partCache.y, dwidth, dheight);
             body.setFriction(.4f);
+            Filter f = new Filter();
+            f.maskBits = FilterGroup.NOCOLLIDE;
+            f.categoryBits = FilterGroup.ARM;
+            body.setFilterData(f);
         }
         body.setDrawScale(drawScale);
         body.setTexture(texture);
