@@ -51,8 +51,8 @@ public class WallModel extends PolygonObstacle {
             this.setSensor(true);
             this.setName("thorns");
             Filter f = new Filter();
-            f.maskBits = FilterGroup.NOCOLLIDE;
-            f.categoryBits = FilterGroup.NOCOLLIDE;
+            f.maskBits = FilterGroup.SLOTH;
+            f.categoryBits = FilterGroup.WALL;
             this.setFilterData(f);
         } else {
             Filter f = new Filter();

@@ -53,6 +53,15 @@
           0.0
         ]
       }
+    },
+    {
+      "CLASSNAME": "askew.entity.ghost.GhostModel",
+      "INSTANCE": {
+        "x": 7.0,
+        "y": 7.0,
+        "patroldx": 9.0,
+        "patroldy": 9.0
+      }
     }
   ]
 }
