@@ -135,7 +135,7 @@ public class SlothModel extends ComplexObstacle  {
     private static final float ARM_HEIGHT = 0.4924f;
 
     private static final float ARM_XOFFSET    = ARM_WIDTH / 2f + .375f;
-    private static final float ARM_YOFFSET    = 3f;
+    private static final float ARM_YOFFSET    = 0f;
 
     private static final float HAND_WIDTH = 0.1125f;
     private static final float HAND_HEIGHT = 0.1125f;
@@ -184,13 +184,13 @@ public class SlothModel extends ComplexObstacle  {
 
         // ARMS
         // Right arm
-        part = makePart(PART_RIGHT_ARM, PART_BODY, SHOULDER_XOFFSET + ARM_XOFFSET, SHOULDER_YOFFSET + ARM_YOFFSET,ARM_WIDTH,ARM_HEIGHT, ARM_DENSITY,false);
-        part.setAngle((float)Math.PI);
+        part = makePart(PART_RIGHT_ARM, PART_BODY, SHOULDER_XOFFSET + ARM_XOFFSET/2f, SHOULDER_YOFFSET + ARM_YOFFSET,ARM_WIDTH,ARM_HEIGHT, ARM_DENSITY,false);
+//        part.setAngle((float)Math.PI);
         part.setGravityScale(GRAVITY_SCALE);
         //part.setMass(ARM_MASS);
 
         // Left arm
-        part = makePart(PART_LEFT_ARM, PART_BODY, -ARM_XOFFSET, -ARM_YOFFSET,ARM_WIDTH,ARM_HEIGHT, ARM_DENSITY,false);
+        part = makePart(PART_LEFT_ARM, PART_BODY, -ARM_XOFFSET/2f, -ARM_YOFFSET,ARM_WIDTH,ARM_HEIGHT, ARM_DENSITY,false);
         part.setAngle((float)Math.PI);
         part.setGravityScale(GRAVITY_SCALE);
         //part.setMass(ARM_MASS);
