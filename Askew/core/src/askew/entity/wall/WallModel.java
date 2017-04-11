@@ -55,7 +55,7 @@ public class WallModel extends PolygonObstacle {
             this.setFilterData(f);
         } else {
             Filter f = new Filter();
-            f.maskBits = 0x0100;
+            f.maskBits = 0x0001;
             f.categoryBits = 0x0100;
             this.setFilterData(f);
         }
