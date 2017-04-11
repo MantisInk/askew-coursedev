@@ -170,9 +170,8 @@ public class GDXRoot extends Game implements ScreenListener {
 		// Intentional fallthrough
 		else if (exitCode == WorldController.EXIT_MM_GM) {
 			current = CON_GM;
-			GameModeController gm =(GameModeController) controllers[CON_GM];
 			MainMenuController mm = (MainMenuController) controllers[CON_MM];
-			gm.setLevel(mm.getLevel());
+			((GameModeController)controllers[current]).setLevel(mm.getLevel());
 			controllers[current].reset();
 			setScreen(controllers[current]);
 
