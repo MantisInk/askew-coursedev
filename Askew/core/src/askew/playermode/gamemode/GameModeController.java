@@ -314,14 +314,8 @@ public class GameModeController extends WorldController {
 		//if (!PlatformController.getPlayerIsReady()) {//Boop
 		displayFont.setColor(Color.YELLOW);
 //			canvas.begin(); // DO NOT SCALE
-		//canvas.drawTextCentered("Hold R at the start!", displayFont, 0.0f);
-		//canvas.drawText(String text, BitmapFont font, float x, float y) {
 		SlothModel sloth = getSloth();
-//			float x_pos = -1 * sloth.getBody().getPosition().x * sloth.getDrawScale().x;
-//			float y_pos = -1 * sloth.getBody().getPosition().y * sloth.getDrawScale().y;
-		float x_pos = sloth.getBody().getPosition().x;
-		float y_pos = sloth.getBody().getPosition().y;
-		canvas.drawText("Hold R \n to start!", displayFont, 0.0f, 550.0f);
+		canvas.drawText("Hold R \n to start!", displayFont, initFlowX * worldScale.x, initFlowY * worldScale.y + 200f);
 //			canvas.end();
 		//}
 	}
