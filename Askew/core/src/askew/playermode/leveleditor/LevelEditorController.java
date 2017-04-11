@@ -12,10 +12,11 @@ package askew.playermode.leveleditor;
 
 import askew.*;
 import askew.entity.Entity;
+import askew.entity.ghost.GhostModel;
 import askew.entity.owl.OwlModel;
+import askew.entity.wall.WallModel;
 import askew.util.json.JSONLoaderSaver;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Affine2;
@@ -27,8 +28,10 @@ import com.google.gson.JsonObject;
 import askew.playermode.WorldController;
 import askew.entity.obstacle.ComplexObstacle;
 import askew.entity.obstacle.Obstacle;
-import askew.entity.trunk.Trunk;
-import askew.entity.stiffbranch.StiffBranch;
+import askew.entity.tree.Trunk;
+import askew.entity.tree.PoleVault;
+import askew.entity.tree.StiffBranch;
+import askew.entity.tree.Tree;
 import askew.entity.vine.Vine;
 import askew.entity.sloth.SlothModel;
 import askew.util.PooledList;
@@ -65,10 +68,13 @@ public class LevelEditorController extends WorldController {
 
 	private static ShapeRenderer gridLineRenderer = new ShapeRenderer();
 
-
 	Affine2 camTrans;
 	float cxCamera;
 	float cyCamera;
+	float adjustedMouseX;
+	float adjustedMouseY;
+
+	protected Vector2 oneScale;
 
 
 	@Getter
@@ -89,10 +95,14 @@ public class LevelEditorController extends WorldController {
 	public static final String[] creationOptions = {
 			".SlothModel",
 			".Vine",
-			".WallModel",
+			".PoleVault",
 			".Trunk",
 			".StiffBranch",
-			".OwlModel"
+			".OwlModel",
+			".WallModel",
+			".Tree",
+			".OwlModel",
+			".GhostModel"
 	};
 
 	private boolean prompting;
@@ -141,7 +151,7 @@ public class LevelEditorController extends WorldController {
 	 *
 	 * @param manager Reference to global asset manager.
 	 */
-	public void preLoadContent(AssetManager manager) {
+	public void preLoadContent(MantisAssetManager manager) {
 		super.preLoadContent(manager);
 		jsonLoaderSaver.setManager(manager);
 	}
@@ -156,7 +166,7 @@ public class LevelEditorController extends WorldController {
 	 *
 	 * @param manager Reference to global asset manager.
 	 */
-	public void loadContent(AssetManager manager) {
+	public void loadContent(MantisAssetManager manager) {
 		if (levelEditorAssetState != AssetState.LOADING) {
 			return;
 		}
@@ -171,7 +181,7 @@ public class LevelEditorController extends WorldController {
 	 * The game has default gravity and other settings
 	 */
 	public LevelEditorController() {
-		super(DEFAULT_WIDTH,DEFAULT_HEIGHT,0);
+		super(36,18,0);
 		setDebug(false);
 		setComplete(false);
 		setFailure(false);
@@ -181,9 +191,14 @@ public class LevelEditorController extends WorldController {
 		showHelp = true;
 		shouldDrawGrid = true;
 		camTrans = new Affine2();
-
 		vimMode = false;
 		selectedEntity = false;
+		oneScale = new Vector2(1,1);
+
+	}
+
+	public void setLevel(String levelName) {
+		currentLevel = levelName;
 	}
 
 	/**
@@ -194,9 +209,9 @@ public class LevelEditorController extends WorldController {
 	public void reset() {
 		Vector2 gravity = new Vector2(world.getGravity() );
 
-		for(Obstacle obj : objects) {
-			if(! (obj instanceof SlothModel))
-				obj.deactivatePhysics(world);
+		for(Entity obj : objects) {
+			if( (obj instanceof Obstacle))
+				((Obstacle)obj).deactivatePhysics(world);
 		}
 
 		objects.clear();
@@ -253,7 +268,7 @@ public class LevelEditorController extends WorldController {
 		InputController input = InputController.getInstance();
 
 		if (input.didLeftButtonPress()) {
-			System.out.println("GE");
+			System.out.println("GM");
 			listener.exitScreen(this, EXIT_LE_GM);
 			return false;
 		} else if (input.didTopButtonPress()) {
@@ -271,26 +286,44 @@ public class LevelEditorController extends WorldController {
 	 * @param y
      */
 	private void createXY(float x, float y) {
+		x = Math.round(x);
+		y = Math.round(y);
 		switch (creationOptions[entityIndex]) {
 			case ".SlothModel":
 				SlothModel sTemplate = new SlothModel(x,y);
 				promptTemplate(sTemplate);
 				break;
 			case ".Vine":
-				Vine vTemplate = new Vine(x,y,5.0f,0.25f,1.0f,scale);
+				Vine vTemplate = new Vine(x,y,5.0f,0.25f,1.0f,oneScale, 5f, -400f);
 				promptTemplate(vTemplate);
 				break;
-			case ".trunk":
-				Trunk tTemplate = new Trunk(x,y, 5.0f, 0.25f, 1.0f, 3.0f,scale);
+			case ".Trunk":
+				Trunk tTemplate = new Trunk(x,y, 5.0f, 0.25f, 1.0f, 3.0f,oneScale, 0);
 				promptTemplate(tTemplate);
 				break;
+			case ".PoleVault":
+				PoleVault pvTemplate = new PoleVault(x,y, 5.0f, 0.25f, 1.0f, oneScale, 0);
+				promptTemplate(pvTemplate);
+				break;
 			case ".StiffBranch":
-				StiffBranch sb = new StiffBranch(x,y, 3.0f, 0.25f, 1.0f,scale);
+				StiffBranch sb = new StiffBranch(x,y, 3.0f, 0.25f, 1.0f,oneScale);
 				promptTemplate(sb);
+				break;
+			case ".Tree":
+				Tree tr = new Tree(x,y,5f, 3f, 0.25f, 1.0f, oneScale);
+				promptTemplate(tr);
 				break;
 			case ".OwlModel":
 				OwlModel owl = new OwlModel(x,y);
 				promptTemplate(owl);
+				break;
+			case ".WallModel":
+				WallModel wall = new WallModel(x,y,new float[] {0,0,0f,1f,1f,1f,1f,0f}, false);
+				promptTemplate(wall);
+				break;
+			case ".GhostModel":
+				GhostModel ghost = new GhostModel(x,y,x+2,y+2);
+				promptTemplate(ghost);
 				break;
 			default:
 				System.err.println("UNKNOWN ENT");
@@ -300,61 +333,18 @@ public class LevelEditorController extends WorldController {
 	}
 
 	private void deleteEntity(float adjustedMouseX, float adjustedMouseY){
-		QueryCallback qc = fixture -> {
-			Object userData = fixture.getBody().getUserData();
-			for (Obstacle o : objects) {
-				if (o == userData) {
-					objects.remove(o);
-					return false;
-				}
-
-				if (o instanceof ComplexObstacle) {
-					for (Obstacle oo : ((ComplexObstacle) o).getBodies()) {
-						if (oo == userData) {
-							objects.remove(o);
-							return false;
-						}
-					}
-				}
-			}
-			return true;
-		};
-
-		world.QueryAABB(qc,adjustedMouseX,adjustedMouseY,adjustedMouseX,adjustedMouseY);
+		Entity select = entityQuery();
+		if (select != null) objects.remove(select);
 		inputRateLimiter = UI_WAIT_SHORT;
 	}
 
 	private void editEntity(float adjustedMouseX, float adjustedMouseY){
-		QueryCallback qc = fixture -> {
-			Object userData = fixture.getBody().getUserData();
-			for (Obstacle o : objects) {
-				if (o == userData) {
-					//promptTemplate(o);
-					//System.out.println(o.getClass().getName());
-					if(isVimMode()) promptTemplate(o); //changeEntityParam(o, o.getClass().getName());
-					else changeEntityParam(o); //Allow user to edit parameters on GUI
-
-					objects.remove(o);
-					return false;
-				}
-
-				if (o instanceof ComplexObstacle) {
-					for (Obstacle oo : ((ComplexObstacle) o).getBodies()) {
-						if (oo == userData) {
-							//promptTemplate(o);
-							if(isVimMode()) promptTemplate(o); //changeEntityParam(o, o.getClass().getName());
-							else changeEntityParam(o); //Allow user to edit parameters on GUI
-
-							objects.remove(o);
-							return false;
-						}
-					}
-				}
-			}
-			return true;
-		};
-
-		world.QueryAABB(qc,adjustedMouseX,adjustedMouseY,adjustedMouseX,adjustedMouseY);
+		Entity select = entityQuery();
+		if (select != null) {
+			if(isVimMode()) promptTemplate(select);
+			else changeEntityParam(select);
+			objects.remove(select);
+		}
 		inputRateLimiter = UI_WAIT_SHORT;
 	}
 
@@ -362,15 +352,9 @@ public class LevelEditorController extends WorldController {
 		System.out.println("Saving...");
 		LevelModel timeToSave = new LevelModel();
 		timeToSave.setTitle(currentLevel);
-		for (Obstacle o : objects) {
+		for (Entity o : objects) {
 			timeToSave.addEntity(o);
 		}
-		if (jsonLoaderSaver.saveLevel(timeToSave, currentLevel)) {
-			System.out.println("Saved!");
-		} else {
-			System.err.println("ERROR IN SAVE");
-		}
-		inputRateLimiter = UI_WAIT_LONG;
 	}
 
 	private void loadLevel(){
@@ -427,12 +411,16 @@ public class LevelEditorController extends WorldController {
 			//System.out.println(entityObject); //FIX EVERYTHING
 
 			// flipping swing
-			JDialog mainFrame = new JDialog();
-			mainFrame.setSize(600,600);
-			mainFrame.setLocationRelativeTo(null);
+			JDialog entityDisplay = new JDialog();
+			entityDisplay.setSize(600,600);
+			entityDisplay.setLocationRelativeTo(null);
 			JPanel panel = new JPanel();
+			//panel.setLayout(new FlowLayout());
+			panel.setLayout(null);
+
 			//JFrame panel = new JFrame();
-			panel.setLayout(new FlowLayout());
+			//panel.setSize(600,600);
+			//panel.setLocationRelativeTo(null);
 //			final JTextArea commentTextArea =
 //					new JTextArea(jsonOfTemplate,20,30);
 			//panel.add(commentTextArea);
@@ -445,7 +433,7 @@ public class LevelEditorController extends WorldController {
 			//String entity_name = className;
 			//int field_num = 2;
 			int buffer = 5;
-			int text_height = 15;
+			int text_height = 20;
 
 			//float x = entityObject.get("x").getAsFloat();
 			//float y = entityObject.get("y").getAsFloat();
@@ -453,27 +441,57 @@ public class LevelEditorController extends WorldController {
 			float x = entity_prop.get("x").getAsFloat();
 			float y = entity_prop.get("y").getAsFloat();
 
+			//Assignments to make Java not complain
+//			float x = 0;
+//			float y = 0;
+			JsonObject trunkObject, branchObject;
+//			JsonObject trunkObject = entity_prop;
+//			JsonObject branchObject = entity_prop;
+
 			JButton delete_thing = new JButton("Delete Entity");
 
 			//JLabel header = new JLabel("Entity Properties");
 			JLabel header = new JLabel("Entity Properties (Please hit OK instead of X)");
+
+			//TODO Add back in for .Tree
+//			if (entity_name == ".Tree"){
+//				trunkObject = entity_prop.get("treeTrunk").getAsJsonObject();
+//				branchObject = entity_prop.get("treeBranch").getAsJsonObject();
+//
+//				//Extract X and Y for each entity
+//			}
+//			else {
+//				//More assignments to make Java not complain
+//				trunkObject = entity_prop;
+//				branchObject = entity_prop;
+//
+//				x = entity_prop.get("x").getAsFloat();
+//				y = entity_prop.get("y").getAsFloat();
+//			}
+
+//			JButton delete_thing = new JButton("Delete Entity");
+//
+//			//JLabel header = new JLabel("Entity Properties");
+//			JLabel header = new JLabel("Entity Properties (Please hit OK instead of X)");
 			JLabel x_pos_text = new JLabel("X:");
 			JTextField x_pos_val = new JTextField(""+x);
 			JLabel y_pos_text = new JLabel("Y:");
 			JTextField y_pos_val = new JTextField(""+y);
 
-			header.setBounds(buffer, buffer, 100, text_height);
-			delete_thing.setBounds((2*buffer)+100, buffer, 300, text_height);
+			header.setBounds(buffer, buffer, 300, text_height);
+			delete_thing.setBounds((2*buffer)+300, buffer, 150, text_height);
 			x_pos_text.setBounds((2*buffer), text_height+(2*buffer), 25, text_height);
-			x_pos_val.setBounds((3*buffer)+25, text_height+(2*buffer), 50, text_height);
+			x_pos_val.setBounds((3*buffer)+25, text_height+(2*buffer), 75, text_height);
 			y_pos_text.setBounds((2*buffer), (2*text_height)+(3*buffer), 25, text_height);
-			y_pos_val.setBounds((3*buffer)+25, (2*text_height)+(3*buffer), 50, text_height);
+			y_pos_val.setBounds((3*buffer)+25, (2*text_height)+(3*buffer), 75, text_height);
 
 			delete_thing.addActionListener(e -> {
 				deleteEntity(x,y);
 				//promptTemplateCallback(commentTextArea.getText());
-				mainFrame.setVisible(false);
-				mainFrame.dispose();
+				entityDisplay.setVisible(false);
+				entityDisplay.dispose();
+				//panel.setVisible(false);
+				//panel.dispose();
 			});
 
 			panel.add(header);
@@ -509,18 +527,19 @@ public class LevelEditorController extends WorldController {
 
 						promptTemplateCallback(temp2);
 
-						mainFrame.setVisible(false);
-						mainFrame.dispose();
+						entityDisplay.setVisible(false);
+						entityDisplay.dispose();
+						//panel.setVisible(false);
+						//panel.dispose();
 					});
 					break;
 				case ".Vine":
 					float current_vines = entity_prop.get("numLinks").getAsFloat();
-					//float current_vines = entityObject.get("numLinks").getAsFloat();
-					JLabel vine_text = new JLabel("Number of links");
+					JLabel vine_text = new JLabel("# Links");
 					JTextField vine_links = new JTextField(""+current_vines);
 
-					vine_text.setBounds((2*buffer), (3*text_height)+(4*buffer), 25, text_height);
-					vine_links.setBounds((3*buffer)+25, (3*text_height)+(4*buffer), 50, text_height);
+					vine_text.setBounds((2*buffer), (3*text_height)+(4*buffer), 75, text_height);
+					vine_links.setBounds((3*buffer)+75, (3*text_height)+(4*buffer), 75, text_height);
 
 					panel.add(vine_text);
 					panel.add(vine_links);
@@ -557,8 +576,10 @@ public class LevelEditorController extends WorldController {
 
 						promptTemplateCallback(temp2);
 
-						mainFrame.setVisible(false);
-						mainFrame.dispose();
+						entityDisplay.setVisible(false);
+						entityDisplay.dispose();
+						//panel.setVisible(false);
+						//panel.dispose();
 					});
 
 					//field_num++;
@@ -584,9 +605,9 @@ public class LevelEditorController extends WorldController {
 					}
 
 					JLabel box_width_text = new JLabel("Width: ");
-					JTextField box_width_val = new JTextField(width);
+					JTextField box_width_val = new JTextField(""+width);
 					JLabel box_height_text = new JLabel("Height: ");
-					JTextField box_height_val = new JTextField(height);
+					JTextField box_height_val = new JTextField(""+height);
 
 					if (thorns_flag) yes_thorn.setSelected(true);
 					else no_thorn.setSelected(true);
@@ -594,10 +615,10 @@ public class LevelEditorController extends WorldController {
 					yes_thorn.setBounds((2*buffer), (3*text_height)+(4*buffer), 75, text_height);
 					no_thorn.setBounds((3*buffer)+75, (3*text_height)+(4*buffer), 100, text_height);
 
-					box_width_text.setBounds((2*buffer), (3*text_height)+(5*buffer), 100, text_height);
-					box_width_val.setBounds((3*buffer)+100, (3*text_height)+(5*buffer), 100, text_height);
-					box_height_text.setBounds((2*buffer), (4*text_height)+(6*buffer), 100, text_height);
-					box_height_val.setBounds((3*buffer)+100, (4*text_height)+(6*buffer), 100, text_height);
+					box_width_text.setBounds((2*buffer), (4*text_height)+(5*buffer), 75, text_height);
+					box_width_val.setBounds((3*buffer)+75, (4*text_height)+(5*buffer), 100, text_height);
+					box_height_text.setBounds((2*buffer), (5*text_height)+(6*buffer), 75, text_height);
+					box_height_val.setBounds((3*buffer)+75, (5*text_height)+(6*buffer), 100, text_height);
 
 
 					thorn_buttons.add(yes_thorn);
@@ -642,8 +663,10 @@ public class LevelEditorController extends WorldController {
 						String temp2 = jsonLoaderSaver.stringFromJson(entityObject);
 						promptTemplateCallback(temp2);
 
-						mainFrame.setVisible(false);
-						mainFrame.dispose();
+						entityDisplay.setVisible(false);
+						entityDisplay.dispose();
+						//panel.setVisible(false);
+						//panel.dispose();
 					});
 
 					//field_num += 2;
@@ -658,10 +681,10 @@ public class LevelEditorController extends WorldController {
 					JLabel stiff_text = new JLabel("Stiffness");
 					JTextField stiff_val = new JTextField(""+current_stiff);
 
-					link_text.setBounds((2*buffer), (3*text_height)+(4*buffer), 25, text_height);
-					link_val.setBounds((3*buffer)+25, (3*text_height)+(4*buffer), 50, text_height);
-					stiff_text.setBounds((2*buffer), (4*text_height)+(5*buffer), 25, text_height);
-					stiff_val.setBounds((3*buffer)+25, (4*text_height)+(5*buffer), 50, text_height);
+					link_text.setBounds((2*buffer), (3*text_height)+(4*buffer), 100, text_height);
+					link_val.setBounds((3*buffer)+100, (3*text_height)+(4*buffer), 75, text_height);
+					stiff_text.setBounds((2*buffer), (4*text_height)+(5*buffer), 100, text_height);
+					stiff_val.setBounds((3*buffer)+100, (4*text_height)+(5*buffer), 75, text_height);
 
 					panel.add(link_text);
 					panel.add(link_val);
@@ -687,8 +710,10 @@ public class LevelEditorController extends WorldController {
 						String temp2 = jsonLoaderSaver.stringFromJson(entityObject);
 						promptTemplateCallback(temp2);
 
-						mainFrame.setVisible(false);
-						mainFrame.dispose();
+						entityDisplay.setVisible(false);
+						entityDisplay.dispose();
+						//panel.setVisible(false);
+						//panel.dispose();
 					});
 
 					//field_num += 2;
@@ -699,8 +724,8 @@ public class LevelEditorController extends WorldController {
 					JLabel branch_text = new JLabel("Stiffness");
 					JTextField branch_val = new JTextField(""+current_branch);
 
-					branch_text.setBounds((2*buffer), (3*text_height)+(4*buffer), 25, text_height);
-					branch_val.setBounds((3*buffer)+25, (3*text_height)+(4*buffer), 50, text_height);
+					branch_text.setBounds((2*buffer), (3*text_height)+(4*buffer), 75, text_height);
+					branch_val.setBounds((3*buffer)+25, (3*text_height)+(4*buffer), 75, text_height);
 
 					panel.add(branch_text);
 					panel.add(branch_val);
@@ -721,8 +746,10 @@ public class LevelEditorController extends WorldController {
 						String temp2 = jsonLoaderSaver.stringFromJson(entityObject);
 						promptTemplateCallback(temp2);
 
-						mainFrame.setVisible(false);
-						mainFrame.dispose();
+						entityDisplay.setVisible(false);
+						entityDisplay.dispose();
+						//panel.setVisible(false);
+						//panel.dispose();
 					});
 
 					//field_num++;
@@ -742,10 +769,195 @@ public class LevelEditorController extends WorldController {
 
 						promptTemplateCallback(temp2);
 
-						mainFrame.setVisible(false);
-						mainFrame.dispose();
+						entityDisplay.setVisible(false);
+						entityDisplay.dispose();
+						//panel.setVisible(false);
+						//panel.dispose();
 					});
 
+					break;
+				case ".PoleVault":
+					float current_pole = entity_prop.get("numLinks").getAsFloat();
+					float current_angle = entity_prop.get("angle").getAsFloat();
+					float current_size = entity_prop.get("linksize").getAsFloat();
+
+					JLabel pole_text = new JLabel("Number of links");
+					JTextField pole_links = new JTextField(""+current_pole);
+					JLabel angle_text = new JLabel("Angle");
+					JTextField angle_val = new JTextField(""+current_angle);
+					JLabel size_text = new JLabel("Size");
+					JTextField size_val = new JTextField(""+current_size);
+
+					pole_text.setBounds((2*buffer), (3*text_height)+(4*buffer), 75, text_height);
+					pole_links.setBounds((3*buffer)+75, (3*text_height)+(4*buffer), 75, text_height);
+					angle_text.setBounds((2*buffer), (4*text_height)+(5*buffer), 75, text_height);
+					angle_val.setBounds((3*buffer)+75, (4*text_height)+(5*buffer), 75, text_height);
+					size_text.setBounds((2*buffer), (5*text_height)+(6*buffer), 75, text_height);
+					size_val.setBounds((3*buffer)+75, (5*text_height)+(6*buffer), 75, text_height);
+
+					panel.add(pole_text);
+					panel.add(pole_links);
+					panel.add(angle_text);
+					panel.add(angle_val);
+					panel.add(size_text);
+					panel.add(size_val);
+
+					okButton.addActionListener(e -> {
+						entity_prop.remove("x");
+						entity_prop.addProperty("x", x_pos_val.getText());
+
+						entity_prop.remove("y");
+						entity_prop.addProperty("y", y_pos_val.getText());
+
+						entity_prop.remove("numLinks");
+						entity_prop.addProperty("numLinks", pole_links.getText());
+
+						entity_prop.remove("angle");
+						entity_prop.addProperty("angle", angle_val.getText());
+
+						entity_prop.remove("linksize");
+						entity_prop.addProperty("linksize", size_val.getText());
+
+						entityObject.remove("INSTANCE");
+						entityObject.add("INSTANCE", entity_prop);
+
+						String temp2 = jsonLoaderSaver.stringFromJson(entityObject);
+
+						promptTemplateCallback(temp2);
+
+						entityDisplay.setVisible(false);
+						entityDisplay.dispose();
+						//panel.setVisible(false);
+						//panel.dispose();
+					});
+
+					break;
+				case ".Tree":
+					//TODO Add back in for .Tree
+					//entity_prop
+					//trunkObject, branchObject
+
+					//Edit Trunk
+//					float trunk_links = trunkObject.get("numLinks").getAsFloat();
+//					//float current_links = trunkObject.get("numLinks").getAsFloat();
+//					JLabel trunk_link_text = new JLabel("Number of links");
+//					JTextField trunk_link_val = new JTextField(""+trunk_links);
+//					//float current_stiff = entity_prop.get("stiffLen").getAsFloat();
+//					float trunk_stiff = trunkObject.get("stiffLen").getAsFloat();
+//					JLabel trunk_stiff_text = new JLabel("Trunk Stiffness");
+//					JTextField trunk_stiff_val = new JTextField(""+trunk_stiff);
+//
+//					trunk_link_text.setBounds((2*buffer), (3*text_height)+(4*buffer), 100, text_height);
+//					trunk_link_val.setBounds((3*buffer)+100, (3*text_height)+(4*buffer), 50, text_height);
+//					trunk_stiff_text.setBounds((2*buffer), (4*text_height)+(5*buffer), 100, text_height);
+//					trunk_stiff_val.setBounds((3*buffer)+100, (4*text_height)+(5*buffer), 50, text_height);
+//
+//					panel.add(trunk_link_text);
+//					panel.add(trunk_link_val);
+//					panel.add(trunk_stiff_text);
+//					panel.add(trunk_stiff_val);
+//
+//					//Edit Branch
+//
+//					float branch_stiff = branchObject.get("stiffLen").getAsFloat();
+//					//float current_branch = entityObject.get("stiffLen").getAsFloat();
+//					JLabel branch_stiff_text = new JLabel("Branch Stiffness");
+//					JTextField branch_stiff_val = new JTextField(""+branch_stiff);
+//
+//					branch_stiff_text.setBounds((2*buffer), (5*text_height)+(6*buffer), 75, text_height);
+//					branch_stiff_val.setBounds((3*buffer)+25, (5*text_height)+(6*buffer), 50, text_height);
+//
+//					panel.add(branch_stiff_text);
+//					panel.add(branch_stiff_val);
+//
+//					okButton.addActionListener(e -> {
+//						//Assign trunk parts
+//						trunkObject.remove("x");
+//						trunkObject.addProperty("x", x_pos_val.getText());
+//
+//						trunkObject.remove("y");
+//						trunkObject.addProperty("y", y_pos_val.getText());
+//
+//						trunkObject.remove("numLinks");
+//						trunkObject.addProperty("numLinks", link_val.getText());
+//
+//						trunkObject.remove("stiffLen");
+//						trunkObject.addProperty("stiffLen", stiff_val.getText());
+//
+//						entity_prop.remove("treeTrunk");
+//						entity_prop.addProperty("treeTrunk", stiff_val.getText());
+//
+//						//Assign branch parts
+//
+//						branchObject.remove("stiffLen");
+//						branchObject.addProperty("stiffLen", branch_val.getText());
+//
+//						entity_prop.remove("treeBranch");
+//						entity_prop.addProperty("treeBranch", stiff_val.getText());
+//
+//						//Put Everything Together
+//
+//						entityObject.remove("INSTANCE");
+//						entityObject.add("INSTANCE", entity_prop);
+//
+//						String temp2 = jsonLoaderSaver.stringFromJson(entityObject);
+//						promptTemplateCallback(temp2);
+//
+//						mainFrame.setVisible(false);
+//						mainFrame.dispose();
+//						//panel.setVisible(false);
+//						//panel.dispose();
+//					});
+
+
+					break;
+				case ".GhostModel":
+					float current_patrol_x = entity_prop.get("patroldx").getAsFloat();
+					float current_patrol_y = entity_prop.get("patroldy").getAsFloat();
+
+					JLabel patrol_text = new JLabel("Patrol Distance");
+					JLabel patrol_x_text = new JLabel("X:");
+					JLabel patrol_y_text = new JLabel("Y:");
+					JTextField patrol_x = new JTextField(""+current_patrol_x);
+					JTextField patrol_y = new JTextField(""+current_patrol_y);
+
+					patrol_text.setBounds((2*buffer), (3*text_height)+(4*buffer), 150, text_height);
+					patrol_x_text.setBounds((2*buffer), (4*text_height)+(5*buffer), 75, text_height);
+					patrol_x.setBounds((3*buffer)+25, (4*text_height)+(5*buffer), 75, text_height);
+					patrol_y_text.setBounds((2*buffer), (5*text_height)+(6*buffer), 75, text_height);
+					patrol_y.setBounds((3*buffer)+25, (5*text_height)+(6*buffer), 75, text_height);
+
+					panel.add(patrol_text);
+					panel.add(patrol_x_text);
+					panel.add(patrol_x);
+					panel.add(patrol_y_text);
+					panel.add(patrol_y);
+
+					okButton.addActionListener(e -> {
+						entity_prop.remove("x");
+						entity_prop.addProperty("x", x_pos_val.getText());
+
+						entity_prop.remove("y");
+						entity_prop.addProperty("y", y_pos_val.getText());
+
+						entity_prop.remove("patroldx");
+						entity_prop.addProperty("patroldx", patrol_x.getText());
+
+						entity_prop.remove("patroldy");
+						entity_prop.addProperty("patroldy", patrol_y.getText());
+
+						entityObject.remove("INSTANCE");
+						entityObject.add("INSTANCE", entity_prop);
+
+						String temp2 = jsonLoaderSaver.stringFromJson(entityObject);
+
+						promptTemplateCallback(temp2);
+
+						entityDisplay.setVisible(false);
+						entityDisplay.dispose();
+						//panel.setVisible(false);
+						//panel.dispose();
+					});
 					break;
 				default:
 					System.out.println("Invalid entity?!?!?!? What are you trying to add? @w@");
@@ -753,7 +965,7 @@ public class LevelEditorController extends WorldController {
 			}
 
 
-			mainFrame.add(panel);
+			entityDisplay.add(panel);
 //			JButton okButton = new JButton("OK");
 //			JLabel please_text = new JLabel("Please hit OK instead of X");
 //			okButton.addActionListener(e -> {
@@ -762,7 +974,8 @@ public class LevelEditorController extends WorldController {
 //				mainFrame.dispose();
 //			});
 			panel.add(okButton);
-			mainFrame.setVisible(true);
+			entityDisplay.setVisible(true);
+			//panel.setVisible(true);
 		}
 	}
 
@@ -806,6 +1019,25 @@ public class LevelEditorController extends WorldController {
 		}
 	}
 
+	public Entity entityQuery() {
+		float MAX_DISTANCE = 2f;
+		Entity found = null;
+		Vector2 mouse = new Vector2(adjustedMouseX, adjustedMouseY);
+		float minDistance = Float.MAX_VALUE;
+		for (Entity e : objects) {
+			float curDist = e.getPosition().dst(mouse);
+			if (curDist < minDistance) {
+				found = e;
+				minDistance = curDist;
+			}
+		}
+
+		if (minDistance < MAX_DISTANCE) {
+			return found;
+		}
+		return null;
+	}
+
 	public void update(float dt) {
 
 		// Decrement rate limiter to allow new input
@@ -817,23 +1049,23 @@ public class LevelEditorController extends WorldController {
 		// Allow access to mouse coordinates for multiple inputs
 		float mouseX = InputController.getInstance().getCrossHair().x;
 		float mouseY = InputController.getInstance().getCrossHair().y;
-		float adjustedMouseX = mouseX - (cxCamera + canvas.getWidth()/2) / scale.x;
-		float adjustedMouseY = mouseY - (cyCamera + canvas.getHeight()/2) / scale.y;
+
+		adjustedMouseX = mouseX - (cxCamera + canvas.getWidth()/2) / worldScale.x;
+		adjustedMouseY = mouseY - (cyCamera + canvas.getHeight()/2) / worldScale.y;
 
 		//Toggle scrolling flag
 		setScrollEnabled(InputController.getInstance().isRShiftKeyPressed() ||
 				InputController.getInstance().isLShiftKeyPressed());
 
 		//Toggle "VIM" mode
-		if(InputController.getInstance().isVKeyPressed()){
-			if(isVimMode()) setVimMode(false);
+		if(InputController.getInstance().isVKeyPressed()) {
+			if (isVimMode()) setVimMode(false);
 			else setVimMode(true);
 			inputRateLimiter = UI_WAIT_LONG;
 		}
 
 		//Allows user to move the camera/view of the level
-		if(isScrollEnabled()){
-			// Check for pan
+		if(isScrollEnabled()) {
 			if (mouseX < 1) {
 				// Pan left
 				cxCamera += 10;
@@ -842,13 +1074,14 @@ public class LevelEditorController extends WorldController {
 				// down
 				cyCamera += 10;
 			}
-			if (mouseX > (canvas.getWidth() / scale.x) - 1) {
+			if (mouseX > (canvas.getWidth() / worldScale.x) - 1) {
 				cxCamera -= 10;
 			}
-			if (mouseY > (canvas.getHeight() / scale.y) - 1) {
+			if (mouseY > (canvas.getHeight() / worldScale.y) - 1) {
 				cyCamera -= 10;
 			}
 		}
+
 
 		//If "VIM" mode is enabled
 		if(isVimMode()) {
@@ -872,6 +1105,11 @@ public class LevelEditorController extends WorldController {
 			// Edit
 			if (InputController.getInstance().isEKeyPressed()) {
 				editEntity(adjustedMouseX, adjustedMouseY);
+			}
+
+			// Save
+			if (InputController.getInstance().isSKeyPressed()) {
+				saveLevel();
 			}
 
 			// Name level
@@ -1211,7 +1449,7 @@ public class LevelEditorController extends WorldController {
 				entity_button.setBounds(100+(2*buffer), (text_height*6)+(8*buffer)+oops_buffer, 100, text_height);
 
 				entity_button.addActionListener(e -> {
-					//TODO Add object to center of screen
+					//TODO FIgure out why can't add object to center of screen
 
 					//getEntityParam();
 					//editEntity(adjustedMouseX,adjustedMouseY); //TESTING
@@ -1263,24 +1501,24 @@ public class LevelEditorController extends WorldController {
 
 	private void drawGridLines() {
 		// debug lines
+		Gdx.gl.glLineWidth(1);
 		// vertical
-		for (int i = ((int)cxCamera % 32 - 32); i < 1024; i += 32) {
-			Gdx.gl.glLineWidth(1);
+		float dpsW = ((canvas.getWidth()) / bounds.width);
+		float dpsH = ((canvas.getHeight()) / bounds.height);
+
+		for (float i = ((int)cxCamera % dpsW - dpsW); i < canvas.getWidth(); i += dpsW) {
 			gridLineRenderer.begin(ShapeRenderer.ShapeType.Line);
 			gridLineRenderer.setColor(Color.FOREST);
-			gridLineRenderer.line(i, 0,i,768);
+			gridLineRenderer.line(i, 0,i,canvas.getHeight());
 			gridLineRenderer.end();
-			Gdx.gl.glLineWidth(1);
 		}
 
 		// horizontal
-		for (int i = ((int)cyCamera % 32 - 32); i < 768; i += 32) {
-			Gdx.gl.glLineWidth(1);
+		for (float i = ((int)cyCamera % dpsH - dpsH); i < canvas.getHeight(); i += dpsH) {
 			gridLineRenderer.begin(ShapeRenderer.ShapeType.Line);
 			gridLineRenderer.setColor(Color.FOREST);
-			gridLineRenderer.line(0, i,1024,i);
+			gridLineRenderer.line(0, i,canvas.getWidth(),i);
 			gridLineRenderer.end();
-			Gdx.gl.glLineWidth(1);
 		}
 	}
 
@@ -1293,14 +1531,15 @@ public class LevelEditorController extends WorldController {
 		camTrans.translate(canvas.getWidth()/2, canvas.getHeight()/2);
 
 		canvas.begin(camTrans);
-		for(Obstacle obj : objects) {
+		for(Entity obj : objects) {
 			obj.draw(canvas);
 		}
+		canvas.end();
 
+		canvas.begin(camTrans);
 		if (shouldDrawGrid) {
 			drawGridLines();
 		}
-
 		canvas.end();
 
 
@@ -1324,14 +1563,16 @@ public class LevelEditorController extends WorldController {
 				}
 			}
 
-			canvas.drawTextStandard(cxCamera / scale.x + "," + cyCamera / scale.y, 10.0f, 120.0f);
+
+			canvas.drawTextStandard("MOUSE: " + adjustedMouseX + " , " + adjustedMouseY, 10.0f, 140.0f);
+			canvas.drawTextStandard(-cxCamera / worldScale.x + "," + -cyCamera / worldScale.y, 10.0f, 120.0f);
 			canvas.drawTextStandard("Level: " + currentLevel, 10.0f, 100.0f);
 			canvas.drawTextStandard("Creating: " + creationOptions[tentativeEntityIndex], 10.0f, 80.0f);
 			if (tentativeEntityIndex != entityIndex) {
 				canvas.drawTextStandard("Hit Enter to Select New Object Type.", 10.0f, 60.0f);
 			}
+			//else canvas.drawTextStandard("VIM MODE DISABLED (Press V to toggle)", x_pos, y_pos);
 		}
-		//else canvas.drawTextStandard("VIM MODE DISABLED (Press V to toggle)", x_pos, y_pos);
 		canvas.end();
 	}
 
@@ -1349,16 +1590,16 @@ public class LevelEditorController extends WorldController {
 		// Garbage collect the deleted objects.
 		// Note how we use the linked list nodes to delete O(1) in place.
 		// This is O(n) without copying.
-		Iterator<PooledList<Obstacle>.Entry> iterator = objects.entryIterator();
+		Iterator<PooledList<Entity>.Entry> iterator = objects.entryIterator();
 		while (iterator.hasNext()) {
-			PooledList<Obstacle>.Entry entry = iterator.next();
-			Obstacle obj = entry.getValue();
-			if (obj.isRemoved()) {
-				obj.deactivatePhysics(world);
-				entry.remove();
-			} else {
-				// Note that update is called last!
-				obj.update(dt);
+			PooledList<Entity>.Entry entry = iterator.next();
+			Entity ent = entry.getValue();
+			if (ent instanceof Obstacle) {
+				Obstacle obj = (Obstacle) ent;
+				if (obj.isRemoved()) {
+					obj.deactivatePhysics(world);
+					entry.remove();
+				}
 			}
 		}
 	}
@@ -1372,8 +1613,8 @@ public class LevelEditorController extends WorldController {
 	public void setCanvas(GameCanvas canvas) {
 		// unscale
 		this.canvas = canvas;
-		this.scale.x = 1.0f * canvas.getWidth()/bounds.getWidth();
-		this.scale.y = 1.0f * canvas.getHeight()/bounds.getHeight();
-		jsonLoaderSaver.setScale(this.scale);
+		this.worldScale.x = 1.0f * canvas.getWidth()/bounds.getWidth();
+		this.worldScale.y = 1.0f * canvas.getHeight()/bounds.getHeight();
+		jsonLoaderSaver.setScale(this.worldScale);
 	}
 }

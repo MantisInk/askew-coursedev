@@ -12,21 +12,23 @@ package askew.playermode.gamemode;
 
 import askew.GlobalConfiguration;
 import askew.InputController;
+import askew.MantisAssetManager;
 import askew.entity.Entity;
-import askew.entity.owl.OwlModel;
-import askew.playermode.WorldController;
-import com.badlogic.gdx.math.*;
-import com.badlogic.gdx.utils.*;
-import com.badlogic.gdx.assets.*;
-import com.badlogic.gdx.graphics.*;
-import com.badlogic.gdx.physics.box2d.*;
-
 import askew.entity.obstacle.BoxObstacle;
 import askew.entity.obstacle.Obstacle;
-import askew.util.json.JSONLoaderSaver;
-import askew.playermode.leveleditor.LevelModel;
+import askew.entity.owl.OwlModel;
 import askew.entity.sloth.SlothModel;
-import askew.util.*;
+import askew.playermode.WorldController;
+import askew.playermode.leveleditor.LevelModel;
+import askew.util.SoundController;
+import askew.util.json.JSONLoaderSaver;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.Affine2;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.ObjectSet;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -70,7 +72,7 @@ public class GameModeController extends WorldController {
 	 *
 	 * @param manager Reference to global asset manager.
 	 */
-	public void preLoadContent(AssetManager manager) {
+	public void preLoadContent(MantisAssetManager manager) {
 		if (platformAssetState != AssetState.EMPTY) {
 			return;
 		}
@@ -89,12 +91,12 @@ public class GameModeController extends WorldController {
 	 *
 	 * @param manager Reference to global asset manager.
 	 */
-	public void loadContent(AssetManager manager) {
+	public void loadContent(MantisAssetManager manager) {
 		if (platformAssetState != AssetState.LOADING) {
 			return;
 		}
 
-		SoundController sounds = SoundController.getInstance();
+		//SoundController sounds = SoundController.getInstance();
 
 		super.loadContent(manager);
 		platformAssetState = AssetState.COMPLETE;
@@ -136,6 +138,10 @@ public class GameModeController extends WorldController {
 		jsonLoaderSaver = new JSONLoaderSaver();
 	}
 
+	public void setLevel(String levelName) {
+		loadLevel = levelName;
+	}
+
 	/**
 	 * Resets the status of the game so that we can play again.
 	 *
@@ -147,9 +153,9 @@ public class GameModeController extends WorldController {
 		Vector2 gravity = new Vector2(world.getGravity() );
 
 		InputController.getInstance().releaseGrabs();
-		for(Obstacle obj : objects) {
-			if(! (obj instanceof SlothModel))
-				obj.deactivatePhysics(world);
+		for(Entity obj : objects) {
+			if( (obj instanceof Obstacle && !(obj instanceof SlothModel)))
+				((Obstacle)obj).deactivatePhysics(world);
 		}
 
 		objects.clear();
@@ -161,6 +167,7 @@ public class GameModeController extends WorldController {
 			collisions = new PhysicsController();
 		}
 		collisions.reset();
+
 		world.setContactListener(collisions);
 		setComplete(false);
 		setFailure(false);
@@ -172,8 +179,8 @@ public class GameModeController extends WorldController {
 	 * Lays out the game geography.
 	 */
 	private void populateLevel() {
+			jsonLoaderSaver.setScale(this.worldScale);
 
-			jsonLoaderSaver.setScale(this.scale);
 			try {
 				LevelModel lm = jsonLoaderSaver.loadLevel(loadLevel);
 				System.out.println(loadLevel);
@@ -302,16 +309,18 @@ public class GameModeController extends WorldController {
 		sloth.setRightVert(InputController.getInstance().getRightVertical());
 		sloth.setLeftGrab(InputController.getInstance().getLeftGrab());
 		sloth.setRightGrab(InputController.getInstance().getRightGrab());
+		sloth.setLeftStickPressed(InputController.getInstance().getLeftStickPressed());
+		sloth.setRightStickPressed(InputController.getInstance().getRightStickPressed());
 
 		//#TODO Collision states check
-		setComplete(collisions.isComplete());
+		setComplete(collisions.isFlowKill());
 
 		Body leftCollisionBody = collisions.getLeftBody();
 		Body rightCollisionBody = collisions.getRightBody();
 
 		if ((leftCollisionBody != null && leftCollisionBody.getUserData() == owl) || (rightCollisionBody != null && rightCollisionBody.getUserData() == owl)) {
 			System.out.println("VICTORY");
-			listener.exitScreen(this, EXIT_GM_LE);
+			setComplete(true);
 		}
 
 		// Physics tiem
@@ -333,16 +342,26 @@ public class GameModeController extends WorldController {
 
 		// If we use sound, we must remember this.
 		SoundController.getInstance().update();
+
+		if (isComplete()) {
+			System.out.println("GG");
+			listener.exitScreen(this, EXIT_GM_LE);
+		}
 	}
 
 	public void draw(float delta){
 		canvas.clear();
-		camTrans.setToTranslation(-1 * sloth.getBody().getPosition().x * sloth.getDrawScale().x
-				, -1 * sloth.getBody().getPosition().y * sloth.getDrawScale().y);
-		camTrans.translate(canvas.getWidth()/2,canvas.getHeight()/2);
+
+		camTrans.setToTranslation(-1 * sloth.getBody().getPosition().x * worldScale.x
+				, -1 * sloth.getBody().getPosition().y * worldScale.y);
+
+    	camTrans.translate(canvas.getWidth()/2,canvas.getHeight()/2);
+
+		sloth.drawGrab(canvas, camTrans);
 		canvas.begin(camTrans);
 
-		for(Obstacle obj : objects) {
+		for(Entity obj : objects) {
+			obj.setDrawScale(worldScale);
 			obj.draw(canvas);
 		}
 
@@ -354,11 +373,18 @@ public class GameModeController extends WorldController {
 
 		if (debug) {
 			canvas.beginDebug(camTrans);
-			for(Obstacle obj : objects) {
-				obj.drawDebug(canvas);
+			for(Entity obj : objects) {
+				if( obj instanceof  Obstacle){
+					((Obstacle)obj).drawDebug(canvas);
+				}
+
 			}
 
 			canvas.endDebug();
+			canvas.begin();
+			// text
+			canvas.drawTextStandard("FPS: " + 1f/delta, 10.0f, 100.0f);
+			canvas.end();
 			sloth.drawForces(canvas, camTrans);
 		}
 

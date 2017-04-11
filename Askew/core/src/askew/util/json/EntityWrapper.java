@@ -1,11 +1,10 @@
 package askew.util.json;
 
+import askew.MantisAssetManager;
 import askew.entity.Entity;
 import askew.entity.JsonEntityFactory;
-import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.math.Vector2;
 import com.google.gson.*;
-import askew.entity.obstacle.Obstacle;
 import lombok.Setter;
 
 import java.lang.reflect.Type;
@@ -17,10 +16,12 @@ public class EntityWrapper implements JsonSerializer<Entity>, JsonDeserializer<E
 
     private static final String CLASSNAME = "CLASSNAME";
     private static final String INSTANCE  = "INSTANCE";
+
     @Setter
     private Vector2 scale;
+
     @Setter
-    private AssetManager manager;
+    private MantisAssetManager manager;
 
     public EntityWrapper() {
     }
@@ -53,10 +54,18 @@ public class EntityWrapper implements JsonSerializer<Entity>, JsonDeserializer<E
                 return JsonEntityFactory.createVine(manager, instance, scale);
             case ".Trunk":
                 return JsonEntityFactory.createTrunk(manager, instance, scale);
+            case ".PoleVault":
+                return JsonEntityFactory.createPoleVault(manager, instance, scale);
             case ".StiffBranch":
                 return JsonEntityFactory.createStiffBranch(manager, instance, scale);
+            case ".Tree":
+                return JsonEntityFactory.createTree(manager, instance, scale);
             case ".OwlModel":
                 return JsonEntityFactory.createOwl(manager, instance, scale);
+            case ".WallModel":
+                return JsonEntityFactory.createWall(manager, instance, scale);
+            case ".GhostModel":
+                return JsonEntityFactory.createGhost(manager, instance, scale);
             default:
                 System.err.println("Unrecognized in wrapper: " + obstacleClass);
                 Class<?> klass = null;

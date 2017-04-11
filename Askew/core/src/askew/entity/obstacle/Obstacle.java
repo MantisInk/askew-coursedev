@@ -48,9 +48,6 @@ public abstract class Obstacle extends Entity {
 	protected transient boolean masseffect;
     /** A tag for debugging purposes */
     private transient String nametag;
-	/** Drawing scale to convert physics units to pixels */
-	protected transient Vector2 drawScale;
-
 	/// Track garbage collection status
 	/** Whether the object should be removed from the world on next pass */
 	private transient boolean toRemove;
@@ -64,10 +61,6 @@ public abstract class Obstacle extends Entity {
 	protected transient Vector2 velocityCache = new Vector2();
 	/** A cache value for when the user wants to access the center of mass */
 	protected transient Vector2 centroidCache = new Vector2();
-	/** A cache value for when the user wants to access the drawing scale */
-	protected transient Vector2 scaleCache = new Vector2();
-
-
 	/// BodyDef Methods
 	/**
 	 * Returns the body type for Box2D physics
@@ -831,62 +824,8 @@ public abstract class Obstacle extends Entity {
 	public Body getBody() {
 		return null;
 	}
-	
-	/// DRAWING METHODS
-	/**
-     * Returns the drawing scale for this physics object
-     *
-     * The drawing scale is the number of pixels to draw before Box2D unit. Because
-     * mass is a function of area in Box2D, we typically want the physics objects
-     * to be small.  So we decouple that scale from the physics object.  However,
-     * we must track the scale difference to communicate with the scene graph.
-     *
-	 * This method does NOT return a reference to the drawing scale. Changes to this 
-	 * vector will not affect the body.  However, it returns the same vector each time
-	 * its is called, and so cannot be used as an allocator.
 
-     * We allow for the scaling factor to be non-uniform.
-     *
-     * @return the drawing scale for this physics object
-     */
-    public Vector2 getDrawScale() { 
-    	scaleCache.set(drawScale);
-    	return scaleCache; 
-    }
-    
-    /**
-     * Sets the drawing scale for this physics object
-     *
-     * The drawing scale is the number of pixels to draw before Box2D unit. Because
-     * mass is a function of area in Box2D, we typically want the physics objects
-     * to be small.  So we decouple that scale from the physics object.  However,
-     * we must track the scale difference to communicate with the scene graph.
-     *
-     * We allow for the scaling factor to be non-uniform.
-     *
-     * @param value  the drawing scale for this physics object
-     */
-    public void setDrawScale(Vector2 value) { 
-    	setDrawScale(value.x,value.y);
-	}
-    
-    /**
-     * Sets the drawing scale for this physics object
-     *
-     * The drawing scale is the number of pixels to draw before Box2D unit. Because
-     * mass is a function of area in Box2D, we typically want the physics objects
-     * to be small.  So we decouple that scale from the physics object.  However,
-     * we must track the scale difference to communicate with the scene graph.
-     *
-     * We allow for the scaling factor to be non-uniform.
-     *
-     * @param x  the x-axis scale for this physics object
-     * @param y  the y-axis scale for this physics object
-     */
-    public void setDrawScale(float x, float y) {
-    	drawScale.set(x,y);
-    }
-    	
+
 	/// DEBUG METHODS
 	/**
      * Returns the physics object tag.
@@ -947,6 +886,7 @@ public abstract class Obstacle extends Entity {
 		
 		// Set the default drawing scale
 		drawScale = new Vector2(1,1);
+		objectScale = new Vector2(1,1);
 	}
 
 	/// Abstract Methods

@@ -12,22 +12,21 @@ package askew;/*
  * LibGDX version, 2/6/2015
  */
 
+import askew.playermode.WorldController;
+import askew.playermode.gamemode.GameModeController;
+import askew.playermode.leveleditor.LevelEditorController;
 import askew.playermode.loading.LoadingMode;
 import askew.playermode.mainmenu.MainMenuController;
-import askew.playermode.WorldController;
+import askew.util.ScreenListener;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGeneratorLoader;
 import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader;
-import askew.playermode.leveleditor.LevelEditorController;
-import askew.playermode.gamemode.GameModeController;
-import askew.util.ScreenListener;
 
 /**
  * Root class for a LibGDX.  
@@ -40,11 +39,11 @@ import askew.util.ScreenListener;
  */
 public class GDXRoot extends Game implements ScreenListener {
 	/** AssetManager to load game assets (texture, sounds, etc.) */
-	private AssetManager manager;
+	private MantisAssetManager manager;
 	/** AssetTraversalController tells manager what to load */
 	private AssetTraversalController assetTraversalController;
 	/** Drawing context to display graphics (VIEW CLASS) */
-	private GameCanvas canvas; 
+	private GameCanvas canvas;
 	/** Player mode for the asset loading screen (CONTROLLER CLASS) */
 	private LoadingMode loading;
 	/** Player mode for the the game proper (CONTROLLER CLASS) */
@@ -64,7 +63,7 @@ public class GDXRoot extends Game implements ScreenListener {
 	 */
 	public GDXRoot() {
 		// Start loading with the asset manager
-		manager = new AssetManager();
+		manager = new MantisAssetManager();
 		assetTraversalController = new AssetTraversalController();
 		
 		// Add font support to the asset manager
@@ -89,11 +88,13 @@ public class GDXRoot extends Game implements ScreenListener {
 		controllers[1] = new GameModeController();
 		controllers[2] = new LevelEditorController();
 		for(int ii = 0; ii < controllers.length; ii++) {
-			controllers[ii].setScale(canvas);
+			controllers[ii].setWorldScale(canvas);
 			controllers[ii].preLoadContent(manager);
 		}
+
 		assetTraversalController.preLoadEverything(manager);
-		current = 1;
+		manager.preloadProcess();
+		current = CON_MM;
 		loading.setScreenListener(this);
 		setScreen(loading);
 	}
@@ -158,16 +159,20 @@ public class GDXRoot extends Game implements ScreenListener {
 				controllers[ii].setScreenListener(this);
 				controllers[ii].setCanvas(canvas);
 			}
-//			controllers[current].reset();
-//			setScreen(controllers[current]);
-//			controllers[current].setCanvas(canvas);
+			current = 0;
+			controllers[current].reset();
+			setScreen(controllers[current]);
+			controllers[current].setCanvas(canvas);
 
 			loading.dispose();
 			loading = null;
 		}
 		// Intentional fallthrough
-		if (exitCode == WorldController.EXIT_MM_GM) {
+		else if (exitCode == WorldController.EXIT_MM_GM) {
 			current = CON_GM;
+			GameModeController gm =(GameModeController) controllers[CON_GM];
+			MainMenuController mm = (MainMenuController) controllers[CON_MM];
+			gm.setLevel(mm.getLevel());
 			controllers[current].reset();
 			setScreen(controllers[current]);
 

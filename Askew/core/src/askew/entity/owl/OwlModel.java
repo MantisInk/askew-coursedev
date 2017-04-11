@@ -1,6 +1,7 @@
 package askew.entity.owl;
 
 import askew.GameCanvas;
+import askew.MantisAssetManager;
 import askew.entity.obstacle.BoxObstacle;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
@@ -57,7 +58,7 @@ public class OwlModel extends BoxObstacle  {
 
 
     @Override
-    public void setTextures(AssetManager manager) {
+    public void setTextures(MantisAssetManager manager) {
         Texture owlTexture = manager.get(OWL_TEXTURE);
         owlTextureRegion = new TextureRegion(owlTexture);
         // aspect ratio scaling

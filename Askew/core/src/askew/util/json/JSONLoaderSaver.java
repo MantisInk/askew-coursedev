@@ -1,6 +1,7 @@
 package askew.util.json;
 
 
+import askew.MantisAssetManager;
 import askew.entity.Entity;
 import askew.playermode.leveleditor.LevelModel;
 import com.badlogic.gdx.Gdx;
@@ -126,7 +127,7 @@ public class JSONLoaderSaver {
         wrapper.setScale(scale);
     }
 
-    public void setManager(AssetManager manager) {
+    public void setManager(MantisAssetManager manager) {
         wrapper.setManager(manager);
     }
 }

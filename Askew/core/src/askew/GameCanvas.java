@@ -76,6 +76,7 @@ public class GameCanvas {
 	private BlendState blend;
 
 	private Texture background;
+	private Texture DEFAULT_BACKGROUND;
 	
 	/** Camera for the underlying SpriteBatch */
 	private OrthographicCamera camera;
@@ -124,9 +125,9 @@ public class GameCanvas {
 		vertex = new Vector2();
 
 		background = new Texture(Gdx.files.internal
-				("texture/background/background.png"));
+				("texture/background/background1.png"));
 		font = new BitmapFont();
-		font.setColor(new Color(255,0,0,255));
+		font.setColor(new Color(255,0,100,255));
 	}
 		
     /**
@@ -259,7 +260,7 @@ public class GameCanvas {
 	 * This method raises an IllegalStateException if called while drawing is
 	 * active (e.g. in-between a begin-end pair).
 	 *
-	 * @param fullscreen Whether this canvas should change to fullscreen.
+	 * //@param fullscreen Whether this canvas should change to fullscreen.
 	 * @param desktop 	 Whether to use the current desktop resolution
 	 */	 
 	public void setFullscreen(boolean value, boolean desktop) {
@@ -335,9 +336,21 @@ public class GameCanvas {
     	// Clear the screen
 		Gdx.gl.glClearColor(0.81f, 0.81f, 0.83f, 1.0f);  // Homage to the XNA years
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+//		background = DEFAULT_BACKGROUND;
 		spriteBatch.begin();
-		//spriteBatch.draw(background,0,-50f);
 		spriteBatch.draw(background, -1000f,-300f, 4000f,2000f);
+		spriteBatch.end();
+	}
+
+	public void clear(Texture bg) {
+		// Clear the screen
+		Gdx.gl.glClearColor(0.81f, 0.81f, 0.83f, 1.0f);  // Homage to the XNA years
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		background = bg;
+		spriteBatch.begin();
+		spriteBatch.draw(background, 0,0);
+		//spriteBatch.draw(background,0,-50f);
+//		spriteBatch.draw(background, 0,0);
 		spriteBatch.end();
 	}
 
@@ -406,7 +419,7 @@ public class GameCanvas {
 	 * at the given coordinates.
 	 *
 	 * @param image The texture to draw
-	 * @param tint  The color tint
+	 //* @param tint  The color tint
 	 * @param x 	The x-coordinate of the bottom left corner
 	 * @param y 	The y-coordinate of the bottom left corner
 	 */
@@ -479,6 +492,9 @@ public class GameCanvas {
 		draw(holder, tint, x-ox, y-oy, width, height);
 	}
 
+	public void draw(Texture image){
+		draw(image, Color.WHITE, 0,0,width,height);
+	}
 
 	/**
 	 * Draws the tinted texture with the given transformations
@@ -559,7 +575,7 @@ public class GameCanvas {
 	 * at the given coordinates.
 	 *
 	 * @param region The texture to draw
-	 * @param tint  The color tint
+	 //* @param tint  The color tint
 	 * @param x 	The x-coordinate of the bottom left corner
 	 * @param y 	The y-coordinate of the bottom left corner
 	 */
@@ -584,7 +600,7 @@ public class GameCanvas {
 	 * the texture will be unscaled.  The bottom left of the texture will be positioned
 	 * at the given coordinates.
 	 *region
-	 * @param image The texture to draw
+//	 * @param image The texture to draw
 	 * @param tint  The color tint
 	 * @param x 	The x-coordinate of the bottom left corner
 	 * @param y 	The y-coordinate of the bottom left corner
@@ -686,11 +702,11 @@ public class GameCanvas {
 	 * The local transformations in this method are applied in the following order: 
 	 * scaling, then rotation, then translation (e.g. placement at (sx,sy)).
 	 *
-	 * @param image The region to draw
+	 //* @param image The region to draw
 	 * @param tint  The color tint
 	 * @param ox 	The x-coordinate of texture origin (in pixels)
 	 * @param oy 	The y-coordinate of texture origin (in pixels)
-	 * @param transform  The image transform
+	 //* @param transform  The image transform
 	 */	
 	public void draw(TextureRegion region, Color tint, float ox, float oy, Affine2 affine) {
 		if (active != DrawPass.STANDARD) {
@@ -703,6 +719,7 @@ public class GameCanvas {
 		spriteBatch.setColor(tint);
 		spriteBatch.draw(region, region.getRegionWidth(), region.getRegionHeight(), local);
 	}
+
 
 	/**
 	 * Draws the polygonal region with the given transformations
@@ -721,7 +738,7 @@ public class GameCanvas {
 	 * scaling, then rotation, then translation (e.g. placement at (sx,sy)).
 	 *
 	 * @param region The polygon to draw
-	 * @param tint  The color tint
+	 //* @param tint  The color tint
 	 * @param x 	The x-coordinate of the bottom left corner
 	 * @param y 	The y-coordinate of the bottom left corner
 	 */	
@@ -866,7 +883,7 @@ public class GameCanvas {
 	 * @param tint  The color tint
 	 * @param ox 	The x-coordinate of texture origin (in pixels)
 	 * @param oy 	The y-coordinate of texture origin (in pixels)
-	 * @param transform  The image transform
+//	 * @param transform  The image transform
 	 */	
 	public void draw(PolygonRegion region, Color tint, float ox, float oy, Affine2 affine) {
 		if (active != DrawPass.STANDARD) {

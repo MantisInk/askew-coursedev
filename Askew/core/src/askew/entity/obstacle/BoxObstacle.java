@@ -12,6 +12,7 @@
 package askew.entity.obstacle;
 
 import askew.GameCanvas;
+import askew.MantisAssetManager;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.graphics.*;
@@ -206,7 +207,30 @@ public class BoxObstacle extends SimpleObstacle {
 
 
 	@Override
-	public void setTextures(AssetManager manager) {
+	public void setTextures(MantisAssetManager manager) {
 		// Do nothing
 	}
+
+	/**
+	 * Draws the physics object.
+	 *
+	 * @param canvas Drawing context
+	 */
+	public void draw(GameCanvas canvas) {
+		draw(canvas, Color.WHITE);
+	}
+
+	/**
+	 * Draws the physics object with a tint
+	 *
+	 * @param canvas Drawing context
+	 */
+	public void draw(GameCanvas canvas, Color tint) {
+		if (texture != null) {
+			canvas.draw(texture,tint,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.x,getAngle(),
+					(1.0f/texture.getRegionWidth()) *   getWidth() * getDrawScale().x * objectScale.x,
+					(1.0f/texture.getRegionHeight()  * getHeight()* getDrawScale().y * objectScale.y));
+		}
+	}
+
 }

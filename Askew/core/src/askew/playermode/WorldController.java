@@ -18,22 +18,22 @@ package askew.playermode;/*
 import askew.GameCanvas;
 import askew.GlobalConfiguration;
 import askew.InputController;
+import askew.MantisAssetManager;
+import askew.entity.Entity;
+import askew.entity.obstacle.Obstacle;
+import askew.util.FilmStrip;
+import askew.util.PooledList;
+import askew.util.ScreenListener;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
-import askew.entity.obstacle.Obstacle;
-import askew.util.FilmStrip;
-import askew.util.PooledList;
-import askew.util.ScreenListener;
-
 
 import java.util.Iterator;
 
@@ -89,7 +89,7 @@ public abstract class WorldController implements Screen {
 	 * 
 	 * @param manager Reference to global asset manager.
 	 */
-	public void preLoadContent(AssetManager manager) {
+	public void preLoadContent(MantisAssetManager manager) {
 		if (worldAssetState != AssetState.EMPTY) {
 			return;
 		}
@@ -113,43 +113,22 @@ public abstract class WorldController implements Screen {
 	 * 
 	 * @param manager Reference to global asset manager.
 	 */
-	public void loadContent(AssetManager manager) {
+	public void loadContent(MantisAssetManager manager) {
 		if (worldAssetState != AssetState.LOADING) {
 			return;
 		}
+
+		manager.loadProcess();
 
 		// Allocate the font
 		if (manager.isLoaded(FONT_FILE)) {
 			displayFont = manager.get(FONT_FILE,BitmapFont.class);
 		} else {
+			System.out.println("I CANT FIND THE FOOOOOOOONT");
 			displayFont = null;
 		}
 
 		worldAssetState = AssetState.COMPLETE;
-	}
-	
-	/**
-	 * Returns a newly loaded texture region for the given file.
-	 *
-	 * This helper methods is used to set texture settings (such as scaling, and
-	 * whether or not the texture should repeat) after loading.
-	 *
-	 * @param manager 	Reference to global asset manager.
-	 * @param file		The texture (region) file
-	 * @param repeat	Whether the texture should be repeated
-	 *
-	 * @return a newly loaded texture region for the given file.
-	 */
-	public TextureRegion createTexture(AssetManager manager, String file, boolean repeat) {
-		if (manager.isLoaded(file)) {
-			TextureRegion region = new TextureRegion(manager.get(file, Texture.class));
-			region.getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
-			if (repeat) {
-				region.getTexture().setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
-			}
-			return region;
-		}
-		return null;
 	}
 	
 	/**
@@ -212,18 +191,18 @@ public abstract class WorldController implements Screen {
 	public static final int WORLD_POSIT = 2;
 	
 	/** Width of the game world in Box2d units */
-	protected static final float DEFAULT_WIDTH  = 32.0f;
+	protected static final float DEFAULT_WIDTH  = 18.0f;
 	/** Height of the game world in Box2d units */
-	protected static final float DEFAULT_HEIGHT = 18.0f;
+	protected static final float DEFAULT_HEIGHT = 10.125f;
 	/** The default value of gravity (going down) */
 	protected static final float DEFAULT_GRAVITY = -4.9f;
 	
 	/** Reference to the game canvas */
 	protected GameCanvas canvas;
 	/** All the objects in the world. */
-	protected PooledList<Obstacle> objects  = new PooledList<Obstacle>();
+	protected PooledList<Entity> objects  = new PooledList<Entity>();
 	/** Queue for adding objects */
-	protected PooledList<Obstacle> addQueue = new PooledList<Obstacle>();
+	protected PooledList<Entity> addQueue = new PooledList<Entity>();
 	/** Listener that will update the player mode when we are done */
 	protected ScreenListener listener;
 
@@ -232,7 +211,7 @@ public abstract class WorldController implements Screen {
 	/** The boundary of the world */
 	protected Rectangle bounds;
 	/** The world scale */
-	protected Vector2 scale;
+	protected Vector2 worldScale;
 	
 	/** Whether or not this is an active controller */
 	private boolean active;
@@ -347,8 +326,8 @@ public abstract class WorldController implements Screen {
 	 */
 	public void setCanvas(GameCanvas canvas) {
 		this.canvas = canvas;
-		this.scale.x = 1.25f * canvas.getWidth()/bounds.getWidth();
-		this.scale.y = 1.25f * canvas.getHeight()/bounds.getHeight();
+		this.worldScale.x = canvas.getWidth()/bounds.getWidth();
+		this.worldScale.y = canvas.getHeight()/bounds.getHeight();
 		//System.out.println("SETCANVAS SET SCALE");
 	}
 	
@@ -395,7 +374,7 @@ public abstract class WorldController implements Screen {
 		assets = new Array<String>();
 		world = new World(gravity,false);
 		this.bounds = new Rectangle(bounds);
-		this.scale = new Vector2(1,1);
+		this.worldScale = new Vector2(1,1);
 		complete = false;
 		failed = false;
 		debug  = false;
@@ -408,8 +387,10 @@ public abstract class WorldController implements Screen {
 	 * Dispose of all (non-static) resources allocated to this mode.
 	 */
 	public void dispose() {
-		for(Obstacle obj : objects) {
-			obj.deactivatePhysics(world);
+		for(Entity ent : objects) {
+			if(ent instanceof Obstacle) {
+				((Obstacle)ent).deactivatePhysics(world);
+			}
 		}
 		objects.clear();
 		addQueue.clear();
@@ -417,7 +398,7 @@ public abstract class WorldController implements Screen {
 		objects = null;
 		addQueue = null;
 		bounds = null;
-		scale  = null;
+		worldScale = null;
 		world  = null;
 		canvas = null;
 	}
@@ -441,10 +422,12 @@ public abstract class WorldController implements Screen {
 	 *
 	 * param obj The object to add
 	 */
-	protected void addObject(Obstacle obj) {
-		assert inBounds(obj) : "Object is not in bounds";
+	protected void addObject(Entity obj) {
+		//assert inBounds(obj) : "Object is not in bounds";
 		objects.add(obj);
-		obj.activatePhysics(world);
+		if(obj instanceof Obstacle) {
+			((Obstacle)obj).activatePhysics(world);
+		}
 	}
 
 	/**
@@ -483,7 +466,7 @@ public abstract class WorldController implements Screen {
 	public boolean preUpdate(float dt) {
 		InputController input = InputController.getInstance();
 
-		input.readInput(bounds, scale);
+		input.readInput(bounds, worldScale);
 		if (listener == null) {
 			return true;
 		}
@@ -567,17 +550,19 @@ public abstract class WorldController implements Screen {
 		// Garbage collect the deleted objects.
 		// Note how we use the linked list nodes to delete O(1) in place.
 		// This is O(n) without copying.
-		Iterator<PooledList<Obstacle>.Entry> iterator = objects.entryIterator();
+		Iterator<PooledList<Entity>.Entry> iterator = objects.entryIterator();
 		while (iterator.hasNext()) {
-			PooledList<Obstacle>.Entry entry = iterator.next();
-			Obstacle obj = entry.getValue();
-			if (obj.isRemoved()) {
-				obj.deactivatePhysics(world);
-				entry.remove();
-			} else {
-				// Note that update is called last!
-				obj.update(dt);
+			PooledList<Entity>.Entry entry = iterator.next();
+			Entity ent = entry.getValue();
+			if(ent instanceof Obstacle){
+				Obstacle obj  = (Obstacle)ent;
+				if (obj.isRemoved()) {
+					obj.deactivatePhysics(world);
+					entry.remove();
+					continue;
+				}
 			}
+			ent.update(dt); // called last!
 		}
 	}
 	
@@ -595,15 +580,17 @@ public abstract class WorldController implements Screen {
 		canvas.clear();
 		
 		canvas.begin();
-		for(Obstacle obj : objects) {
+		for(Entity obj : objects) {
 			obj.draw(canvas);
 		}
 		canvas.end();
 		
 		if (debug) {
 			canvas.beginDebug();
-			for(Obstacle obj : objects) {
-				obj.drawDebug(canvas);
+			for(Entity obj : objects) {
+				if( obj instanceof Obstacle) {
+					((Obstacle)obj).drawDebug(canvas);
+				}
 			}
 			canvas.endDebug();
 		}
@@ -639,11 +626,11 @@ public abstract class WorldController implements Screen {
 		// IGNORE FOR NOW
 	}
 
-	public void setScale(GameCanvas canvas) {
+	public void setWorldScale(GameCanvas canvas) {
 		//System.out.println("IN SET SCALE");
 		//System.out.println("pre set ("+scale.x+","+scale.y+")");
-		this.scale.x = canvas.getWidth()/bounds.getWidth()/32f;
-		this.scale.y = canvas.getHeight()/bounds.getHeight()/32f;
+		this.worldScale.x = canvas.getWidth()/bounds.getWidth();
+		this.worldScale.y = canvas.getHeight()/bounds.getHeight();
 		//System.out.println("post set ("+scale.x+","+scale.y+")");
 	}
 

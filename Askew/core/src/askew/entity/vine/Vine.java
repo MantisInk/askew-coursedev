@@ -14,116 +14,121 @@
  */
 package askew.entity.vine;
 
-import askew.entity.Entity;
-import com.badlogic.gdx.assets.AssetManager;
+import askew.MantisAssetManager;
+import askew.GlobalConfiguration;
+import askew.entity.FilterGroup;
+import askew.entity.obstacle.*;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.Filter;
 import com.badlogic.gdx.physics.box2d.Joint;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
-import com.google.gson.JsonObject;
-import askew.GlobalConfiguration;
-import askew.AssetTraversalController;
-import askew.entity.obstacle.*;
 
 /**
- * A bridge with planks connected by revolute joints.
+ * A vine with segments connected by revolute joints.
  *
  * Note that this class returns to static loading.  That is because there are
  * no other subclasses that we might loop through.
  */
 public class Vine extends ComplexObstacle {
-	/** The debug name for the entire obstacle */
-	private static final String VINE_NAME = "vine";
-	/** The debug name for each plank */
-	private static final String PLANK_NAME = "barrier";
-	/** The debug name for each anchor pin */
-	private static final String BRIDGE_PIN_NAME = "pin";
-	/** The radius of each anchor pin */
-	private static final float BRIDGE_PIN_RADIUS = 0.1f;
-    /** The density of each plank in the bridge */
-	private transient float BASIC_DENSITY;
+
+	private static final String VINE_NAME = "vine";				/** The debug name for the entire obstacle */
+	private static final String PLANK_NAME = "vine_piece";		/** The debug name for each segment */
+	private static final String ANCHOR_NAME = "vine_pin";		/** The debug name for each anchor pin */
+	private static final float ANCHOR_RADIUS = 0.1f;			/** The radius of each anchor pin */
+	private transient float BASIC_DENSITY;						/** The density of each plank in the bridge */
 
     public static final String VINE_TEXTURE = "texture/vine/vine.png";
 
 	// Invisible anchor objects
-	/** The left side of the bridge */
-	private transient WheelObstacle start = null;
-	private transient WheelObstacle finish = null;
-	private boolean pin = false;
-	/** Set damping constant for joint rotation in vines */
-	public static final float DAMPING_ROTATION = 5f;
+	private transient WheelObstacle start = null;				// anchor point of vine (top)
+	private transient WheelObstacle finish = null;				// optional bottom anchor (bottom)
+	private boolean pin = false; 								// default no bottom anchor
+
+	public static final float DAMPING_ROTATION = 5f;			/** Set damping constant for joint rotation in vines */
 
 	// Dimension information
-	/** The size of the entire bridge */
-	protected transient Vector2 dimension;
-	/** The size of a single plank */
-	protected transient Vector2 planksize;
-	/* The length of each link */
-	protected transient float linksize = 1.0f;
-	/** The spacing between each link */
-	protected transient float spacing = 0.0f;
+	protected transient Vector2 dimension;						/** The length of the entire vine */
+	protected transient Vector2 planksize;						/** The size of a vine piece */
+	protected transient float linksize = 1.0f;					/** The length of each vine piece*/
+	protected transient float spacing = 0.0f;					/** The spacing between each piece */
 
-	protected float numLinks;
-	protected float x;
-	protected float y;
+	protected float numLinks;									/** number of vine pieces */
+	protected float x;											/** x-coord of top anchor */
+	protected float y;											/** y-coord of bottom anchor */
+	protected float angle;										/** starting angle of vine */
+	protected float omega;										/** starting angular velocity of vine */
 
 
 	/**
-	 * Creates a new rope bridge at the given position.
+	 * Creates a new vine at the given position.
 	 *
-	 * This bridge is straight horizontal. The coordinates given are the 
-	 * position of the leftmost anchor.
+	 * The default is at the given position, with the provided length
+	 * Default angle 5 degrees, default starting velocity 450f (units?)
 	 *
 	 * @param x  		The x position of the left anchor
 	 * @param y  		The y position of the left anchor
 	 * @param length		The length of the bridge
-	 * @param lwidth	The plank length
-	 * @param lheight	The bridge thickness
+	 * @param lwidth	The vine piece thickness
+	 * @param lheight	The vine piece length
 	 */
 	public Vine(float x, float y, float length, float lwidth, float lheight, Vector2 scale) {
-		this(x, y, x, y-length, lwidth*scale.x/32f, lheight*scale.y/32f, false, 5f, -450f);
+		this(x, y, x, y-length, lwidth, lheight, false, 5f, -400f);
 		numLinks = length;
 		this.x = x;
 		this.y = y;
+		this.angle = 5f;
+		this.omega = -400f;
+		this.setObjectScale(scale);
+
+	}
+
+	public Vine(float x, float y, float length, float lwidth, float lheight, Vector2 scale, float angle, float omega) {
+		this(x, y, x, y-length, lwidth, lheight, false, angle, omega);
+		numLinks = length;
+		this.x = x;
+		this.y = y;
+		this.angle = angle;
+		this.omega = omega;
+		this.setObjectScale(scale);
 	}
 
 	public Vine(float x, float y, float length, float lwidth, float lheight, Vector2 scale, boolean pinned, float angle, float omega) {
-		this(x, y, x+length, y, lwidth*scale.x/32f, lheight*scale.y/32f, pinned, angle, omega);
+		this(x, y, x, y-length, lwidth, lheight, pinned, angle, omega);
 		numLinks = length;
 		this.x = x;
 		this.y = y;
+		this.angle = angle;
+		this.omega = omega;
+		this.setObjectScale(scale);
 	}
 
     /**
-     * Creates a new rope bridge with the given anchors.
+     * Creates a new vine with the given start/end locations and other params.
      *
 	 * @param x0  		The x position of the left anchor
 	 * @param y0  		The y position of the left anchor
 	 * @param x1  		The x position of the right anchor
 	 * @param y1  		The y position of the right anchor
-	 * @param lwidth	The plank length
-	 * @param lheight	The bridge thickness
+	 * @param lwidth	The vine piece thickness
+	 * @param lheight	The vine piece length
 	 */
 	public Vine(float x0, float y0, float x1, float y1, float lwidth, float lheight, boolean pinned, float angle, float omega) {
 		super(x0,y0);
 		pin = pinned;
 		setName(VINE_NAME);
 
-		//System.out.println("x0 "+x0+" y0 "+y0);
-		//System.out.println("x1 "+x1+" y1 "+y1);;
 
 		this.BASIC_DENSITY = GlobalConfiguration.getInstance().getAsFloat("vineDensity");
 
-		//System.out.println("lwidth "+lwidth+" lheight "+lheight);
-		
-		planksize = new Vector2(lwidth,lheight);
-		linksize = planksize.y;
 
-		//System.out.println("linksize before "+linksize);
-		
+		planksize = new Vector2(lwidth,lheight);
+		linksize = lheight;
+
+
 	    // Compute the bridge length
 		dimension = new Vector2(x1-x0,y1-y0);
 	    float length = dimension.len();
@@ -131,8 +136,6 @@ public class Vine extends ComplexObstacle {
 	    norm.nor();
 	    norm.rotate(angle);
 
-	    //System.out.println("length "+length);
-	    
 	    // If too small, only make one plank.
 	    int nLinks = (int)(length / linksize);
 	    if (nLinks <= 1) {
@@ -144,11 +147,10 @@ public class Vine extends ComplexObstacle {
 	        spacing /= (nLinks-1);
 	    }
 
-	    //System.out.println("links "+nLinks);
-	    //System.out.println("linksize "+linksize);
 	    	    
 	    // Create the planks
-		planksize.y = linksize;
+		planksize.y = lheight;
+
 	    Vector2 pos = new Vector2();
 	    for (int ii = 0; ii < nLinks; ii++) {
 	        float t = ii*(linksize+spacing) + linksize/2.0f;
@@ -159,6 +161,10 @@ public class Vine extends ComplexObstacle {
 	        plank.setName(PLANK_NAME+ii);
 	        plank.setDensity(BASIC_DENSITY);
 	        plank.setAngularVelocity(omega*(nLinks-ii-1)/(nLinks));
+			Filter f = new Filter();
+			f.maskBits = FilterGroup.WALL | FilterGroup.SLOTH | FilterGroup.HAND;
+			f.categoryBits = FilterGroup.VINE;
+			plank.setFilterData(f);
 	        bodies.add(plank);
 	    }
 	}
@@ -177,15 +183,15 @@ public class Vine extends ComplexObstacle {
 		assert bodies.size > 0;
 
 		Vector2 anchor1 = new Vector2();
-		Vector2 anchor2 = new Vector2(0, -linksize / 2);
+		Vector2 anchor2 = new Vector2(0, linksize / 2);
 
-		// Create the leftmost anchor
+		// Create the top anchor
 		// Normally, we would do this in constructor, but we have
 		// reasons to not add the anchor to the bodies list.
 		Vector2 pos = bodies.get(0).getPosition();
 		pos.y -= linksize / 2;
-		start = new WheelObstacle(pos.x,pos.y,BRIDGE_PIN_RADIUS);
-		start.setName(BRIDGE_PIN_NAME+0);
+		start = new WheelObstacle(pos.x,pos.y,ANCHOR_RADIUS);
+		start.setName(ANCHOR_NAME+0);
 		start.setDensity(BASIC_DENSITY);
 		start.setBodyType(BodyDef.BodyType.StaticBody);
 		start.activatePhysics(world);
@@ -194,47 +200,46 @@ public class Vine extends ComplexObstacle {
 		RevoluteJointDef jointDef = new RevoluteJointDef();
 
 		// Initial joint
-		jointDef.bodyA = start.getBody();
-		jointDef.bodyB = bodies.get(0).getBody();
-		jointDef.localAnchorA.set(anchor1);
-		jointDef.localAnchorB.set(anchor2);
+		jointDef.bodyB = start.getBody();
+		jointDef.bodyA = bodies.get(0).getBody();
+		jointDef.localAnchorB.set(anchor1);
+		jointDef.localAnchorA.set(anchor2);
 		jointDef.collideConnected = false;
 		Joint joint = world.createJoint(jointDef);
 		joints.add(joint);
 
-		// Link the planks together
-		anchor1.y = linksize / 2;
+		// Link the pieces together
+		anchor1.y = -linksize / 2;
 		for (int ii = 0; ii < bodies.size-1; ii++) {
-			//#region INSERT CODE HERE
-			// Look at what we did above and join the planks
-			jointDef.bodyA = bodies.get(ii).getBody();
-			jointDef.bodyB = bodies.get(ii+1).getBody();
-			jointDef.localAnchorA.set(anchor1);
-			jointDef.localAnchorB.set(anchor2);
+			// join the planks
+			jointDef.bodyB = bodies.get(ii).getBody();
+			jointDef.bodyA = bodies.get(ii+1).getBody();
+			jointDef.localAnchorB.set(anchor1);
+			jointDef.localAnchorA.set(anchor2);
 			jointDef.collideConnected = false;
 			joint = world.createJoint(jointDef);
 			joints.add(joint);
-			//#endregion
 		}
 
+		// optional
 		if (pin) {
-			// Create the rightmost anchor
+			// Create the bottom anchor
 			Obstacle last = bodies.get(bodies.size-1);
 
 			pos = last.getPosition();
 			pos.y += linksize / 2;
-			finish = new WheelObstacle(pos.x,pos.y,BRIDGE_PIN_RADIUS);
-			finish.setName(BRIDGE_PIN_NAME+1);
+			finish = new WheelObstacle(pos.x,pos.y,ANCHOR_RADIUS);
+			finish.setName(ANCHOR_NAME+1);
 			finish.setDensity(BASIC_DENSITY);
 			finish.setBodyType(BodyDef.BodyType.StaticBody);
 			finish.activatePhysics(world);
 
 			// Final joint
 			anchor2.y = 0;
-			jointDef.bodyA = last.getBody();
-			jointDef.bodyB = finish.getBody();
-			jointDef.localAnchorA.set(anchor1);
-			jointDef.localAnchorB.set(anchor2);
+			jointDef.bodyB = last.getBody();
+			jointDef.bodyA = finish.getBody();
+			jointDef.localAnchorB.set(anchor1);
+			jointDef.localAnchorA.set(anchor2);
 			joint = world.createJoint(jointDef);
 			joints.add(joint);
 		}
@@ -256,9 +261,9 @@ public class Vine extends ComplexObstacle {
 	}
 	
 	/**
-	 * Returns the texture for the individual planks
+	 * Returns the texture for the individual pieces
 	 *
-	 * @return the texture for the individual planks
+	 * @return the texture for the individual pieces
 	 */
 	public TextureRegion getTexture() {
 		if (bodies.size == 0) {
@@ -268,7 +273,7 @@ public class Vine extends ComplexObstacle {
 	}
 
     @Override
-    public void setTextures(AssetManager manager) {
+    public void setTextures(MantisAssetManager manager) {
         Texture vineTexture = manager.get(VINE_TEXTURE, Texture.class);
         TextureRegion regionedTexture = new TextureRegion(vineTexture);
         for(Obstacle body : bodies) {
