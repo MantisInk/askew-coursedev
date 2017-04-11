@@ -9,6 +9,7 @@ package askew.entity.sloth;
 import askew.MantisAssetManager;
 import askew.GameCanvas;
 import askew.GlobalConfiguration;
+import askew.entity.FilterGroup;
 import askew.entity.obstacle.BoxObstacle;
 import askew.entity.obstacle.ComplexObstacle;
 import askew.entity.obstacle.Obstacle;
@@ -259,8 +260,8 @@ public class SlothModel extends ComplexObstacle  {
         if(!collides){
             body = new BoxObstacle(partCache.x, partCache.y, dwidth, dheight);
             Filter f = new Filter();
-            f.maskBits = 0x0100;
-            f.categoryBits = 0x0001;
+            f.maskBits = FilterGroup.WALL;
+            f.categoryBits = FilterGroup.SLOTH;
             body.setFilterData(f);
         }
         else{
@@ -610,10 +611,15 @@ public class SlothModel extends ComplexObstacle  {
         sensorShape.setAsBox(MN_SENSOR_WIDTH, MN_SENSOR_HEIGHT, sensorCenter, 0.0f);
         sensorDef.shape = sensorShape;
 
+        Filter f = new Filter();
+        f.maskBits = FilterGroup.VINE;
+        f.categoryBits = FilterGroup.HAND;
         sensorFixture1 = bodies.get(PART_LEFT_HAND).getBody().createFixture(sensorDef);
         sensorFixture1.setUserData("sloth left hand");
         sensorFixture2 = bodies.get(PART_RIGHT_HAND).getBody().createFixture(sensorDef);
         sensorFixture2.setUserData("sloth right hand");
+        sensorFixture1.setFilterData(f);
+        sensorFixture2.setFilterData(f);
         BodyDef bd = new BodyDef();
         bd.type = BodyDef.BodyType.StaticBody;
         bd.position.set(0.0f, -10.0f);
