@@ -8,6 +8,6 @@
   "flowCanMoveGrabbingHand": false,
   "vineDensity": 2.0,
   "fullscreen": false,
-  "defaultLevel": "level1",
+  "defaultLevel": "tunnel_vines",
   "torqueBasedMovement": false
 }

@@ -170,8 +170,10 @@ public class MainMenuController extends WorldController {
     }
 
     public String getLevel() {
-        String lvl = "level"+selected;
-        //System.out.println("lvl "+lvl);
+        String lvl;
+        if(mode == HOME_SCREEN)
+            selected = 0;
+        lvl = "level"+selected;
         return lvl;
     }
 }

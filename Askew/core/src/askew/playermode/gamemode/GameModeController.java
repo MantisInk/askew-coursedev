@@ -56,7 +56,7 @@ public class GameModeController extends WorldController {
 	private static boolean playerIsReady = false;
 
 	@Setter
-	private String loadLevel;
+	private String loadLevel, DEFAULT_LEVEL;
 
 	private PhysicsController collisions;
 
@@ -134,11 +134,14 @@ public class GameModeController extends WorldController {
 		collisions = new PhysicsController();
 		world.setContactListener(collisions);
 		sensorFixtures = new ObjectSet<Fixture>();
-		loadLevel = GlobalConfiguration.getInstance().getAsString("defaultLevel");
+		DEFAULT_LEVEL = GlobalConfiguration.getInstance().getAsString("defaultLevel");
+		loadLevel = DEFAULT_LEVEL;
 		jsonLoaderSaver = new JSONLoaderSaver();
 	}
 
 	public void setLevel(String levelName) {
+		if (levelName.equals("level0"))
+			levelName = DEFAULT_LEVEL;
 		loadLevel = levelName;
 	}
 
@@ -180,7 +183,6 @@ public class GameModeController extends WorldController {
 	 */
 	private void populateLevel() {
 			jsonLoaderSaver.setScale(this.worldScale);
-
 			try {
 				LevelModel lm = jsonLoaderSaver.loadLevel(loadLevel);
 				System.out.println(loadLevel);
