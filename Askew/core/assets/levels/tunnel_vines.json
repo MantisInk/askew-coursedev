@@ -274,6 +274,24 @@
           0.0
         ]
       }
+    },
+    {
+      "CLASSNAME": "askew.entity.ghost.GhostModel",
+      "INSTANCE": {
+        "x": 5.0,
+        "y": -7.0,
+        "patroldx": 25.0,
+        "patroldy": -7.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.ghost.GhostModel",
+      "INSTANCE": {
+        "x": 25.0,
+        "y": -10.0,
+        "patroldx": 5.0,
+        "patroldy": -10.0
+      }
     }
   ]
 }
