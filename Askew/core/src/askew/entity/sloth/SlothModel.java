@@ -185,12 +185,13 @@ public class SlothModel extends ComplexObstacle  {
         // ARMS
         // Right arm
         part = makePart(PART_RIGHT_ARM, PART_BODY, SHOULDER_XOFFSET + ARM_XOFFSET, SHOULDER_YOFFSET + ARM_YOFFSET,ARM_WIDTH,ARM_HEIGHT, ARM_DENSITY,false);
+        part.setAngle((float)Math.PI);
         part.setGravityScale(GRAVITY_SCALE);
         //part.setMass(ARM_MASS);
 
         // Left arm
         part = makePart(PART_LEFT_ARM, PART_BODY, -ARM_XOFFSET, -ARM_YOFFSET,ARM_WIDTH,ARM_HEIGHT, ARM_DENSITY,false);
-//        part.setAngle((float)Math.PI);
+        part.setAngle((float)Math.PI);
         part.setGravityScale(GRAVITY_SCALE);
         //part.setMass(ARM_MASS);
 
@@ -291,12 +292,12 @@ public class SlothModel extends ComplexObstacle  {
 //        createJoint(world, PART_LEFT_ARM, PART_RIGHT_ARM, ARM_XOFFSET/2, 0, -ARM_XOFFSET/2, 0);
 
         // BODY TO ARM WOW
-        createJoint(world, PART_BODY, PART_RIGHT_ARM, SHOULDER_XOFFSET/2, SHOULDER_YOFFSET, -ARM_XOFFSET/2, 0);
-        createJoint(world, PART_BODY, PART_LEFT_ARM, SHOULDER_XOFFSET/2, SHOULDER_YOFFSET, -ARM_XOFFSET/2, 0);
+        createJoint(world, PART_BODY, PART_RIGHT_ARM, SHOULDER_XOFFSET/2, SHOULDER_YOFFSET, ARM_XOFFSET/2, 0);
+        createJoint(world, PART_BODY, PART_LEFT_ARM, SHOULDER_XOFFSET/2, SHOULDER_YOFFSET, ARM_XOFFSET/2, 0);
 
         // HANDS
-        createJoint(world, PART_LEFT_ARM, PART_LEFT_HAND, HAND_XOFFSET, 0, 0, 0);
-        createJoint(world, PART_RIGHT_ARM, PART_RIGHT_HAND, HAND_XOFFSET, 0, 0, 0);
+        createJoint(world, PART_LEFT_ARM, PART_LEFT_HAND, -HAND_XOFFSET, 0, 0, 0);
+        createJoint(world, PART_RIGHT_ARM, PART_RIGHT_HAND, -HAND_XOFFSET, 0, 0, 0);
 
         // This is bad but i do sensors here
 //        activateSlothPhysics();
@@ -361,7 +362,7 @@ public class SlothModel extends ComplexObstacle  {
 
 
     public void doThePhysics() {
-        if (TORQUE_BASED_MOVEMENT) {
+        if (TORQUE_BASED_MOVEMENT || (leftGrabJoint == null && rightGrabJoint == null)) {
             Obstacle rightHand = bodies.get(PART_RIGHT_HAND);
             Obstacle leftHand = bodies.get(PART_LEFT_HAND);
 
@@ -371,7 +372,7 @@ public class SlothModel extends ComplexObstacle  {
             // Apply forces
             float dLTheta = 0f;
             float lcTheta = (float)Math.atan2(leftVert,leftHori); // correct
-            float lTheta = (-leftArm.getAngle());
+            float lTheta = (-leftArm.getAngle()) + PI;
             lTheta = ((lTheta%(2*PI)) + (2*PI)) % (2*PI) - PI; //ltheta is correct
             float lav = leftArm.getAngularVelocity() * 2;
             float lLength = (float)Math.sqrt((leftVert * leftVert) + (leftHori * leftHori));
