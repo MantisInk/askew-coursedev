@@ -15,6 +15,7 @@
 package askew.entity.tree;
 
 import askew.MantisAssetManager;
+import askew.entity.FilterGroup;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.graphics.g2d.*;
@@ -39,19 +40,18 @@ public class Trunk extends ComplexObstacle {
 	private static final float TRUNK_PIN_RADIUS = 0.1f;			/** The radius of each anchor pin */
 	private static final float BASIC_DENSITY = 13f;				/** The density of each plank in the bridge */
 
-	private float x,y,stiffLen, angle; 								/** starting coords of bottom anchor and length for branch */
-	public transient Vector2 final_norm = null;					/** coords for starting branch off this trunk */
+	/** The spacing between each link */
+	protected transient Vector2 dimension;						/** The size of the entire bridge */
+	private float x,y,stiffLen, angle; 							/** starting coords of bottom anchor and length for branch */
+	protected float linksize;									/** The length of each link */
 
+	public transient Vector2 final_norm = null;					/** coords for starting branch off this trunk */
 	// Invisible anchor objects
 	private transient WheelObstacle start = null;				/** The bottom of the trunk */
 	private transient WheelObstacle finish = null;				/** The top of the trunk */
-	public transient static final float DAMPING_ROTATION = 5f;	/** Set damping constant for joint rotation in vines */
 
-	/** The spacing between each link */
-	// TODO: Fix this from being public (refactor artifact)
-	protected transient Vector2 dimension;						/** The size of the entire bridge */
+	public transient static final float DAMPING_ROTATION = 5f;	/** Set damping constant for joint rotation in vines */
 	protected transient Vector2 planksize;						/** The size of a single plank */
-	protected transient float linksize = 1.0f;					/** The length of each link */
 	// TODO: Fix this from being public (refactor artifact) ?
 	private transient float spacing = 0.0f;						/** The spacing between each link */
 
@@ -76,6 +76,7 @@ public class Trunk extends ComplexObstacle {
 		numLinks = length;
 		this.x = x;
 		this.y = y;
+		this.linksize = lheight;
 		this.setObjectScale(scale);
 	}
 
@@ -84,6 +85,7 @@ public class Trunk extends ComplexObstacle {
 		numLinks = length;
 		this.x = x;
 		this.y = y;
+		this.linksize = lheight;
 		this.setObjectScale(scale);
 	}
 
@@ -100,7 +102,7 @@ public class Trunk extends ComplexObstacle {
 	public Trunk(float x0, float y0, float x1, float y1, float lwidth, float lheight, float stiffLen, float angle) {
 		super(x0,y0);
 		this.angle = angle;
-		this.x = x0;	this.y = y0;	this.stiffLen = stiffLen;
+		this.x = x0;	this.y = y0;	this.stiffLen = stiffLen;		this.linksize = lheight;
 		setName(TRUNK_NAME);
 
 		planksize = new Vector2(lwidth,lheight);
@@ -136,6 +138,10 @@ public class Trunk extends ComplexObstacle {
 			plank.setName(PLANK_NAME+ii);
 			plank.setDensity(BASIC_DENSITY);
 			plank.setAngle((float)Math.toRadians(angle));
+			Filter f = new Filter();
+			f.maskBits = FilterGroup.WALL | FilterGroup.SLOTH | FilterGroup.HAND;
+			f.categoryBits = FilterGroup.VINE;
+			plank.setFilterData(f);
 			bodies.add(plank);
 		}
 		final_norm = new Vector2(pos);
