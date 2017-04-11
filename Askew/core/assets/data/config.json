@@ -7,7 +7,7 @@
   "flowGravityScale": 0.7,
   "flowCanMoveGrabbingHand": false,
   "vineDensity": 2.0,
-  "fullscreen": true,
+  "fullscreen": false,
   "defaultLevel": "level1",
   "torqueBasedMovement": false
 }

@@ -8,3 +8,4 @@ texture/vine/vine.png
 texture/wall/wall.png
 texture/wall/thorn.png
 texture/background/fern.png
+texture/background/background1.png

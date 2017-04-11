@@ -124,7 +124,7 @@ public class GameCanvas {
 		vertex = new Vector2();
 
 		background = new Texture(Gdx.files.internal
-				("texture/background/background.png"));
+				("texture/background/background1.png"));
 		font = new BitmapFont();
 		font.setColor(new Color(255,0,100,255));
 	}
@@ -336,7 +336,7 @@ public class GameCanvas {
 		Gdx.gl.glClearColor(0.81f, 0.81f, 0.83f, 1.0f);  // Homage to the XNA years
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		spriteBatch.begin();
-//		spriteBatch.draw(background, -1000f,-300f, 4000f,2000f);
+		spriteBatch.draw(background, -1000f,-300f, 4000f,2000f);
 		spriteBatch.end();
 	}
 
