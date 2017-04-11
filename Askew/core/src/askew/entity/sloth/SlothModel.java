@@ -408,9 +408,13 @@ public class SlothModel extends ComplexObstacle  {
             if(dRcLTheta > PI){ dRcLTheta -= (PI + PI);}
             if(dRcLTheta < -PI){ dRcLTheta += (PI + PI);}
 
-            float counterfactor = .3f;
-            float counterfR =  counterfactor * calculateTorque(dLcRTheta,rav/OMEGA_NORMALIZER);
-            float counterfL = counterfactor * calculateTorque(dRcLTheta,lav/OMEGA_NORMALIZER);
+            float counterfactor = .5f;
+            float counterfR =0;
+            float counterfL = 0;
+            if (leftGrab )
+                counterfL = counterfactor * calculateTorque(dRcLTheta,lav/OMEGA_NORMALIZER);
+            if (rightGrab )
+                counterfR =  counterfactor * calculateTorque(dLcRTheta,rav/OMEGA_NORMALIZER);
 
 
 
