@@ -613,9 +613,6 @@ public class LevelEditorController extends WorldController {
 					obj.deactivatePhysics(world);
 					entry.remove();
 				}
-			} else {
-				// Note that update is called last!
-				ent.update(dt);
 			}
 		}
 	}

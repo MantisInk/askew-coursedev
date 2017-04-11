@@ -554,16 +554,15 @@ public abstract class WorldController implements Screen {
 		while (iterator.hasNext()) {
 			PooledList<Entity>.Entry entry = iterator.next();
 			Entity ent = entry.getValue();
-			if(ent instanceof  Obstacle){
+			if(ent instanceof Obstacle){
 				Obstacle obj  = (Obstacle)ent;
 				if (obj.isRemoved()) {
 					obj.deactivatePhysics(world);
 					entry.remove();
+					continue;
 				}
-			} else {
-				// Note that update is called last!
-				ent.update(dt);
 			}
+			ent.update(dt); // called last!
 		}
 	}
 	

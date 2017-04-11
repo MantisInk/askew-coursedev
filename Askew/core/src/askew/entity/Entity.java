@@ -23,9 +23,6 @@ public abstract class Entity {
     public abstract float getY();
     public abstract void setY(float y);
 
-
-
-
     /// DRAWING METHODS
     public Vector2 getDrawScale() {
         drawScaleCache.set(drawScale);
