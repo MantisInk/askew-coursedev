@@ -371,6 +371,25 @@ public class LevelEditorController extends WorldController {
 		}
 	}
 
+	public Entity entityQuery() {
+		float MAX_DISTANCE = 2f;
+		Entity found = null;
+		Vector2 mouse = new Vector2(adjustedMouseX, adjustedMouseY);
+		float minDistance = Float.MAX_VALUE;
+		for (Entity e : objects) {
+			float curDist = e.getPosition().dst(mouse);
+			if (curDist < minDistance) {
+				found = e;
+				minDistance = curDist;
+			}
+		}
+
+		if (minDistance < MAX_DISTANCE) {
+			return found;
+		}
+		return null;
+	}
+
 	public void update(float dt) {
 
 		// Decrement rate limiter to allow new input
@@ -410,57 +429,18 @@ public class LevelEditorController extends WorldController {
 
 		// Delete
 		if (InputController.getInstance().isRightClickPressed()) {
-//#TODO FIX ENTITY VS BOX2D
-			QueryCallback qc = fixture -> {
-                Object userData = fixture.getBody().getUserData();
-                for (Entity o : objects) {
-                    if (o == userData) {
-                        objects.remove(o);
-                        return false;
-                    }
-
-                    if (o instanceof ComplexObstacle) {
-                        for (Obstacle oo : ((ComplexObstacle) o).getBodies()) {
-                            if (oo == userData) {
-                                objects.remove(o);
-                                return false;
-                            }
-                        }
-                    }
-                }
-                return true;
-            };
-
-			world.QueryAABB(qc,adjustedMouseX,adjustedMouseY,adjustedMouseX,adjustedMouseY);
+			Entity select = entityQuery();
+			if (select != null) objects.remove(select);
 			inputRateLimiter = UI_WAIT_SHORT;
 		}
 
 		// Edit
 		if (InputController.getInstance().isEKeyPressed()) {
-
-			QueryCallback qc = fixture -> {
-                Object userData = fixture.getBody().getUserData();
-                for (Entity o : objects) {
-                    if (o == userData) {
-                        promptTemplate(o);
-                        objects.remove(o);
-                        return false;
-                    }
-
-                    if (o instanceof ComplexObstacle) {
-                        for (Obstacle oo : ((ComplexObstacle) o).getBodies()) {
-                            if (oo == userData) {
-                                promptTemplate(o);
-                                objects.remove(o);
-                                return false;
-                            }
-                        }
-                    }
-                }
-                return true;
-            };
-
-			world.QueryAABB(qc,adjustedMouseX,adjustedMouseY,adjustedMouseX,adjustedMouseY);
+			Entity select = entityQuery();
+			if (select != null) {
+				promptTemplate(select);
+				objects.remove(select);
+			}
 			inputRateLimiter = UI_WAIT_SHORT;
 		}
 
