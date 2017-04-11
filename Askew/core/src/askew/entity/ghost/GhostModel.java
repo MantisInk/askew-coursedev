@@ -18,7 +18,8 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 public class GhostModel extends BoxObstacle  {
 
     public static final float GHOST_SPEED = 1f;
-    public static final float GHOST_WIDTH = 1.6f;
+    public static final float GHOST_WIDTH = 0.9f;
+    public static final float GHOST_HEIGHT = GHOST_WIDTH * (523f / 290f);
 
     // determined at runtime to preserve aspect ratio from designers
     private transient float ghostHeight;
@@ -48,7 +49,7 @@ public class GhostModel extends BoxObstacle  {
      * @param y  Initial y position of the ragdoll head
      */
     public GhostModel(float x, float y, float patroldx, float patroldy) {
-        super(x,y, GHOST_WIDTH, GHOST_WIDTH);
+        super(x,y, GHOST_WIDTH, GHOST_HEIGHT);
         this.x = x;
         this.y = y;
         this.patroldx = patroldx;
@@ -79,9 +80,8 @@ public class GhostModel extends BoxObstacle  {
         if (walkAnimation.getKeyFrames().length == 0)
             System.err.println("did not find ghost");
         ghostTextureRegion = walkAnimation.getKeyFrame(0);
-        this.ghostHeight = getWidth() * ((float) ghostTextureRegion.getRegionHeight() / (float) ghostTextureRegion.getRegionWidth());
-        thirtyTwoPixelDensityScale = 32f / ghostTextureRegion.getRegionWidth();
-        this.setHeight(ghostHeight);
+        this.ghostHeight = getWidth() * ((float) ghostTextureRegion.getRegionHeight() / (float) ghostTextureRegion.getRegionWidth()) / 2;
+        thirtyTwoPixelDensityScale = 32f / ghostTextureRegion.getRegionWidth() * 2;
         setTexture(ghostTextureRegion);
     }
 
