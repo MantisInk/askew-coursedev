@@ -10,29 +10,34 @@
  */
 package askew.playermode.leveleditor;
 
-import askew.*;
+import askew.GameCanvas;
+import askew.GlobalConfiguration;
+import askew.InputController;
+import askew.MantisAssetManager;
 import askew.entity.Entity;
 import askew.entity.ghost.GhostModel;
+import askew.entity.obstacle.Obstacle;
 import askew.entity.owl.OwlModel;
+import askew.entity.sloth.SlothModel;
+import askew.entity.tree.PoleVault;
+import askew.entity.tree.StiffBranch;
+import askew.entity.tree.Tree;
+import askew.entity.tree.Trunk;
+import askew.entity.vine.Vine;
 import askew.entity.wall.WallModel;
+import askew.playermode.WorldController;
+import askew.util.PooledList;
 import askew.util.json.JSONLoaderSaver;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.physics.box2d.Contact;
+import com.badlogic.gdx.physics.box2d.ContactImpulse;
+import com.badlogic.gdx.physics.box2d.Manifold;
+import com.badlogic.gdx.physics.box2d.World;
 import com.google.gson.JsonObject;
-import askew.playermode.WorldController;
-import askew.entity.obstacle.ComplexObstacle;
-import askew.entity.obstacle.Obstacle;
-import askew.entity.tree.Trunk;
-import askew.entity.tree.PoleVault;
-import askew.entity.tree.StiffBranch;
-import askew.entity.tree.Tree;
-import askew.entity.vine.Vine;
-import askew.entity.sloth.SlothModel;
-import askew.util.PooledList;
 import lombok.Getter;
 
 import javax.swing.*;
@@ -70,6 +75,8 @@ public class LevelEditorController extends WorldController {
 	float adjustedMouseY;
 
 	protected Vector2 oneScale;
+
+	private boolean pressedL, prevPressedL;
 
 
 	@Getter
@@ -176,7 +183,8 @@ public class LevelEditorController extends WorldController {
 		shouldDrawGrid = true;
 		camTrans = new Affine2();
 		oneScale = new Vector2(1,1);
-
+		pressedL = false;
+		prevPressedL = false;
 	}
 	public void setLevel(String levelName) {
 		currentLevel = levelName;
@@ -247,7 +255,8 @@ public class LevelEditorController extends WorldController {
 		}
 
 		InputController input = InputController.getInstance();
-
+		prevPressedL = pressedL;
+		pressedL = input.isLKeyPressed();
 		if (input.didLeftButtonPress()) {
 			System.out.println("GM");
 			listener.exitScreen(this, EXIT_LE_GM);
@@ -458,7 +467,7 @@ public class LevelEditorController extends WorldController {
 		}
 
 		// Load level
-		if (InputController.getInstance().isLKeyPressed()) {
+		if (pressedL && !prevPressedL) {
 			if (!loadingLevelPrompt) {
 				loadingLevelPrompt = true;
 				currentLevel = showInputDialog("What level do you want to load?");
