@@ -27,6 +27,7 @@ import askew.playermode.WorldController;
 import askew.entity.obstacle.ComplexObstacle;
 import askew.entity.obstacle.Obstacle;
 import askew.entity.tree.Trunk;
+import askew.entity.tree.PoleVault;
 import askew.entity.tree.StiffBranch;
 import askew.entity.tree.Tree;
 import askew.entity.vine.Vine;
@@ -90,6 +91,7 @@ public class LevelEditorController extends WorldController {
 			".SlothModel",
 			".Vine",
 			".Platform",
+			".PoleVault",
 			".Trunk",
 			".StiffBranch",
 			".OwlModel",
@@ -278,6 +280,10 @@ public class LevelEditorController extends WorldController {
 			case ".Trunk":
 				Trunk tTemplate = new Trunk(x,y, 5.0f, 0.25f, 1.0f, 3.0f,oneScale, 0);
 				promptTemplate(tTemplate);
+				break;
+			case ".PoleVault":
+				PoleVault pvTemplate = new PoleVault(x,y, 5.0f, 0.25f, 1.0f, oneScale, 0);
+				promptTemplate(pvTemplate);
 				break;
 			case ".StiffBranch":
 				StiffBranch sb = new StiffBranch(x,y, 3.0f, 0.25f, 1.0f,oneScale);
