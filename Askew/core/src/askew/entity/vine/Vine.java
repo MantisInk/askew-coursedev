@@ -161,7 +161,7 @@ public class Vine extends ComplexObstacle {
 		assert bodies.size > 0;
 
 		Vector2 anchor1 = new Vector2();
-		Vector2 anchor2 = new Vector2(0, -linksize / 2);
+		Vector2 anchor2 = new Vector2(0, linksize / 2);
 
 		// Create the top anchor
 		// Normally, we would do this in constructor, but we have
@@ -178,22 +178,22 @@ public class Vine extends ComplexObstacle {
 		RevoluteJointDef jointDef = new RevoluteJointDef();
 
 		// Initial joint
-		jointDef.bodyA = start.getBody();
-		jointDef.bodyB = bodies.get(0).getBody();
-		jointDef.localAnchorA.set(anchor1);
-		jointDef.localAnchorB.set(anchor2);
+		jointDef.bodyB = start.getBody();
+		jointDef.bodyA = bodies.get(0).getBody();
+		jointDef.localAnchorB.set(anchor1);
+		jointDef.localAnchorA.set(anchor2);
 		jointDef.collideConnected = false;
 		Joint joint = world.createJoint(jointDef);
 		joints.add(joint);
 
 		// Link the pieces together
-		anchor1.y = linksize / 2;
+		anchor1.y = -linksize / 2;
 		for (int ii = 0; ii < bodies.size-1; ii++) {
 			// join the planks
-			jointDef.bodyA = bodies.get(ii).getBody();
-			jointDef.bodyB = bodies.get(ii+1).getBody();
-			jointDef.localAnchorA.set(anchor1);
-			jointDef.localAnchorB.set(anchor2);
+			jointDef.bodyB = bodies.get(ii).getBody();
+			jointDef.bodyA = bodies.get(ii+1).getBody();
+			jointDef.localAnchorB.set(anchor1);
+			jointDef.localAnchorA.set(anchor2);
 			jointDef.collideConnected = false;
 			joint = world.createJoint(jointDef);
 			joints.add(joint);
@@ -214,10 +214,10 @@ public class Vine extends ComplexObstacle {
 
 			// Final joint
 			anchor2.y = 0;
-			jointDef.bodyA = last.getBody();
-			jointDef.bodyB = finish.getBody();
-			jointDef.localAnchorA.set(anchor1);
-			jointDef.localAnchorB.set(anchor2);
+			jointDef.bodyB = last.getBody();
+			jointDef.bodyA = finish.getBody();
+			jointDef.localAnchorB.set(anchor1);
+			jointDef.localAnchorA.set(anchor2);
 			joint = world.createJoint(jointDef);
 			joints.add(joint);
 		}

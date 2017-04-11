@@ -92,7 +92,7 @@ public class SlothModel extends ComplexObstacle  {
     private transient boolean rightGrab;
     private transient boolean leftStickPressed;
     private transient boolean rightStickPressed;
-
+    private transient boolean movingRight;
 
     /**
      * Returns the texture index for the given body part
@@ -124,22 +124,23 @@ public class SlothModel extends ComplexObstacle  {
     /** Dist between arms? */
 
     private static final float SHOULDER_XOFFSET    = 0.00f;
-    private static final float SHOULDER_YOFFSET    = 0.00f;
+    private static final float SHOULDER_YOFFSET    = 0.10f;
 
     private static final float HAND_YOFFSET    = 0;
 
-    private static final float BODY_WIDTH = 1.5f;
-    private static final float BODY_HEIGHT = 1.5f;
+    private static final float BODY_HEIGHT = 2.4f;
+    private static final float BODY_WIDTH = BODY_HEIGHT * (489f / 835f);
 
-    private static final float ARM_WIDTH = 1.25f;
-    private static final float ARM_HEIGHT = 0.3125f;
+    private static final float ARM_WIDTH = 1.75f;
+    private static final float ARM_HEIGHT = 0.4924f;
 
     private static final float ARM_XOFFSET    = ARM_WIDTH / 2f + .375f;
-    private static final float ARM_YOFFSET    = 0;
+    private static final float ARM_YOFFSET    = 3f;
 
-    private static final float HAND_WIDTH = 0.3125f;
-    private static final float HAND_HEIGHT = 0.3125f;
-    private static final float HAND_XOFFSET  = (ARM_WIDTH / 2f) - HAND_WIDTH/2;
+    private static final float HAND_WIDTH = 0.1125f;
+    private static final float HAND_HEIGHT = 0.1125f;
+    //private static final float HAND_XOFFSET  = (ARM_WIDTH / 2f) - HAND_WIDTH/2;
+    private static final float HAND_XOFFSET  = (ARM_WIDTH / 2f) - HAND_WIDTH * 2 - .02f;
 
 
     /** Texture assets for the body parts */
@@ -189,7 +190,7 @@ public class SlothModel extends ComplexObstacle  {
 
         // Left arm
         part = makePart(PART_LEFT_ARM, PART_BODY, -ARM_XOFFSET, -ARM_YOFFSET,ARM_WIDTH,ARM_HEIGHT, ARM_DENSITY,false);
-        part.setAngle((float)Math.PI);
+//        part.setAngle((float)Math.PI);
         part.setGravityScale(GRAVITY_SCALE);
         //part.setMass(ARM_MASS);
 
@@ -258,7 +259,7 @@ public class SlothModel extends ComplexObstacle  {
             body = new BoxObstacle(partCache.x, partCache.y, dwidth, dheight);
             Filter f = new Filter();
             f.maskBits = 0x0100;
-            f.categoryBits = 0x0100;
+            f.categoryBits = 0x0000;
             body.setFilterData(f);
         }
         else{
@@ -290,11 +291,11 @@ public class SlothModel extends ComplexObstacle  {
 //        createJoint(world, PART_LEFT_ARM, PART_RIGHT_ARM, ARM_XOFFSET/2, 0, -ARM_XOFFSET/2, 0);
 
         // BODY TO ARM WOW
-        createJoint(world, PART_BODY, PART_RIGHT_ARM, SHOULDER_XOFFSET/2, 0, -ARM_XOFFSET/2, 0);
-        createJoint(world, PART_BODY, PART_LEFT_ARM, -SHOULDER_XOFFSET/2, 0, ARM_XOFFSET/2, 0);
+        createJoint(world, PART_BODY, PART_RIGHT_ARM, SHOULDER_XOFFSET/2, SHOULDER_YOFFSET, -ARM_XOFFSET/2, 0);
+        createJoint(world, PART_BODY, PART_LEFT_ARM, SHOULDER_XOFFSET/2, SHOULDER_YOFFSET, -ARM_XOFFSET/2, 0);
 
         // HANDS
-        createJoint(world, PART_LEFT_ARM, PART_LEFT_HAND, -HAND_XOFFSET, 0, 0, 0);
+        createJoint(world, PART_LEFT_ARM, PART_LEFT_HAND, HAND_XOFFSET, 0, 0, 0);
         createJoint(world, PART_RIGHT_ARM, PART_RIGHT_HAND, HAND_XOFFSET, 0, 0, 0);
 
         // This is bad but i do sensors here
@@ -464,6 +465,11 @@ public class SlothModel extends ComplexObstacle  {
                 rightHand
                         .getBody()
                         .applyForce(rx, ry, rightHand.getX(), rightHand.getY(), true);
+        }
+        if (bodies.get(PART_BODY).getBody().getLinearVelocity().x > 0) {
+            movingRight = true;
+        } else {
+            movingRight = false;
         }
     }
 
@@ -654,11 +660,23 @@ public class SlothModel extends ComplexObstacle  {
 
     @Override
     public void draw(GameCanvas canvas){
-        for(int x=0;x<bodies.size;x++){
+        for(int x=bodies.size-1;x>=0;x--){
 
             SimpleObstacle part = (SimpleObstacle) bodies.get(x);
             TextureRegion texture = part.getTexture();
             if (texture != null) {
+
+                if (x == 0) {
+                    if (movingRight) {
+                        if (!texture.isFlipX()) {
+                            texture.flip(true,false);
+                        }
+                    } else {
+                        if (texture.isFlipX()) {
+                            texture.flip(true,false);
+                        }
+                    }
+                }
 
                 //If the body parts are from the right limb
                 if (x == 3 || x == 4) continue;

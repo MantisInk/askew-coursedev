@@ -13,6 +13,15 @@
         "x": 3.6875,
         "y": 16.25
       }
+    },
+    {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "pin": false,
+        "numLinks": 5.0,
+        "x": 4.0,
+        "y": 14.0
+      }
     }
   ]
 }
