@@ -10,5 +10,5 @@
   "fullscreen": false,
   "defaultLevel": "tunnel_vines",
   "torqueBasedMovement": true,
-  "maxLevel": 5
+  "maxLevel": 6
 }

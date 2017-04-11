@@ -8,28 +8,21 @@
   "width": 10,
   "entities": [
     {
-      "CLASSNAME": "askew.entity.sloth.SlothModel",
-      "INSTANCE": {
-        "x": -2.0,
-        "y": 17.0
-      }
-    },
-    {
       "CLASSNAME": "askew.entity.tree.Trunk",
       "INSTANCE": {
-        "x": 2.0,
-        "y": 13.0,
+        "x": 0.0,
+        "y": 14.0,
         "stiffLen": 0.0,
         "angle": 270.0,
         "linksize": 1.0,
-        "numLinks": 5.0
+        "numLinks": 7.0
       }
     },
     {
       "CLASSNAME": "askew.entity.tree.Trunk",
       "INSTANCE": {
         "x": 7.0,
-        "y": 13.0,
+        "y": 14.0,
         "stiffLen": 0.0,
         "angle": 225.0,
         "linksize": 1.0,
@@ -149,6 +142,67 @@
           1.0,
           0.0
         ]
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.wall.WallModel",
+      "INSTANCE": {
+        "x": -4.0,
+        "y": 11.0,
+        "thorn": false,
+        "points": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.wall.WallModel",
+      "INSTANCE": {
+        "x": -4.0,
+        "y": 12.0,
+        "thorn": false,
+        "points": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.wall.WallModel",
+      "INSTANCE": {
+        "x": -4.0,
+        "y": 13.0,
+        "thorn": false,
+        "points": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.sloth.SlothModel",
+      "INSTANCE": {
+        "x": 0.0,
+        "y": 17.0
       }
     }
   ]
