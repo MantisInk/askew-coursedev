@@ -3,7 +3,6 @@ package askew.playermode.mainmenu;
 import askew.InputController;
 import askew.MantisAssetManager;
 import askew.playermode.WorldController;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
@@ -49,7 +48,7 @@ public class MainMenuController extends WorldController {
     @Override
     public void loadContent(MantisAssetManager manager) {
         super.loadContent(manager);
-        fern = new Texture(Gdx.files.internal(FERN_TEXTURE));
+        fern = manager.get(FERN_TEXTURE);
         menu1 = manager.get(MENU_BACKGROUND1_TEXTURE);
         menu2 = manager.get(MENU_BACKGROUND2_TEXTURE);
     }
