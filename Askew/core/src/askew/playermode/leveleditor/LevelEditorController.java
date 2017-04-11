@@ -443,7 +443,7 @@ public class LevelEditorController extends WorldController {
 			JsonObject entity_prop = entityObject.get("INSTANCE").getAsJsonObject();
 			String entity_name = entityObject.get("CLASSNAME").getAsString();
 			//String entity_name = className;
-			int field_num = 2;
+			//int field_num = 2;
 			int buffer = 5;
 			int text_height = 15;
 
@@ -488,12 +488,6 @@ public class LevelEditorController extends WorldController {
 
 			JButton okButton = new JButton("OK");
 			okButton.setBounds(275,500,100,text_height);
-			//JLabel please_text = new JLabel("Please hit OK instead of X");
-//			okButton.addActionListener(e -> {
-//				//promptTemplateCallback(commentTextArea.getText());
-//				mainFrame.setVisible(false);
-//				mainFrame.dispose();
-//			});
 
 			switch(entity_name){
 				case ".SlothModel":
@@ -567,7 +561,7 @@ public class LevelEditorController extends WorldController {
 						mainFrame.dispose();
 					});
 
-					field_num++;
+					//field_num++;
 					break;
 				case ".WallModel":
 					//TODO Does this actually work? @w@ Can't test without Trevor's sprint code
@@ -652,7 +646,7 @@ public class LevelEditorController extends WorldController {
 						mainFrame.dispose();
 					});
 
-					field_num += 2;
+					//field_num += 2;
 					break;
 				case ".Trunk":
 					float current_links = entity_prop.get("numLinks").getAsFloat();
@@ -697,7 +691,7 @@ public class LevelEditorController extends WorldController {
 						mainFrame.dispose();
 					});
 
-					field_num += 2;
+					//field_num += 2;
 					break;
 				case ".StiffBranch":
 					float current_branch = entity_prop.get("stiffLen").getAsFloat();
@@ -731,7 +725,7 @@ public class LevelEditorController extends WorldController {
 						mainFrame.dispose();
 					});
 
-					field_num++;
+					//field_num++;
 					break;
 				case ".OwlModel":
 					okButton.addActionListener(e -> {
