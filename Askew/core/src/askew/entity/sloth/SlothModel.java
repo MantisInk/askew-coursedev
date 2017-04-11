@@ -56,7 +56,7 @@ public class SlothModel extends ComplexObstacle  {
     private static final float PI = (float)Math.PI;
 
     /** The number of DISTINCT body parts */
-    private static final int BODY_TEXTURE_COUNT = 4;
+    private static final int BODY_TEXTURE_COUNT = 5;
 
     private transient RevoluteJointDef leftGrabJointDef;
     private transient RevoluteJointDef rightGrabJointDef;
@@ -92,7 +92,7 @@ public class SlothModel extends ComplexObstacle  {
     private transient boolean rightGrab;
     private transient boolean leftStickPressed;
     private transient boolean rightStickPressed;
-    private transient boolean movingRight;
+    private transient int flowFacingState;
 
     /**
      * Returns the texture index for the given body part
@@ -468,10 +468,14 @@ public class SlothModel extends ComplexObstacle  {
                         .applyForce(rx, ry, rightHand.getX(), rightHand.getY(), true);
         }
         if (bodies.get(PART_BODY).getBody().getLinearVelocity().x > 0) {
-            movingRight = true;
+            flowFacingState++;
         } else {
-            movingRight = false;
+            flowFacingState--;
         }
+
+        // MAGIC NUMBERS (TREVOR)
+        if (flowFacingState > 20) flowFacingState = 20;
+        if (flowFacingState < -20) flowFacingState = -20;
     }
 
     public void drawForces(GameCanvas canvas, Affine2 camTrans){
@@ -548,7 +552,6 @@ public class SlothModel extends ComplexObstacle  {
         } else {
             grabJoint = rightGrabJoint;
             hand =  bodies.get(PART_RIGHT_HAND);
-
         }
 
         if (grabJoint != null || target == null) return;
@@ -643,11 +646,13 @@ public class SlothModel extends ComplexObstacle  {
         partTextures = new TextureRegion[BODY_TEXTURE_COUNT];
         Texture managedHand = manager.get("texture/sloth/hand.png");
         Texture managedFrontArm = manager.get("texture/sloth/frontarm.png");
+        Texture managedFlowFront = manager.get("texture/sloth/frontflow.png");
         Texture managedBackArm = manager.get("texture/sloth/backarm.png");
         Texture managedDude = manager.get("texture/sloth/dude.png");
         partTextures[0] = new TextureRegion(managedHand);
         partTextures[1] = new TextureRegion(managedFrontArm);
         partTextures[3] = new TextureRegion(managedBackArm);
+        partTextures[4] = new TextureRegion(managedFlowFront);
         partTextures[2] = new TextureRegion(managedDude);
 
         if (bodies.size == 0) {
@@ -663,19 +668,23 @@ public class SlothModel extends ComplexObstacle  {
     public void draw(GameCanvas canvas){
         for(int x=bodies.size-1;x>=0;x--){
 
-            SimpleObstacle part = (SimpleObstacle) bodies.get(x);
+            BoxObstacle part = (BoxObstacle) bodies.get(x);
             TextureRegion texture = part.getTexture();
             if (texture != null) {
 
                 if (x == 0) {
-                    if (movingRight) {
+                    if (flowFacingState > 10) {
+                        part.setTexture(partTextures[2]);
                         if (!texture.isFlipX()) {
                             texture.flip(true,false);
                         }
-                    } else {
+                    } else if (flowFacingState < -10) {
+                        part.setTexture(partTextures[2]);
                         if (texture.isFlipX()) {
                             texture.flip(true,false);
                         }
+                    } else {
+                        part.setTexture(partTextures[4]);
                     }
                 }
 
