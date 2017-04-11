@@ -31,13 +31,15 @@ import askew.entity.obstacle.*;
  */
 public class Trunk extends ComplexObstacle {
 
+	private transient int nLinks;
+	private transient float width,height;
 	private static final String TRUNK_NAME = "trunk";			/** The debug name for the entire obstacle */
 	private static final String PLANK_NAME = "driftwood";		/** The debug name for each plank */
 	private static final String TRUNK_PIN_NAME = "pin";			/** The debug name for each anchor pin */
 	private static final float TRUNK_PIN_RADIUS = 0.1f;			/** The radius of each anchor pin */
 	private static final float BASIC_DENSITY = 13f;				/** The density of each plank in the bridge */
 
-	private float x,y,stiffLen; 								/** starting coords of bottom anchor and length for branch */
+	private float x,y,stiffLen, angle; 								/** starting coords of bottom anchor and length for branch */
 	public transient Vector2 final_norm = null;					/** coords for starting branch off this trunk */
 
 	// Invisible anchor objects
@@ -45,7 +47,8 @@ public class Trunk extends ComplexObstacle {
 	private transient WheelObstacle finish = null;				/** The top of the trunk */
 	public transient static final float DAMPING_ROTATION = 5f;	/** Set damping constant for joint rotation in vines */
 
-	// Dimension information
+	/** The spacing between each link */
+	// TODO: Fix this from being public (refactor artifact)
 	protected transient Vector2 dimension;						/** The size of the entire bridge */
 	protected transient Vector2 planksize;						/** The size of a single plank */
 	protected transient float linksize = 1.0f;					/** The length of each link */
@@ -96,6 +99,7 @@ public class Trunk extends ComplexObstacle {
 	 */
 	public Trunk(float x0, float y0, float x1, float y1, float lwidth, float lheight, float stiffLen, float angle) {
 		super(x0,y0);
+		this.angle = angle;
 		this.x = x0;	this.y = y0;	this.stiffLen = stiffLen;
 		setName(TRUNK_NAME);
 
@@ -113,7 +117,7 @@ public class Trunk extends ComplexObstacle {
 		int nLinks = (int)(length / linksize);
 		if (nLinks <= 1) {
 			nLinks = 1;
-			linksize = length;
+//			linksize = length;
 			spacing = 0;
 		} else {
 			spacing = length - nLinks * linksize;
@@ -131,6 +135,7 @@ public class Trunk extends ComplexObstacle {
 			BoxObstacle plank = new BoxObstacle(pos.x, pos.y, planksize.x, planksize.y);
 			plank.setName(PLANK_NAME+ii);
 			plank.setDensity(BASIC_DENSITY);
+			plank.setAngle((float)Math.toRadians(angle));
 			bodies.add(plank);
 		}
 		final_norm = new Vector2(pos);

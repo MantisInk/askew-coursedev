@@ -100,24 +100,25 @@ public class Vine extends ComplexObstacle {
 	 */
 	public Vine(float x0, float y0, float x1, float y1, float lwidth, float lheight, boolean pinned, float angle, float omega) {
 		super(x0,y0);
-		System.out.println(lheight);
 		pin = pinned;
 		setName(VINE_NAME);
+
+
 		this.BASIC_DENSITY = GlobalConfiguration.getInstance().getAsFloat("vineDensity");
-		
+
+
 		planksize = new Vector2(lwidth,lheight);
 		linksize = lheight;
 
-		//System.out.println("linksize before "+linksize);
 
-	    // Compute the vine length & create unit vector for building pieces
+	    // Compute the bridge length
 		dimension = new Vector2(x1-x0,y1-y0);
 	    float length = dimension.len();
 	    Vector2 norm = new Vector2(dimension);
 	    norm.nor();
 	    norm.rotate(angle);
-	    
-	    // If too small, only make one piece.
+
+	    // If too small, only make one plank.
 	    int nLinks = (int)(length / linksize);
 	    if (nLinks <= 1) {
 	        nLinks = 1;
@@ -128,12 +129,9 @@ public class Vine extends ComplexObstacle {
 	        spacing /= (nLinks-1);
 	    }
 
-	    //System.out.println("links "+nLinks);
-	    //System.out.println("linksize "+linksize);
 	    	    
 	    // Create the planks
 		planksize.y = lheight;
-	    System.out.println(planksize);
 
 	    Vector2 pos = new Vector2();
 	    for (int ii = 0; ii < nLinks; ii++) {
@@ -163,7 +161,7 @@ public class Vine extends ComplexObstacle {
 		assert bodies.size > 0;
 
 		Vector2 anchor1 = new Vector2();
-		Vector2 anchor2 = new Vector2(0, -linksize / 2);
+		Vector2 anchor2 = new Vector2(0, linksize / 2);
 
 		// Create the top anchor
 		// Normally, we would do this in constructor, but we have
@@ -180,22 +178,22 @@ public class Vine extends ComplexObstacle {
 		RevoluteJointDef jointDef = new RevoluteJointDef();
 
 		// Initial joint
-		jointDef.bodyA = start.getBody();
-		jointDef.bodyB = bodies.get(0).getBody();
-		jointDef.localAnchorA.set(anchor1);
-		jointDef.localAnchorB.set(anchor2);
+		jointDef.bodyB = start.getBody();
+		jointDef.bodyA = bodies.get(0).getBody();
+		jointDef.localAnchorB.set(anchor1);
+		jointDef.localAnchorA.set(anchor2);
 		jointDef.collideConnected = false;
 		Joint joint = world.createJoint(jointDef);
 		joints.add(joint);
 
 		// Link the pieces together
-		anchor1.y = linksize / 2;
+		anchor1.y = -linksize / 2;
 		for (int ii = 0; ii < bodies.size-1; ii++) {
 			// join the planks
-			jointDef.bodyA = bodies.get(ii).getBody();
-			jointDef.bodyB = bodies.get(ii+1).getBody();
-			jointDef.localAnchorA.set(anchor1);
-			jointDef.localAnchorB.set(anchor2);
+			jointDef.bodyB = bodies.get(ii).getBody();
+			jointDef.bodyA = bodies.get(ii+1).getBody();
+			jointDef.localAnchorB.set(anchor1);
+			jointDef.localAnchorA.set(anchor2);
 			jointDef.collideConnected = false;
 			joint = world.createJoint(jointDef);
 			joints.add(joint);
@@ -216,10 +214,10 @@ public class Vine extends ComplexObstacle {
 
 			// Final joint
 			anchor2.y = 0;
-			jointDef.bodyA = last.getBody();
-			jointDef.bodyB = finish.getBody();
-			jointDef.localAnchorA.set(anchor1);
-			jointDef.localAnchorB.set(anchor2);
+			jointDef.bodyB = last.getBody();
+			jointDef.bodyA = finish.getBody();
+			jointDef.localAnchorB.set(anchor1);
+			jointDef.localAnchorA.set(anchor2);
 			joint = world.createJoint(jointDef);
 			joints.add(joint);
 		}

@@ -1,10 +1,13 @@
 package askew;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import lombok.Getter;
 
+import javax.xml.soap.Text;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,9 +25,13 @@ public class MantisAssetManager extends AssetManager {
     @Getter
     private Map<String,TextureRegion> processedTextureMap;
 
+    @Getter
+    private TextureAtlas textureAtlas;
+
     public MantisAssetManager() {
         super();
         processedTextureMap = new HashMap<>();
+        textureAtlas = new TextureAtlas();
     }
 
     public void preloadProcess() {
@@ -40,6 +47,7 @@ public class MantisAssetManager extends AssetManager {
         if (!loaded) {
             createTexture(WALL_TEXTURE,true);
             createTexture(THORN_TEXTURE,true);
+            textureAtlas = new TextureAtlas(Gdx.files.internal("texture/packed/packed.atlas"));
         }
         loaded = true;
     }

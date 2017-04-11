@@ -1,6 +1,6 @@
 {
   "levelModelVersion": 1,
-  "title": "test_save_obstacle",
+  "title": "aaa",
   "goalTimeGold": 30,
   "goalTimeSilver": 45,
   "goalTimeBronze": 60,
@@ -10,17 +10,8 @@
     {
       "CLASSNAME": "askew.entity.sloth.SlothModel",
       "INSTANCE": {
-        "x": 3.6875,
-        "y": 16.25
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.vine.Vine",
-      "INSTANCE": {
-        "pin": false,
-        "numLinks": 5.0,
-        "x": 4.0,
-        "y": 14.0
+        "x": 16.40625,
+        "y": 12.03125
       }
     }
   ]

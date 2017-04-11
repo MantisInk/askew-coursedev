@@ -56,7 +56,7 @@ public class SlothModel extends ComplexObstacle  {
     private static final float PI = (float)Math.PI;
 
     /** The number of DISTINCT body parts */
-    private static final int BODY_TEXTURE_COUNT = 3;
+    private static final int BODY_TEXTURE_COUNT = 4;
 
     private transient RevoluteJointDef leftGrabJointDef;
     private transient RevoluteJointDef rightGrabJointDef;
@@ -92,7 +92,7 @@ public class SlothModel extends ComplexObstacle  {
     private transient boolean rightGrab;
     private transient boolean leftStickPressed;
     private transient boolean rightStickPressed;
-
+    private transient boolean movingRight;
 
     /**
      * Returns the texture index for the given body part
@@ -108,6 +108,7 @@ public class SlothModel extends ComplexObstacle  {
             case PART_HEAD:
                 return 0;
             case PART_LEFT_ARM:
+                return 3;
             case PART_RIGHT_ARM:
                 return 1;
             case PART_BODY:
@@ -123,22 +124,24 @@ public class SlothModel extends ComplexObstacle  {
     /** Dist between arms? */
 
     private static final float SHOULDER_XOFFSET    = 0.00f;
-    private static final float SHOULDER_YOFFSET    = 0.00f;
+    private static final float SHOULDER_YOFFSET    = 0.10f;
 
-    private static final float ARM_XOFFSET    = 1.00f;
-    private static final float ARM_YOFFSET    = 0;
-
-    private static final float HAND_XOFFSET    = .70f;
     private static final float HAND_YOFFSET    = 0;
 
-    private static final float BODY_WIDTH = 1.5f;
-    private static final float BODY_HEIGHT = 1.5f;
+    private static final float BODY_HEIGHT = 2.4f;
+    private static final float BODY_WIDTH = BODY_HEIGHT * (489f / 835f);
 
-    private static final float ARM_WIDTH = 1.25f;
-    private static final float ARM_HEIGHT = 0.3125f;
+    private static final float ARM_WIDTH = 1.75f;
+    private static final float ARM_HEIGHT = 0.4924f;
 
-    private static final float HAND_WIDTH = 0.3125f;
-    private static final float HAND_HEIGHT = 0.3125f;
+    private static final float ARM_XOFFSET    = ARM_WIDTH / 2f + .375f;
+    private static final float ARM_YOFFSET    = 0f;
+
+    private static final float HAND_WIDTH = 0.1125f;
+    private static final float HAND_HEIGHT = 0.1125f;
+    //private static final float HAND_XOFFSET  = (ARM_WIDTH / 2f) - HAND_WIDTH/2;
+    private static final float HAND_XOFFSET  = (ARM_WIDTH / 2f) - HAND_WIDTH * 2 - .07f;
+
 
     /** Texture assets for the body parts */
     private transient TextureRegion[] partTextures;
@@ -174,7 +177,6 @@ public class SlothModel extends ComplexObstacle  {
         // We do not do anything yet.
         BoxObstacle part;
 
-
         // Body
         part = makePart(PART_BODY, PART_NONE, x, y,BODY_WIDTH,BODY_HEIGHT, BODY_DENSITY,false);
         part.setFixedRotation(BODY_FIXED_ROTATION);
@@ -182,12 +184,13 @@ public class SlothModel extends ComplexObstacle  {
 
         // ARMS
         // Right arm
-        part = makePart(PART_RIGHT_ARM, PART_BODY, SHOULDER_XOFFSET + ARM_XOFFSET, SHOULDER_YOFFSET + ARM_YOFFSET,ARM_WIDTH,ARM_HEIGHT, ARM_DENSITY,false);
+        part = makePart(PART_RIGHT_ARM, PART_BODY, SHOULDER_XOFFSET + ARM_XOFFSET/2f, SHOULDER_YOFFSET + ARM_YOFFSET,ARM_WIDTH,ARM_HEIGHT, ARM_DENSITY,false);
+//        part.setAngle((float)Math.PI);
         part.setGravityScale(GRAVITY_SCALE);
         //part.setMass(ARM_MASS);
 
         // Left arm
-        part = makePart(PART_LEFT_ARM, PART_BODY, -ARM_XOFFSET, -ARM_YOFFSET,ARM_WIDTH,ARM_HEIGHT, ARM_DENSITY,false);
+        part = makePart(PART_LEFT_ARM, PART_BODY, -ARM_XOFFSET/2f, -ARM_YOFFSET,ARM_WIDTH,ARM_HEIGHT, ARM_DENSITY,false);
         part.setAngle((float)Math.PI);
         part.setGravityScale(GRAVITY_SCALE);
         //part.setMass(ARM_MASS);
@@ -197,6 +200,7 @@ public class SlothModel extends ComplexObstacle  {
         part = makePart(PART_LEFT_HAND, PART_LEFT_ARM, ARM_XOFFSET, ARM_YOFFSET, HAND_WIDTH, HAND_HEIGHT, HAND_DENSITY,false);
         part.setFixedRotation(HANDS_FIXED_ROTATION);
         part.setGravityScale(GRAVITY_SCALE);
+
         // Right hand
         part = makePart(PART_RIGHT_HAND, PART_RIGHT_ARM, ARM_XOFFSET, ARM_YOFFSET, HAND_WIDTH, HAND_HEIGHT, HAND_DENSITY,false);
         part.setFixedRotation(HANDS_FIXED_ROTATION);
@@ -256,7 +260,7 @@ public class SlothModel extends ComplexObstacle  {
             body = new BoxObstacle(partCache.x, partCache.y, dwidth, dheight);
             Filter f = new Filter();
             f.maskBits = 0x0100;
-            f.categoryBits = 0x0100;
+            f.categoryBits = 0x0000;
             body.setFilterData(f);
         }
         else{
@@ -288,11 +292,11 @@ public class SlothModel extends ComplexObstacle  {
 //        createJoint(world, PART_LEFT_ARM, PART_RIGHT_ARM, ARM_XOFFSET/2, 0, -ARM_XOFFSET/2, 0);
 
         // BODY TO ARM WOW
-        createJoint(world, PART_BODY, PART_RIGHT_ARM, SHOULDER_XOFFSET/2, 0, -ARM_XOFFSET/2, 0);
-        createJoint(world, PART_BODY, PART_LEFT_ARM, -SHOULDER_XOFFSET/2, 0, ARM_XOFFSET/2, 0);
+        createJoint(world, PART_BODY, PART_RIGHT_ARM, SHOULDER_XOFFSET/2, SHOULDER_YOFFSET, -ARM_XOFFSET/2, 0);
+        createJoint(world, PART_BODY, PART_LEFT_ARM, SHOULDER_XOFFSET/2, SHOULDER_YOFFSET, -ARM_XOFFSET/2, 0);
 
         // HANDS
-        createJoint(world, PART_LEFT_ARM, PART_LEFT_HAND, -HAND_XOFFSET, 0, 0, 0);
+        createJoint(world, PART_LEFT_ARM, PART_LEFT_HAND, HAND_XOFFSET, 0, 0, 0);
         createJoint(world, PART_RIGHT_ARM, PART_RIGHT_HAND, HAND_XOFFSET, 0, 0, 0);
 
         // This is bad but i do sensors here
@@ -358,7 +362,7 @@ public class SlothModel extends ComplexObstacle  {
 
 
     public void doThePhysics() {
-        if (TORQUE_BASED_MOVEMENT) {
+        if (TORQUE_BASED_MOVEMENT || (leftGrabJoint == null && rightGrabJoint == null)) {
             Obstacle rightHand = bodies.get(PART_RIGHT_HAND);
             Obstacle leftHand = bodies.get(PART_LEFT_HAND);
 
@@ -368,7 +372,7 @@ public class SlothModel extends ComplexObstacle  {
             // Apply forces
             float dLTheta = 0f;
             float lcTheta = (float)Math.atan2(leftVert,leftHori); // correct
-            float lTheta = (-leftArm.getAngle());
+            float lTheta = (-leftArm.getAngle()) + PI;
             lTheta = ((lTheta%(2*PI)) + (2*PI)) % (2*PI) - PI; //ltheta is correct
             float lav = leftArm.getAngularVelocity() * 2;
             float lLength = (float)Math.sqrt((leftVert * leftVert) + (leftHori * leftHori));
@@ -462,6 +466,11 @@ public class SlothModel extends ComplexObstacle  {
                 rightHand
                         .getBody()
                         .applyForce(rx, ry, rightHand.getX(), rightHand.getY(), true);
+        }
+        if (bodies.get(PART_BODY).getBody().getLinearVelocity().x > 0) {
+            movingRight = true;
+        } else {
+            movingRight = false;
         }
     }
 
@@ -587,8 +596,8 @@ public class SlothModel extends ComplexObstacle  {
     }
 
     public void activateSlothPhysics(World world) {
-        float MN_SENSOR_HEIGHT = .2f;
-        float MN_SENSOR_WIDTH = .2f;
+        float MN_SENSOR_HEIGHT = HAND_HEIGHT/2f;
+        float MN_SENSOR_WIDTH = HAND_WIDTH/2f;
         //float MN_SHRINK = 0.6f;
         Vector2 sensorCenter = new Vector2(0, 0);
         FixtureDef sensorDef = new FixtureDef();
@@ -633,10 +642,12 @@ public class SlothModel extends ComplexObstacle  {
     public void setTextures(MantisAssetManager manager) {
         partTextures = new TextureRegion[BODY_TEXTURE_COUNT];
         Texture managedHand = manager.get("texture/sloth/hand.png");
-        Texture managedArm = manager.get("texture/sloth/arm.png");
+        Texture managedFrontArm = manager.get("texture/sloth/frontarm.png");
+        Texture managedBackArm = manager.get("texture/sloth/backarm.png");
         Texture managedDude = manager.get("texture/sloth/dude.png");
         partTextures[0] = new TextureRegion(managedHand);
-        partTextures[1] = new TextureRegion(managedArm);
+        partTextures[1] = new TextureRegion(managedFrontArm);
+        partTextures[3] = new TextureRegion(managedBackArm);
         partTextures[2] = new TextureRegion(managedDude);
 
         if (bodies.size == 0) {
@@ -650,20 +661,33 @@ public class SlothModel extends ComplexObstacle  {
 
     @Override
     public void draw(GameCanvas canvas){
-        for(int x=0;x<bodies.size;x++){
+        for(int x=bodies.size-1;x>=0;x--){
 
             SimpleObstacle part = (SimpleObstacle) bodies.get(x);
             TextureRegion texture = part.getTexture();
             if (texture != null) {
 
+                if (x == 0) {
+                    if (movingRight) {
+                        if (!texture.isFlipX()) {
+                            texture.flip(true,false);
+                        }
+                    } else {
+                        if (texture.isFlipX()) {
+                            texture.flip(true,false);
+                        }
+                    }
+                }
+
                 //If the body parts are from the right limb
+                if (x == 3 || x == 4) continue;
                 if (x == 1 || x == 4) {
                     part.draw(canvas, Color.WHITE);
                     part.draw(canvas, Color.WHITE);     //remove this line when you draw the head
                 }
                 //If the body parts are from the left limb
                 else if (x == 2 || x == 3) {
-                    part.draw(canvas, Color.BLACK);
+                    part.draw(canvas, Color.WHITE);
                 }
                 //If the body parts are not limbs
                 else {
