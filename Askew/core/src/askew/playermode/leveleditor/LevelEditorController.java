@@ -264,6 +264,8 @@ public class LevelEditorController extends WorldController {
 	 * @param y
      */
 	private void createXY(float x, float y) {
+		x = Math.round(x);
+		y = Math.round(y);
 		switch (creationOptions[entityIndex]) {
 			case ".SlothModel":
 				SlothModel sTemplate = new SlothModel(x,y);

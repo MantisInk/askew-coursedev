@@ -30,7 +30,7 @@ public class JsonEntityFactory {
         float numlinks = instance.get("numLinks").getAsFloat();
         Texture managedTexture = manager.get(Vine.VINE_TEXTURE, Texture.class);
         TextureRegion vineTexture = new TextureRegion(managedTexture);
-		vine = new Vine(x, y, numlinks, .25f, 1.0f, scale);
+		vine = new Vine(x, y, numlinks, .35f, 1.0f, scale);
 		vine.setDrawScale(scale.x, scale.y);
 		vine.setTextures(manager);
         return vine;
@@ -40,9 +40,11 @@ public class JsonEntityFactory {
         Trunk trunk;
         float x = instance.get("x").getAsFloat();
         float y = instance.get("y").getAsFloat();
+        float angle = instance.get("angle").getAsFloat();
         float numlinks = instance.get("numLinks").getAsFloat();
+        float linksize = instance.get("linksize").getAsFloat();
         float stiff = instance.get("stiffLen").getAsFloat();
-        trunk = new Trunk(x, y, numlinks, 0.25f, 1.0f, stiff,scale);
+        trunk = new Trunk(x, y, numlinks, 0.25f, linksize, stiff,scale, angle);
         trunk.setDrawScale(scale.x, scale.y);
         trunk.setTextures(manager);
         return trunk;

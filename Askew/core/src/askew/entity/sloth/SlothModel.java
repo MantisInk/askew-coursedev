@@ -56,7 +56,7 @@ public class SlothModel extends ComplexObstacle  {
     private static final float PI = (float)Math.PI;
 
     /** The number of DISTINCT body parts */
-    private static final int BODY_TEXTURE_COUNT = 3;
+    private static final int BODY_TEXTURE_COUNT = 4;
 
     private transient RevoluteJointDef leftGrabJointDef;
     private transient RevoluteJointDef rightGrabJointDef;
@@ -108,6 +108,7 @@ public class SlothModel extends ComplexObstacle  {
             case PART_HEAD:
                 return 0;
             case PART_LEFT_ARM:
+                return 3;
             case PART_RIGHT_ARM:
                 return 1;
             case PART_BODY:
@@ -125,10 +126,6 @@ public class SlothModel extends ComplexObstacle  {
     private static final float SHOULDER_XOFFSET    = 0.00f;
     private static final float SHOULDER_YOFFSET    = 0.00f;
 
-    private static final float ARM_XOFFSET    = 1.00f;
-    private static final float ARM_YOFFSET    = 0;
-
-    private static final float HAND_XOFFSET    = .70f;
     private static final float HAND_YOFFSET    = 0;
 
     private static final float BODY_WIDTH = 1.5f;
@@ -137,8 +134,13 @@ public class SlothModel extends ComplexObstacle  {
     private static final float ARM_WIDTH = 1.25f;
     private static final float ARM_HEIGHT = 0.3125f;
 
+    private static final float ARM_XOFFSET    = ARM_WIDTH / 2f + .375f;
+    private static final float ARM_YOFFSET    = 0;
+
     private static final float HAND_WIDTH = 0.3125f;
     private static final float HAND_HEIGHT = 0.3125f;
+    private static final float HAND_XOFFSET  = (ARM_WIDTH / 2f) - HAND_WIDTH/2;
+
 
     /** Texture assets for the body parts */
     private transient TextureRegion[] partTextures;
@@ -174,7 +176,6 @@ public class SlothModel extends ComplexObstacle  {
         // We do not do anything yet.
         BoxObstacle part;
 
-
         // Body
         part = makePart(PART_BODY, PART_NONE, x, y,BODY_WIDTH,BODY_HEIGHT, BODY_DENSITY,false);
         part.setFixedRotation(BODY_FIXED_ROTATION);
@@ -197,6 +198,7 @@ public class SlothModel extends ComplexObstacle  {
         part = makePart(PART_LEFT_HAND, PART_LEFT_ARM, ARM_XOFFSET, ARM_YOFFSET, HAND_WIDTH, HAND_HEIGHT, HAND_DENSITY,false);
         part.setFixedRotation(HANDS_FIXED_ROTATION);
         part.setGravityScale(GRAVITY_SCALE);
+
         // Right hand
         part = makePart(PART_RIGHT_HAND, PART_RIGHT_ARM, ARM_XOFFSET, ARM_YOFFSET, HAND_WIDTH, HAND_HEIGHT, HAND_DENSITY,false);
         part.setFixedRotation(HANDS_FIXED_ROTATION);
@@ -587,8 +589,8 @@ public class SlothModel extends ComplexObstacle  {
     }
 
     public void activateSlothPhysics(World world) {
-        float MN_SENSOR_HEIGHT = .2f;
-        float MN_SENSOR_WIDTH = .2f;
+        float MN_SENSOR_HEIGHT = HAND_HEIGHT/2f;
+        float MN_SENSOR_WIDTH = HAND_WIDTH/2f;
         //float MN_SHRINK = 0.6f;
         Vector2 sensorCenter = new Vector2(0, 0);
         FixtureDef sensorDef = new FixtureDef();
@@ -633,10 +635,12 @@ public class SlothModel extends ComplexObstacle  {
     public void setTextures(MantisAssetManager manager) {
         partTextures = new TextureRegion[BODY_TEXTURE_COUNT];
         Texture managedHand = manager.get("texture/sloth/hand.png");
-        Texture managedArm = manager.get("texture/sloth/arm.png");
+        Texture managedFrontArm = manager.get("texture/sloth/frontarm.png");
+        Texture managedBackArm = manager.get("texture/sloth/backarm.png");
         Texture managedDude = manager.get("texture/sloth/dude.png");
         partTextures[0] = new TextureRegion(managedHand);
-        partTextures[1] = new TextureRegion(managedArm);
+        partTextures[1] = new TextureRegion(managedFrontArm);
+        partTextures[3] = new TextureRegion(managedBackArm);
         partTextures[2] = new TextureRegion(managedDude);
 
         if (bodies.size == 0) {
@@ -657,13 +661,14 @@ public class SlothModel extends ComplexObstacle  {
             if (texture != null) {
 
                 //If the body parts are from the right limb
+                if (x == 3 || x == 4) continue;
                 if (x == 1 || x == 4) {
                     part.draw(canvas, Color.WHITE);
                     part.draw(canvas, Color.WHITE);     //remove this line when you draw the head
                 }
                 //If the body parts are from the left limb
                 else if (x == 2 || x == 3) {
-                    part.draw(canvas, Color.BLACK);
+                    part.draw(canvas, Color.WHITE);
                 }
                 //If the body parts are not limbs
                 else {

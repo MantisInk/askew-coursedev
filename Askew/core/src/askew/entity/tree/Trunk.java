@@ -42,7 +42,7 @@ public class Trunk extends ComplexObstacle {
 	private static final float BASIC_DENSITY = 13f;
 
 	private transient int nLinks;
-	private float x,y,stiffLen;
+	private float x,y,stiffLen, angle;
 	private transient float width,height;
 
 	public transient Vector2 final_norm = null;
@@ -59,8 +59,8 @@ public class Trunk extends ComplexObstacle {
 	protected transient Vector2 dimension;
 	/** The size of a single plank */
 	protected transient Vector2 planksize;
-	/* The length of each link */
-	protected transient float linksize = 1.0f;
+	/** The length of each link */
+	private float linksize;
 	/** The spacing between each link */
 	// TODO: Fix this from being public (refactor artifact)
 	private transient float spacing = 0.0f;
@@ -109,6 +109,7 @@ public class Trunk extends ComplexObstacle {
 	 */
 	public Trunk(float x0, float y0, float x1, float y1, float lwidth, float lheight, float stiffLen, float angle) {
 		super(x0,y0);
+		this.angle = angle;
 		this.x = x0;	this.y = y0;	this.stiffLen = stiffLen;	this.width = lwidth; this.height = lheight;
 		setName(VINE_NAME);
 
@@ -126,7 +127,7 @@ public class Trunk extends ComplexObstacle {
 		nLinks = (int)(length / linksize);
 		if (nLinks <= 1) {
 			nLinks = 1;
-			linksize = length;
+//			linksize = length;
 			spacing = 0;
 		} else {
 			spacing = length - nLinks * linksize;
@@ -144,6 +145,7 @@ public class Trunk extends ComplexObstacle {
 			BoxObstacle plank = new BoxObstacle(pos.x, pos.y, planksize.x, planksize.y);
 			plank.setName(PLANK_NAME+ii);
 			plank.setDensity(BASIC_DENSITY);
+			plank.setAngle((float)Math.toRadians(angle));
 			bodies.add(plank);
 		}
 		final_norm = new Vector2(pos);

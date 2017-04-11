@@ -56,6 +56,17 @@
         "patroldx": 11.316406,
         "patroldy": 17.767578
       }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 9.0,
+        "y": 6.0,
+        "stiffLen": 0.0,
+        "angle": 0.0,
+        "linksize": 3.0,
+        "numLinks": 1.0
+      }
     }
   ]
 }
