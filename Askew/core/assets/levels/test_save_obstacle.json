@@ -20,7 +20,38 @@
         "pin": false,
         "numLinks": 5.0,
         "x": 4.0,
-        "y": 14.0
+        "y": 14.0,
+        "angle": 5.0,
+        "omega": -400.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "pin": false,
+        "numLinks": 5.0,
+        "x": 7.0,
+        "y": 16.0,
+        "angle": 0.0,
+        "omega": 0.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.wall.WallModel",
+      "INSTANCE": {
+        "x": 5.0,
+        "y": 11.0,
+        "thorn": false,
+        "points": [
+          0.0,
+          0.0,
+          0.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          0.0
+        ]
       }
     }
   ]

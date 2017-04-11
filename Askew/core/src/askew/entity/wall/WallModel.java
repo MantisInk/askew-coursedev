@@ -2,6 +2,7 @@ package askew.entity.wall;
 
 import askew.GameCanvas;
 import askew.MantisAssetManager;
+import askew.entity.FilterGroup;
 import askew.entity.obstacle.PolygonObstacle;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
@@ -50,13 +51,13 @@ public class WallModel extends PolygonObstacle {
             this.setSensor(true);
             this.setName("thorns");
             Filter f = new Filter();
-            f.maskBits = 0x0100;
-            f.categoryBits = 0x0100;
+            f.maskBits = FilterGroup.NOCOLLIDE;
+            f.categoryBits = FilterGroup.NOCOLLIDE;
             this.setFilterData(f);
         } else {
             Filter f = new Filter();
-            f.maskBits = 0x0100;
-            f.categoryBits = 0x0100;
+            f.maskBits = FilterGroup.SLOTH | FilterGroup.VINE;
+            f.categoryBits = FilterGroup.WALL;
             this.setFilterData(f);
         }
     }

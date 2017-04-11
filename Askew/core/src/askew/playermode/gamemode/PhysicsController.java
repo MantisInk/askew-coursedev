@@ -81,7 +81,7 @@ public class PhysicsController implements ContactListener {
             }
 
             // Check for thorns
-            if (bd1 != null && bd2 != null && (bd1.getName().equals("slothpart") || bd2.getName().equals("slothpart"))) {
+            if (bd1 != null && bd2 != null && ((bd1.getName() != null && bd1.getName().equals("slothpart")) ||( bd2.getName() != null && bd2.getName().equals("slothpart")))) {
                 Obstacle slothy;
                 Obstacle other;
                 if (bd1.getName() != null && bd1.getName().equals("slothpart")) {
