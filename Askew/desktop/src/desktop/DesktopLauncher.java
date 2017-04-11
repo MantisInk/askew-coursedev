@@ -12,6 +12,7 @@
  */
 package desktop;
 
+import com.badlogic.gdx.Files;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import askew.GDXRoot;
@@ -40,6 +41,7 @@ public class DesktopLauncher {
 		config.resizable = false;
 		config.fullscreen = false;
 		config.title = "Askew";
+		config.addIcon("texture/icon.png", Files.FileType.Internal);
 		new LwjglApplication(new GDXRoot(), config);
 	}
 }
