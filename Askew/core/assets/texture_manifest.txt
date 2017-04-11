@@ -9,3 +9,5 @@ texture/vine/vine.png
 texture/wall/wall.png
 texture/wall/thorn.png
 texture/background/fern.png
+texture/background/menu1.png
+texture/background/menu2.png

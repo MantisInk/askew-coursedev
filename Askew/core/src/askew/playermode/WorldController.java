@@ -124,6 +124,7 @@ public abstract class WorldController implements Screen {
 		if (manager.isLoaded(FONT_FILE)) {
 			displayFont = manager.get(FONT_FILE,BitmapFont.class);
 		} else {
+			System.out.println("I CANT FIND THE FOOOOOOOONT");
 			displayFont = null;
 		}
 

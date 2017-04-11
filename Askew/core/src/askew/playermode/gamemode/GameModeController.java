@@ -14,13 +14,6 @@ import askew.GlobalConfiguration;
 import askew.InputController;
 import askew.MantisAssetManager;
 import askew.entity.Entity;
-import askew.entity.owl.OwlModel;
-import askew.playermode.WorldController;
-import com.badlogic.gdx.math.*;
-import com.badlogic.gdx.utils.*;
-import com.badlogic.gdx.graphics.*;
-import com.badlogic.gdx.physics.box2d.*;
-
 import askew.entity.obstacle.BoxObstacle;
 import askew.entity.obstacle.Obstacle;
 import askew.entity.owl.OwlModel;
@@ -385,7 +378,7 @@ public class GameModeController extends WorldController {
 		camTrans.setToTranslation(-1 * sloth.getBody().getPosition().x * worldScale.x
 				, -1 * sloth.getBody().getPosition().y * worldScale.y);
 
-    camTrans.translate(canvas.getWidth()/2,canvas.getHeight()/2);
+    	camTrans.translate(canvas.getWidth()/2,canvas.getHeight()/2);
 		canvas.begin(camTrans);
 
 		for(Entity obj : objects) {

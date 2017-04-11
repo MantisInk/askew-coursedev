@@ -558,7 +558,7 @@ public class LevelEditorController extends WorldController {
 
 	@Override
 	public void draw(float delta) {
-		canvas.clear("LE");
+		canvas.clear();
 
 		// Translate camera to cx, cy
 		camTrans.setToTranslation(cxCamera, cyCamera);
