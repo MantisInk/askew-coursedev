@@ -439,11 +439,11 @@ public class SlothModel extends ComplexObstacle  {
             forceL.set((float) (ltorque * Math.sin(lTheta)),(float) (ltorque * Math.cos(lTheta)));
             forceR.set((float) (rtorque * Math.sin(rTheta)),(float) (rtorque * Math.cos(rTheta)));
 
-            if ((GRABBING_HAND_HAS_TORQUE || !leftGrab) )
+            if ((GRABBING_HAND_HAS_TORQUE || !isActualLeftGrab()) )
                 leftArm
                         .getBody()
                         .applyTorque(ltorque,true);
-            if ((GRABBING_HAND_HAS_TORQUE || !rightGrab))
+            if ((GRABBING_HAND_HAS_TORQUE || !isActualRightGrab()) )
                 rightArm
                         .getBody()
                         .applyTorque(rtorque, true);
@@ -491,11 +491,11 @@ public class SlothModel extends ComplexObstacle  {
             float ry = (float) (TORQUE * -Math.cos(rTheta) * forceRight * rLength);
             forceR.set(rx,ry);
 
-            if (isRightGrab() && !isLeftGrab())
+            if (isActualRightGrab() && !isActualLeftGrab())
                 leftHand
                         .getBody()
                         .applyForce(lx, ly, leftHand.getX(), leftHand.getY(), true);
-            if (!isRightGrab() && isLeftGrab())
+            if (!isActualRightGrab() && isActualLeftGrab())
                 rightHand
                         .getBody()
                         .applyForce(rx, ry, rightHand.getX(), rightHand.getY(), true);
@@ -509,6 +509,15 @@ public class SlothModel extends ComplexObstacle  {
         // MAGIC NUMBERS (TREVOR)
         if (flowFacingState > 20) flowFacingState = 20;
         if (flowFacingState < -20) flowFacingState = -20;
+    }
+
+
+    public boolean isActualRightGrab() {
+        return this.rightGrabJoint != null;
+    }
+
+    public boolean isActualLeftGrab() {
+        return this.leftGrabJoint != null;
     }
 
     public void drawForces(GameCanvas canvas, Affine2 camTrans){

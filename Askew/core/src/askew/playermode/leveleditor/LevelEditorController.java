@@ -85,6 +85,7 @@ public class LevelEditorController extends WorldController {
 
 	public static final int UI_WAIT_SHORT = 2;
 	public static final int UI_WAIT_LONG = 15;
+	public static final int UI_WAIT_ETERNAL = 120;
 
 
 	public static final String[] creationOptions = {
@@ -164,7 +165,8 @@ public class LevelEditorController extends WorldController {
 	 * The game has default gravity and other settings
 	 */
 	public LevelEditorController() {
-		super(36,18,0);
+//		super(36,18,0); I want this scale but for the sake of alpha:
+		super(DEFAULT_WIDTH,DEFAULT_HEIGHT,0);
 		setDebug(false);
 		setComplete(false);
 		setFailure(false);
@@ -461,10 +463,10 @@ public class LevelEditorController extends WorldController {
 			if (!loadingLevelPrompt) {
 				loadingLevelPrompt = true;
 				currentLevel = showInputDialog("What level do you want to load?");
-				reset();
 				loadingLevelPrompt = false;
+				reset();
 			}
-			inputRateLimiter = UI_WAIT_LONG;
+			inputRateLimiter = UI_WAIT_ETERNAL;
 		}
 
 		// Save
