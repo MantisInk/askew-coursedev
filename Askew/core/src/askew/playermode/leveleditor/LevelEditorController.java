@@ -276,7 +276,7 @@ public class LevelEditorController extends WorldController {
 				promptTemplate(vTemplate);
 				break;
 			case ".Trunk":
-				Trunk tTemplate = new Trunk(x,y, 5.0f, 0.25f, 1.0f, 3.0f,oneScale);
+				Trunk tTemplate = new Trunk(x,y, 5.0f, 0.25f, 1.0f, 3.0f,oneScale, 0);
 				promptTemplate(tTemplate);
 				break;
 			case ".StiffBranch":
