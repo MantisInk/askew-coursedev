@@ -5,6 +5,7 @@ texture/sloth/dude.png
 texture/sloth/hand.png
 texture/sloth/frontarm.png
 texture/sloth/backarm.png
+texture/sloth/frontflow.png
 texture/vine/vine.png
 texture/wall/wall.png
 texture/wall/thorn.png

@@ -162,7 +162,7 @@ public class LevelEditorController extends WorldController {
 	 * The game has default gravity and other settings
 	 */
 	public LevelEditorController() {
-		super(DEFAULT_WIDTH,DEFAULT_HEIGHT,0);
+		super(36,18,0);
 		setDebug(false);
 		setComplete(false);
 		setFailure(false);
@@ -272,7 +272,7 @@ public class LevelEditorController extends WorldController {
 				promptTemplate(sTemplate);
 				break;
 			case ".Vine":
-				Vine vTemplate = new Vine(x,y,5.0f,0.25f,1.0f,oneScale);
+				Vine vTemplate = new Vine(x,y,5.0f,0.25f,1.0f,oneScale, 5f, -400f);
 				promptTemplate(vTemplate);
 				break;
 			case ".Trunk":
@@ -542,18 +542,21 @@ public class LevelEditorController extends WorldController {
 		// debug lines
 		Gdx.gl.glLineWidth(1);
 		// vertical
-		for (int i = ((int)cxCamera % 32 - 32); i < 1024; i += 32) {
+		float dpsW = ((canvas.getWidth()) / bounds.width);
+		float dpsH = ((canvas.getHeight()) / bounds.height);
+
+		for (float i = ((int)cxCamera % dpsW - dpsW); i < canvas.getWidth(); i += dpsW) {
 			gridLineRenderer.begin(ShapeRenderer.ShapeType.Line);
 			gridLineRenderer.setColor(Color.FOREST);
-			gridLineRenderer.line(i, 0,i,768);
+			gridLineRenderer.line(i, 0,i,canvas.getHeight());
 			gridLineRenderer.end();
 		}
 
 		// horizontal
-		for (int i = ((int)cyCamera % 32 - 32); i < 768; i += 32) {
+		for (float i = ((int)cyCamera % dpsH - dpsH); i < canvas.getHeight(); i += dpsH) {
 			gridLineRenderer.begin(ShapeRenderer.ShapeType.Line);
 			gridLineRenderer.setColor(Color.FOREST);
-			gridLineRenderer.line(0, i,1024,i);
+			gridLineRenderer.line(0, i,canvas.getWidth(),i);
 			gridLineRenderer.end();
 		}
 	}
@@ -592,7 +595,7 @@ public class LevelEditorController extends WorldController {
 
 
 		canvas.drawTextStandard("MOUSE: " + adjustedMouseX + " , " + adjustedMouseY, 10.0f, 140.0f);
-		canvas.drawTextStandard(cxCamera / worldScale.x + "," + cyCamera / worldScale.y, 10.0f, 120.0f);
+		canvas.drawTextStandard(-cxCamera / worldScale.x + "," + -cyCamera / worldScale.y , 10.0f, 120.0f);
 		canvas.drawTextStandard("Level: " + currentLevel, 10.0f, 100.0f);
 		canvas.drawTextStandard("Creating: " + creationOptions[tentativeEntityIndex], 10.0f, 80.0f);
 		if (tentativeEntityIndex != entityIndex) {

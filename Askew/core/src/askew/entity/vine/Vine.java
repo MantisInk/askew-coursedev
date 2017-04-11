@@ -16,11 +16,13 @@ package askew.entity.vine;
 
 import askew.MantisAssetManager;
 import askew.GlobalConfiguration;
+import askew.entity.FilterGroup;
 import askew.entity.obstacle.*;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.Filter;
 import com.badlogic.gdx.physics.box2d.Joint;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
@@ -57,6 +59,8 @@ public class Vine extends ComplexObstacle {
 	protected float numLinks;									/** number of vine pieces */
 	protected float x;											/** x-coord of top anchor */
 	protected float y;											/** y-coord of bottom anchor */
+	protected float angle;										/** starting angle of vine */
+	protected float omega;										/** starting angular velocity of vine */
 
 
 	/**
@@ -72,12 +76,24 @@ public class Vine extends ComplexObstacle {
 	 * @param lheight	The vine piece length
 	 */
 	public Vine(float x, float y, float length, float lwidth, float lheight, Vector2 scale) {
-		this(x, y, x, y-length, lwidth, lheight, false, 5f, -450f);
+		this(x, y, x, y-length, lwidth, lheight, false, 5f, -400f);
 		numLinks = length;
 		this.x = x;
 		this.y = y;
+		this.angle = 5f;
+		this.omega = -400f;
 		this.setObjectScale(scale);
 
+	}
+
+	public Vine(float x, float y, float length, float lwidth, float lheight, Vector2 scale, float angle, float omega) {
+		this(x, y, x, y-length, lwidth, lheight, false, angle, omega);
+		numLinks = length;
+		this.x = x;
+		this.y = y;
+		this.angle = angle;
+		this.omega = omega;
+		this.setObjectScale(scale);
 	}
 
 	public Vine(float x, float y, float length, float lwidth, float lheight, Vector2 scale, boolean pinned, float angle, float omega) {
@@ -85,6 +101,8 @@ public class Vine extends ComplexObstacle {
 		numLinks = length;
 		this.x = x;
 		this.y = y;
+		this.angle = angle;
+		this.omega = omega;
 		this.setObjectScale(scale);
 	}
 
@@ -143,6 +161,10 @@ public class Vine extends ComplexObstacle {
 	        plank.setName(PLANK_NAME+ii);
 	        plank.setDensity(BASIC_DENSITY);
 	        plank.setAngularVelocity(omega*(nLinks-ii-1)/(nLinks));
+			Filter f = new Filter();
+			f.maskBits = FilterGroup.WALL | FilterGroup.SLOTH | FilterGroup.HAND;
+			f.categoryBits = FilterGroup.VINE;
+			plank.setFilterData(f);
 	        bodies.add(plank);
 	    }
 	}
