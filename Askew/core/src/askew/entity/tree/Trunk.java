@@ -161,33 +161,16 @@ public class Trunk extends ComplexObstacle {
 	protected boolean createJoints(World world) {
 		assert bodies.size > 0;
 
-		Vector2 anchor1 = new Vector2();
-		Vector2 anchor2 = new Vector2(0, -linksize / 2);
-
 		// Create the bottom anchor
 		// Normally, we would do this in constructor, but we have
 		// reasons to not add the anchor to the bodies list.
 		Vector2 pos = bodies.get(0).getPosition();
-		pos.y -= linksize / 2;
-		start = new WheelObstacle(pos.x,pos.y,TRUNK_PIN_RADIUS);
-		start.setName(TRUNK_PIN_NAME+0);
-		start.setDensity(BASIC_DENSITY);
-		start.setBodyType(BodyDef.BodyType.StaticBody);
-		start.activatePhysics(world);
+		bodies.get(0).setBodyType(BodyDef.BodyType.StaticBody);
 
 		// Definition for a revolute joint
 		WeldJointDef jointDef = new WeldJointDef();
 
-		// Initial joint
-		// uncomment section to stand up
-		// comment section to fall over
-		jointDef.bodyA = start.getBody();
-		jointDef.bodyB = bodies.get(0).getBody();
-		jointDef.localAnchorA.set(anchor1);
-		jointDef.localAnchorB.set(anchor2);
-		jointDef.collideConnected = false;
-		Joint joint = world.createJoint(jointDef );
-		joints.add(joint);
+		Joint joint;
 
 		// uncomment to fall over
 		// comment to stand up
@@ -199,6 +182,9 @@ public class Trunk extends ComplexObstacle {
 //		flexJointDef.collideConnected = false;
 //		Joint joint = world.createJoint(flexJointDef);
 //		joints.add(joint);
+		Vector2 anchor1 = new Vector2();
+		Vector2 anchor2 = new Vector2(0, -linksize / 2);
+
 
 		//Joint joint;
 		// Link the planks together
