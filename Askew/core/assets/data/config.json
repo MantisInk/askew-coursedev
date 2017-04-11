@@ -9,5 +9,6 @@
   "vineDensity": 1.0,
   "fullscreen": false,
   "defaultLevel": "tunnel_vines",
-  "torqueBasedMovement": true
+  "torqueBasedMovement": true,
+  "maxLevel": 4
 }

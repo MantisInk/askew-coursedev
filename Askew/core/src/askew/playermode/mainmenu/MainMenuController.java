@@ -171,11 +171,9 @@ public class MainMenuController extends WorldController {
 
     }
 
-    public String getLevel() {
-        String lvl;
+    public int getLevel() {
         if(mode == HOME_SCREEN)
             selected = 1;
-        lvl = "level"+selected;
-        return lvl;
+        return selected;
     }
 }
