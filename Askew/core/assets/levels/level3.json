@@ -26,21 +26,21 @@
       }
     },
     {
+      "CLASSNAME": "askew.entity.owl.OwlModel",
+      "INSTANCE": {
+        "x": 7.0,
+        "y": 8.0
+      }
+    },
+    {
       "CLASSNAME": "askew.entity.vine.Vine",
       "INSTANCE": {
         "pin": false,
         "numLinks": 5.0,
         "x": 3.0,
         "y": 13.0,
-        "angle": 5.0,
-        "omega": -400.0
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.owl.OwlModel",
-      "INSTANCE": {
-        "x": 7.0,
-        "y": 8.0
+        "angle": 10.0,
+        "omega": -5.0
       }
     }
   ]

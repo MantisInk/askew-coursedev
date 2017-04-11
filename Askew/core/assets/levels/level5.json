@@ -8,13 +8,6 @@
   "width": 10,
   "entities": [
     {
-      "CLASSNAME": "askew.entity.sloth.SlothModel",
-      "INSTANCE": {
-        "x": -2.0,
-        "y": 17.0
-      }
-    },
-    {
       "CLASSNAME": "askew.entity.vine.Vine",
       "INSTANCE": {
         "pin": false,
@@ -52,6 +45,13 @@
       "INSTANCE": {
         "x": 18.0,
         "y": 10.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.sloth.SlothModel",
+      "INSTANCE": {
+        "x": -3.0,
+        "y": 17.0
       }
     }
   ]
