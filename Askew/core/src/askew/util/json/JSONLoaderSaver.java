@@ -59,7 +59,8 @@ public class JSONLoaderSaver {
     }
 
     public JsonObject gsonToJsonObject(Entity o) {
-        return gson.toJsonTree(o).getAsJsonObject();
+        JsonParser jsonParser = new JsonParser();
+        return jsonParser.parse(gson.toJson(o, Entity.class)).getAsJsonObject();
     }
 
 //    public Entity entityFromJson(JsonElement o) {

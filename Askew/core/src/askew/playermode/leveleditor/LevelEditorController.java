@@ -327,8 +327,8 @@ public class LevelEditorController extends WorldController {
 			for (Obstacle o : objects) {
 				if (o == userData) {
 					//promptTemplate(o);
-					System.out.println(o.getClass().getName());
-					if(isVimMode()) changeEntityParam(o, o.getClass().getName()); //promptTemplate(o);
+					//System.out.println(o.getClass().getName());
+					if(isVimMode()) promptTemplate(o); //changeEntityParam(o, o.getClass().getName());
 					else changeEntityParam(o, o.getClass().getName()); //Allow user to edit parameters on GUI
 
 					objects.remove(o);
@@ -339,7 +339,7 @@ public class LevelEditorController extends WorldController {
 					for (Obstacle oo : ((ComplexObstacle) o).getBodies()) {
 						if (oo == userData) {
 							//promptTemplate(o);
-							if(isVimMode()) changeEntityParam(o, o.getClass().getName()); //promptTemplate(o);
+							if(isVimMode()) promptTemplate(o); //changeEntityParam(o, o.getClass().getName());
 							else changeEntityParam(o, o.getClass().getName()); //Allow user to edit parameters on GUI
 
 							objects.remove(o);
@@ -394,6 +394,7 @@ public class LevelEditorController extends WorldController {
 		if (!prompting) {
 			prompting = true;
 			String jsonOfTemplate = jsonLoaderSaver.gsonToJson(template);
+			System.out.println(jsonOfTemplate); //TEST
 			// flipping swing
 			JDialog mainFrame = new JDialog();
 			mainFrame.setSize(600,600);
@@ -419,6 +420,9 @@ public class LevelEditorController extends WorldController {
 		if (!prompting) {
 			prompting = true; //Use different constant? Can just use the same one?
 			JsonObject entityObject = jsonLoaderSaver.gsonToJsonObject(template);
+
+			//System.out.println(entityObject); //FIX EVERYTHING
+
 			// flipping swing
 			JDialog mainFrame = new JDialog();
 			mainFrame.setSize(600,600);
@@ -433,15 +437,18 @@ public class LevelEditorController extends WorldController {
 			//System.out.println(entityObject);
 			//System.out.println(Entity.class);
 
-			//JsonObject entity_prop = entityObject.get("INSTANCE").getAsJsonObject();
-			//String entity_name = entityObject.get("CLASSNAME").getAsString();
-			String entity_name = className;
+			JsonObject entity_prop = entityObject.get("INSTANCE").getAsJsonObject();
+			String entity_name = entityObject.get("CLASSNAME").getAsString();
+			//String entity_name = className;
 			int field_num = 2;
 			int buffer = 5;
 			int text_height = 15;
 
-			float x = entityObject.get("x").getAsFloat();
-			float y = entityObject.get("y").getAsFloat();
+			//float x = entityObject.get("x").getAsFloat();
+			//float y = entityObject.get("y").getAsFloat();
+
+			float x = entity_prop.get("x").getAsFloat();
+			float y = entity_prop.get("y").getAsFloat();
 
 			JButton delete_thing = new JButton("Delete Entity");
 
@@ -490,10 +497,28 @@ public class LevelEditorController extends WorldController {
 //					SlothModel sTemplate = new SlothModel(x, y);
 //					promptTemplate(sTemplate);
 					//field_num = 2;
+					okButton.addActionListener(e -> {
+						entity_prop.remove("x");
+						entity_prop.addProperty("x", x_pos_val.getText());
+
+						entity_prop.remove("y");
+						entity_prop.addProperty("y", y_pos_val.getText());
+
+						entityObject.remove("INSTANCE");
+						entityObject.add("INSTANCE", entity_prop);
+
+						String temp2 = jsonLoaderSaver.stringFromJson(entityObject);
+						//System.out.println(temp2);
+
+						promptTemplateCallback(temp2);
+
+						mainFrame.setVisible(false);
+						mainFrame.dispose();
+					});
 					break;
 				case ".Vine":
-					//float current_vines = entity_prop.get("numLinks").getAsFloat();
-					float current_vines = entityObject.get("numLinks").getAsFloat();
+					float current_vines = entity_prop.get("numLinks").getAsFloat();
+					//float current_vines = entityObject.get("numLinks").getAsFloat();
 					JLabel vine_text = new JLabel("Number of links");
 					JTextField vine_links = new JTextField(""+current_vines);
 
@@ -506,8 +531,20 @@ public class LevelEditorController extends WorldController {
 					okButton.addActionListener(e -> {
 						//STILL WORKING
 						//promptTemplateCallback(commentTextArea.getText());
-						entityObject.remove("numLinks");
-						entityObject.addProperty("numLinks", vine_links.getText());
+						//entityObject.remove("numLinks");
+						//entityObject.addProperty("numLinks", vine_links.getText());
+
+						entity_prop.remove("x");
+						entity_prop.addProperty("x", x_pos_val.getText());
+
+						entity_prop.remove("y");
+						entity_prop.addProperty("y", y_pos_val.getText());
+
+						entity_prop.remove("numLinks");
+						entity_prop.addProperty("numLinks", vine_links.getText());
+
+						entityObject.remove("INSTANCE");
+						entityObject.add("INSTANCE", entity_prop);
 
 						//Entity temp = jsonLoaderSaver.entityFromJson(entityObject);
 						//String jsonOfObject = jsonLoaderSaver.gsonToJson(temp);
@@ -518,7 +555,9 @@ public class LevelEditorController extends WorldController {
 //						promptTemplateCallback(jsonOfObject);
 
 						String temp2 = jsonLoaderSaver.stringFromJson(entityObject);
+						System.out.println(temp2);
 						//guiCallback(temp2, entity_name);
+
 						promptTemplateCallback(temp2);
 
 						mainFrame.setVisible(false);
@@ -530,8 +569,8 @@ public class LevelEditorController extends WorldController {
 				case ".Platform":
 					break;
 				case ".Trunk":
-					//float current_links = entity_prop.get("numLinks").getAsFloat();
-					float current_links = entityObject.get("numLinks").getAsFloat();
+					float current_links = entity_prop.get("numLinks").getAsFloat();
+					//float current_links = entityObject.get("numLinks").getAsFloat();
 					JLabel link_text = new JLabel("Number of links");
 					JTextField link_val = new JTextField(""+current_links);
 					//float current_stiff = entity_prop.get("stiffLen").getAsFloat();
@@ -550,7 +589,24 @@ public class LevelEditorController extends WorldController {
 					panel.add(stiff_val);
 
 					okButton.addActionListener(e -> {
-						//promptTemplateCallback(commentTextArea.getText());
+						entity_prop.remove("x");
+						entity_prop.addProperty("x", x_pos_val.getText());
+
+						entity_prop.remove("y");
+						entity_prop.addProperty("y", y_pos_val.getText());
+
+						entity_prop.remove("numLinks");
+						entity_prop.addProperty("numLinks", link_val.getText());
+
+						entity_prop.remove("stiffLen");
+						entity_prop.addProperty("stiffLen", stiff_val.getText());
+
+						entityObject.remove("INSTANCE");
+						entityObject.add("INSTANCE", entity_prop);
+
+						String temp2 = jsonLoaderSaver.stringFromJson(entityObject);
+						promptTemplateCallback(temp2);
+
 						mainFrame.setVisible(false);
 						mainFrame.dispose();
 					});
@@ -558,8 +614,8 @@ public class LevelEditorController extends WorldController {
 					field_num += 2;
 					break;
 				case ".StiffBranch":
-					//float current_branch = entity_prop.get("stiffLen").getAsFloat();
-					float current_branch = entityObject.get("stiffLen").getAsFloat();
+					float current_branch = entity_prop.get("stiffLen").getAsFloat();
+					//float current_branch = entityObject.get("stiffLen").getAsFloat();
 					JLabel branch_text = new JLabel("Stiffness");
 					JTextField branch_val = new JTextField(""+current_branch);
 
@@ -570,7 +626,21 @@ public class LevelEditorController extends WorldController {
 					panel.add(branch_val);
 
 					okButton.addActionListener(e -> {
-						//promptTemplateCallback(commentTextArea.getText());
+						entity_prop.remove("x");
+						entity_prop.addProperty("x", x_pos_val.getText());
+
+						entity_prop.remove("y");
+						entity_prop.addProperty("y", y_pos_val.getText());
+
+						entity_prop.remove("stiffLen");
+						entity_prop.addProperty("stiffLen", branch_val.getText());
+
+						entityObject.remove("INSTANCE");
+						entityObject.add("INSTANCE", entity_prop);
+
+						String temp2 = jsonLoaderSaver.stringFromJson(entityObject);
+						promptTemplateCallback(temp2);
+
 						mainFrame.setVisible(false);
 						mainFrame.dispose();
 					});
@@ -578,6 +648,25 @@ public class LevelEditorController extends WorldController {
 					field_num++;
 					break;
 				case ".OwlModel":
+					okButton.addActionListener(e -> {
+						entity_prop.remove("x");
+						entity_prop.addProperty("x", x_pos_val.getText());
+
+						entity_prop.remove("y");
+						entity_prop.addProperty("y", y_pos_val.getText());
+
+						entityObject.remove("INSTANCE");
+						entityObject.add("INSTANCE", entity_prop);
+
+						String temp2 = jsonLoaderSaver.stringFromJson(entityObject);
+						//System.out.println(temp2);
+
+						promptTemplateCallback(temp2);
+
+						mainFrame.setVisible(false);
+						mainFrame.dispose();
+					});
+
 					break;
 				default:
 
@@ -599,17 +688,6 @@ public class LevelEditorController extends WorldController {
 	}
 
 	private void promptTemplateCallback(String json) {
-		Entity toAdd = jsonLoaderSaver.entityFromJson(json);
-		if (toAdd instanceof Obstacle) {
-			addObject((Obstacle) toAdd);
-		} else {
-			System.err.println(toAdd);
-			System.err.println("Unsupported nonobstacle entity");
-		}
-		prompting = false;
-	}
-
-	private void guiCallback(String json, String className) {
 		Entity toAdd = jsonLoaderSaver.entityFromJson(json);
 		if (toAdd instanceof Obstacle) {
 			addObject((Obstacle) toAdd);
@@ -792,7 +870,8 @@ public class LevelEditorController extends WorldController {
 				//int field_length = 150;
 				//int field_height= text_height;
 
-				editor_window.setSize(canvas.getWidth()*3/5, canvas.getHeight() + 100);
+				//editor_window.setSize(canvas.getWidth()*3/5, canvas.getHeight() + 100);
+				editor_window.setSize(canvas.getWidth()*3/5, canvas.getHeight()*2/3);
 //				JButton okButton = new JButton("ok");
 //				okButton.addActionListener(e -> {
 //					editor_window.setVisible(false);
@@ -1043,6 +1122,10 @@ public class LevelEditorController extends WorldController {
 				JLabel add_entity_header = new JLabel("Choose Entity to Add");
 				JComboBox entity_types = new JComboBox(creationOptions);
 				JButton entity_button = new JButton("Add Entity");
+//				JLabel entity_x_text = new JLabel("X: ");
+//				JLabel entity_y_text = new JLabel("Y: ");
+//				JTextField entity_x_val = new JTextField();
+//				JTextField entity_y_val = new JTextField();
 
 				add_entity_header.setBounds(buffer, (text_height*5)+(7*buffer)+oops_buffer, 175, text_height);
 				entity_types.setBounds(buffer, (text_height*6)+(8*buffer)+oops_buffer, 100, text_height);
@@ -1054,8 +1137,8 @@ public class LevelEditorController extends WorldController {
 					//getEntityParam();
 					//editEntity(adjustedMouseX,adjustedMouseY); //TESTING
 
-					//entityIndex = entity_types.getSelectedIndex();
-					//createXY(canvas.getWidth(),canvas.getHeight());
+					entityIndex = entity_types.getSelectedIndex();
+					createXY(cxCamera,cyCamera);
 					System.out.println("BAP");
 				});
 
@@ -1065,17 +1148,16 @@ public class LevelEditorController extends WorldController {
 
 				//TODO Add ability to edit entity parameters (on click/selecting only?)
 
-				JLabel edit_entity_header = new JLabel("Edit a Selected Entity");
+				JLabel edit_entity_header = new JLabel("Click a Stage Entity to Edit It");
 				//JComboBox entity_types = new JComboBox(creationOptions);
 				//JButton entity_button = new JButton("Add Entity");
 
-				edit_entity_header.setBounds(100+(2*buffer), (text_height*6)+(10*buffer)+oops_buffer, 150, text_height);
+				edit_entity_header.setBounds(100+(2*buffer), (text_height*7)+(10*buffer)+oops_buffer, 250, text_height);
 
 				editor_window.add(edit_entity_header);
 
 				//On left click = get entity at coordinate via same looping method used in promptTemplate
 				//
-
 
 				//promptTemplate
 
@@ -1083,7 +1165,19 @@ public class LevelEditorController extends WorldController {
 				editor_window.setLayout(null);
 				editor_window.setVisible(true);
 
-				//TODO Add mouse interactions with level
+
+
+			}
+			//TODO Add mouse interactions with level
+
+			if (InputController.getInstance().isLeftClickPressed()) {
+				try {
+					editEntity(adjustedMouseX, adjustedMouseY);
+				}
+				catch (Exception e){
+					System.out.println(e);
+					System.out.println("Derp?");
+				}
 			}
 		}
 	}
@@ -1164,6 +1258,7 @@ public class LevelEditorController extends WorldController {
 
 	@Override
 	public void postUpdate(float dt) {
+		// Add any objects created by actions
 		// Add any objects created by actions
 		while (!addQueue.isEmpty()) {
 			addObject(addQueue.poll());
