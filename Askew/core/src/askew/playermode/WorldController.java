@@ -178,7 +178,7 @@ public abstract class WorldController implements Screen {
 	public static final int EXIT_GM_LE = 4;
 	public static final int EXIT_LE_MM = 5;
 	public static final int EXIT_LE_GM = 6;
-	public static final int EXIT_MM_GM_OLD = 7;
+	public static final int EXIT_GM_GM = 7;
 
 	/** How many frames after winning/losing do we continue? */
 	public static final int EXIT_COUNT = 120;

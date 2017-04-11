@@ -59,6 +59,7 @@ public class GameModeController extends WorldController {
 
 	@Setter
 	private String loadLevel, DEFAULT_LEVEL;
+	private int numLevel, MAX_LEVEL; 	// track int val of lvl #
 
 	private PhysicsController collisions;
 
@@ -143,15 +144,24 @@ public class GameModeController extends WorldController {
 		world.setContactListener(collisions);
 		sensorFixtures = new ObjectSet<Fixture>();
 		DEFAULT_LEVEL = GlobalConfiguration.getInstance().getAsString("defaultLevel");
+		MAX_LEVEL = GlobalConfiguration.getInstance().getAsInt("maxLevel");
 		loadLevel = DEFAULT_LEVEL;
 		jsonLoaderSaver = new JSONLoaderSaver();
 	}
 
-	public void setLevel(String levelName) {
-		if (levelName.equals("level0"))
-			levelName = DEFAULT_LEVEL;
-		loadLevel = levelName;
+	public void setLevel(int lvl) {
+		numLevel = lvl;
+		if (lvl == 0) {
+			loadLevel = DEFAULT_LEVEL;
+		} else if (lvl > MAX_LEVEL) {
+			loadLevel = "level"+MAX_LEVEL;
+			System.out.println("MM");
+			listener.exitScreen(this, EXIT_GM_MM);
+		} else
+			loadLevel = "level"+lvl;
 	}
+
+	public void incrLevel() {setLevel(numLevel+1);}
 
 	/**
 	 * Resets the status of the game so that we can play again.
@@ -376,7 +386,7 @@ public class GameModeController extends WorldController {
 
 		if (isComplete()) {
 			System.out.println("GG");
-			listener.exitScreen(this, EXIT_GM_LE);
+			listener.exitScreen(this, EXIT_GM_GM);
 		}
 	}
 
