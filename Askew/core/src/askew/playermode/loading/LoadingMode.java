@@ -322,7 +322,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 
 			// We are are ready, notify our listener
 			if (isReady() && listener != null) {
-				listener.exitScreen(this, GDXRoot.CON_LE);
+				listener.exitScreen(this, GDXRoot.CON_MM);
 			}
 		}
 	}

@@ -19,6 +19,7 @@ import askew.GameCanvas;
 import askew.GlobalConfiguration;
 import askew.InputController;
 import askew.MantisAssetManager;
+import askew.entity.Entity;
 import askew.entity.obstacle.Obstacle;
 import askew.util.FilmStrip;
 import askew.util.PooledList;
@@ -199,9 +200,9 @@ public abstract class WorldController implements Screen {
 	/** Reference to the game canvas */
 	protected GameCanvas canvas;
 	/** All the objects in the world. */
-	protected PooledList<Obstacle> objects  = new PooledList<Obstacle>();
+	protected PooledList<Entity> objects  = new PooledList<Entity>();
 	/** Queue for adding objects */
-	protected PooledList<Obstacle> addQueue = new PooledList<Obstacle>();
+	protected PooledList<Entity> addQueue = new PooledList<Entity>();
 	/** Listener that will update the player mode when we are done */
 	protected ScreenListener listener;
 
@@ -386,8 +387,10 @@ public abstract class WorldController implements Screen {
 	 * Dispose of all (non-static) resources allocated to this mode.
 	 */
 	public void dispose() {
-		for(Obstacle obj : objects) {
-			obj.deactivatePhysics(world);
+		for(Entity ent : objects) {
+			if(ent instanceof Obstacle) {
+				((Obstacle)ent).deactivatePhysics(world);
+			}
 		}
 		objects.clear();
 		addQueue.clear();
@@ -419,10 +422,12 @@ public abstract class WorldController implements Screen {
 	 *
 	 * param obj The object to add
 	 */
-	protected void addObject(Obstacle obj) {
-		assert inBounds(obj) : "Object is not in bounds";
+	protected void addObject(Entity obj) {
+		//assert inBounds(obj) : "Object is not in bounds";
 		objects.add(obj);
-		obj.activatePhysics(world);
+		if(obj instanceof Obstacle) {
+			((Obstacle)obj).activatePhysics(world);
+		}
 	}
 
 	/**
@@ -545,16 +550,19 @@ public abstract class WorldController implements Screen {
 		// Garbage collect the deleted objects.
 		// Note how we use the linked list nodes to delete O(1) in place.
 		// This is O(n) without copying.
-		Iterator<PooledList<Obstacle>.Entry> iterator = objects.entryIterator();
+		Iterator<PooledList<Entity>.Entry> iterator = objects.entryIterator();
 		while (iterator.hasNext()) {
-			PooledList<Obstacle>.Entry entry = iterator.next();
-			Obstacle obj = entry.getValue();
-			if (obj.isRemoved()) {
-				obj.deactivatePhysics(world);
-				entry.remove();
+			PooledList<Entity>.Entry entry = iterator.next();
+			Entity ent = entry.getValue();
+			if(ent instanceof  Obstacle){
+				Obstacle obj  = (Obstacle)ent;
+				if (obj.isRemoved()) {
+					obj.deactivatePhysics(world);
+					entry.remove();
+				}
 			} else {
 				// Note that update is called last!
-				obj.update(dt);
+				ent.update(dt);
 			}
 		}
 	}
@@ -573,15 +581,17 @@ public abstract class WorldController implements Screen {
 		canvas.clear();
 		
 		canvas.begin();
-		for(Obstacle obj : objects) {
+		for(Entity obj : objects) {
 			obj.draw(canvas);
 		}
 		canvas.end();
 		
 		if (debug) {
 			canvas.beginDebug();
-			for(Obstacle obj : objects) {
-				obj.drawDebug(canvas);
+			for(Entity obj : objects) {
+				if( obj instanceof Obstacle) {
+					((Obstacle)obj).drawDebug(canvas);
+				}
 			}
 			canvas.endDebug();
 		}

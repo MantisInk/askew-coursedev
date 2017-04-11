@@ -187,9 +187,9 @@ public class LevelEditorController extends WorldController {
 	public void reset() {
 		Vector2 gravity = new Vector2(world.getGravity() );
 
-		for(Obstacle obj : objects) {
-			if(! (obj instanceof SlothModel))
-				obj.deactivatePhysics(world);
+		for(Entity obj : objects) {
+			if( (obj instanceof Obstacle))
+				((Obstacle)obj).deactivatePhysics(world);
 		}
 
 		objects.clear();
@@ -371,6 +371,25 @@ public class LevelEditorController extends WorldController {
 		}
 	}
 
+	public Entity entityQuery() {
+		float MAX_DISTANCE = 2f;
+		Entity found = null;
+		Vector2 mouse = new Vector2(adjustedMouseX, adjustedMouseY);
+		float minDistance = Float.MAX_VALUE;
+		for (Entity e : objects) {
+			float curDist = e.getPosition().dst(mouse);
+			if (curDist < minDistance) {
+				found = e;
+				minDistance = curDist;
+			}
+		}
+
+		if (minDistance < MAX_DISTANCE) {
+			return found;
+		}
+		return null;
+	}
+
 	public void update(float dt) {
 
 		// Decrement rate limiter to allow new input
@@ -410,57 +429,18 @@ public class LevelEditorController extends WorldController {
 
 		// Delete
 		if (InputController.getInstance().isRightClickPressed()) {
-
-			QueryCallback qc = fixture -> {
-                Object userData = fixture.getBody().getUserData();
-                for (Obstacle o : objects) {
-                    if (o == userData) {
-                        objects.remove(o);
-                        return false;
-                    }
-
-                    if (o instanceof ComplexObstacle) {
-                        for (Obstacle oo : ((ComplexObstacle) o).getBodies()) {
-                            if (oo == userData) {
-                                objects.remove(o);
-                                return false;
-                            }
-                        }
-                    }
-                }
-                return true;
-            };
-
-			world.QueryAABB(qc,adjustedMouseX,adjustedMouseY,adjustedMouseX,adjustedMouseY);
+			Entity select = entityQuery();
+			if (select != null) objects.remove(select);
 			inputRateLimiter = UI_WAIT_SHORT;
 		}
 
 		// Edit
 		if (InputController.getInstance().isEKeyPressed()) {
-
-			QueryCallback qc = fixture -> {
-                Object userData = fixture.getBody().getUserData();
-                for (Obstacle o : objects) {
-                    if (o == userData) {
-                        promptTemplate(o);
-                        objects.remove(o);
-                        return false;
-                    }
-
-                    if (o instanceof ComplexObstacle) {
-                        for (Obstacle oo : ((ComplexObstacle) o).getBodies()) {
-                            if (oo == userData) {
-                                promptTemplate(o);
-                                objects.remove(o);
-                                return false;
-                            }
-                        }
-                    }
-                }
-                return true;
-            };
-
-			world.QueryAABB(qc,adjustedMouseX,adjustedMouseY,adjustedMouseX,adjustedMouseY);
+			Entity select = entityQuery();
+			if (select != null) {
+				promptTemplate(select);
+				objects.remove(select);
+			}
 			inputRateLimiter = UI_WAIT_SHORT;
 		}
 
@@ -486,7 +466,7 @@ public class LevelEditorController extends WorldController {
 			System.out.println("Saving...");
 			LevelModel timeToSave = new LevelModel();
 			timeToSave.setTitle(currentLevel);
-			for (Obstacle o : objects) {
+			for (Entity o : objects) {
 				timeToSave.addEntity(o);
 			}
 			if (jsonLoaderSaver.saveLevel(timeToSave, currentLevel)) {
@@ -570,7 +550,7 @@ public class LevelEditorController extends WorldController {
 		camTrans.translate(canvas.getWidth()/2, canvas.getHeight()/2);
 
 		canvas.begin(camTrans);
-		for(Obstacle obj : objects) {
+		for(Entity obj : objects) {
 			obj.draw(canvas);
 		}
 		canvas.end();
@@ -617,16 +597,19 @@ public class LevelEditorController extends WorldController {
 		// Garbage collect the deleted objects.
 		// Note how we use the linked list nodes to delete O(1) in place.
 		// This is O(n) without copying.
-		Iterator<PooledList<Obstacle>.Entry> iterator = objects.entryIterator();
+		Iterator<PooledList<Entity>.Entry> iterator = objects.entryIterator();
 		while (iterator.hasNext()) {
-			PooledList<Obstacle>.Entry entry = iterator.next();
-			Obstacle obj = entry.getValue();
-			if (obj.isRemoved()) {
-				obj.deactivatePhysics(world);
-				entry.remove();
+			PooledList<Entity>.Entry entry = iterator.next();
+			Entity ent = entry.getValue();
+			if (ent instanceof Obstacle) {
+				Obstacle obj = (Obstacle) ent;
+				if (obj.isRemoved()) {
+					obj.deactivatePhysics(world);
+					entry.remove();
+				}
 			} else {
 				// Note that update is called last!
-//				obj.update(dt);
+				ent.update(dt);
 			}
 		}
 	}
