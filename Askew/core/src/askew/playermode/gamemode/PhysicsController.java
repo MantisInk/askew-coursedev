@@ -20,6 +20,8 @@ public class PhysicsController implements ContactListener {
     private SlothModel sloth;
     @Getter @Setter
     private BoxObstacle goalDoor;
+    @Getter
+    private boolean isFlowWin;
 
     /**
      * This function deals with collisions.
@@ -95,6 +97,11 @@ public class PhysicsController implements ContactListener {
                 if (other.getName() != null && (other.getName().equals("thorns") || other.getName().equals("ghost") )) {
                     System.out.println("GG TODO KILL FLOW");
                     isFlowKill = true;
+                }
+
+                if (other.getName() != null && other.getName().equals("owl") ) {
+                    System.out.println("Hoot hoot");
+                    isFlowWin = true;
                 }
 
             }
