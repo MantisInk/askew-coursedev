@@ -21,6 +21,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import askew.playermode.WorldController;
@@ -36,7 +37,9 @@ import lombok.Setter;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.Iterator;
 
 import static javax.swing.JOptionPane.showInputDialog;
@@ -86,7 +89,7 @@ public class LevelEditorController extends WorldController {
 	public static final String[] creationOptions = {
 			".SlothModel",
 			".Vine",
-			".Platform",
+			".WallModel",
 			".Trunk",
 			".StiffBranch",
 			".OwlModel"
@@ -329,7 +332,7 @@ public class LevelEditorController extends WorldController {
 					//promptTemplate(o);
 					//System.out.println(o.getClass().getName());
 					if(isVimMode()) promptTemplate(o); //changeEntityParam(o, o.getClass().getName());
-					else changeEntityParam(o, o.getClass().getName()); //Allow user to edit parameters on GUI
+					else changeEntityParam(o); //Allow user to edit parameters on GUI
 
 					objects.remove(o);
 					return false;
@@ -340,7 +343,7 @@ public class LevelEditorController extends WorldController {
 						if (oo == userData) {
 							//promptTemplate(o);
 							if(isVimMode()) promptTemplate(o); //changeEntityParam(o, o.getClass().getName());
-							else changeEntityParam(o, o.getClass().getName()); //Allow user to edit parameters on GUI
+							else changeEntityParam(o); //Allow user to edit parameters on GUI
 
 							objects.remove(o);
 							return false;
@@ -416,7 +419,7 @@ public class LevelEditorController extends WorldController {
 		}
 	}
 
-	private void changeEntityParam(Entity template, String className) {
+	private void changeEntityParam(Entity template) {
 		if (!prompting) {
 			prompting = true; //Use different constant? Can just use the same one?
 			JsonObject entityObject = jsonLoaderSaver.gsonToJsonObject(template);
@@ -566,7 +569,90 @@ public class LevelEditorController extends WorldController {
 
 					field_num++;
 					break;
-				case ".Platform":
+				case ".WallModel":
+					//TODO Does this actually work? @w@ Can't test without Trevor's sprint code
+					boolean thorns_flag = entity_prop.get("thorn").getAsBoolean();
+					JRadioButton yes_thorn = new JRadioButton("Thorns");
+					JRadioButton no_thorn = new JRadioButton("No Thorns");
+					ButtonGroup thorn_buttons = new ButtonGroup();
+					JsonArray thorns_points = entity_prop.get("points").getAsJsonArray();
+
+					int width = 0;
+					int height = 0;
+
+					//TODO Change from assuming shape is always a rectangle
+					for(int k=0;k<thorns_points.size();k++){
+						int value = thorns_points.get(k).getAsInt();
+						if(value > 0){
+							if(k % 2 == 0) width = value;
+							else height = value;
+						}
+					}
+
+					JLabel box_width_text = new JLabel("Width: ");
+					JTextField box_width_val = new JTextField(width);
+					JLabel box_height_text = new JLabel("Height: ");
+					JTextField box_height_val = new JTextField(height);
+
+					if (thorns_flag) yes_thorn.setSelected(true);
+					else no_thorn.setSelected(true);
+
+					yes_thorn.setBounds((2*buffer), (3*text_height)+(4*buffer), 75, text_height);
+					no_thorn.setBounds((3*buffer)+75, (3*text_height)+(4*buffer), 100, text_height);
+
+					box_width_text.setBounds((2*buffer), (3*text_height)+(5*buffer), 100, text_height);
+					box_width_val.setBounds((3*buffer)+100, (3*text_height)+(5*buffer), 100, text_height);
+					box_height_text.setBounds((2*buffer), (4*text_height)+(6*buffer), 100, text_height);
+					box_height_val.setBounds((3*buffer)+100, (4*text_height)+(6*buffer), 100, text_height);
+
+
+					thorn_buttons.add(yes_thorn);
+					thorn_buttons.add(no_thorn);
+
+					panel.add(yes_thorn);
+					panel.add(no_thorn);
+					panel.add(box_width_text);
+					panel.add(box_width_val);
+					panel.add(box_height_text);
+					panel.add(box_height_val);
+
+
+					okButton.addActionListener((ActionEvent e) -> {
+						entity_prop.remove("x");
+						entity_prop.addProperty("x", x_pos_val.getText());
+
+						entity_prop.remove("y");
+						entity_prop.addProperty("y", y_pos_val.getText());
+
+						entity_prop.remove("thorn");
+						if (yes_thorn.isSelected()) entity_prop.addProperty("thorn", true);
+						else entity_prop.addProperty("thorn", false);
+
+						int box_width = Integer.parseInt(box_width_val.getText());
+						int box_height = Integer.parseInt(box_height_val.getText());
+
+						//Create box coordinates
+						for(int k=0;k<thorns_points.size();k++){
+							thorns_points.remove(0);
+							if (k == 2 || k == 4) thorns_points.add(box_width);
+							else if (k == 7 || k == 5) thorns_points.add(box_height);
+							else thorns_points.add(0);
+						}
+
+						entity_prop.remove("points");
+						entity_prop.add("points", thorns_points);
+
+						entityObject.remove("INSTANCE");
+						entityObject.add("INSTANCE", entity_prop);
+
+						String temp2 = jsonLoaderSaver.stringFromJson(entityObject);
+						promptTemplateCallback(temp2);
+
+						mainFrame.setVisible(false);
+						mainFrame.dispose();
+					});
+
+					field_num += 2;
 					break;
 				case ".Trunk":
 					float current_links = entity_prop.get("numLinks").getAsFloat();
@@ -659,7 +745,6 @@ public class LevelEditorController extends WorldController {
 						entityObject.add("INSTANCE", entity_prop);
 
 						String temp2 = jsonLoaderSaver.stringFromJson(entityObject);
-						//System.out.println(temp2);
 
 						promptTemplateCallback(temp2);
 
@@ -669,7 +754,7 @@ public class LevelEditorController extends WorldController {
 
 					break;
 				default:
-
+					System.out.println("Invalid entity?!?!?!? What are you trying to add? @w@");
 					break;
 			}
 
