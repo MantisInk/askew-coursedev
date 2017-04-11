@@ -26,57 +26,45 @@ import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 
 /**
- * A bridge with planks connected by revolute joints.
+ * A rotating branch with planks connected by weld joints.
  *
  * Note that this class returns to static loading.  That is because there are
  * no other subclasses that we might loop through.
  */
 public class StiffBranch extends ComplexObstacle {
-	/** The debug name for the entire obstacle */
-	private static final String VINE_NAME = "branch";
-	/** The debug name for each plank */
-	private static final String PLANK_NAME = "barrier";
-	/** The debug name for each anchor pin */
-	private static final String BRIDGE_PIN_NAME = "pin";
-	/** The radius of each anchor pin */
-	private static final float BRIDGE_PIN_RADIUS = 0.1f;
-	/** The density of each plank in the bridge */
-	private static final float BASIC_DENSITY = 0.8f;
+
+	private static final String BRANCH_NAME = "branch";				/** The debug name for the entire obstacle */
+	private static final String PLANK_NAME = "barrier";				/** The debug name for each plank */
+	private static final String BRANCH_PIN_NAME = "pin";			/** The debug name for each anchor pin */
+	private static final float BRANCH_PIN_RADIUS = 0.1f;			/** The radius of each anchor pin */
+	private static final float BASIC_DENSITY = 0.8f;				/** The density of each plank in the bridge */
 	private static final float BASIC_MASS = 0.03f;
-	private static final float LOWER_LIMIT = 0-(float)Math.PI/3;
-	private static final float UPPER_LIMIT = (float)Math.PI/3;
+	private static final float LOWER_LIMIT = 0-(float)Math.PI/3;	/** lower limit of rotation in radians */
+	private static final float UPPER_LIMIT = (float)Math.PI/3;		/** upper limit of rotation in radians */
 
 	// Invisible anchor objects
-	/** The left side of the bridge */
-	private transient WheelObstacle start = null;
-	/** Set damping constant for joint rotation in vines */
-	public static final float DAMPING_ROTATION = 5f;
+	private transient WheelObstacle start = null;					/** The bottom pin of the branch (rotation pt) */
+	public static final float DAMPING_ROTATION = 5f;				/** Set damping constant for joint rotation in vines */
 
 	// Dimension information
-	/** The size of the entire bridge */
-	protected transient Vector2 dimension;
-	/** The size of a single plank */
-	protected transient Vector2 planksize;
-	/* The length of each link */
-	protected transient float linksize = 1.0f;
-	/** The spacing between each link */
-	protected transient float spacing = 0.0f;
+	protected transient Vector2 dimension;							/** The size of the entire bridge */
+	protected transient Vector2 planksize;							/** The size of a single plank */
+	protected transient float linksize = 1.0f;						/* The length of each link */
+	protected transient float spacing = 0.0f;						/** The spacing between each link */
 
-	private float stiffLen;
-	private float x;
-	private float y;
+	private float stiffLen;											/** The number of planks in the branch */
+	private float x, y;												/** The starting coords (bottom) of the branch */
 
 	/**
-	 * Creates a new rope bridge at the given position.
+	 * Creates a new tree branch at the given position.
 	 *
-	 * This bridge is straight horizontal. The coordinates given are the
-	 * position of the leftmost anchor.
+	 * This bridge is starts vertical. If it hits anything, it will begin falling.
 	 *
 	 * @param x  		The x position of the left anchor
 	 * @param y  		The y position of the left anchor
 	 * @param width		The length of the bridge
-	 * @param lwidth	The plank length
-	 * @param lheight	The bridge thickness
+	 * @param lwidth	The plank thickness
+	 * @param lheight	The plank length
 	 */
 	public StiffBranch(float x, float y, float width, float lwidth, float lheight, Vector2 scale) {
 		this(x, y, x, y+width, lwidth, lheight, 0f);
@@ -96,18 +84,18 @@ public class StiffBranch extends ComplexObstacle {
 	}
 
 	/**
-	 * Creates a new rope bridge with the given anchors.
+	 * Creates a new tree branch with the given anchors.
 	 *
-	 * @param x0  		The x position of the left anchor
-	 * @param y0  		The y position of the left anchor
-	 * @param x1  		The x position of the right anchor
-	 * @param y1  		The y position of the right anchor
-	 * @param lwidth	The plank length
-	 * @param lheight	The bridge thickness
+	 * @param x0  		The x position of the bottom anchor
+	 * @param y0  		The y position of the bottom anchor
+	 * @param x1  		The x position of the branch end (top)
+	 * @param y1  		The y position of the branch end (top)
+	 * @param lwidth	The plank thickness
+	 * @param lheight	The plank length
 	 */
 	public StiffBranch(float x0, float y0, float x1, float y1, float lwidth, float lheight, float angle) {
 		super(x0,y0);
-		setName(VINE_NAME);
+		setName(BRANCH_NAME);
 
 		planksize = new Vector2(lwidth,lheight);
 		linksize = planksize.y;
@@ -162,13 +150,13 @@ public class StiffBranch extends ComplexObstacle {
 		Vector2 anchor1 = new Vector2();
 		Vector2 anchor2 = new Vector2(0, -linksize / 2);
 
-		// Create the leftmost anchor
+		// Create the bottom anchor
 		// Normally, we would do this in constructor, but we have
 		// reasons to not add the anchor to the bodies list.
 		Vector2 pos = bodies.get(0).getPosition();
 		pos.y -= linksize / 2;
-		start = new WheelObstacle(pos.x,pos.y,BRIDGE_PIN_RADIUS);
-		start.setName(BRIDGE_PIN_NAME+0);
+		start = new WheelObstacle(pos.x,pos.y,BRANCH_PIN_RADIUS);
+		start.setName(BRANCH_PIN_NAME+0);
 		start.setDensity(BASIC_DENSITY);
 		start.setBodyType(BodyDef.BodyType.StaticBody);
 		start.activatePhysics(world);
@@ -201,12 +189,10 @@ public class StiffBranch extends ComplexObstacle {
 		Joint joint = world.createJoint(flexJointDef);
 		joints.add(joint);
 
-		//Joint joint;
 		// Link the planks together
 		anchor1.y = linksize / 2;
 		for (int ii = 0; ii < bodies.size-1; ii++) {
-			//#region INSERT CODE HERE
-			// Look at what we did above and join the planks
+			// join the planks
 			jointDef = new WeldJointDef();
 			jointDef.bodyA = bodies.get(ii).getBody();
 			jointDef.bodyB = bodies.get(ii+1).getBody();
@@ -215,7 +201,6 @@ public class StiffBranch extends ComplexObstacle {
 			jointDef.collideConnected = false;
 			joint = world.createJoint(jointDef);
 			joints.add(joint);
-			//#endregion
 		}
 
 //		RevoluteJointDef flexJointDef = new RevoluteJointDef();
@@ -226,8 +211,6 @@ public class StiffBranch extends ComplexObstacle {
 //		flexJointDef.collideConnected = false;
 //		joint = world.createJoint(flexJointDef);
 //		joints.add(joint);
-
-
 		return true;
 	}
 
