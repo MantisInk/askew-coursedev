@@ -25,7 +25,7 @@ public class AssetTraversalController {
         return fileName.replace("\\","/");
     }
 
-    private String escaleRelativeDot(String fileName) {
+    private String escapeRelativeDot(String fileName) {
         int spliceIndex = fileName.indexOf("./");
         if (spliceIndex > -1) {
             return fileName.substring(spliceIndex+2);

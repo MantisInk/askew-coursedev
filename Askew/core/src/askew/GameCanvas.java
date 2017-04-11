@@ -339,7 +339,7 @@ public class GameCanvas {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		background = DEFAULT_BACKGROUND;
 		spriteBatch.begin();
-		spriteBatch.draw(background, -1000f,-300f, 4000f,2000f);
+//		spriteBatch.draw(background, -1000f,-300f, 4000f,2000f);
 		spriteBatch.end();
 	}
 
@@ -350,6 +350,8 @@ public class GameCanvas {
 		background = bg;
 		spriteBatch.begin();
 		spriteBatch.draw(background, 0,0);
+		//spriteBatch.draw(background,0,-50f);
+//		spriteBatch.draw(background, 0,0);
 		spriteBatch.end();
 	}
 

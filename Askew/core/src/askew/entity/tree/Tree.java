@@ -23,12 +23,11 @@ public class Tree extends ComplexObstacle {
 
     public Tree (float trunk_pos_x, float trunk_pos_y, float trunklen, float branchlen, float dwidth, float dheight, Vector2 scale){
         treeTrunk = new Trunk(trunk_pos_x, trunk_pos_y,trunklen, dwidth, dheight, branchlen, scale);
-        treeTrunk.setDrawScale(scale);
+
         bodies.add(treeTrunk);
 
         //treeBranch = new StiffBranch(branch_pos.x, branch_pos.y+(treeTrunk.linksize*(trunklen-branchlen)),branchlen,dwidth,dheight, scale);
         treeBranch = new StiffBranch(treeTrunk.final_norm.x, treeTrunk.final_norm.y, branchlen,dwidth,dheight, scale);
-        treeBranch.setDrawScale(scale);
         bodies.add(treeBranch);
     }
 
@@ -37,8 +36,8 @@ public class Tree extends ComplexObstacle {
         bodies.add(treeTrunk);
 
         treeBranch = new StiffBranch(treeTrunk.final_norm.x, treeTrunk.final_norm.y, branchlen,dwidth,dheight, scale);
-        treeBranch.setDrawScale(scale);
         bodies.add(treeBranch);
+        this.setObjectScale(scale);
     }
 
     public Tree (Trunk trunk, StiffBranch branch) {
@@ -46,6 +45,7 @@ public class Tree extends ComplexObstacle {
         treeBranch = branch;
         bodies.add(treeTrunk);
         bodies.add(treeBranch);
+
     }
 
     @Override

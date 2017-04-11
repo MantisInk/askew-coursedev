@@ -69,17 +69,19 @@ public class Trunk extends ComplexObstacle {
 	 *
 	 */
 	public Trunk(float x, float y, float length, float lwidth, float lheight, float stiffLen, Vector2 scale) {
-		this(x, y, x, y+length, lwidth*scale.y/32f, lheight*scale.y/32f, stiffLen, 0f);
+		this(x, y, x, y+length, lwidth, lheight, stiffLen, 0f);
 		numLinks = length;
 		this.x = x;
 		this.y = y;
+		this.setObjectScale(scale);
 	}
 
 	public Trunk(float x, float y, float length, float lwidth, float lheight, float stiffLen, Vector2 scale, float angle) {
-		this(x, y, x, y+length, lwidth*scale.y/32f, lheight*scale.y/32f, stiffLen, angle);
+		this(x, y, x, y+length, lwidth, lheight, stiffLen, angle);
 		numLinks = length;
 		this.x = x;
 		this.y = y;
+		this.setObjectScale(scale);
 	}
 
 	/**

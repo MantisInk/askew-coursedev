@@ -179,7 +179,8 @@ public class GameModeController extends WorldController {
 	 * Lays out the game geography.
 	 */
 	private void populateLevel() {
-			jsonLoaderSaver.setScale(this.scale);
+			jsonLoaderSaver.setScale(this.worldScale);
+
 			try {
 				LevelModel lm = jsonLoaderSaver.loadLevel(loadLevel);
 				System.out.println(loadLevel);
@@ -332,6 +333,8 @@ public class GameModeController extends WorldController {
 		sloth.setRightVert(InputController.getInstance().getRightVertical());
 		sloth.setLeftGrab(InputController.getInstance().getLeftGrab());
 		sloth.setRightGrab(InputController.getInstance().getRightGrab());
+		sloth.setLeftStickPressed(InputController.getInstance().getLeftStickPressed());
+		sloth.setRightStickPressed(InputController.getInstance().getRightStickPressed());
 
 		//#TODO Collision states check
 		setComplete(collisions.isFlowKill());
@@ -372,12 +375,14 @@ public class GameModeController extends WorldController {
 
 	public void draw(float delta){
 		canvas.clear();
-		camTrans.setToTranslation(-1 * sloth.getBody().getPosition().x * sloth.getDrawScale().x
-				, -1 * sloth.getBody().getPosition().y * sloth.getDrawScale().y);
-		camTrans.translate(canvas.getWidth()/2,canvas.getHeight()/2);
+		camTrans.setToTranslation(-1 * sloth.getBody().getPosition().x * worldScale.x
+				, -1 * sloth.getBody().getPosition().y * worldScale.y);
+
+    	camTrans.translate(canvas.getWidth()/2,canvas.getHeight()/2);
 		canvas.begin(camTrans);
 
 		for(Obstacle obj : objects) {
+			obj.setDrawScale(worldScale);
 			obj.draw(canvas);
 		}
 
