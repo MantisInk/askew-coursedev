@@ -7,6 +7,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Json;
 import com.google.gson.*;
 import askew.entity.obstacle.Obstacle;
 import lombok.Cleanup;
@@ -55,6 +56,31 @@ public class JSONLoaderSaver {
 
     public String gsonToJson(Entity o) {
         return gson.toJson(o, Entity.class);
+    }
+
+    public JsonObject gsonToJsonObject(Entity o) {
+        return gson.toJsonTree(o).getAsJsonObject();
+    }
+
+//    public Entity entityFromJson(JsonElement o) {
+//        //return gson.toJsonTree(o).getAsJsonObject();
+//        return gson.fromJson(o, Entity.class);
+//    }
+
+//    public Entity entityFromJson(JsonElement o, String className) {
+//        //return gson.toJsonTree(o).getAsJsonObject();
+//        Entity cls = Class.forName(className);
+//        return gson.fromJson(o, cls);
+//    }
+
+//    public String stringFromJson(JsonElement o) {
+//        //return gson.toJsonTree(o).getAsJsonObject();
+//        return gson.fromJson(o, String.class);
+//    }
+
+    public String stringFromJson(JsonElement o) {
+        //return gson.toJsonTree(o).getAsJsonObject();
+        return gson.toJson(o);
     }
 
     public Entity entityFromJson(String s) {
