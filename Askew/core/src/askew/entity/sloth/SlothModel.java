@@ -76,6 +76,8 @@ public class SlothModel extends ComplexObstacle  {
     private transient Vector2 forceL = new Vector2();
     private transient Vector2 forceR = new Vector2();
 
+    private transient CircleShape grabGlow = new CircleShape();
+
 
 
     /** For drawing the force lines*/
@@ -525,6 +527,21 @@ public class SlothModel extends ComplexObstacle  {
 
     }
 
+    public void drawGrab(GameCanvas canvas, Affine2 camTrans){
+        Obstacle right = bodies.get(PART_RIGHT_HAND);
+        Obstacle left = bodies.get(PART_LEFT_HAND);
+        grabGlow.setRadius(.07f);
+        Gdx.gl.glLineWidth(3);
+        canvas.beginDebug(camTrans);
+        if(isLeftGrab())
+            canvas.drawPhysics(grabGlow, new Color(0xafaf000f),left.getX() , left.getY() , drawScale.x,drawScale.y );
+        if(isRightGrab())
+            canvas.drawPhysics(grabGlow, new Color(0xafaf000f),right.getX() , right.getY() ,drawScale.x,drawScale.y );
+
+        canvas.endDebug();
+
+    }
+
     public void setLeftGrab(boolean leftGrab) {
         this.leftGrab = leftGrab;
     }
@@ -710,6 +727,7 @@ public class SlothModel extends ComplexObstacle  {
                 }
             }
         }
+
 
 
         //Commented out because the vine images disappear when this is used here?

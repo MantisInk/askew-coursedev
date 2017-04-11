@@ -375,10 +375,13 @@ public class GameModeController extends WorldController {
 
 	public void draw(float delta){
 		canvas.clear();
+
 		camTrans.setToTranslation(-1 * sloth.getBody().getPosition().x * worldScale.x
 				, -1 * sloth.getBody().getPosition().y * worldScale.y);
 
     	camTrans.translate(canvas.getWidth()/2,canvas.getHeight()/2);
+
+		sloth.drawGrab(canvas, camTrans);
 		canvas.begin(camTrans);
 
 		for(Entity obj : objects) {
