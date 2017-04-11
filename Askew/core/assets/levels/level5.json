@@ -1,0 +1,58 @@
+{
+  "levelModelVersion": 1,
+  "title": "level5",
+  "goalTimeGold": 30,
+  "goalTimeSilver": 45,
+  "goalTimeBronze": 60,
+  "height": 10,
+  "width": 10,
+  "entities": [
+    {
+      "CLASSNAME": "askew.entity.sloth.SlothModel",
+      "INSTANCE": {
+        "x": -2.0,
+        "y": 17.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "pin": false,
+        "numLinks": 5.0,
+        "x": -2.0,
+        "y": 16.0,
+        "angle": 5.0,
+        "omega": -50.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "pin": false,
+        "numLinks": 5.0,
+        "x": 4.0,
+        "y": 21.0,
+        "angle": 5.0,
+        "omega": -100.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "pin": false,
+        "numLinks": 15.0,
+        "x": 13.0,
+        "y": 29.0,
+        "angle": 5.0,
+        "omega": -400.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.owl.OwlModel",
+      "INSTANCE": {
+        "x": 18.0,
+        "y": 10.0
+      }
+    }
+  ]
+}
