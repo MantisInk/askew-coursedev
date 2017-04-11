@@ -38,6 +38,7 @@ public class PhysicsController implements ContactListener {
         sloth = null;
         goalDoor = null;
         isFlowKill = false;
+        isFlowWin = false;
         clearGrab();
     }
 

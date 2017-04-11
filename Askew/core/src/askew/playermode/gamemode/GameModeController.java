@@ -172,7 +172,6 @@ public class GameModeController extends WorldController {
 		objects.clear();
 		addQueue.clear();
 		world.dispose();
-		SoundController.getInstance().stop("bgmusic");
 
 		world = new World(gravity,false);
 		if(collisions == null){
@@ -184,7 +183,8 @@ public class GameModeController extends WorldController {
 		setComplete(false);
 		setFailure(false);
 		populateLevel();
-		SoundController.getInstance().play("bgmusic","sound/music/askew.wav",true);
+		if (!SoundController.getInstance().isActive("bgmusic"))
+			SoundController.getInstance().play("bgmusic","sound/music/askew.wav",true);
 	}
 
 	/**

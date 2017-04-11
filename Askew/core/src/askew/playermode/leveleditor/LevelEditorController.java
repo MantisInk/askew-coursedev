@@ -91,7 +91,6 @@ public class LevelEditorController extends WorldController {
 	public static final String[] creationOptions = {
 			".SlothModel",
 			".Vine",
-			".Platform",
 			".PoleVault",
 			".Trunk",
 			".StiffBranch",
