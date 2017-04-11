@@ -1,6 +1,6 @@
 {
   "levelModelVersion": 1,
-  "title": "level1",
+  "title": "level2",
   "goalTimeGold": 30,
   "goalTimeSilver": 45,
   "goalTimeBronze": 60,
@@ -15,6 +15,13 @@
       }
     },
     {
+      "CLASSNAME": "askew.entity.owl.OwlModel",
+      "INSTANCE": {
+        "x": 6.0,
+        "y": 8.0
+      }
+    },
+    {
       "CLASSNAME": "askew.entity.tree.Trunk",
       "INSTANCE": {
         "x": -3.0,
@@ -22,25 +29,29 @@
         "stiffLen": 0.0,
         "angle": 270.0,
         "linksize": 1.0,
-        "numLinks": 5.0
+        "numLinks": 2.0
       }
     },
     {
       "CLASSNAME": "askew.entity.tree.Trunk",
       "INSTANCE": {
-        "x": 2.0,
+        "x": 0.0,
         "y": 13.0,
         "stiffLen": 0.0,
-        "angle": 225.0,
+        "angle": 270.0,
         "linksize": 1.0,
-        "numLinks": 5.0
+        "numLinks": 2.0
       }
     },
     {
-      "CLASSNAME": "askew.entity.owl.OwlModel",
+      "CLASSNAME": "askew.entity.tree.Trunk",
       "INSTANCE": {
-        "x": 6.0,
-        "y": 8.0
+        "x": 3.0,
+        "y": 12.0,
+        "stiffLen": 0.0,
+        "angle": 225.0,
+        "linksize": 1.0,
+        "numLinks": 3.0
       }
     }
   ]

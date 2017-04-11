@@ -1,6 +1,6 @@
 {
   "levelModelVersion": 1,
-  "title": "level1",
+  "title": "level3",
   "goalTimeGold": 30,
   "goalTimeSilver": 45,
   "goalTimeBronze": 60,
@@ -26,20 +26,20 @@
       }
     },
     {
-      "CLASSNAME": "askew.entity.tree.Trunk",
+      "CLASSNAME": "askew.entity.vine.Vine",
       "INSTANCE": {
-        "x": 2.0,
+        "pin": false,
+        "numLinks": 5.0,
+        "x": 3.0,
         "y": 13.0,
-        "stiffLen": 0.0,
-        "angle": 225.0,
-        "linksize": 1.0,
-        "numLinks": 5.0
+        "angle": 5.0,
+        "omega": -400.0
       }
     },
     {
       "CLASSNAME": "askew.entity.owl.OwlModel",
       "INSTANCE": {
-        "x": 6.0,
+        "x": 7.0,
         "y": 8.0
       }
     }
