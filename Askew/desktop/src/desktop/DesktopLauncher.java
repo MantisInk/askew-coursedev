@@ -39,6 +39,7 @@ public class DesktopLauncher {
 		config.height = 576;
 		config.resizable = false;
 		config.fullscreen = false;
+		config.title = "Askew";
 		new LwjglApplication(new GDXRoot(), config);
 	}
 }
