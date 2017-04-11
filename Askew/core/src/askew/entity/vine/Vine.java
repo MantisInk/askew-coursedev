@@ -57,6 +57,8 @@ public class Vine extends ComplexObstacle {
 	protected float numLinks;									/** number of vine pieces */
 	protected float x;											/** x-coord of top anchor */
 	protected float y;											/** y-coord of bottom anchor */
+	protected float angle;										/** starting angle of vine */
+	protected float omega;										/** starting angular velocity of vine */
 
 
 	/**
@@ -72,12 +74,24 @@ public class Vine extends ComplexObstacle {
 	 * @param lheight	The vine piece length
 	 */
 	public Vine(float x, float y, float length, float lwidth, float lheight, Vector2 scale) {
-		this(x, y, x, y-length, lwidth, lheight, false, 5f, -450f);
+		this(x, y, x, y-length, lwidth, lheight, false, 5f, -400f);
 		numLinks = length;
 		this.x = x;
 		this.y = y;
+		this.angle = 5f;
+		this.omega = -400f;
 		this.setObjectScale(scale);
 
+	}
+
+	public Vine(float x, float y, float length, float lwidth, float lheight, Vector2 scale, float angle, float omega) {
+		this(x, y, x, y-length, lwidth, lheight, false, angle, omega);
+		numLinks = length;
+		this.x = x;
+		this.y = y;
+		this.angle = angle;
+		this.omega = omega;
+		this.setObjectScale(scale);
 	}
 
 	public Vine(float x, float y, float length, float lwidth, float lheight, Vector2 scale, boolean pinned, float angle, float omega) {
@@ -85,6 +99,8 @@ public class Vine extends ComplexObstacle {
 		numLinks = length;
 		this.x = x;
 		this.y = y;
+		this.angle = angle;
+		this.omega = omega;
 		this.setObjectScale(scale);
 	}
 

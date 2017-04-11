@@ -5,12 +5,11 @@ import askew.entity.ghost.GhostModel;
 import askew.entity.owl.OwlModel;
 import askew.entity.sloth.SlothModel;
 import askew.entity.tree.StiffBranch;
-import askew.entity.tree.Trunk;
 import askew.entity.tree.Tree;
+import askew.entity.tree.Trunk;
 import askew.entity.vine.Vine;
 import askew.entity.wall.WallModel;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.google.gson.JsonObject;
 
@@ -28,9 +27,11 @@ public class JsonEntityFactory {
         float x = instance.get("x").getAsFloat();
         float y = instance.get("y").getAsFloat();
         float numlinks = instance.get("numLinks").getAsFloat();
+        float angle = instance.get("angle").getAsFloat();
+        float omega = instance.get("omega").getAsFloat();
         Texture managedTexture = manager.get(Vine.VINE_TEXTURE, Texture.class);
-        TextureRegion vineTexture = new TextureRegion(managedTexture);
-		vine = new Vine(x, y, numlinks, .35f, 1.0f, scale);
+        //TextureRegion vineTexture = new TextureRegion(managedTexture);
+		vine = new Vine(x, y, numlinks, .35f, 1.0f, scale, angle, omega);
 		vine.setDrawScale(scale.x, scale.y);
 		vine.setTextures(manager);
         return vine;
