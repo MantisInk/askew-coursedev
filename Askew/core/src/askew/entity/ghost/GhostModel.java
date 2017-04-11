@@ -2,6 +2,7 @@ package askew.entity.ghost;
 
 import askew.GameCanvas;
 import askew.MantisAssetManager;
+import askew.entity.FilterGroup;
 import askew.entity.obstacle.BoxObstacle;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -11,6 +12,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.Filter;
 
 /**
  * A ghost which patrols between two points and murders Flow.
@@ -18,7 +20,8 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 public class GhostModel extends BoxObstacle  {
 
     public static final float GHOST_SPEED = 1f;
-    public static final float GHOST_WIDTH = 1.6f;
+    public static final float GHOST_WIDTH = 0.8f;
+    public static final float GHOST_HEIGHT = GHOST_WIDTH * (523f / 290f);
 
     // determined at runtime to preserve aspect ratio from designers
     private transient float ghostHeight;
@@ -48,7 +51,7 @@ public class GhostModel extends BoxObstacle  {
      * @param y  Initial y position of the ragdoll head
      */
     public GhostModel(float x, float y, float patroldx, float patroldy) {
-        super(x,y, GHOST_WIDTH, GHOST_WIDTH);
+        super(x,y, GHOST_WIDTH, GHOST_HEIGHT);
         this.x = x;
         this.y = y;
         this.patroldx = patroldx;
@@ -58,6 +61,10 @@ public class GhostModel extends BoxObstacle  {
         this.setFriction(0);
         this.setRestitution(0);
         this.setSensor(true);
+        Filter f = new Filter();
+        f.maskBits = FilterGroup.SLOTH;
+        f.categoryBits = FilterGroup.WALL;
+        this.setFilterData(f);
         this.setName("ghost");
         elapseTime = 1;
     }
@@ -79,9 +86,8 @@ public class GhostModel extends BoxObstacle  {
         if (walkAnimation.getKeyFrames().length == 0)
             System.err.println("did not find ghost");
         ghostTextureRegion = walkAnimation.getKeyFrame(0);
-        this.ghostHeight = getWidth() * ((float) ghostTextureRegion.getRegionHeight() / (float) ghostTextureRegion.getRegionWidth());
-        thirtyTwoPixelDensityScale = 32f / ghostTextureRegion.getRegionWidth();
-        this.setHeight(ghostHeight);
+        this.ghostHeight = getWidth() * ((float) ghostTextureRegion.getRegionHeight() / (float) ghostTextureRegion.getRegionWidth()) / 2;
+        thirtyTwoPixelDensityScale = 32f / ghostTextureRegion.getRegionWidth() * 2;
         setTexture(ghostTextureRegion);
     }
 
