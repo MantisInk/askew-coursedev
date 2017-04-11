@@ -103,7 +103,7 @@ public class GameModeController extends WorldController {
 			return;
 		}
 
-		SoundController sounds = SoundController.getInstance();
+		//SoundController sounds = SoundController.getInstance();
 
 		super.loadContent(manager);
 		platformAssetState = AssetState.COMPLETE;
@@ -160,9 +160,9 @@ public class GameModeController extends WorldController {
 		Vector2 gravity = new Vector2(world.getGravity() );
 
 		InputController.getInstance().releaseGrabs();
-		for(Obstacle obj : objects) {
-			if(! (obj instanceof SlothModel))
-				obj.deactivatePhysics(world);
+		for(Entity obj : objects) {
+			if( (obj instanceof Obstacle && !(obj instanceof SlothModel)))
+				((Obstacle)obj).deactivatePhysics(world);
 		}
 
 		objects.clear();
@@ -388,7 +388,7 @@ public class GameModeController extends WorldController {
     camTrans.translate(canvas.getWidth()/2,canvas.getHeight()/2);
 		canvas.begin(camTrans);
 
-		for(Obstacle obj : objects) {
+		for(Entity obj : objects) {
 			obj.setDrawScale(worldScale);
 			obj.draw(canvas);
 		}
@@ -401,8 +401,11 @@ public class GameModeController extends WorldController {
 
 		if (debug) {
 			canvas.beginDebug(camTrans);
-			for(Obstacle obj : objects) {
-				obj.drawDebug(canvas);
+			for(Entity obj : objects) {
+				if( obj instanceof  Obstacle){
+					((Obstacle)obj).drawDebug(canvas);
+				}
+
 			}
 
 			canvas.endDebug();

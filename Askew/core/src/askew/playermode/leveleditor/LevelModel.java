@@ -45,7 +45,7 @@ class LevelModel {
         this.goalTimeBronze = 60;
     }
 
-    public void addEntity(Obstacle o) {
+    public void addEntity(Entity o) {
         entities.add(o);
     }
 }

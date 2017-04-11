@@ -187,9 +187,9 @@ public class LevelEditorController extends WorldController {
 	public void reset() {
 		Vector2 gravity = new Vector2(world.getGravity() );
 
-		for(Obstacle obj : objects) {
-			if(! (obj instanceof SlothModel))
-				obj.deactivatePhysics(world);
+		for(Entity obj : objects) {
+			if( (obj instanceof Obstacle))
+				((Obstacle)obj).deactivatePhysics(world);
 		}
 
 		objects.clear();
@@ -408,10 +408,10 @@ public class LevelEditorController extends WorldController {
 
 		// Delete
 		if (InputController.getInstance().isRightClickPressed()) {
-
+//#TODO FIX ENTITY VS BOX2D
 			QueryCallback qc = fixture -> {
                 Object userData = fixture.getBody().getUserData();
-                for (Obstacle o : objects) {
+                for (Entity o : objects) {
                     if (o == userData) {
                         objects.remove(o);
                         return false;
@@ -438,7 +438,7 @@ public class LevelEditorController extends WorldController {
 
 			QueryCallback qc = fixture -> {
                 Object userData = fixture.getBody().getUserData();
-                for (Obstacle o : objects) {
+                for (Entity o : objects) {
                     if (o == userData) {
                         promptTemplate(o);
                         objects.remove(o);
@@ -484,7 +484,7 @@ public class LevelEditorController extends WorldController {
 			System.out.println("Saving...");
 			LevelModel timeToSave = new LevelModel();
 			timeToSave.setTitle(currentLevel);
-			for (Obstacle o : objects) {
+			for (Entity o : objects) {
 				timeToSave.addEntity(o);
 			}
 			if (jsonLoaderSaver.saveLevel(timeToSave, currentLevel)) {
@@ -565,7 +565,7 @@ public class LevelEditorController extends WorldController {
 		camTrans.translate(canvas.getWidth()/2, canvas.getHeight()/2);
 
 		canvas.begin(camTrans);
-		for(Obstacle obj : objects) {
+		for(Entity obj : objects) {
 			obj.draw(canvas);
 		}
 		canvas.end();
@@ -612,16 +612,19 @@ public class LevelEditorController extends WorldController {
 		// Garbage collect the deleted objects.
 		// Note how we use the linked list nodes to delete O(1) in place.
 		// This is O(n) without copying.
-		Iterator<PooledList<Obstacle>.Entry> iterator = objects.entryIterator();
+		Iterator<PooledList<Entity>.Entry> iterator = objects.entryIterator();
 		while (iterator.hasNext()) {
-			PooledList<Obstacle>.Entry entry = iterator.next();
-			Obstacle obj = entry.getValue();
-			if (obj.isRemoved()) {
-				obj.deactivatePhysics(world);
-				entry.remove();
+			PooledList<Entity>.Entry entry = iterator.next();
+			Entity ent = entry.getValue();
+			if (ent instanceof Obstacle) {
+				Obstacle obj = (Obstacle) ent;
+				if (obj.isRemoved()) {
+					obj.deactivatePhysics(world);
+					entry.remove();
+				}
 			} else {
 				// Note that update is called last!
-//				obj.update(dt);
+				ent.update(dt);
 			}
 		}
 	}
