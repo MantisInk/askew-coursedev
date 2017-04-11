@@ -159,15 +159,16 @@ public class GDXRoot extends Game implements ScreenListener {
 				controllers[ii].setScreenListener(this);
 				controllers[ii].setCanvas(canvas);
 			}
-//			controllers[current].reset();
-//			setScreen(controllers[current]);
-//			controllers[current].setCanvas(canvas);
+			current = 0;
+			controllers[current].reset();
+			setScreen(controllers[current]);
+			controllers[current].setCanvas(canvas);
 
 			loading.dispose();
 			loading = null;
 		}
 		// Intentional fallthrough
-		if (exitCode == WorldController.EXIT_MM_GM) {
+		else if (exitCode == WorldController.EXIT_MM_GM) {
 			current = CON_GM;
 			GameModeController gm =(GameModeController) controllers[CON_GM];
 			MainMenuController mm = (MainMenuController) controllers[CON_MM];

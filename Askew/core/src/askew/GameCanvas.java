@@ -492,6 +492,9 @@ public class GameCanvas {
 		draw(holder, tint, x-ox, y-oy, width, height);
 	}
 
+	public void draw(Texture image){
+		draw(image, Color.WHITE, 0,0,width,height);
+	}
 
 	/**
 	 * Draws the tinted texture with the given transformations
@@ -716,6 +719,7 @@ public class GameCanvas {
 		spriteBatch.setColor(tint);
 		spriteBatch.draw(region, region.getRegionWidth(), region.getRegionHeight(), local);
 	}
+
 
 	/**
 	 * Draws the polygonal region with the given transformations

@@ -135,6 +135,7 @@ public abstract class SimpleObstacle extends Obstacle {
 			positionCache.set(value,body.getPosition().y);
 			body.setTransform(positionCache,body.getAngle());
 		} else {
+			System.err.println("setting x on null body");
 			super.setX(value);
 		}
 	}

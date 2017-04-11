@@ -4,9 +4,7 @@ import askew.MantisAssetManager;
 import askew.entity.ghost.GhostModel;
 import askew.entity.owl.OwlModel;
 import askew.entity.sloth.SlothModel;
-import askew.entity.tree.StiffBranch;
-import askew.entity.tree.Tree;
-import askew.entity.tree.Trunk;
+import askew.entity.tree.*;
 import askew.entity.vine.Vine;
 import askew.entity.wall.WallModel;
 import com.badlogic.gdx.graphics.Texture;
@@ -49,6 +47,19 @@ public class JsonEntityFactory {
         trunk.setDrawScale(scale.x, scale.y);
         trunk.setTextures(manager);
         return trunk;
+    }
+
+    public static PoleVault createPoleVault(MantisAssetManager manager, JsonObject instance, Vector2 scale) {
+        PoleVault poleVault;
+        float x = instance.get("x").getAsFloat();
+        float y = instance.get("y").getAsFloat();
+        float angle = instance.get("angle").getAsFloat();
+        float numlinks = instance.get("numLinks").getAsFloat();
+        float linksize = instance.get("linksize").getAsFloat();
+        poleVault = new PoleVault(x, y, numlinks, 0.25f, linksize, scale, angle);
+        poleVault.setDrawScale(scale.x, scale.y);
+        poleVault.setTextures(manager);
+        return poleVault;
     }
 
     public static SlothModel createSloth(MantisAssetManager manager, JsonObject instance, Vector2 scale) {

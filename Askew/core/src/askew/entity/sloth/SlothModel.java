@@ -76,6 +76,8 @@ public class SlothModel extends ComplexObstacle  {
     private transient Vector2 forceL = new Vector2();
     private transient Vector2 forceR = new Vector2();
 
+    private transient CircleShape grabGlow = new CircleShape();
+
 
 
     /** For drawing the force lines*/
@@ -129,11 +131,11 @@ public class SlothModel extends ComplexObstacle  {
 
     private static final float HAND_YOFFSET    = 0;
 
-    private static final float BODY_HEIGHT = 2.4f;
+    private static final float BODY_HEIGHT = 2.0f;
     private static final float BODY_WIDTH = BODY_HEIGHT * (489f / 835f);
 
     private static final float ARM_WIDTH = 1.75f;
-    private static final float ARM_HEIGHT = 0.4924f;
+    private static final float ARM_HEIGHT = 0.5f;
 
     private static final float ARM_XOFFSET    = ARM_WIDTH / 2f + .375f;
     private static final float ARM_YOFFSET    = 0f;
@@ -392,6 +394,32 @@ public class SlothModel extends ComplexObstacle  {
             if(dRTheta > PI){ dRTheta -= (PI + PI);}
             if(dRTheta < -PI){ dRTheta += (PI + PI);}
 
+
+            //countertorque
+            float dLcRTheta = 0f; // How much left controller affects right arm
+            float invlcTheta = (float)Math.atan2(-leftVert,-leftHori);
+            dLcRTheta = (float)(invlcTheta - rTheta);
+            if(dLcRTheta > PI){ dLcRTheta -= (PI + PI);}
+            if(dLcRTheta < -PI){ dLcRTheta += (PI + PI);}
+
+            float dRcLTheta = 0f; // How much right controller affects left arm
+            float invrcTheta = (float)Math.atan2(-rightVert,-rightHori);
+            dRcLTheta = (float)(invrcTheta - lTheta);
+            if(dRcLTheta > PI){ dRcLTheta -= (PI + PI);}
+            if(dRcLTheta < -PI){ dRcLTheta += (PI + PI);}
+
+            float counterfactor = .3f;
+            float counterfR =  counterfactor * calculateTorque(dLcRTheta,rav/OMEGA_NORMALIZER);
+            float counterfL = counterfactor * calculateTorque(dRcLTheta,lav/OMEGA_NORMALIZER);
+
+
+
+
+
+
+
+
+
             float forceLeft =  calculateTorque(dLTheta,lav/OMEGA_NORMALIZER); //#MAGIC 20f default, omega normalizer
 //        float lx = (float) (TORQUE * -Math.sin(lTheta) * forceLeft * lLength);
 //        float ly = (float) (TORQUE * -Math.cos(lTheta) * forceLeft * lLength);
@@ -402,16 +430,16 @@ public class SlothModel extends ComplexObstacle  {
 //        float ry = (float) (TORQUE * -Math.cos(rTheta) * forceRight * rLength);
 //        forceR.set(rx,ry);
 
-            float ltorque = TORQUE * forceLeft * lLength;
-            float rtorque = TORQUE * forceRight * rLength;
+            float ltorque = TORQUE * ((forceLeft  * lLength) + (counterfL * rLength ));
+            float rtorque = TORQUE * ((forceRight * rLength) + ( counterfR * lLength ));
             forceL.set((float) (ltorque * Math.sin(lTheta)),(float) (ltorque * Math.cos(lTheta)));
             forceR.set((float) (rtorque * Math.sin(rTheta)),(float) (rtorque * Math.cos(rTheta)));
 
-            if ((GRABBING_HAND_HAS_TORQUE || !isActualLeftGrab()) || leftStickPressed )
+            if ((GRABBING_HAND_HAS_TORQUE || !isActualLeftGrab()) )
                 leftArm
                         .getBody()
                         .applyTorque(ltorque,true);
-            if ((GRABBING_HAND_HAS_TORQUE || !isActualRightGrab()) || rightStickPressed )
+            if ((GRABBING_HAND_HAS_TORQUE || !isActualRightGrab()) )
                 rightArm
                         .getBody()
                         .applyTorque(rtorque, true);
@@ -489,48 +517,37 @@ public class SlothModel extends ComplexObstacle  {
     }
 
     public void drawForces(GameCanvas canvas, Affine2 camTrans){
-//    public void drawForces(float displace_x, float displace_y){
-//    //public void drawForces(float x_push, float y_push){
         Obstacle right = bodies.get(PART_RIGHT_HAND);
         Obstacle left = bodies.get(PART_LEFT_HAND);
 
-        //Draw the lines for the forces
-
-        //OrthographicCamera camera = new OrthographicCamera(Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
-        //camera.setToOrtho(false);
-
         Gdx.gl.glLineWidth(3);
-//        if (shaper == null) shaper = new ShapeRenderer();
-//        shaper.setProjectionMatrix(camera.combined);
-
-        //float left_x = left.getX()*drawScale.x;
         float left_x = left.getX();
-        //float left_y = left.getY() * drawScale.y;
         float left_y = left.getY();
-        //float right_x = right.getX()*drawScale.x;
         float right_x = right.getX();
-        //float right_y = right.getY() * drawScale.y;
         float right_y = right.getY();
 
-        //float displace_x = askew.playermode.WorldController.getCanvas().getWidth()/2; //1 * bodies.get(PART_BODY).getPosition().x * getDrawScale().x;
-        //float displace_y = askew.playermode.WorldController.getCanvas().getHeight()/2; //1 * bodies.get(PART_BODY).getPosition().y * getDrawScale().y;
 
-        //float displace_x = x_push*getDrawScale().x;
-        //float displace_y = y_push*getDrawScale().y;
         canvas.beginDebug(camTrans);
         canvas.drawLine(left.getX()*drawScale.x,left.getY() * drawScale.y, left.getX()*drawScale.x+(forceL.x*2),left.getY() * drawScale.y+(forceL.y*2),Color.BLUE, Color.BLUE);
         canvas.drawLine(right.getX()*drawScale.x,right.getY() * drawScale.y, right.getX()*drawScale.x+(forceR.x*2),right.getY() * drawScale.y+(forceR.y*2),Color.RED, Color.RED);
         canvas.endDebug();
-//
-//        shaper.begin(ShapeRenderer.ShapeType.Line);
-//        shaper.setColor(Color.BLUE);
-//        //shaper.line();
-//        shaper.line(left_x+displace_x,left_y+displace_y, left_x+displace_x+(forceL.x*20),left_y+displace_y+(forceL.y*20));
-//        shaper.setColor(Color.RED);
-//        //shaper.line(right.getX()*drawScale.x,right.getY() * drawScale.y, right.getX()*drawScale.x+(forceR.x*20),right.getY() * drawScale.y+(forceR.y*20));
-//        shaper.line(right_x+displace_x,right_y+displace_y, right_x+displace_x+(forceR.x*20),right_y+displace_y+(forceR.y*20));
-//        shaper.end();
 
+
+
+    }
+
+    public void drawGrab(GameCanvas canvas, Affine2 camTrans){
+        Obstacle right = bodies.get(PART_RIGHT_HAND);
+        Obstacle left = bodies.get(PART_LEFT_HAND);
+        grabGlow.setRadius(.12f);
+        Gdx.gl.glLineWidth(3);
+        canvas.beginDebug(camTrans);
+        if(isLeftGrab())
+            canvas.drawPhysics(grabGlow, new Color(0xcfcf000f),left.getX() , left.getY() , drawScale.x,drawScale.y );
+        if(isRightGrab())
+            canvas.drawPhysics(grabGlow, new Color(0xcfcf000f),right.getX() , right.getY() ,drawScale.x,drawScale.y );
+
+        canvas.endDebug();
 
     }
 
@@ -719,6 +736,7 @@ public class SlothModel extends ComplexObstacle  {
                 }
             }
         }
+
 
 
         //Commented out because the vine images disappear when this is used here?
