@@ -478,7 +478,7 @@ public class GameCanvas {
 	}
 
 	public void draw(Texture image){
-		draw(image, Color.WHITE, 0,0,width,height);
+		draw(image, Color.WHITE, 0,0,getWidth(),getHeight());
 	}
 
 	/**

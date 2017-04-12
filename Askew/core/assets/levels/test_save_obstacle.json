@@ -73,8 +73,248 @@
     {
       "CLASSNAME": "askew.entity.BackgroundEntity",
       "INSTANCE": {
-        "x": 1.6347656,
-        "y": 14.431641,
+        "x": 0.6503906,
+        "y": 15.626953,
+        "width": 1.0,
+        "height": 1.0,
+        "depth": -1.0,
+        "angle": 0.0,
+        "alpha": 1.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/fern.png"
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": -0.0703125,
+        "y": 15.292969,
+        "width": 1.0,
+        "height": 1.0,
+        "depth": -1.0,
+        "angle": 0.0,
+        "alpha": 1.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/fern.png"
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 0.6328125,
+        "y": 15.328125,
+        "width": 1.0,
+        "height": 1.0,
+        "depth": -1.0,
+        "angle": 0.0,
+        "alpha": 1.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/fern.png"
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 0.40429688,
+        "y": 15.205078,
+        "width": 1.0,
+        "height": 1.0,
+        "depth": -1.0,
+        "angle": 0.0,
+        "alpha": 1.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/fern.png"
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": -0.15820312,
+        "y": 14.8359375,
+        "width": 1.0,
+        "height": 1.0,
+        "depth": -1.0,
+        "angle": 0.0,
+        "alpha": 1.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/fern.png"
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 0.47460938,
+        "y": 15.46875,
+        "width": 1.0,
+        "height": 1.0,
+        "depth": -1.0,
+        "angle": 0.0,
+        "alpha": 1.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/fern.png"
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 1.1601562,
+        "y": 15.6796875,
+        "width": 1.0,
+        "height": 1.0,
+        "depth": -1.0,
+        "angle": 0.0,
+        "alpha": 1.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/fern.png"
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 0.6152344,
+        "y": 15.1171875,
+        "width": 1.0,
+        "height": 1.0,
+        "depth": -1.0,
+        "angle": 0.0,
+        "alpha": 1.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/fern.png"
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 1.265625,
+        "y": 15.275391,
+        "width": 1.0,
+        "height": 1.0,
+        "depth": -1.0,
+        "angle": 0.0,
+        "alpha": 1.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/fern.png"
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": -0.6503906,
+        "y": 14.466797,
+        "width": 1.0,
+        "height": 1.0,
+        "depth": -1.0,
+        "angle": 0.0,
+        "alpha": 1.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/fern.png"
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": -1.0546875,
+        "y": 14.009766,
+        "width": 1.0,
+        "height": 1.0,
+        "depth": -1.0,
+        "angle": 0.0,
+        "alpha": 1.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/fern.png"
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 0.140625,
+        "y": 14.449219,
+        "width": 1.0,
+        "height": 1.0,
+        "depth": -1.0,
+        "angle": 0.0,
+        "alpha": 1.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/fern.png"
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": -0.6328125,
+        "y": 13.78125,
+        "width": 1.0,
+        "height": 1.0,
+        "depth": -1.0,
+        "angle": 0.0,
+        "alpha": 1.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/fern.png"
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": -0.22851562,
+        "y": 13.9921875,
+        "width": 1.0,
+        "height": 1.0,
+        "depth": -1.0,
+        "angle": 0.0,
+        "alpha": 1.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/fern.png"
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 1.1074219,
+        "y": 15.574219,
+        "width": 1.0,
+        "height": 1.0,
+        "depth": -1.0,
+        "angle": 0.0,
+        "alpha": 1.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/fern.png"
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 0.7734375,
+        "y": 14.818359,
+        "width": 1.0,
+        "height": 1.0,
+        "depth": -1.0,
+        "angle": 0.0,
+        "alpha": 1.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/fern.png"
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 0.7207031,
+        "y": 14.800781,
         "width": 1.0,
         "height": 1.0,
         "depth": -1.0,

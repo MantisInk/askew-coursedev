@@ -401,8 +401,13 @@ public class GameModeController extends WorldController {
 
     	camTrans.translate(canvas.getWidth()/2,canvas.getHeight()/2);
 
+    	canvas.begin();
+		canvas.draw(background);
+		canvas.end();
+
 		canvas.begin(camTrans);
-		canvas.draw(background, Color.WHITE, .25f*background.getWidth(),.75f * background.getHeight(),initFlowX*worldScale.x,initFlowY*worldScale.y,background.getWidth(), background.getHeight());
+		//canvas.draw(background, Color.WHITE, .25f*background.getWidth(),.75f * background.getHeight(),initFlowX*worldScale.x,initFlowY*worldScale.y,background.getWidth(), background.getHeight());
+
 		for(Entity obj : objects) {
 			obj.setDrawScale(worldScale);
 			obj.draw(canvas);
