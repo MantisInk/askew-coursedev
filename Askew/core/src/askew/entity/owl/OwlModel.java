@@ -24,7 +24,6 @@ public class OwlModel extends BoxObstacle  {
     private transient float owlHeight;
 
     private transient TextureRegion owlTextureRegion;
-    private transient float thirtyTwoPixelDensityScale;
 
     public float x;
     public float y;
@@ -69,16 +68,16 @@ public class OwlModel extends BoxObstacle  {
         owlTextureRegion = new TextureRegion(owlTexture);
         // aspect ratio scaling
         this.owlHeight = getWidth() * ( owlTextureRegion.getRegionHeight() / owlTextureRegion.getRegionWidth());
-        thirtyTwoPixelDensityScale = 32f /owlTextureRegion.getRegionWidth();
         setTexture(owlTextureRegion);
     }
 
     @Override
     public void draw(GameCanvas canvas) {
-        // TODO: Help me figure out the draw scaling someone please
 
         if (texture != null) {
-            canvas.draw(texture, Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.x,getAngle(), thirtyTwoPixelDensityScale * OWL_WIDTH, thirtyTwoPixelDensityScale * owlHeight);
+            canvas.draw(texture,Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.x,getAngle(),
+                    (1.0f/texture.getRegionWidth()) *   getWidth() * getDrawScale().x * objectScale.x,
+                    (1.0f/texture.getRegionHeight()  * getHeight()* getDrawScale().y * objectScale.y));
         }
     }
 }

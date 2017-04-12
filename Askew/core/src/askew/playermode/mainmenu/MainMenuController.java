@@ -99,11 +99,11 @@ public class MainMenuController extends WorldController {
 
         canvas.begin(); // DO NOT SCALE
         if(mode == HOME_SCREEN) {
-            canvas.draw(menu1,0,0);
+            canvas.draw(menu1);
             canvas.draw(fern, home_button_locs[home_button].x, home_button_locs[home_button].y);
         }
         else if(mode == LEVEL_SELECT) {
-            canvas.draw(menu2,0,0);
+            canvas.draw(menu2);
             canvas.drawText("         " + selected, displayFont, 300f, 280f);
             canvas.draw(fern, select_button_locs[select_button].x, select_button_locs[select_button].y);
         }

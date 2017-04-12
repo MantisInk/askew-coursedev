@@ -27,7 +27,6 @@ public class GhostModel extends BoxObstacle  {
     private transient float ghostHeight;
 
     private transient TextureRegion ghostTextureRegion;
-    private transient float thirtyTwoPixelDensityScale;
 
     private float x;
     private float y;
@@ -87,13 +86,11 @@ public class GhostModel extends BoxObstacle  {
             System.err.println("did not find ghost");
         ghostTextureRegion = walkAnimation.getKeyFrame(0);
         this.ghostHeight = getWidth() * ((float) ghostTextureRegion.getRegionHeight() / (float) ghostTextureRegion.getRegionWidth()) / 2;
-        thirtyTwoPixelDensityScale = 32f / ghostTextureRegion.getRegionWidth() * 2;
         setTexture(ghostTextureRegion);
     }
 
     @Override
     public void draw(GameCanvas canvas) {
-        // TODO: Help me figure out the draw scaling someone please
         elapseTime += Gdx.graphics.getDeltaTime();
 
         if (elapseTime == 0) return;
@@ -102,16 +99,17 @@ public class GhostModel extends BoxObstacle  {
         if (faceRight) {
             if (!drawFrame.isFlipX())
                 drawFrame.flip(true,false);
-            canvas.draw(drawFrame, Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.x,getAngle(), thirtyTwoPixelDensityScale * GHOST_WIDTH, thirtyTwoPixelDensityScale * ghostHeight);
+            canvas.draw(texture,Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.x,getAngle(),
+                    (1.0f/texture.getRegionWidth()) *   getWidth() * getDrawScale().x * objectScale.x,
+                    (1.0f/texture.getRegionHeight()  * getHeight()* getDrawScale().y * objectScale.y));
         } else {
             if (drawFrame.isFlipX())
                 drawFrame.flip(true,false);
-            canvas.draw(drawFrame, Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.x,getAngle(), thirtyTwoPixelDensityScale * GHOST_WIDTH, thirtyTwoPixelDensityScale * ghostHeight);
+            canvas.draw(texture,Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.x,getAngle(),
+                    (1.0f/texture.getRegionWidth()) *   getWidth() * getDrawScale().x * objectScale.x,
+                    (1.0f/texture.getRegionHeight()  * getHeight()* getDrawScale().y * objectScale.y));
         }
 
-//        if (texture != null) {
-//            canvas.draw(texture, Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.x,getAngle(), thirtyTwoPixelDensityScale * GHOST_WIDTH, thirtyTwoPixelDensityScale * ghostHeight);
-//        }
     }
 
     @Override
