@@ -156,17 +156,6 @@
     {
       "CLASSNAME": "askew.entity.tree.Trunk",
       "INSTANCE": {
-        "x": -8.0,
-        "y": 4.0,
-        "stiffLen": 0.0,
-        "angle": -15.0,
-        "linksize": 1.0,
-        "numLinks": 5.0
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.tree.Trunk",
-      "INSTANCE": {
         "x": -6.0,
         "y": 10.0,
         "stiffLen": 0.0,
@@ -198,6 +187,16 @@
           1.0,
           0.0
         ]
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.PoleVault",
+      "INSTANCE": {
+        "x": -8.0,
+        "y": 4.0,
+        "angle": -15.0,
+        "linksize": 1.0,
+        "numLinks": 5.0
       }
     }
   ]
