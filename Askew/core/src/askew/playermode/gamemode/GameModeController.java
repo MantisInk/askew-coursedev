@@ -211,11 +211,8 @@ public class GameModeController extends WorldController {
 
 				for (Entity o : lm.getEntities()) {
 					// drawing
-					if (o instanceof Obstacle) {
-						addObject((Obstacle) o);
-					} else {
-						System.err.println("Trying to add non-obstacle ent!");
-					}
+
+					addObject( o);
 					if (o instanceof SlothModel) {
 						sloth = (SlothModel) o;
 						sloth.activateSlothPhysics(world);
@@ -226,6 +223,7 @@ public class GameModeController extends WorldController {
 					if (o instanceof OwlModel) {
 						owl = (OwlModel) o;
 					}
+
 				}
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
