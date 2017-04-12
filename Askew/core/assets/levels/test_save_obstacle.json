@@ -135,6 +135,7 @@
         "height": 1.0,
         "depth": -1.0,
         "angle": 0.0,
+        "alpha": 1.0,
         "scalex": 1.0,
         "scaley": 1.0,
         "texturePath": "texture/background/fern.png"
