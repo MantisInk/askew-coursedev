@@ -172,7 +172,7 @@ public class BackgroundEntity extends Entity{
 
     @Override
     public void draw(GameCanvas canvas) {
-        draw(canvas, Color.WHITE);
+        draw(canvas, new Color(0xff00ff0f));
     }
 
     public void draw(GameCanvas canvas, Color tint) {
