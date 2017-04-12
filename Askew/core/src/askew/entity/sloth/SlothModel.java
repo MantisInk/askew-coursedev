@@ -399,8 +399,12 @@ public class SlothModel extends ComplexObstacle  {
 
             float impulseL = 0;
             if(totalRotL * dLTheta < 0 && lLength > .4f){
-                impulseL = ((leftHand.getMass() * ARM_XOFFSET * ARM_XOFFSET) + leftArm.getInertia()) * leftArm.getAngularVelocity() * -1 * 60;
+                impulseL = ((leftHand.getMass() * ARM_XOFFSET * ARM_XOFFSET) + leftArm.getInertia()) * leftArm.getAngularVelocity() * -1 * 60/2;
 
+            }
+
+            if(isActualLeftGrab()){
+                impulseL = impulseL * 6;
             }
 
 
@@ -420,9 +424,14 @@ public class SlothModel extends ComplexObstacle  {
 
             float impulseR = 0;
             if(totalRotR * dRTheta < 0 && rLength > .4f){
-                impulseR = ((rightHand.getMass() * ARM_XOFFSET * ARM_XOFFSET) + rightArm.getInertia()) * rightArm.getAngularVelocity() * -1 * 60;
+                impulseR = ((rightHand.getMass() * ARM_XOFFSET * ARM_XOFFSET) + rightArm.getInertia()) * rightArm.getAngularVelocity() * -1 * 60/2;
 
             }
+
+            if(isActualRightGrab()){
+                impulseR = impulseR * 6;
+            }
+
 
 
             //countertorque left stick on right arm
