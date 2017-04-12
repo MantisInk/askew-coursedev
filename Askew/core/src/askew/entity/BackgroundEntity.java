@@ -15,6 +15,7 @@ public class BackgroundEntity extends Entity{
     private float height;
     private float depth;
     private float angle; //angle in radians
+    private float alpha;
     private float scalex;
     private float scaley;
     private String texturePath;
@@ -32,17 +33,18 @@ public class BackgroundEntity extends Entity{
     }
 
     public BackgroundEntity(float x, float y){
-        this(x,y,1,1,-1,0,1,1,"texture/background/fern.png");
+        this(x,y,1,1,-1,0,1,1,1,"texture/background/fern.png");
     }
 
     public BackgroundEntity(float x, float y, float width, float height, float depth,
-                            float angle, float scalex, float scaley, String path){
+                            float angle, float alpha, float scalex, float scaley, String path){
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
         this.depth = depth;
         this.angle = angle;
+        this.alpha = alpha;
         this.scalex = scalex;
         this.scaley = scaley;
         this.texturePath = path;
@@ -107,6 +109,12 @@ public class BackgroundEntity extends Entity{
 
     public void setAngle(float rads){
         angle = rads;
+    }
+
+    public float getAlpha(){return alpha;}
+
+    public void setAlpha(float a){
+        alpha = a;
     }
 
     public float getWidth(){

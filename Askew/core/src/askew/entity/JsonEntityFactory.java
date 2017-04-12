@@ -151,11 +151,12 @@ public class JsonEntityFactory {
         float height = instance.get("height").getAsFloat();
         float depth = instance.get("depth").getAsFloat();
         float angle = instance.get("angle").getAsFloat();
+        float alpha = instance.get("alpha").getAsFloat();
         float scalex = instance.get("scalex").getAsFloat();
         float scaley = instance.get("scaley").getAsFloat();
         String tex = instance.get("texturePath").getAsString();
 
-        bge = new BackgroundEntity(x,y,width,height,depth,angle,scalex,scaley,tex);
+        bge = new BackgroundEntity(x,y,width,height,depth,angle,alpha,scalex,scaley,tex);
         bge.setTextures(manager);
         bge.setDrawScale(scale);
         return bge;
