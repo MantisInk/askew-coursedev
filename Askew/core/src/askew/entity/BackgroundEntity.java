@@ -158,7 +158,6 @@ public class BackgroundEntity extends Entity{
 
     @Override
     public void setTextures(MantisAssetManager manager) {
-        System.out.print(texturePath);
         Texture tex = manager.get(texturePath);
         texture = new TextureRegion(tex);
         origin.set(texture.getRegionWidth()/2.0f, texture.getRegionHeight()/2.0f);
@@ -172,7 +171,7 @@ public class BackgroundEntity extends Entity{
 
     @Override
     public void draw(GameCanvas canvas) {
-        draw(canvas, new Color(0xff00ff0f));
+        draw(canvas, new Color(0xffffffff));
     }
 
     public void draw(GameCanvas canvas, Color tint) {

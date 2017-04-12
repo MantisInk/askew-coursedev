@@ -232,11 +232,11 @@ public class LevelEditorController extends WorldController {
 		}
 
 		for (Entity o : levelModel.getEntities()) {
-			if (o instanceof Obstacle) {
-				addObject((Obstacle) o);
-			} else {
-				System.err.println("UNSUPPORTED: Adding non obstacle entity");
-			}
+
+			addObject( o);
+
+			//System.err.println("UNSUPPORTED: Adding non obstacle entity");
+
 		}
 	}
 
@@ -358,12 +358,7 @@ public class LevelEditorController extends WorldController {
 
 	private void promptTemplateCallback(String json) {
 		Entity toAdd = jsonLoaderSaver.entityFromJson(json);
-		if (toAdd instanceof Entity) {
-			addObject( toAdd);
-		} else {
-			System.err.println(toAdd);
-			System.err.println("Unsupported nonobstacle entity");
-		}
+		addObject( toAdd);
 		prompting = false;
 	}
 
