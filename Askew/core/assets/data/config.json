@@ -8,7 +8,7 @@
   "flowCanMoveGrabbingHand": true,
   "vineDensity": 1.0,
   "fullscreen": false,
-  "defaultLevel": "level7",
+  "defaultLevel": "level0",
   "torqueBasedMovement": true,
   "maxLevel": 7
 }

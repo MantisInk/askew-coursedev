@@ -46,96 +46,6 @@
     {
       "CLASSNAME": "askew.entity.wall.WallModel",
       "INSTANCE": {
-        "x": 2.0,
-        "y": 10.5,
-        "thorn": false,
-        "points": [
-          0.0,
-          0.0,
-          0.0,
-          1.0,
-          1.0,
-          1.0,
-          1.0,
-          0.0
-        ]
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.wall.WallModel",
-      "INSTANCE": {
-        "x": 1.0,
-        "y": 10.5,
-        "thorn": false,
-        "points": [
-          0.0,
-          0.0,
-          0.0,
-          1.0,
-          1.0,
-          1.0,
-          1.0,
-          0.0
-        ]
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.wall.WallModel",
-      "INSTANCE": {
-        "x": 0.0,
-        "y": 10.5,
-        "thorn": false,
-        "points": [
-          0.0,
-          0.0,
-          0.0,
-          1.0,
-          1.0,
-          1.0,
-          1.0,
-          0.0
-        ]
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.wall.WallModel",
-      "INSTANCE": {
-        "x": -1.0,
-        "y": 10.5,
-        "thorn": false,
-        "points": [
-          0.0,
-          0.0,
-          0.0,
-          1.0,
-          1.0,
-          1.0,
-          1.0,
-          0.0
-        ]
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.wall.WallModel",
-      "INSTANCE": {
-        "x": -2.0,
-        "y": 10.5,
-        "thorn": false,
-        "points": [
-          0.0,
-          0.0,
-          0.0,
-          1.0,
-          1.0,
-          1.0,
-          1.0,
-          0.0
-        ]
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.wall.WallModel",
-      "INSTANCE": {
         "x": -3.0,
         "y": 10.5,
         "thorn": false,
@@ -144,9 +54,9 @@
           0.0,
           0.0,
           1.0,
+          6.0,
           1.0,
-          1.0,
-          1.0,
+          6.0,
           0.0
         ]
       }
@@ -161,27 +71,9 @@
           0.0,
           0.0,
           0.0,
+          3.0,
           1.0,
-          1.0,
-          1.0,
-          1.0,
-          0.0
-        ]
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.wall.WallModel",
-      "INSTANCE": {
-        "x": -4.0,
-        "y": 11.5,
-        "thorn": false,
-        "points": [
-          0.0,
-          0.0,
-          0.0,
-          1.0,
-          1.0,
-          1.0,
+          3.0,
           1.0,
           0.0
         ]
@@ -190,17 +82,17 @@
     {
       "CLASSNAME": "askew.entity.wall.WallModel",
       "INSTANCE": {
-        "x": -4.0,
-        "y": 12.5,
-        "thorn": false,
+        "x": -8.0,
+        "y": 5.0,
+        "thorn": true,
         "points": [
           0.0,
           0.0,
           0.0,
           1.0,
+          25.0,
           1.0,
-          1.0,
-          1.0,
+          25.0,
           0.0
         ]
       }
