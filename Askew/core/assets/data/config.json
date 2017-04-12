@@ -2,7 +2,7 @@
   "flowGrabAnything": false,
   "flowArmDensity": 1.1,
   "flowTwoFreeForceMultiplier": 5.0,
-  "flowTorque": 9.0,
+  "flowTorque": 3.5,
   "flowOmegaNormalizer": 20.0,
   "flowGravityScale": 0.7,
   "flowCanMoveGrabbingHand": true,

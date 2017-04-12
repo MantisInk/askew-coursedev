@@ -354,7 +354,7 @@ public class GameModeController extends WorldController {
 		sloth.setRightStickPressed(InputController.getInstance().getRightStickPressed());
 
 		//#TODO Collision states check
-		setComplete(collisions.isFlowKill());
+		setFailure(collisions.isFlowKill());
 
 		Body leftCollisionBody = collisions.getLeftBody();
 		Body rightCollisionBody = collisions.getRightBody();
@@ -387,6 +387,11 @@ public class GameModeController extends WorldController {
 		if (isComplete()) {
 			System.out.println("GG");
 			listener.exitScreen(this, EXIT_GM_GM);
+		}
+
+		if(isFailure()){
+			System.out.println("Fail");
+			reset();
 		}
 	}
 

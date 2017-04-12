@@ -1,19 +1,12 @@
 {
   "levelModelVersion": 1,
-  "title": "tunnel_vines",
+  "title": "level7",
   "goalTimeGold": 30,
   "goalTimeSilver": 45,
   "goalTimeBronze": 60,
   "height": 10,
   "width": 10,
   "entities": [
-    {
-      "CLASSNAME": "askew.entity.sloth.SlothModel",
-      "INSTANCE": {
-        "x": 0.0,
-        "y": 0.0
-      }
-    },
     {
       "CLASSNAME": "askew.entity.tree.Trunk",
       "INSTANCE": {
@@ -313,6 +306,13 @@
       "INSTANCE": {
         "x": 31.0,
         "y": 6.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.sloth.SlothModel",
+      "INSTANCE": {
+        "x": -0.5,
+        "y": 0.0
       }
     }
   ]
