@@ -28,13 +28,13 @@ public class MainMenuController extends WorldController {
     private final int LEVEL_SELECT_BUTTON = 1;
     private final int QUIT_BUTTON = 2;
     private int home_button = PLAY_BUTTON;
-    private Vector2[] home_button_locs = {new Vector2(620f,257f), new Vector2(620f,204f), new Vector2(620f,155f)};
+    private Vector2[] home_button_locs = {new Vector2(10.5f,4.4f), new Vector2(10.5f,3.6f), new Vector2(10.5f,2.8f)};
 
     // level select mode options
     private final int CHOOSE_LEVEL = 0;
     private final int RETURN_HOME = 1;
     private int select_button = CHOOSE_LEVEL;
-    private Vector2[] select_button_locs = {new Vector2(630f, 230f), new Vector2(625f, 170f)};
+    private Vector2[] select_button_locs = {new Vector2(10f, 3.8f), new Vector2(10f, 2.8f)};
 
     private static final String FERN_TEXTURE = "texture/background/fern.png";
     private static final String MENU_BACKGROUND1_TEXTURE = "texture/background/menu1.png";
@@ -100,12 +100,16 @@ public class MainMenuController extends WorldController {
         canvas.begin(); // DO NOT SCALE
         if(mode == HOME_SCREEN) {
             canvas.draw(menu1);
-            canvas.draw(fern, home_button_locs[home_button].x, home_button_locs[home_button].y);
+            canvas.draw(fern, Color.WHITE,fern.getWidth()/2, fern.getHeight()/2,
+                    home_button_locs[home_button].x * worldScale.x, home_button_locs[home_button].y* worldScale.y,
+                    0,worldScale.x/fern.getWidth(),worldScale.y/fern.getHeight());
         }
         else if(mode == LEVEL_SELECT) {
             canvas.draw(menu2);
-            canvas.drawText("         " + selected, displayFont, 300f, 280f);
-            canvas.draw(fern, select_button_locs[select_button].x, select_button_locs[select_button].y);
+            canvas.drawText("         " + selected, displayFont, 6.5f*worldScale.x, 4.1f*worldScale.y);
+            canvas.draw(fern, Color.WHITE,fern.getWidth()/2, fern.getHeight()/2,
+                    select_button_locs[select_button].x * worldScale.x, select_button_locs[select_button].y* worldScale.y,
+                    0,worldScale.x/fern.getWidth(),worldScale.y/fern.getHeight());
         }
         canvas.end();
     }
