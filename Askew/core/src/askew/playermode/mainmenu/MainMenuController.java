@@ -90,10 +90,10 @@ public class MainMenuController extends WorldController {
     @Override
     public void draw(float delta) {
         if(mode == HOME_SCREEN) {
-            canvas.clear(menu1);
+            canvas.clear();
         }
         else if (mode == LEVEL_SELECT) {
-            canvas.clear(menu2);
+            canvas.clear();
             displayFont.setColor(Color.GREEN);
         }
 

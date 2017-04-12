@@ -211,11 +211,8 @@ public class GameModeController extends WorldController {
 
 				for (Entity o : lm.getEntities()) {
 					// drawing
-					if (o instanceof Obstacle) {
-						addObject((Obstacle) o);
-					} else {
-						System.err.println("Trying to add non-obstacle ent!");
-					}
+
+					addObject( o);
 					if (o instanceof SlothModel) {
 						sloth = (SlothModel) o;
 						sloth.activateSlothPhysics(world);
@@ -226,6 +223,7 @@ public class GameModeController extends WorldController {
 					if (o instanceof OwlModel) {
 						owl = (OwlModel) o;
 					}
+
 				}
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
@@ -403,8 +401,13 @@ public class GameModeController extends WorldController {
 
     	camTrans.translate(canvas.getWidth()/2,canvas.getHeight()/2);
 
+    	canvas.begin();
+		canvas.draw(background);
+		canvas.end();
+
 		canvas.begin(camTrans);
-		canvas.draw(background, Color.WHITE, .25f*background.getWidth(),.75f * background.getHeight(),initFlowX*worldScale.x,initFlowY*worldScale.y,background.getWidth(), background.getHeight());
+		//canvas.draw(background, Color.WHITE, .25f*background.getWidth(),.75f * background.getHeight(),initFlowX*worldScale.x,initFlowY*worldScale.y,background.getWidth(), background.getHeight());
+
 		for(Entity obj : objects) {
 			obj.setDrawScale(worldScale);
 			obj.draw(canvas);

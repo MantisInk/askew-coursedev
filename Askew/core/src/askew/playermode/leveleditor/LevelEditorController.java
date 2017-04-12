@@ -14,6 +14,7 @@ import askew.GameCanvas;
 import askew.GlobalConfiguration;
 import askew.InputController;
 import askew.MantisAssetManager;
+import askew.entity.BackgroundEntity;
 import askew.entity.Entity;
 import askew.entity.ghost.GhostModel;
 import askew.entity.obstacle.Obstacle;
@@ -105,7 +106,8 @@ public class LevelEditorController extends WorldController {
 			".WallModel",
 			".Tree",
 			".OwlModel",
-			".GhostModel"
+			".GhostModel",
+			".BackgroundEntity"
 	};
 
 	private boolean prompting;
@@ -230,11 +232,11 @@ public class LevelEditorController extends WorldController {
 		}
 
 		for (Entity o : levelModel.getEntities()) {
-			if (o instanceof Obstacle) {
-				addObject((Obstacle) o);
-			} else {
-				System.err.println("UNSUPPORTED: Adding non obstacle entity");
-			}
+
+			addObject( o);
+
+			//System.err.println("UNSUPPORTED: Adding non obstacle entity");
+
 		}
 	}
 
@@ -276,6 +278,8 @@ public class LevelEditorController extends WorldController {
 	 * @param y
      */
 	private void createXY(float x, float y) {
+		float xorig = x;
+		float yorig = y;
 		x = Math.round(x);
 		y = Math.round(y);
 		switch (creationOptions[entityIndex]) {
@@ -315,6 +319,11 @@ public class LevelEditorController extends WorldController {
 				GhostModel ghost = new GhostModel(x,y,x+2,y+2);
 				promptTemplate(ghost);
 				break;
+			case ".BackgroundEntity":
+				BackgroundEntity bge = new BackgroundEntity(xorig,yorig);
+				promptTemplate(bge);
+				break;
+
 			default:
 				System.err.println("UNKNOWN ENT");
 				break;
@@ -349,12 +358,7 @@ public class LevelEditorController extends WorldController {
 
 	private void promptTemplateCallback(String json) {
 		Entity toAdd = jsonLoaderSaver.entityFromJson(json);
-		if (toAdd instanceof Obstacle) {
-			addObject((Obstacle) toAdd);
-		} else {
-			System.err.println(toAdd);
-			System.err.println("Unsupported nonobstacle entity");
-		}
+		addObject( toAdd);
 		prompting = false;
 	}
 

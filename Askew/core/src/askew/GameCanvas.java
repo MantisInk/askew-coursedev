@@ -333,12 +333,6 @@ public class GameCanvas {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 	}
 
-	public void clear(Texture bg) {
-		// Clear the screen
-		Gdx.gl.glClearColor(0.81f, 0.81f, 0.83f, 1.0f);  // Homage to the XNA years
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-	}
-
 	/**
 	 * Start a standard drawing sequence.
 	 *
@@ -478,7 +472,7 @@ public class GameCanvas {
 	}
 
 	public void draw(Texture image){
-		draw(image, Color.WHITE, 0,0,width,height);
+		draw(image, Color.WHITE, 0,0,getWidth(),getHeight());
 	}
 
 	/**

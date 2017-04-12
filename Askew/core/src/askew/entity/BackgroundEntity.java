@@ -2,81 +2,105 @@ package askew.entity;
 
 import askew.GameCanvas;
 import askew.MantisAssetManager;
-import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
-public abstract class BackgroundEntity extends Entity{
+public class BackgroundEntity extends Entity{
 
-    private transient Vector2 dimension;
-    protected transient Vector2 position;
-    protected transient float zDepth;
-    protected transient float angle; //angle in radians
+    private float x;
+    private float y;
+    private float width;
+    private float height;
+    private float depth;
+    private float angle; //angle in radians
+    private float alpha;
+    private float scalex;
+    private float scaley;
+    private String texturePath;
 
     private transient TextureRegion texture;
-    protected transient String texturePath;
-    /** The texture origin for drawing */
     protected transient Vector2 origin;
 
     protected transient  Vector2 positionCache = new Vector2();
     private transient Vector2 sizeCache = new Vector2();
 
+
     public BackgroundEntity() {
-        position = new Vector2();
-        zDepth = -1;
+
+        this(0,0);
+    }
+
+    public BackgroundEntity(float x, float y){
+        this(x,y,1,1,-1,0,1,1,1,"texture/background/fern.png");
+    }
+
+    public BackgroundEntity(float x, float y, float width, float height, float depth,
+                            float angle, float alpha, float scalex, float scaley, String path){
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+        this.depth = depth;
+        this.angle = angle;
+        this.alpha = alpha;
+        this.scalex = scalex;
+        this.scaley = scaley;
+        this.texturePath = path;
 
         drawScale = new Vector2(1,1);
         objectScale = new Vector2(1,1);
+        setObjectScale(scalex,scaley);
+        origin = new Vector2(1,1);
+
     }
 
-    public Vector2 getDimension() {
-        return sizeCache.set(dimension);
-    }
-    public void setDimension(Vector2 value) {
-        setDimension(value.x, value.y);
-    }
-    public void setDimension(float width, float height) {
-        dimension.set(width, height);
-    }
 
-    public float getWidth(){return dimension.x;}
-    public float getHeight(){return dimension.y;}
 
     @Override
     public Vector2 getPosition() {
-        return positionCache.set(position);
+        return positionCache.set(x,y);
     }
 
     @Override
     public void setPosition(Vector2 value) {
-        position = value;
+        x = value.x;
+        y = value.y;
     }
 
     @Override
     public void setPosition(float x, float y) {
-        position.set(x,y);
+        this.x = x;
+        this.y = y;
     }
 
     @Override
     public float getX() {
-        return position.x;
+        return x;
     }
 
     @Override
     public void setX(float x) {
-        position.set(x,position.y);
+        this.x = x;
     }
 
     @Override
     public float getY() {
-        return position.y;
+        return y;
     }
 
     @Override
     public void setY(float y) {
-        position.set(position.x,y);
+        this.y = y;
+    }
+
+    public float getDepth(){
+        return depth;
+    }
+
+    public void setDepth(float d){
+        depth = d;
     }
 
     public float getAngle(){
@@ -86,6 +110,51 @@ public abstract class BackgroundEntity extends Entity{
     public void setAngle(float rads){
         angle = rads;
     }
+
+    public float getAlpha(){return alpha;}
+
+    public void setAlpha(float a){
+        alpha = a;
+    }
+
+    public float getWidth(){
+        return width;
+    }
+
+    public void setWidth(float w){
+        width = w;
+    }
+
+    public float getHeight(){
+        return height;
+    }
+
+    public void setHeight(float h){
+        height = h;
+    }
+
+    @Override
+    public void setObjectScale(float x, float y) {
+        super.setObjectScale(x, y);
+        scalex = x;
+        scaley = y;
+    }
+
+    @Override
+    public void setObjectScale(Vector2 value) {
+        super.setObjectScale(value);
+        scalex = value.x;
+        scaley = value.y;
+    }
+    public String getTexturePath(){
+        return texturePath;
+    }
+
+    public void setTexturePath(String path){
+        texturePath = path;
+    }
+
+
 
     @Override
     public void setTextures(MantisAssetManager manager) {
@@ -102,7 +171,7 @@ public abstract class BackgroundEntity extends Entity{
 
     @Override
     public void draw(GameCanvas canvas) {
-        draw(canvas, Color.WHITE);
+        draw(canvas, new Color(0xffffffff));
     }
 
     public void draw(GameCanvas canvas, Color tint) {

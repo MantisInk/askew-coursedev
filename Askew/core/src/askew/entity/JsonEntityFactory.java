@@ -142,4 +142,23 @@ public class JsonEntityFactory {
         ghost.setTextures(manager);
         return ghost;
     }
+
+    public static BackgroundEntity createBGEntity(MantisAssetManager manager, JsonObject instance, Vector2 scale) {
+        BackgroundEntity bge;
+        float x = instance.get("x").getAsFloat();
+        float y = instance.get("y").getAsFloat();
+        float width = instance.get("width").getAsFloat();
+        float height = instance.get("height").getAsFloat();
+        float depth = instance.get("depth").getAsFloat();
+        float angle = instance.get("angle").getAsFloat();
+        float alpha = instance.get("alpha").getAsFloat();
+        float scalex = instance.get("scalex").getAsFloat();
+        float scaley = instance.get("scaley").getAsFloat();
+        String tex = instance.get("texturePath").getAsString();
+
+        bge = new BackgroundEntity(x,y,width,height,depth,angle,alpha,scalex,scaley,tex);
+        bge.setTextures(manager);
+        bge.setDrawScale(scale);
+        return bge;
+    }
 }
