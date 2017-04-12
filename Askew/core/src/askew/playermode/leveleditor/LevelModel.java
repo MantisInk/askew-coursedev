@@ -43,6 +43,7 @@ class LevelModel {
         this.goalTimeGold = 30;
         this.goalTimeSilver = 45;
         this.goalTimeBronze = 60;
+        String background = "texture/background/background1.png";
     }
 
     public void addEntity(Entity o) {

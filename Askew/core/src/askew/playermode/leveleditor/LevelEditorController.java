@@ -31,6 +31,7 @@ import askew.util.PooledList;
 import askew.util.json.JSONLoaderSaver;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Vector2;
@@ -40,6 +41,7 @@ import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.World;
 import com.google.gson.JsonObject;
 import lombok.Getter;
+import lombok.Setter;
 
 import javax.swing.*;
 import java.awt.*;
@@ -64,10 +66,14 @@ public class LevelEditorController extends WorldController {
 	private AssetState levelEditorAssetState = AssetState.EMPTY;
 
 	private JSONLoaderSaver jsonLoaderSaver;
+	@Getter @Setter
+	private MantisAssetManager mantisAssetManager;
 
 	private LevelModel levelModel;
 
 	private static ShapeRenderer gridLineRenderer = new ShapeRenderer();
+
+	private Texture background;
 
 	Affine2 camTrans;
 	float cxCamera;
@@ -146,6 +152,7 @@ public class LevelEditorController extends WorldController {
 	public void preLoadContent(MantisAssetManager manager) {
 		super.preLoadContent(manager);
 		jsonLoaderSaver.setManager(manager);
+		setMantisAssetManager(manager);
 	}
 
 	/**
@@ -159,13 +166,11 @@ public class LevelEditorController extends WorldController {
 	 * @param manager Reference to global asset manager.
 	 */
 	public void loadContent(MantisAssetManager manager) {
-		if (levelEditorAssetState != AssetState.LOADING) {
-			return;
-		}
-
 		super.loadContent(manager);
+		background = manager.get("texture/background/background1.png");
 		levelEditorAssetState = AssetState.COMPLETE;
 	}
+
 
 	/**
 	 * Creates and initialize a new instance of the platformer game
@@ -213,6 +218,7 @@ public class LevelEditorController extends WorldController {
 		setComplete(false);
 		setFailure(false);
 		populateLevel();
+
 		cxCamera = -canvas.getWidth() / 2;
 		cyCamera = -canvas.getHeight() / 2;
 	}
@@ -531,6 +537,8 @@ public class LevelEditorController extends WorldController {
 		if (InputController.getInstance().isBKeyPressed()) {
 			levelModel.setBackground(showInputDialog("What texture should the background be set to?"));
 			// TODO: Update the drawn background (after henry implements the engine)
+			background = getMantisAssetManager().get("texture/background/background1.png");
+
 		}
 
 		if (InputController.getInstance().isGKeyPressed()) {
@@ -565,10 +573,14 @@ public class LevelEditorController extends WorldController {
 	public void draw(float delta) {
 		canvas.clear();
 
+		//draw background
+		canvas.begin();
+		canvas.draw(background);
+		canvas.end();
+
 		// Translate camera to cx, cy
 		camTrans.setToTranslation(cxCamera, cyCamera);
 		camTrans.translate(canvas.getWidth()/2, canvas.getHeight()/2);
-
 		canvas.begin(camTrans);
 		for(Entity obj : objects) {
 			obj.draw(canvas);
@@ -602,6 +614,9 @@ public class LevelEditorController extends WorldController {
 			canvas.drawTextStandard("Hit Enter to Select New Object Type.", 10.0f, 60.0f);
 		}
 		canvas.end();
+
+
+
 	}
 
 	@Override
