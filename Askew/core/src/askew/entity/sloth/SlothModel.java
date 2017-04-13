@@ -600,10 +600,20 @@ public class SlothModel extends ComplexObstacle  {
         grabGlow.setRadius(.12f);
         Gdx.gl.glLineWidth(3);
         canvas.beginDebug(camTrans);
-        if(isLeftGrab())
-            canvas.drawPhysics(grabGlow, new Color(0xcfcf000f),left.getX() , left.getY() , drawScale.x,drawScale.y );
-        if(isRightGrab())
-            canvas.drawPhysics(grabGlow, new Color(0xcfcf000f),right.getX() , right.getY() ,drawScale.x,drawScale.y );
+        if(isLeftGrab())  {
+            if (isActualLeftGrab()) {
+                canvas.drawPhysics(grabGlow, new Color(0xABCDEF),left.getX() , left.getY() , drawScale.x,drawScale.y );
+            } else {
+                canvas.drawPhysics(grabGlow, new Color(0xcfcf000f),left.getX() , left.getY() , drawScale.x,drawScale.y );
+            }
+        }
+        if(isRightGrab()) {
+            if (isActualRightGrab()) {
+                canvas.drawPhysics(grabGlow, new Color(0xABCDEF),right.getX() , right.getY() , drawScale.x,drawScale.y );
+            } else {
+                canvas.drawPhysics(grabGlow, new Color(0xcfcf000f),right.getX() , right.getY() ,drawScale.x,drawScale.y );
+            }
+        }
 
         canvas.endDebug();
 
