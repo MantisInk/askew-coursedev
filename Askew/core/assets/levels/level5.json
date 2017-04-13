@@ -15,13 +15,6 @@
       }
     },
     {
-      "CLASSNAME": "askew.entity.sloth.SlothModel",
-      "INSTANCE": {
-        "x": -3.0,
-        "y": 17.0
-      }
-    },
-    {
       "CLASSNAME": "askew.entity.wall.WallModel",
       "INSTANCE": {
         "x": -12.0,
@@ -37,17 +30,6 @@
           40.0,
           0.0
         ]
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.tree.Trunk",
-      "INSTANCE": {
-        "x": -4.0,
-        "y": 16.0,
-        "stiffLen": 0.0,
-        "angle": -90.0,
-        "linksize": 1.0,
-        "numLinks": 2.0
       }
     },
     {
@@ -81,6 +63,24 @@
         "y": 28.0,
         "angle": 5.0,
         "omega": -400.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": -5.0,
+        "y": 16.0,
+        "stiffLen": 0.0,
+        "angle": -90.0,
+        "linksize": 1.0,
+        "numLinks": 3.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.sloth.SlothModel",
+      "INSTANCE": {
+        "x": -3.5,
+        "y": 20.0
       }
     }
   ]
