@@ -12,11 +12,10 @@
  */
 package desktop;
 
+import askew.GDXRoot;
 import com.badlogic.gdx.Files;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
-import askew.GDXRoot;
-import askew.GlobalConfiguration;
 
 /**
  * The main class of the game.
