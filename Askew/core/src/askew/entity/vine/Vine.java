@@ -48,8 +48,7 @@ public class Vine extends ComplexObstacle {
 	// Invisible anchor objects
 	private transient WheelObstacle start = null;				// anchor point of vine (top)
 	private transient WheelObstacle finish = null;				// optional bottom anchor (bottom)
-	private boolean pin = false; 								// default no bottom anchor
-
+	
 	public static final float DAMPING_ROTATION = 5f;			/** Set damping constant for joint rotation in vines */
 
 	// Dimension information
