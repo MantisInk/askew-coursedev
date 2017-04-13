@@ -40,7 +40,9 @@ import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.World;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -50,6 +52,7 @@ import java.awt.event.ActionEvent;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Map;
 
 import static javax.swing.JOptionPane.showInputDialog;
 
@@ -65,6 +68,10 @@ import static javax.swing.JOptionPane.showInputDialog;
  */
 public class LevelEditorController extends WorldController {
 
+	public static final int BUFFER = 5;
+	public static final int TEXT_HEIGHT = 20;
+	public static final int FIELD_TEXT_WIDTH = 75;
+	public static final int FIELD_BOX_WIDTH = 50;
 	/** Track asset loading from all instances and subclasses */
 	private AssetState levelEditorAssetState = AssetState.EMPTY;
 
@@ -357,60 +364,49 @@ public class LevelEditorController extends WorldController {
 		inputRateLimiter = UI_WAIT_SHORT;
 	}
 
-	/** Returns and ArrayList of parameters needed create a given game entity
-	 *
-	 * @param entityName The name of the entity as a string, ex ".SlothModel"
-	 * */
-	private ArrayList<String> getEntityParam(String entityName){
-		ArrayList<String> fieldNames = new ArrayList<String>();
-		fieldNames.add("x");
-		fieldNames.add("y");
+	private int recurseEntity(JsonObject e, JPanel jPanel, int rowNum) {
+		for(Map.Entry<String,JsonElement> entry : e.entrySet()) {
+			// Add key
+			String key = entry.getKey();
+			JLabel paramText = new JLabel(key + ":");
 
-		switch (entityName) {
-			case ".SlothModel":
-				//No additional fields needed
-				break;
-			case ".Vine":
-				fieldNames.add("numLinks");
-				fieldNames.add("angle");
-				fieldNames.add("omega");
-				break;
-			case ".Trunk":
-				fieldNames.add("angle");
-				fieldNames.add("numLinks");
-				fieldNames.add("linksize");
-				fieldNames.add("stiffLen");
-				break;
-			case ".PoleVault":
-				fieldNames.add("angle");
-				fieldNames.add("numLinks");
-				fieldNames.add("linksize");
-				break;
-			case ".StiffBranch":
-				fieldNames.add("stiffLen");
-				break;
-			case ".OwlModel":
-				//No additional fields needed
-				break;
-			case ".WallModel":
-				fieldNames.add("thorn");
-				fieldNames.add("points");
-				break;
-			case ".GhostModel":
-				fieldNames.add("patroldx");
-				fieldNames.add("patroldy");
-				break;
-			default:
-				System.err.println("UNKNOWN ENT");
-				break;
+			JComponent valueComponent;
+			// Add value based on type
+			JsonElement value = entry.getValue();
+			if (value.isJsonArray()) {
+				// TODO (hard), recurse
+				System.err.println("TODO: JSON Array");
+				continue;
+			} else if (value.isJsonPrimitive()) {
+				JsonPrimitive primitive = value.getAsJsonPrimitive();
+				if (primitive.isBoolean()) {
+					valueComponent = new JCheckBox(key,primitive.getAsBoolean());
+				} else if (primitive.isNumber()) {
+					valueComponent = new JTextField(primitive.getAsNumber().toString());
+				} else if (primitive.isString()) {
+					valueComponent = new JTextField(primitive.getAsString());
+				} else {
+					System.err.println("Unknown primitive type: " + entry);
+					continue;
+				}
+			} else if (value.isJsonObject()) {
+				System.err.println("Unknown object type: " + entry);
+				continue;
+			} else {
+				System.err.println("Unknown type: " + entry);
+				continue;
+			}
+
+			paramText.setBounds((2 * BUFFER), (rowNum * TEXT_HEIGHT) + ((rowNum + 1) * BUFFER), FIELD_TEXT_WIDTH, TEXT_HEIGHT);
+			valueComponent.setBounds((3 * BUFFER) + FIELD_TEXT_WIDTH, (rowNum * TEXT_HEIGHT) + ((rowNum + 1) * BUFFER), FIELD_BOX_WIDTH, TEXT_HEIGHT);
+
+			// Update panel with key, value
+			jPanel.add(paramText);
+			jPanel.add(valueComponent);
+			rowNum++;
 		}
 
-		return fieldNames;
-	}
-
-	private void createGuiWindow(){
-		//TODO Create clean way of making GUI window
-
+		return rowNum;
 	}
 
 	/** Returns the pop-out window for editing parameters of individual entities as a JPanel
@@ -426,18 +422,10 @@ public class LevelEditorController extends WorldController {
 		String entityName = entityObject.get("CLASSNAME").getAsString();
 		entityName = entityName.substring(entityName.lastIndexOf("."));
 
-		ArrayList<String> params = getEntityParam(entityName);
-		ArrayList<JTextField> fieldObjects = new ArrayList<>();
-		//ArrayList<JComponent> fieldObjects = new ArrayList<>();
-
 		JPanel panel = new JPanel();
 		panel.setLayout(null);
 
-		int buffer = 5;
-		int textHeight = 20;
 		int rowNum = 0;
-		int fieldTextWidth = 75;
-		int fieldBoxWidth = 50;
 
 		JLabel header = new JLabel(entityName+" Properties (Please hit OK instead of X to closeout window)");
 		JButton okButton = new JButton("OK");
@@ -448,201 +436,34 @@ public class LevelEditorController extends WorldController {
 		float y = entityProp.get("y").getAsFloat();
 
 		//Define top elements
-		header.setBounds(buffer, buffer, 500, textHeight);
+		header.setBounds(BUFFER, BUFFER, 500, TEXT_HEIGHT);
 		rowNum++;
-		deleteButton.setBounds(buffer, (rowNum*textHeight)+((rowNum+1)*buffer), 150, textHeight);
+		deleteButton.setBounds(BUFFER, (rowNum*TEXT_HEIGHT)+((rowNum+1)* BUFFER), 150, TEXT_HEIGHT);
 		rowNum++;
 
-		//Define field elements
+		// Add properties
+		rowNum = recurseEntity(entityProp,panel,rowNum);
 
-		if(entityName.equals(".WallModel")){
-			//Hard-coded since otherwise I don't know how to make it work because JRadioButton isn't a JTextField OTL
+		//Add okay button
+		okButton.addActionListener(e -> {
+			// TODO: Go through GUI and grab changes here.
 
-			//Do X & Y components
-			for (int i = 0; i < 2; i++) {
-				String paramName = params.get(i);
+			entityObject.add("INSTANCE", entityProp);
 
-				float paramVal = entityProp.get(paramName).getAsFloat();
-				JLabel paramText = new JLabel(paramName + ":");
-				JTextField paramField = new JTextField("" + paramVal);
+			//Get the string form of the entityObject
+			String stringJson = jsonLoaderSaver.stringFromJson(entityObject);
+			promptTemplateCallback(stringJson);
 
-				paramText.setBounds((2 * buffer), (rowNum * textHeight) + ((rowNum + 1) * buffer), fieldTextWidth, textHeight);
-				paramField.setBounds((3 * buffer) + fieldTextWidth, (rowNum * textHeight) + ((rowNum + 1) * buffer), fieldBoxWidth, textHeight);
+			parentWindow.setVisible(false);
+			parentWindow.dispose();
+		});
 
-				panel.add(paramText);
-				panel.add(paramField);
-				fieldObjects.add(paramField);
-
-				rowNum++;
-			}
-
-			//Get everything else
-			boolean thornsFlag = entityProp.get("thorn").getAsBoolean();
-			JRadioButton yesThorn = new JRadioButton("Thorns");
-			JRadioButton noThorn = new JRadioButton("No Thorns");
-			ButtonGroup thornButtons = new ButtonGroup();
-
-			JsonArray thornsPoints = entityProp.get("points").getAsJsonArray();
-
-			//Holds the dimensions for the wall
-			int width = 0;
-			int height = 0;
-
-			//TODO Change from assuming shape is always a rectangle
-			try {
-				for (int k = 0; k < thornsPoints.size(); k++) {
-					int value = thornsPoints.get(k).getAsInt();
-					if (value > 0) {
-						if (k % 2 == 0) width = value;
-						else height = value;
-					}
-				}
-			}
-			catch (Exception e){
-				e.printStackTrace();
-			}
-
-			//Define wall parameter boxes
-			JLabel boxWidthText = new JLabel("Width: ");
-			JTextField boxWidthVal = new JTextField(""+width);
-			JLabel boxHeightText = new JLabel("Height: ");
-			JTextField boxHeightVal = new JTextField(""+height);
-
-			//Set value of radio buttons
-			if (thornsFlag) yesThorn.setSelected(true);
-			else noThorn.setSelected(true);
-
-			//Place radio buttons
-			yesThorn.setBounds((2*buffer), (rowNum*textHeight)+((rowNum+1)*buffer), 75, textHeight);
-			noThorn.setBounds((3*buffer)+75, (rowNum*textHeight)+((rowNum+1)*buffer), 100, textHeight);
-			rowNum++;
-
-			//Place wall parameter boxes
-			boxWidthText.setBounds((2*buffer), (rowNum*textHeight)+((rowNum+1)*buffer), fieldTextWidth, textHeight);
-			boxWidthVal.setBounds((3*buffer)+fieldTextWidth, (rowNum*textHeight)+((rowNum+1)*buffer), fieldBoxWidth, textHeight);
-			rowNum++;
-			boxHeightText.setBounds((2*buffer), (rowNum*textHeight)+((rowNum+1)*buffer), fieldTextWidth, textHeight);
-			boxHeightVal.setBounds((3*buffer)+fieldTextWidth, (rowNum*textHeight)+((rowNum+1)*buffer), fieldBoxWidth, textHeight);
-			rowNum++;
-
-			//Add radio buttons to button group
-			thornButtons.add(yesThorn);
-			thornButtons.add(noThorn);
-
-			//Add all elements to panel
-			panel.add(yesThorn);
-			panel.add(noThorn);
-			panel.add(boxWidthText);
-			panel.add(boxWidthVal);
-			panel.add(boxHeightText);
-			panel.add(boxHeightVal);
-
-			okButton.addActionListener((ActionEvent e) -> {
-
-				//Do X & Y components
-				for (int i = 0; i < 2; i++) {
-					String paramName = params.get(i);
-					JTextField fieldObject = fieldObjects.get(i);
-
-					entityProp.remove(paramName);
-					entityProp.addProperty(paramName, fieldObject.getText());
-				}
-
-				//Change thorn flag
-				entityProp.remove("thorn");
-				if (yesThorn.isSelected()) entityProp.addProperty("thorn", true);
-				else entityProp.addProperty("thorn", false);
-
-				int boxWidth = Integer.parseInt(boxWidthVal.getText());
-				int boxHeight = Integer.parseInt(boxHeightVal.getText());
-
-				//Create box coordinates
-				// Clear thornpoints first
-				int s = thornsPoints.size();
-				for (int i = s-1; i >=0; i--) {
-					thornsPoints.remove(0);
-				}
-
-				for(int k=0;k<thornsPoints.size();k++){
-					if (k == 2 || k == 4) thornsPoints.add(boxWidth);
-					else if (k == 7 || k == 5) thornsPoints.add(boxHeight);
-					else thornsPoints.add(0);
-				}
-
-				//Change box parameters
-				entityProp.remove("points");
-				entityProp.add("points", thornsPoints);
-
-				//Reassign object
-				entityObject.remove("INSTANCE");
-				entityObject.add("INSTANCE", entityProp);
-
-				//Get the string form of the entityObject
-				String stringJson = jsonLoaderSaver.stringFromJson(entityObject);
-				promptTemplateCallback(stringJson);
-
-				parentWindow.setVisible(false);
-				parentWindow.dispose();
-				//panel.setVisible(false);
-				//panel.dispose();
-			});
-			//End of sad times
-		}
-		//Anything that isn't a wall
-		else {
-
-			for (int i = 0; i < params.size(); i++) {
-				String paramName = params.get(i);
-				float paramVal = entityProp.get(paramName).getAsFloat();
-				JLabel paramText = new JLabel(paramName + ":");
-				JTextField paramField = new JTextField("" + paramVal);
-
-				paramText.setBounds((2 * buffer), (rowNum * textHeight) + ((rowNum + 1) * buffer), fieldTextWidth, textHeight);
-				paramField.setBounds((3 * buffer) + fieldTextWidth, (rowNum * textHeight) + ((rowNum + 1) * buffer), fieldBoxWidth, textHeight);
-
-				panel.add(paramText);
-				panel.add(paramField);
-				fieldObjects.add(paramField);
-				//}
-				rowNum++;
-			}
-
-			//Add okay button
-			//okButton.setBounds(125, ((rowNum + 1) * textHeight) + ((rowNum + 1) * buffer), 100, textHeight);
-
-			okButton.addActionListener(e -> {
-				for (int i = 0; i < params.size(); i++) {
-					String paramName = params.get(i);
-
-					JTextField fieldObject = fieldObjects.get(i);
-
-					entityProp.remove(paramName);
-					entityProp.addProperty(paramName, fieldObject.getText());
-
-				}
-
-				entityObject.remove("INSTANCE");
-				entityObject.add("INSTANCE", entityProp);
-
-				//Get the string form of the entityObject
-				String stringJson = jsonLoaderSaver.stringFromJson(entityObject);
-				promptTemplateCallback(stringJson);
-
-				parentWindow.setVisible(false);
-				parentWindow.dispose();
-				//panel.setVisible(false);
-				//panel.dispose();
-			});
-		}
-
-		okButton.setBounds(125, ((rowNum+1)*textHeight)+((rowNum+1)*buffer), 100, textHeight);
+		okButton.setBounds(125, ((rowNum+1)*TEXT_HEIGHT)+((rowNum+1)* BUFFER), 100, TEXT_HEIGHT);
 
 		deleteButton.addActionListener(e -> {
 			deleteEntity(x,y);
 			parentWindow.setVisible(false);
 			parentWindow.dispose();
-			//panel.setVisible(false);
-			//panel.dispose();
 		});
 
 		panel.add(header);
@@ -650,7 +471,6 @@ public class LevelEditorController extends WorldController {
 		panel.add(deleteButton);
 
 		return panel;
-
 	}
 
 	private void deleteEntity(float adjustedMouseX, float adjustedMouseY){
