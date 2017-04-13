@@ -67,7 +67,7 @@ public class LevelEditorController extends WorldController {
 	public static final int BUFFER = 5;
 	public static final int TEXT_HEIGHT = 20;
 	public static final int FIELD_TEXT_WIDTH = 75;
-	public static final int FIELD_BOX_WIDTH = 50;
+	public static final int FIELD_BOX_WIDTH = 150;
 	/** Track asset loading from all instances and subclasses */
 	private AssetState levelEditorAssetState = AssetState.EMPTY;
 
@@ -371,7 +371,7 @@ public class LevelEditorController extends WorldController {
 			JsonElement value = entry.getValue();
 			if (value.isJsonArray()) {
 				// TODO (hard), recurse
-				System.err.println("TODO: JSON Array");
+				System.err.println("TODO: JSON Array. Use Henry's click and drag!");
 				continue;
 			} else if (value.isJsonPrimitive()) {
 				JsonPrimitive primitive = value.getAsJsonPrimitive();
@@ -405,7 +405,7 @@ public class LevelEditorController extends WorldController {
 		return rowNum;
 	}
 
-	private void updateObject(JsonObject entityProp, JPanel p) {
+	private void grabUpdatedObjectValuesFromGUI(JsonObject entityProp, JPanel p) {
 		for(Map.Entry<String,JsonElement> entry : entityProp.entrySet()) {
 			// Add key
 			String key = entry.getKey();
@@ -469,10 +469,6 @@ public class LevelEditorController extends WorldController {
 		JButton okButton = new JButton("OK");
 		JButton deleteButton = new JButton("Delete Entity");
 
-		//Hard-coded for lambda purposes in the delete button ;w;
-		float x = entityProp.get("x").getAsFloat();
-		float y = entityProp.get("y").getAsFloat();
-
 		//Define top elements
 		header.setBounds(BUFFER, BUFFER, 500, TEXT_HEIGHT);
 		rowNum++;
@@ -484,7 +480,7 @@ public class LevelEditorController extends WorldController {
 
 		//Add okay button
 		okButton.addActionListener(e -> {
-			updateObject(entityProp,panel);
+			grabUpdatedObjectValuesFromGUI(entityProp,panel);
 			entityObject.add("INSTANCE", entityProp);
 			objects.remove(template);
 
@@ -499,7 +495,7 @@ public class LevelEditorController extends WorldController {
 		okButton.setBounds(125, ((rowNum+1)*TEXT_HEIGHT)+((rowNum+1)* BUFFER), 100, TEXT_HEIGHT);
 
 		deleteButton.addActionListener(e -> {
-			deleteEntity(x,y);
+			deleteEntity(template);
 			parentWindow.setVisible(false);
 			parentWindow.dispose();
 		});
@@ -511,13 +507,17 @@ public class LevelEditorController extends WorldController {
 		return panel;
 	}
 
-	private void deleteEntity(float adjustedMouseX, float adjustedMouseY){
+	private void deleteEntity(){
 		Entity select = entityQuery();
 		if (select != null) objects.remove(select);
 		inputRateLimiter = UI_WAIT_SHORT;
 	}
 
-	private void editEntity(float adjustedMouseX, float adjustedMouseY){
+	private void deleteEntity(Entity target){
+		objects.remove(target);
+	}
+
+	private void editEntity(){
 		Entity select = entityQuery();
 		if (select != null) {
 			if(isVimMode()) promptTemplate(select);
@@ -709,12 +709,12 @@ public class LevelEditorController extends WorldController {
 
 			// Delete
 			if (InputController.getInstance().isRightClickPressed()) {
-				deleteEntity(adjustedMouseX, adjustedMouseY);
+				deleteEntity();
 			}
 
 			// Edit
 			if (InputController.getInstance().isEKeyPressed()) {
-				editEntity(adjustedMouseX, adjustedMouseY);
+				editEntity();
 			}
 
 			// Save
@@ -825,13 +825,8 @@ public class LevelEditorController extends WorldController {
 				});
 
 				saveButton.addActionListener(e -> {
-					//editorWindow.setVisible(false);
-					//editorWindow.dispose();
-					//guiPrompt = false;
-
 					currentLevel = levelName.getText();
 					saveLevel();
-					//System.out.println("BOOP");
 				});
 
 //				file_button.addActionListener(e -> {
@@ -1077,7 +1072,7 @@ public class LevelEditorController extends WorldController {
 
 			if (InputController.getInstance().isLeftClickPressed()) {
 				try {
-					editEntity(adjustedMouseX, adjustedMouseY);
+					editEntity();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
