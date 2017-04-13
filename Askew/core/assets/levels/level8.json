@@ -1,0 +1,181 @@
+{
+  "levelModelVersion": 1,
+  "title": "level8",
+  "goalTimeGold": 30,
+  "goalTimeSilver": 45,
+  "goalTimeBronze": 60,
+  "height": 10,
+  "width": 10,
+  "entities": [
+    {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "pin": false,
+        "numLinks": 5.0,
+        "x": 5.0,
+        "y": 7.0,
+        "angle": 15.0,
+        "omega": -5.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.sloth.SlothModel",
+      "INSTANCE": {
+        "x": 4.0,
+        "y": 9.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.StiffBranch",
+      "INSTANCE": {
+        "angle": -30.0,
+        "stiffLen": 5.0,
+        "x": 0.8,
+        "y": 8.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 1.0,
+        "y": 2.0,
+        "stiffLen": 3.0,
+        "angle": 0.0,
+        "linksize": 1.0,
+        "numLinks": 12.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.PoleVault",
+      "INSTANCE": {
+        "x": 1.0,
+        "y": 11.0,
+        "angle": 0.0,
+        "linksize": 1.0,
+        "numLinks": 6.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.StiffBranch",
+      "INSTANCE": {
+        "angle": 30.0,
+        "stiffLen": 4.0,
+        "x": 1.2,
+        "y": 12.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "pin": false,
+        "numLinks": 5.0,
+        "x": 9.0,
+        "y": 7.0,
+        "angle": 15.0,
+        "omega": -5.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "pin": false,
+        "numLinks": 8.0,
+        "x": 5.0,
+        "y": 23.0,
+        "angle": 10.0,
+        "omega": -5.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.ghost.GhostModel",
+      "INSTANCE": {
+        "x": 13.0,
+        "y": 18.0,
+        "patroldx": 3.0,
+        "patroldy": 18.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "pin": false,
+        "numLinks": 6.0,
+        "x": 10.0,
+        "y": 23.0,
+        "angle": 10.0,
+        "omega": -5.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "pin": false,
+        "numLinks": 4.0,
+        "x": 14.0,
+        "y": 23.0,
+        "angle": 10.0,
+        "omega": -5.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "pin": false,
+        "numLinks": 5.0,
+        "x": 18.0,
+        "y": 20.0,
+        "angle": 10.0,
+        "omega": -5.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "pin": false,
+        "numLinks": 10.0,
+        "x": 22.0,
+        "y": 16.0,
+        "angle": 10.0,
+        "omega": -10.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "pin": false,
+        "numLinks": 5.0,
+        "x": 28.0,
+        "y": 10.0,
+        "angle": 10.0,
+        "omega": -50.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.owl.OwlModel",
+      "INSTANCE": {
+        "x": 27.0,
+        "y": 2.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "pin": false,
+        "numLinks": 5.0,
+        "x": 18.0,
+        "y": 7.0,
+        "angle": 10.0,
+        "omega": -50.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.ghost.GhostModel",
+      "INSTANCE": {
+        "x": 17.0,
+        "y": 5.0,
+        "patroldx": 12.0,
+        "patroldy": 5.0
+      }
+    }
+  ]
+}

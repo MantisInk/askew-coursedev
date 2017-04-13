@@ -19,6 +19,7 @@
           "numLinks": 5.0
         },
         "treeBranch": {
+          "angle": 0.0,
           "stiffLen": 3.0,
           "x": -9.0,
           "y": 17.0
@@ -70,6 +71,7 @@
           "numLinks": 5.0
         },
         "treeBranch": {
+          "angle": 0.0,
           "stiffLen": 3.0,
           "x": 5.0,
           "y": 10.0
@@ -88,6 +90,7 @@
           "numLinks": 5.0
         },
         "treeBranch": {
+          "angle": 0.0,
           "stiffLen": 3.0,
           "x": 9.0,
           "y": 10.0
@@ -104,6 +107,7 @@
     {
       "CLASSNAME": "askew.entity.tree.StiffBranch",
       "INSTANCE": {
+        "angle": 0.0,
         "stiffLen": 4.0,
         "x": 13.0,
         "y": 8.0
