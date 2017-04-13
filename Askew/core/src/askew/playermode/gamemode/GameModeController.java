@@ -260,14 +260,14 @@ public class GameModeController extends WorldController {
 	 * @return whether the player has pressed a button
 	 */
 	public boolean checkReady(){
-		InputController the_controller = InputController.getInstance();
+		InputController theController = InputController.getInstance();
 
 		//If the player pressed "RB"
-		if(the_controller.getRightGrab()){
+		if(theController.getRightGrab()){
 			return true;
 		}
 		//If the player pressed "LB"
-		else if(the_controller.getLeftGrab()){
+		else if(theController.getLeftGrab()){
 			return true;
 		}
 

@@ -332,6 +332,404 @@ public class LevelEditorController extends WorldController {
 		inputRateLimiter = UI_WAIT_SHORT;
 	}
 
+	/** Returns and ArrayList of parameters needed create a given game entity
+	 *
+	 * @param entityName The name of the entity as a string, ex ".SlothModel"
+	 * */
+	private ArrayList<String> getEntityParam(String entityName){
+		ArrayList<String> fieldNames = new ArrayList<String>();
+		fieldNames.add("x");
+		fieldNames.add("y");
+
+		switch (entityName) {
+			case ".SlothModel":
+				//No additional fields needed
+				break;
+			case ".Vine":
+				fieldNames.add("numLinks");
+				fieldNames.add("angle");
+				fieldNames.add("omega");
+				break;
+			case ".Trunk":
+				fieldNames.add("angle");
+				fieldNames.add("numLinks");
+				fieldNames.add("linksize");
+				fieldNames.add("stiffLen");
+				break;
+			case ".PoleVault":
+				fieldNames.add("angle");
+				fieldNames.add("numLinks");
+				fieldNames.add("linksize");
+				break;
+			case ".StiffBranch":
+				fieldNames.add("stiffLen");
+				break;
+			case ".Tree":
+				fieldNames = getEntityParam(".Trunk");
+				ArrayList<String> branchList = getEntityParam(".StiffBranch");
+
+				for(int i=0;i<branchList.size();i++){
+					fieldNames.add(branchList.get(i));
+				}
+				break;
+			case ".OwlModel":
+				//No additional fields needed
+				break;
+			case ".WallModel":
+				fieldNames.add("thorn");
+				fieldNames.add("points");
+				break;
+			case ".GhostModel":
+				fieldNames.add("patroldx");
+				fieldNames.add("patroldy");
+				break;
+			default:
+				System.err.println("UNKNOWN ENT");
+				break;
+		}
+
+		return fieldNames;
+	}
+
+	private void createGuiWindow(){
+		//TODO Create clean way of making GUI window
+
+	}
+
+	/** Returns the pop-out window for editing parameters of individual entities as a JPanel
+	 *
+	 * @param template The entity to be edited
+	 * @param parentWindow The parent window for the window being created (used for button events)
+	 * @returns A JPanel specifically for the level editor GUI
+	 * */
+	private JPanel makeEntityWindow(Entity template, JDialog parentWindow){
+		JsonObject entityObject = jsonLoaderSaver.gsonToJsonObject(template);
+
+		JsonObject entityProp = entityObject.get("INSTANCE").getAsJsonObject();
+		String entityName = entityObject.get("CLASSNAME").getAsString();
+		entityName = entityName.substring(entityName.lastIndexOf("."));
+
+		ArrayList<String> params = getEntityParam(entityName);
+		ArrayList<JTextField> fieldObjects = new ArrayList<>();
+		//ArrayList<JComponent> fieldObjects = new ArrayList<>();
+
+		JPanel panel = new JPanel();
+		panel.setLayout(null);
+
+		int buffer = 5;
+		int textHeight = 20;
+		int rowNum = 0;
+		int fieldTextWidth = 75;
+		int fieldBoxWidth = 50;
+
+		JLabel header = new JLabel(entityName+" Properties (Please hit OK instead of X to closeout window)");
+		JButton okButton = new JButton("OK");
+		JButton deleteButton = new JButton("Delete Entity");
+
+		//TODO Still figure out how to add Trees
+
+		//Hard-coded for lambda purposes in the delete button ;w;
+		float x = entityProp.get("x").getAsFloat();
+		float y = entityProp.get("y").getAsFloat();
+
+		//TODO Add back in for .Tree
+//			if (entityName == ".Tree"){
+//				trunkObject = entityProp.get("treeTrunk").getAsJsonObject();
+//				branchObject = entityProp.get("treeBranch").getAsJsonObject();
+//
+//				//Extract X and Y for each entity
+//			}
+//			else {
+//				//More assignments to make Java not complain
+//				trunkObject = entityProp;
+//				branchObject = entityProp;
+//
+//				x = entityProp.get("x").getAsFloat();
+//				y = entityProp.get("y").getAsFloat();
+//			}
+
+		//Define top elements
+		header.setBounds(buffer, buffer, 500, textHeight);
+		rowNum++;
+		deleteButton.setBounds(buffer, (rowNum*textHeight)+((rowNum+1)*buffer), 150, textHeight);
+		rowNum++;
+
+		//Define field elements
+
+		if(entityName.equals(".WallModel")){
+			//Hard-coded since otherwise I don't know how to make it work because JRadioButton isn't a JTextField OTL
+
+			//Do X & Y components
+			for (int i = 0; i < 2; i++) {
+				String paramName = params.get(i);
+
+				float paramVal = entityProp.get(paramName).getAsFloat();
+				JLabel paramText = new JLabel(paramName + ":");
+				JTextField paramField = new JTextField("" + paramVal);
+
+				paramText.setBounds((2 * buffer), (rowNum * textHeight) + ((rowNum + 1) * buffer), fieldTextWidth, textHeight);
+				paramField.setBounds((3 * buffer) + fieldTextWidth, (rowNum * textHeight) + ((rowNum + 1) * buffer), fieldBoxWidth, textHeight);
+
+				panel.add(paramText);
+				panel.add(paramField);
+				fieldObjects.add(paramField);
+
+				rowNum++;
+			}
+
+			//Get everything else
+			boolean thornsFlag = entityProp.get("thorn").getAsBoolean();
+			JRadioButton yesThorn = new JRadioButton("Thorns");
+			JRadioButton noThorn = new JRadioButton("No Thorns");
+			ButtonGroup thornButtons = new ButtonGroup();
+
+			JsonArray thornsPoints = entityProp.get("points").getAsJsonArray();
+
+			//Holds the dimensions for the wall
+			int width = 0;
+			int height = 0;
+
+			//TODO Change from assuming shape is always a rectangle
+			try {
+				for (int k = 0; k < thornsPoints.size(); k++) {
+					int value = thornsPoints.get(k).getAsInt();
+					if (value > 0) {
+						if (k % 2 == 0) width = value;
+						else height = value;
+					}
+				}
+			}
+			catch (Exception e){
+				e.printStackTrace();
+			}
+
+			//Define wall parameter boxes
+			JLabel boxWidthText = new JLabel("Width: ");
+			JTextField boxWidthVal = new JTextField(""+width);
+			JLabel boxHeightText = new JLabel("Height: ");
+			JTextField boxHeightVal = new JTextField(""+height);
+
+			//Set value of radio buttons
+			if (thornsFlag) yesThorn.setSelected(true);
+			else noThorn.setSelected(true);
+
+			//Place radio buttons
+			yesThorn.setBounds((2*buffer), (rowNum*textHeight)+((rowNum+1)*buffer), 75, textHeight);
+			noThorn.setBounds((3*buffer)+75, (rowNum*textHeight)+((rowNum+1)*buffer), 100, textHeight);
+			rowNum++;
+
+			//Place wall parameter boxes
+			boxWidthText.setBounds((2*buffer), (rowNum*textHeight)+((rowNum+1)*buffer), fieldTextWidth, textHeight);
+			boxWidthVal.setBounds((3*buffer)+fieldTextWidth, (rowNum*textHeight)+((rowNum+1)*buffer), fieldBoxWidth, textHeight);
+			rowNum++;
+			boxHeightText.setBounds((2*buffer), (rowNum*textHeight)+((rowNum+1)*buffer), fieldTextWidth, textHeight);
+			boxHeightVal.setBounds((3*buffer)+fieldTextWidth, (rowNum*textHeight)+((rowNum+1)*buffer), fieldBoxWidth, textHeight);
+			rowNum++;
+
+			//Add radio buttons to button group
+			thornButtons.add(yesThorn);
+			thornButtons.add(noThorn);
+
+			//Add all elements to panel
+			panel.add(yesThorn);
+			panel.add(noThorn);
+			panel.add(boxWidthText);
+			panel.add(boxWidthVal);
+			panel.add(boxHeightText);
+			panel.add(boxHeightVal);
+
+			okButton.addActionListener((ActionEvent e) -> {
+
+				//Do X & Y components
+				for (int i = 0; i < 2; i++) {
+					String paramName = params.get(i);
+					JTextField fieldObject = fieldObjects.get(i);
+
+					entityProp.remove(paramName);
+					entityProp.addProperty(paramName, fieldObject.getText());
+				}
+
+				//Change thorn flag
+				entityProp.remove("thorn");
+				if (yesThorn.isSelected()) entityProp.addProperty("thorn", true);
+				else entityProp.addProperty("thorn", false);
+
+				int boxWidth = Integer.parseInt(boxWidthVal.getText());
+				int boxHeight = Integer.parseInt(boxHeightVal.getText());
+
+				//Create box coordinates
+				for(int k=0;k<thornsPoints.size();k++){
+					thornsPoints.remove(0);
+					if (k == 2 || k == 4) thornsPoints.add(boxWidth);
+					else if (k == 7 || k == 5) thornsPoints.add(boxHeight);
+					else thornsPoints.add(0);
+				}
+
+				//Change box parameters
+				entityProp.remove("points");
+				entityProp.add("points", thornsPoints);
+
+				//Reassign object
+				entityObject.remove("INSTANCE");
+				entityObject.add("INSTANCE", entityProp);
+
+				//Get the string form of the entityObject
+				String stringJson = jsonLoaderSaver.stringFromJson(entityObject);
+				promptTemplateCallback(stringJson);
+
+				parentWindow.setVisible(false);
+				parentWindow.dispose();
+				//panel.setVisible(false);
+				//panel.dispose();
+			});
+			//End of sad times
+		}
+		else if(entityName.equals(".Tree")){
+			System.err.println("Unimplemented");
+//					//TODO Add back in for .Tree
+//					//entityProp
+//					//trunkObject, branchObject
+//
+//					//Edit Trunk
+////					float trunk_links = trunkObject.get("numLinks").getAsFloat();
+////					//float current_links = trunkObject.get("numLinks").getAsFloat();
+////					JLabel trunk_link_text = new JLabel("Number of links");
+////					JTextField trunk_link_val = new JTextField(""+trunk_links);
+////					//float current_stiff = entityProp.get("stiffLen").getAsFloat();
+////					float trunk_stiff = trunkObject.get("stiffLen").getAsFloat();
+////					JLabel trunk_stiff_text = new JLabel("Trunk Stiffness");
+////					JTextField trunk_stiff_val = new JTextField(""+trunk_stiff);
+////
+////					trunk_link_text.setBounds((2*buffer), (3*textHeight)+(4*buffer), 100, textHeight);
+////					trunk_link_val.setBounds((3*buffer)+100, (3*textHeight)+(4*buffer), 50, textHeight);
+////					trunk_stiff_text.setBounds((2*buffer), (4*textHeight)+(5*buffer), 100, textHeight);
+////					trunk_stiff_val.setBounds((3*buffer)+100, (4*textHeight)+(5*buffer), 50, textHeight);
+////
+////					panel.add(trunk_link_text);
+////					panel.add(trunk_link_val);
+////					panel.add(trunk_stiff_text);
+////					panel.add(trunk_stiff_val);
+////
+////					//Edit Branch
+////
+////					float branch_stiff = branchObject.get("stiffLen").getAsFloat();
+////					//float current_branch = entityObject.get("stiffLen").getAsFloat();
+////					JLabel branch_stiff_text = new JLabel("Branch Stiffness");
+////					JTextField branch_stiff_val = new JTextField(""+branch_stiff);
+////
+////					branch_stiff_text.setBounds((2*buffer), (5*textHeight)+(6*buffer), 75, textHeight);
+////					branch_stiff_val.setBounds((3*buffer)+25, (5*textHeight)+(6*buffer), 50, textHeight);
+////
+////					panel.add(branch_stiff_text);
+////					panel.add(branch_stiff_val);
+////
+////					okButton.addActionListener(e -> {
+////						//Assign trunk parts
+////						trunkObject.remove("x");
+////						trunkObject.addProperty("x", x_pos_val.getText());
+////
+////						trunkObject.remove("y");
+////						trunkObject.addProperty("y", y_pos_val.getText());
+////
+////						trunkObject.remove("numLinks");
+////						trunkObject.addProperty("numLinks", link_val.getText());
+////
+////						trunkObject.remove("stiffLen");
+////						trunkObject.addProperty("stiffLen", stiff_val.getText());
+////
+////						entityProp.remove("treeTrunk");
+////						entityProp.addProperty("treeTrunk", stiff_val.getText());
+////
+////						//Assign branch parts
+////
+////						branchObject.remove("stiffLen");
+////						branchObject.addProperty("stiffLen", branch_val.getText());
+////
+////						entityProp.remove("treeBranch");
+////						entityProp.addProperty("treeBranch", stiff_val.getText());
+////
+////						//Put Everything Together
+////
+////						entityObject.remove("INSTANCE");
+////						entityObject.add("INSTANCE", entityProp);
+////
+////						String temp2 = jsonLoaderSaver.stringFromJson(entityObject);
+////						promptTemplateCallback(temp2);
+////
+////						mainFrame.setVisible(false);
+////						mainFrame.dispose();
+////						//panel.setVisible(false);
+////						//panel.dispose();
+////					});
+//
+//
+//					break;
+		}
+		//Anything that isn't a wall
+		else {
+
+			for (int i = 0; i < params.size(); i++) {
+				String paramName = params.get(i);
+				float paramVal = entityProp.get(paramName).getAsFloat();
+				JLabel paramText = new JLabel(paramName + ":");
+				JTextField paramField = new JTextField("" + paramVal);
+
+				paramText.setBounds((2 * buffer), (rowNum * textHeight) + ((rowNum + 1) * buffer), fieldTextWidth, textHeight);
+				paramField.setBounds((3 * buffer) + fieldTextWidth, (rowNum * textHeight) + ((rowNum + 1) * buffer), fieldBoxWidth, textHeight);
+
+				panel.add(paramText);
+				panel.add(paramField);
+				fieldObjects.add(paramField);
+				//}
+				rowNum++;
+			}
+
+			//Add okay button
+			//okButton.setBounds(125, ((rowNum + 1) * textHeight) + ((rowNum + 1) * buffer), 100, textHeight);
+
+			okButton.addActionListener(e -> {
+				for (int i = 0; i < params.size(); i++) {
+					String paramName = params.get(i);
+
+					JTextField fieldObject = fieldObjects.get(i);
+
+					entityProp.remove(paramName);
+					entityProp.addProperty(paramName, fieldObject.getText());
+
+				}
+
+				entityObject.remove("INSTANCE");
+				entityObject.add("INSTANCE", entityProp);
+
+				//Get the string form of the entityObject
+				String stringJson = jsonLoaderSaver.stringFromJson(entityObject);
+				promptTemplateCallback(stringJson);
+
+				parentWindow.setVisible(false);
+				parentWindow.dispose();
+				//panel.setVisible(false);
+				//panel.dispose();
+			});
+		}
+
+		okButton.setBounds(125, ((rowNum+1)*textHeight)+((rowNum+1)*buffer), 100, textHeight);
+
+		deleteButton.addActionListener(e -> {
+			deleteEntity(x,y);
+			parentWindow.setVisible(false);
+			parentWindow.dispose();
+			//panel.setVisible(false);
+			//panel.dispose();
+		});
+
+		panel.add(header);
+		panel.add(okButton);
+		panel.add(deleteButton);
+
+		return panel;
+
+	}
+
 	private void deleteEntity(float adjustedMouseX, float adjustedMouseY){
 		Entity select = entityQuery();
 		if (select != null) objects.remove(select);
@@ -406,574 +804,13 @@ public class LevelEditorController extends WorldController {
 	private void changeEntityParam(Entity template) {
 		if (!prompting) {
 			prompting = true; //Use different constant? Can just use the same one?
-			JsonObject entityObject = jsonLoaderSaver.gsonToJsonObject(template);
 
-			//System.out.println(entityObject); //FIX EVERYTHING
-
-			// flipping swing
 			JDialog entityDisplay = new JDialog();
 			entityDisplay.setSize(600,600);
 			entityDisplay.setLocationRelativeTo(null);
-			JPanel panel = new JPanel();
-			//panel.setLayout(new FlowLayout());
-			panel.setLayout(null);
-
-			//JFrame panel = new JFrame();
-			//panel.setSize(600,600);
-			//panel.setLocationRelativeTo(null);
-//			final JTextArea commentTextArea =
-//					new JTextArea(jsonOfTemplate,20,30);
-			//panel.add(commentTextArea);
-
-			//System.out.println(entityObject);
-			//System.out.println(Entity.class);
-
-			JsonObject entity_prop = entityObject.get("INSTANCE").getAsJsonObject();
-			String entity_name = entityObject.get("CLASSNAME").getAsString();
-			//String entity_name = className;
-			//int field_num = 2;
-			int buffer = 5;
-			int text_height = 20;
-
-			//float x = entityObject.get("x").getAsFloat();
-			//float y = entityObject.get("y").getAsFloat();
-
-			float x = entity_prop.get("x").getAsFloat();
-			float y = entity_prop.get("y").getAsFloat();
-
-			//Assignments to make Java not complain
-//			float x = 0;
-//			float y = 0;
-			JsonObject trunkObject, branchObject;
-//			JsonObject trunkObject = entity_prop;
-//			JsonObject branchObject = entity_prop;
-
-			JButton delete_thing = new JButton("Delete Entity");
-
-			//JLabel header = new JLabel("Entity Properties");
-			JLabel header = new JLabel("Entity Properties (Please hit OK instead of X)");
-
-			//TODO Add back in for .Tree
-//			if (entity_name == ".Tree"){
-//				trunkObject = entity_prop.get("treeTrunk").getAsJsonObject();
-//				branchObject = entity_prop.get("treeBranch").getAsJsonObject();
-//
-//				//Extract X and Y for each entity
-//			}
-//			else {
-//				//More assignments to make Java not complain
-//				trunkObject = entity_prop;
-//				branchObject = entity_prop;
-//
-//				x = entity_prop.get("x").getAsFloat();
-//				y = entity_prop.get("y").getAsFloat();
-//			}
-
-//			JButton delete_thing = new JButton("Delete Entity");
-//
-//			//JLabel header = new JLabel("Entity Properties");
-//			JLabel header = new JLabel("Entity Properties (Please hit OK instead of X)");
-			JLabel x_pos_text = new JLabel("X:");
-			JTextField x_pos_val = new JTextField(""+x);
-			JLabel y_pos_text = new JLabel("Y:");
-			JTextField y_pos_val = new JTextField(""+y);
-
-			header.setBounds(buffer, buffer, 300, text_height);
-			delete_thing.setBounds((2*buffer)+300, buffer, 150, text_height);
-			x_pos_text.setBounds((2*buffer), text_height+(2*buffer), 25, text_height);
-			x_pos_val.setBounds((3*buffer)+25, text_height+(2*buffer), 75, text_height);
-			y_pos_text.setBounds((2*buffer), (2*text_height)+(3*buffer), 25, text_height);
-			y_pos_val.setBounds((3*buffer)+25, (2*text_height)+(3*buffer), 75, text_height);
-
-			delete_thing.addActionListener(e -> {
-				deleteEntity(x,y);
-				//promptTemplateCallback(commentTextArea.getText());
-				entityDisplay.setVisible(false);
-				entityDisplay.dispose();
-				//panel.setVisible(false);
-				//panel.dispose();
-			});
-
-			panel.add(header);
-			panel.add(x_pos_text);
-			panel.add(x_pos_val);
-			panel.add(y_pos_text);
-			panel.add(y_pos_val);
-			panel.add(delete_thing);
-
-			//Trim class name
-			entity_name = entity_name.substring(entity_name.lastIndexOf("."));
-
-			JButton okButton = new JButton("OK");
-			okButton.setBounds(275,500,100,text_height);
-
-			switch(entity_name){
-				case ".SlothModel":
-//					SlothModel sTemplate = new SlothModel(x, y);
-//					promptTemplate(sTemplate);
-					//field_num = 2;
-					okButton.addActionListener(e -> {
-						entity_prop.remove("x");
-						entity_prop.addProperty("x", x_pos_val.getText());
-
-						entity_prop.remove("y");
-						entity_prop.addProperty("y", y_pos_val.getText());
-
-						entityObject.remove("INSTANCE");
-						entityObject.add("INSTANCE", entity_prop);
-
-						String temp2 = jsonLoaderSaver.stringFromJson(entityObject);
-						//System.out.println(temp2);
-
-						promptTemplateCallback(temp2);
-
-						entityDisplay.setVisible(false);
-						entityDisplay.dispose();
-						//panel.setVisible(false);
-						//panel.dispose();
-					});
-					break;
-				case ".Vine":
-					float current_vines = entity_prop.get("numLinks").getAsFloat();
-					JLabel vine_text = new JLabel("# Links");
-					JTextField vine_links = new JTextField(""+current_vines);
-
-					vine_text.setBounds((2*buffer), (3*text_height)+(4*buffer), 75, text_height);
-					vine_links.setBounds((3*buffer)+75, (3*text_height)+(4*buffer), 75, text_height);
-
-					panel.add(vine_text);
-					panel.add(vine_links);
-
-					okButton.addActionListener(e -> {
-						//STILL WORKING
-						//promptTemplateCallback(commentTextArea.getText());
-						//entityObject.remove("numLinks");
-						//entityObject.addProperty("numLinks", vine_links.getText());
-
-						entity_prop.remove("x");
-						entity_prop.addProperty("x", x_pos_val.getText());
-
-						entity_prop.remove("y");
-						entity_prop.addProperty("y", y_pos_val.getText());
-
-						entity_prop.remove("numLinks");
-						entity_prop.addProperty("numLinks", vine_links.getText());
-
-						entityObject.remove("INSTANCE");
-						entityObject.add("INSTANCE", entity_prop);
-
-						//Entity temp = jsonLoaderSaver.entityFromJson(entityObject);
-						//String jsonOfObject = jsonLoaderSaver.gsonToJson(temp);
-
-						//String jsonOfObject = jsonLoaderSaver.stringFromJson(entityObject);
-//						Entity temp = jsonLoaderSaver.entityFromJson(entityObject, entity_name);
-//						String jsonOfObject = jsonLoaderSaver.gsonToJson(temp);
-//						promptTemplateCallback(jsonOfObject);
-
-						String temp2 = jsonLoaderSaver.stringFromJson(entityObject);
-						System.out.println(temp2);
-						//guiCallback(temp2, entity_name);
-
-						promptTemplateCallback(temp2);
-
-						entityDisplay.setVisible(false);
-						entityDisplay.dispose();
-						//panel.setVisible(false);
-						//panel.dispose();
-					});
-
-					//field_num++;
-					break;
-				case ".WallModel":
-					//TODO Does this actually work? @w@ Can't test without Trevor's sprint code
-					boolean thorns_flag = entity_prop.get("thorn").getAsBoolean();
-					JRadioButton yes_thorn = new JRadioButton("Thorns");
-					JRadioButton no_thorn = new JRadioButton("No Thorns");
-					ButtonGroup thorn_buttons = new ButtonGroup();
-					JsonArray thorns_points = entity_prop.get("points").getAsJsonArray();
-
-					int width = 0;
-					int height = 0;
-
-					//TODO Change from assuming shape is always a rectangle
-					for(int k=0;k<thorns_points.size();k++){
-						int value = thorns_points.get(k).getAsInt();
-						if(value > 0){
-							if(k % 2 == 0) width = value;
-							else height = value;
-						}
-					}
-
-					JLabel box_width_text = new JLabel("Width: ");
-					JTextField box_width_val = new JTextField(""+width);
-					JLabel box_height_text = new JLabel("Height: ");
-					JTextField box_height_val = new JTextField(""+height);
-
-					if (thorns_flag) yes_thorn.setSelected(true);
-					else no_thorn.setSelected(true);
-
-					yes_thorn.setBounds((2*buffer), (3*text_height)+(4*buffer), 75, text_height);
-					no_thorn.setBounds((3*buffer)+75, (3*text_height)+(4*buffer), 100, text_height);
-
-					box_width_text.setBounds((2*buffer), (4*text_height)+(5*buffer), 75, text_height);
-					box_width_val.setBounds((3*buffer)+75, (4*text_height)+(5*buffer), 100, text_height);
-					box_height_text.setBounds((2*buffer), (5*text_height)+(6*buffer), 75, text_height);
-					box_height_val.setBounds((3*buffer)+75, (5*text_height)+(6*buffer), 100, text_height);
-
-
-					thorn_buttons.add(yes_thorn);
-					thorn_buttons.add(no_thorn);
-
-					panel.add(yes_thorn);
-					panel.add(no_thorn);
-					panel.add(box_width_text);
-					panel.add(box_width_val);
-					panel.add(box_height_text);
-					panel.add(box_height_val);
-
-
-					okButton.addActionListener((ActionEvent e) -> {
-						entity_prop.remove("x");
-						entity_prop.addProperty("x", x_pos_val.getText());
-
-						entity_prop.remove("y");
-						entity_prop.addProperty("y", y_pos_val.getText());
-
-						entity_prop.remove("thorn");
-						if (yes_thorn.isSelected()) entity_prop.addProperty("thorn", true);
-						else entity_prop.addProperty("thorn", false);
-
-						int box_width = Integer.parseInt(box_width_val.getText());
-						int box_height = Integer.parseInt(box_height_val.getText());
-
-						//Create box coordinates
-						for(int k=0;k<thorns_points.size();k++){
-							thorns_points.remove(0);
-							if (k == 2 || k == 4) thorns_points.add(box_width);
-							else if (k == 7 || k == 5) thorns_points.add(box_height);
-							else thorns_points.add(0);
-						}
-
-						entity_prop.remove("points");
-						entity_prop.add("points", thorns_points);
-
-						entityObject.remove("INSTANCE");
-						entityObject.add("INSTANCE", entity_prop);
-
-						String temp2 = jsonLoaderSaver.stringFromJson(entityObject);
-						promptTemplateCallback(temp2);
-
-						entityDisplay.setVisible(false);
-						entityDisplay.dispose();
-						//panel.setVisible(false);
-						//panel.dispose();
-					});
-
-					//field_num += 2;
-					break;
-				case ".Trunk":
-					float current_links = entity_prop.get("numLinks").getAsFloat();
-					//float current_links = entityObject.get("numLinks").getAsFloat();
-					JLabel link_text = new JLabel("Number of links");
-					JTextField link_val = new JTextField(""+current_links);
-					//float current_stiff = entity_prop.get("stiffLen").getAsFloat();
-					float current_stiff = entityObject.get("stiffLen").getAsFloat();
-					JLabel stiff_text = new JLabel("Stiffness");
-					JTextField stiff_val = new JTextField(""+current_stiff);
-
-					link_text.setBounds((2*buffer), (3*text_height)+(4*buffer), 100, text_height);
-					link_val.setBounds((3*buffer)+100, (3*text_height)+(4*buffer), 75, text_height);
-					stiff_text.setBounds((2*buffer), (4*text_height)+(5*buffer), 100, text_height);
-					stiff_val.setBounds((3*buffer)+100, (4*text_height)+(5*buffer), 75, text_height);
-
-					panel.add(link_text);
-					panel.add(link_val);
-					panel.add(stiff_text);
-					panel.add(stiff_val);
-
-					okButton.addActionListener(e -> {
-						entity_prop.remove("x");
-						entity_prop.addProperty("x", x_pos_val.getText());
-
-						entity_prop.remove("y");
-						entity_prop.addProperty("y", y_pos_val.getText());
-
-						entity_prop.remove("numLinks");
-						entity_prop.addProperty("numLinks", link_val.getText());
-
-						entity_prop.remove("stiffLen");
-						entity_prop.addProperty("stiffLen", stiff_val.getText());
-
-						entityObject.remove("INSTANCE");
-						entityObject.add("INSTANCE", entity_prop);
-
-						String temp2 = jsonLoaderSaver.stringFromJson(entityObject);
-						promptTemplateCallback(temp2);
-
-						entityDisplay.setVisible(false);
-						entityDisplay.dispose();
-						//panel.setVisible(false);
-						//panel.dispose();
-					});
-
-					//field_num += 2;
-					break;
-				case ".StiffBranch":
-					float current_branch = entity_prop.get("stiffLen").getAsFloat();
-					//float current_branch = entityObject.get("stiffLen").getAsFloat();
-					JLabel branch_text = new JLabel("Stiffness");
-					JTextField branch_val = new JTextField(""+current_branch);
-
-					branch_text.setBounds((2*buffer), (3*text_height)+(4*buffer), 75, text_height);
-					branch_val.setBounds((3*buffer)+25, (3*text_height)+(4*buffer), 75, text_height);
-
-					panel.add(branch_text);
-					panel.add(branch_val);
-
-					okButton.addActionListener(e -> {
-						entity_prop.remove("x");
-						entity_prop.addProperty("x", x_pos_val.getText());
-
-						entity_prop.remove("y");
-						entity_prop.addProperty("y", y_pos_val.getText());
-
-						entity_prop.remove("stiffLen");
-						entity_prop.addProperty("stiffLen", branch_val.getText());
-
-						entityObject.remove("INSTANCE");
-						entityObject.add("INSTANCE", entity_prop);
-
-						String temp2 = jsonLoaderSaver.stringFromJson(entityObject);
-						promptTemplateCallback(temp2);
-
-						entityDisplay.setVisible(false);
-						entityDisplay.dispose();
-						//panel.setVisible(false);
-						//panel.dispose();
-					});
-
-					//field_num++;
-					break;
-				case ".OwlModel":
-					okButton.addActionListener(e -> {
-						entity_prop.remove("x");
-						entity_prop.addProperty("x", x_pos_val.getText());
-
-						entity_prop.remove("y");
-						entity_prop.addProperty("y", y_pos_val.getText());
-
-						entityObject.remove("INSTANCE");
-						entityObject.add("INSTANCE", entity_prop);
-
-						String temp2 = jsonLoaderSaver.stringFromJson(entityObject);
-
-						promptTemplateCallback(temp2);
-
-						entityDisplay.setVisible(false);
-						entityDisplay.dispose();
-						//panel.setVisible(false);
-						//panel.dispose();
-					});
-
-					break;
-				case ".PoleVault":
-					float current_pole = entity_prop.get("numLinks").getAsFloat();
-					float current_angle = entity_prop.get("angle").getAsFloat();
-					float current_size = entity_prop.get("linksize").getAsFloat();
-
-					JLabel pole_text = new JLabel("Number of links");
-					JTextField pole_links = new JTextField(""+current_pole);
-					JLabel angle_text = new JLabel("Angle");
-					JTextField angle_val = new JTextField(""+current_angle);
-					JLabel size_text = new JLabel("Size");
-					JTextField size_val = new JTextField(""+current_size);
-
-					pole_text.setBounds((2*buffer), (3*text_height)+(4*buffer), 75, text_height);
-					pole_links.setBounds((3*buffer)+75, (3*text_height)+(4*buffer), 75, text_height);
-					angle_text.setBounds((2*buffer), (4*text_height)+(5*buffer), 75, text_height);
-					angle_val.setBounds((3*buffer)+75, (4*text_height)+(5*buffer), 75, text_height);
-					size_text.setBounds((2*buffer), (5*text_height)+(6*buffer), 75, text_height);
-					size_val.setBounds((3*buffer)+75, (5*text_height)+(6*buffer), 75, text_height);
-
-					panel.add(pole_text);
-					panel.add(pole_links);
-					panel.add(angle_text);
-					panel.add(angle_val);
-					panel.add(size_text);
-					panel.add(size_val);
-
-					okButton.addActionListener(e -> {
-						entity_prop.remove("x");
-						entity_prop.addProperty("x", x_pos_val.getText());
-
-						entity_prop.remove("y");
-						entity_prop.addProperty("y", y_pos_val.getText());
-
-						entity_prop.remove("numLinks");
-						entity_prop.addProperty("numLinks", pole_links.getText());
-
-						entity_prop.remove("angle");
-						entity_prop.addProperty("angle", angle_val.getText());
-
-						entity_prop.remove("linksize");
-						entity_prop.addProperty("linksize", size_val.getText());
-
-						entityObject.remove("INSTANCE");
-						entityObject.add("INSTANCE", entity_prop);
-
-						String temp2 = jsonLoaderSaver.stringFromJson(entityObject);
-
-						promptTemplateCallback(temp2);
-
-						entityDisplay.setVisible(false);
-						entityDisplay.dispose();
-						//panel.setVisible(false);
-						//panel.dispose();
-					});
-
-					break;
-				case ".Tree":
-					//TODO Add back in for .Tree
-					//entity_prop
-					//trunkObject, branchObject
-
-					//Edit Trunk
-//					float trunk_links = trunkObject.get("numLinks").getAsFloat();
-//					//float current_links = trunkObject.get("numLinks").getAsFloat();
-//					JLabel trunk_link_text = new JLabel("Number of links");
-//					JTextField trunk_link_val = new JTextField(""+trunk_links);
-//					//float current_stiff = entity_prop.get("stiffLen").getAsFloat();
-//					float trunk_stiff = trunkObject.get("stiffLen").getAsFloat();
-//					JLabel trunk_stiff_text = new JLabel("Trunk Stiffness");
-//					JTextField trunk_stiff_val = new JTextField(""+trunk_stiff);
-//
-//					trunk_link_text.setBounds((2*buffer), (3*text_height)+(4*buffer), 100, text_height);
-//					trunk_link_val.setBounds((3*buffer)+100, (3*text_height)+(4*buffer), 50, text_height);
-//					trunk_stiff_text.setBounds((2*buffer), (4*text_height)+(5*buffer), 100, text_height);
-//					trunk_stiff_val.setBounds((3*buffer)+100, (4*text_height)+(5*buffer), 50, text_height);
-//
-//					panel.add(trunk_link_text);
-//					panel.add(trunk_link_val);
-//					panel.add(trunk_stiff_text);
-//					panel.add(trunk_stiff_val);
-//
-//					//Edit Branch
-//
-//					float branch_stiff = branchObject.get("stiffLen").getAsFloat();
-//					//float current_branch = entityObject.get("stiffLen").getAsFloat();
-//					JLabel branch_stiff_text = new JLabel("Branch Stiffness");
-//					JTextField branch_stiff_val = new JTextField(""+branch_stiff);
-//
-//					branch_stiff_text.setBounds((2*buffer), (5*text_height)+(6*buffer), 75, text_height);
-//					branch_stiff_val.setBounds((3*buffer)+25, (5*text_height)+(6*buffer), 50, text_height);
-//
-//					panel.add(branch_stiff_text);
-//					panel.add(branch_stiff_val);
-//
-//					okButton.addActionListener(e -> {
-//						//Assign trunk parts
-//						trunkObject.remove("x");
-//						trunkObject.addProperty("x", x_pos_val.getText());
-//
-//						trunkObject.remove("y");
-//						trunkObject.addProperty("y", y_pos_val.getText());
-//
-//						trunkObject.remove("numLinks");
-//						trunkObject.addProperty("numLinks", link_val.getText());
-//
-//						trunkObject.remove("stiffLen");
-//						trunkObject.addProperty("stiffLen", stiff_val.getText());
-//
-//						entity_prop.remove("treeTrunk");
-//						entity_prop.addProperty("treeTrunk", stiff_val.getText());
-//
-//						//Assign branch parts
-//
-//						branchObject.remove("stiffLen");
-//						branchObject.addProperty("stiffLen", branch_val.getText());
-//
-//						entity_prop.remove("treeBranch");
-//						entity_prop.addProperty("treeBranch", stiff_val.getText());
-//
-//						//Put Everything Together
-//
-//						entityObject.remove("INSTANCE");
-//						entityObject.add("INSTANCE", entity_prop);
-//
-//						String temp2 = jsonLoaderSaver.stringFromJson(entityObject);
-//						promptTemplateCallback(temp2);
-//
-//						mainFrame.setVisible(false);
-//						mainFrame.dispose();
-//						//panel.setVisible(false);
-//						//panel.dispose();
-//					});
-
-
-					break;
-				case ".GhostModel":
-					float current_patrol_x = entity_prop.get("patroldx").getAsFloat();
-					float current_patrol_y = entity_prop.get("patroldy").getAsFloat();
-
-					JLabel patrol_text = new JLabel("Patrol Distance");
-					JLabel patrol_x_text = new JLabel("X:");
-					JLabel patrol_y_text = new JLabel("Y:");
-					JTextField patrol_x = new JTextField(""+current_patrol_x);
-					JTextField patrol_y = new JTextField(""+current_patrol_y);
-
-					patrol_text.setBounds((2*buffer), (3*text_height)+(4*buffer), 150, text_height);
-					patrol_x_text.setBounds((2*buffer), (4*text_height)+(5*buffer), 75, text_height);
-					patrol_x.setBounds((3*buffer)+25, (4*text_height)+(5*buffer), 75, text_height);
-					patrol_y_text.setBounds((2*buffer), (5*text_height)+(6*buffer), 75, text_height);
-					patrol_y.setBounds((3*buffer)+25, (5*text_height)+(6*buffer), 75, text_height);
-
-					panel.add(patrol_text);
-					panel.add(patrol_x_text);
-					panel.add(patrol_x);
-					panel.add(patrol_y_text);
-					panel.add(patrol_y);
-
-					okButton.addActionListener(e -> {
-						entity_prop.remove("x");
-						entity_prop.addProperty("x", x_pos_val.getText());
-
-						entity_prop.remove("y");
-						entity_prop.addProperty("y", y_pos_val.getText());
-
-						entity_prop.remove("patroldx");
-						entity_prop.addProperty("patroldx", patrol_x.getText());
-
-						entity_prop.remove("patroldy");
-						entity_prop.addProperty("patroldy", patrol_y.getText());
-
-						entityObject.remove("INSTANCE");
-						entityObject.add("INSTANCE", entity_prop);
-
-						String temp2 = jsonLoaderSaver.stringFromJson(entityObject);
-
-						promptTemplateCallback(temp2);
-
-						entityDisplay.setVisible(false);
-						entityDisplay.dispose();
-						//panel.setVisible(false);
-						//panel.dispose();
-					});
-					break;
-				default:
-					System.out.println("Invalid entity?!?!?!? What are you trying to add? @w@");
-					break;
-			}
-
+			JPanel panel = makeEntityWindow(template,entityDisplay);
 
 			entityDisplay.add(panel);
-//			JButton okButton = new JButton("OK");
-//			JLabel please_text = new JLabel("Please hit OK instead of X");
-//			okButton.addActionListener(e -> {
-//				//promptTemplateCallback(commentTextArea.getText());
-//				mainFrame.setVisible(false);
-//				mainFrame.dispose();
-//			});
-			panel.add(okButton);
 			entityDisplay.setVisible(true);
 			//panel.setVisible(true);
 		}
@@ -1059,8 +896,7 @@ public class LevelEditorController extends WorldController {
 
 		//Toggle "VIM" mode
 		if(InputController.getInstance().isVKeyPressed()) {
-			if (isVimMode()) setVimMode(false);
-			else setVimMode(true);
+			setVimMode(!isVimMode());
 			inputRateLimiter = UI_WAIT_LONG;
 		}
 
@@ -1115,8 +951,6 @@ public class LevelEditorController extends WorldController {
 			// Name level
 			if (InputController.getInstance().isNKeyPressed()) {
 				setLevelName();
-//				currentLevel = showInputDialog("What should we call this level?");
-//				inputRateLimiter = UI_WAIT_LONG;
 			}
 
 			// Load level
@@ -1175,303 +1009,286 @@ public class LevelEditorController extends WorldController {
 				//Prevent multiple windows from being created
 				guiPrompt = true;
 				//Window Settings
-				JFrame editor_window = new JFrame();
-				//JFrame entity_window = new JFrame();
+				JFrame editorWindow = new JFrame();;
 
 				//TODO Add scaling
-				int button_width = 75;
-				int button_height = 30;
+				int buttonWidth = 75;
+				int buttonHeight = 30;
 				int buffer = 6;
-				int text_length = 175;
-				int text_height = 20;
+				int textLength = 175;
+				int textHeight = 20;
 				//int field_length = 150;
-				//int field_height= text_height;
+				//int field_height= textHeight;
 
-				//editor_window.setSize(canvas.getWidth()*3/5, canvas.getHeight() + 100);
-				editor_window.setSize(canvas.getWidth()*3/5, canvas.getHeight()*2/3);
-//				JButton okButton = new JButton("ok");
-//				okButton.addActionListener(e -> {
-//					editor_window.setVisible(false);
-//					editor_window.dispose();
-//					guiPrompt = false;
-//				});
-
-				//System.out.println("X: "+editor_window.getWidth());
-				//System.out.println("Y: "+editor_window.getHeight());
-
+				editorWindow.setSize(canvas.getWidth()*3/5, canvas.getHeight()*2/3);
 
 				//"File Properties" Stuff
-				//JLabel file_text = new JLabel("File Name: "+"Temp");
-				JLabel file_text = new JLabel("File Name: ");
-				//JLabel level_text = new JLabel("Level Name: "+currentLevel);
-				JLabel level_text = new JLabel("Level Name: ");
-				//JButton file_button = new JButton("Edit");
-				//JButton level_button = new JButton("Edit");
+				JLabel fileText = new JLabel("File Name: ");
+				JLabel levelText = new JLabel("Level Name: ");
 
-				JTextField file_name = new JTextField("Temp");
-				JTextField level_name = new JTextField(currentLevel);
-				//file_button.setBounds(100*scale.x,100*scale.y,100*scale.x,100*scale.y);
+				JTextField fileName = new JTextField("Temp");
+				JTextField levelName = new JTextField(currentLevel);
 
-				//file_text.setBounds(buffer, buffer, text_length, text_height);
-				file_text.setBounds(buffer, buffer, 65, text_height);
-				//file_button.setBounds(text_length+buffer, buffer, button_width-20, button_height);
-				file_name.setBounds(65+buffer, buffer, text_length, text_height);
-				//level_text.setBounds(text_length+button_width+(buffer*5), buffer, text_length, text_height);
-				level_text.setBounds(65+text_length+(buffer*2), buffer, 75, text_height);
-				level_name.setBounds(65+75+text_length+(buffer*2), buffer, text_length, text_height);
-				//level_button.setBounds(button_width +(text_length*2)+(buffer*5), buffer, button_width-20, button_height);
+				//fileText.setBounds(buffer, buffer, textLength, textHeight);
+				fileText.setBounds(buffer, buffer, 65, textHeight);
+				//file_button.setBounds(textLength+buffer, buffer, buttonWidth-20, buttonHeight);
+				fileName.setBounds(65+buffer, buffer, textLength, textHeight);
+				//levelText.setBounds(textLength+buttonWidth+(buffer*5), buffer, textLength, textHeight);
+				levelText.setBounds(65+textLength+(buffer*2), buffer, 75, textHeight);
+				levelName.setBounds(65+75+textLength+(buffer*2), buffer, textLength, textHeight);
+				//level_button.setBounds(buttonWidth +(textLength*2)+(buffer*5), buffer, buttonWidth-20, buttonHeight);
 
 				//Load/Save Button
-				JButton load_button = new JButton("Load");
-				JButton save_button = new JButton("Save");
+				JButton loadButton = new JButton("Load");
+				JButton saveButton = new JButton("Save");
 
-				load_button.setBounds(65+75+(2*text_length)+(buffer*3), buffer, button_width, button_height);
-				save_button.setBounds(65+75+(2*text_length)+(buffer*3), (2*buffer)+button_height, button_width, button_height);
+				loadButton.setBounds(65+75+(2*textLength)+(buffer*3), buffer, buttonWidth, buttonHeight);
+				saveButton.setBounds(65+75+(2*textLength)+(buffer*3), (2*buffer)+buttonHeight, buttonWidth, buttonHeight);
 
-				load_button.addActionListener(e -> {
+				loadButton.addActionListener(e -> {
 					loadLevel();
-					//System.out.println("BAP");
 				});
 
-				save_button.addActionListener(e -> {
-					//editor_window.setVisible(false);
-					//editor_window.dispose();
+				saveButton.addActionListener(e -> {
+					//editorWindow.setVisible(false);
+					//editorWindow.dispose();
 					//guiPrompt = false;
 
-					//currentFile = file_name.getText(); ?!?!?!?
-					currentLevel = level_name.getText();
+					currentLevel = levelName.getText();
 					saveLevel();
 					//System.out.println("BOOP");
 				});
 
 //				file_button.addActionListener(e -> {
-//					//editor_window.setVisible(false);
-//					//editor_window.dispose();
+//					//editorWindow.setVisible(false);
+//					//editorWindow.dispose();
 //					//guiPrompt = false;
 //					System.out.println("BOOP");
 //				});
 //
 //				level_button.addActionListener(e -> {
-//					//editor_window.setVisible(false);
-//					//editor_window.dispose();
+//					//editorWindow.setVisible(false);
+//					//editorWindow.dispose();
 //					//guiPrompt = false;
 //					setLevelName();
 //				});
 
 				//Add all file properties to the editor window
-				editor_window.add(file_text);
-				editor_window.add(file_name);
-				//editor_window.add(file_button);
-				editor_window.add(level_text);
-				editor_window.add(level_name);
-				//editor_window.add(level_button);
-				editor_window.add(load_button);
-				editor_window.add(save_button);
+				editorWindow.add(fileText);
+				editorWindow.add(fileName);
+				//editorWindow.add(file_button);
+				editorWindow.add(levelText);
+				editorWindow.add(levelName);
+				//editorWindow.add(level_button);
+				editorWindow.add(loadButton);
+				editorWindow.add(saveButton);
 
 				//Stage Dimensions & Background
 
 				//STUFF
-				JLabel bg_text = new JLabel("Current BG: ");
-				//JTextField bg_name = new JTextField();
-				JLabel bg_name = new JLabel("BACKGROUND_NAME");
-				JButton bg_button = new JButton("Edit");
-				JLabel size_text = new JLabel("Stage Size: ");
-				JButton size_button = new JButton("Apply");
-				JLabel width_text = new JLabel("Width: ");
-				JLabel height_text = new JLabel("Height: ");
-				JTextField width_val = new JTextField();
-				JTextField height_val = new JTextField();
+				JLabel bgText = new JLabel("Current BG: ");
+				//JTextField bgName = new JTextField();
+				JLabel bgName = new JLabel("BACKGROUND_NAME");
+				JButton bgButton = new JButton("Edit");
+				JLabel sizeText = new JLabel("Stage Size: ");
+				JButton sizeButton = new JButton("Apply");
+				JLabel widthText = new JLabel("Width: ");
+				JLabel heightText = new JLabel("Height: ");
+				JTextField widthVal = new JTextField();
+				JTextField heightVal = new JTextField();
 
 				//
 
-				int col_buffer = 125; //New location
-				int col2_buffer = 175; //New location
+				int colBuffer = 125; //New location
+				int col2Buffer = 175; //New location
 
-				bg_text.setBounds(buffer, text_height+(3*buffer), 75, text_height);
-				bg_name.setBounds(buffer+25, (text_height*2)+(5*buffer), 200, text_height);
-				bg_button.setBounds((2*buffer)+75, text_height+(3*buffer), 60, text_height);
-//				start_x_text.setBounds((3*buffer), (text_height*3)+(4*buffer), 25, text_height);
-//				start_x_pos.setBounds((3*buffer)+25, (text_height*3)+(4*buffer), 50, text_height);
-//				start_y_text.setBounds((3*buffer), (text_height*4)+(5*buffer), 25, text_height);
-//				start_y_pos.setBounds((3*buffer)+25, (text_height*4)+(5*buffer), 50, text_height);
-				size_text.setBounds(buffer+col_buffer+col2_buffer, text_height+(3*buffer), 75, text_height);
-				size_button.setBounds(buffer+col_buffer+col2_buffer+75, text_height+(3*buffer), 75, text_height);
-				//rank_text.setBounds(buffer+col_buffer+col2_buffer , (text_height*2)+(3*buffer), 100, text_height);
-				width_text.setBounds((3*buffer)+col_buffer+col2_buffer , (text_height*2)+(4*buffer), 50, text_height);
-				width_val.setBounds((3*buffer)+50+col_buffer+col2_buffer , (text_height*2)+(4*buffer), 50, text_height);
-				height_text.setBounds((3*buffer)+col_buffer+col2_buffer , (text_height*3)+(5*buffer), 50, text_height);
-				height_val.setBounds((3*buffer)+50+col_buffer+col2_buffer , (text_height*3)+(5*buffer), 50, text_height);
-				//rank_b_text.setBounds((3*buffer)+col_buffer+col2_buffer , (text_height*4)+(5*buffer), 50, text_height);
-				//rank_b_time.setBounds((3*buffer)+50+col_buffer+col2_buffer , (text_height*4)+(5*buffer), 50, text_height);
+				bgText.setBounds(buffer, textHeight+(3*buffer), 75, textHeight);
+				bgName.setBounds(buffer+25, (textHeight*2)+(5*buffer), 200, textHeight);
+				bgButton.setBounds((2*buffer)+75, textHeight+(3*buffer), 60, textHeight);
+//				startXText.setBounds((3*buffer), (textHeight*3)+(4*buffer), 25, textHeight);
+//				startXPos.setBounds((3*buffer)+25, (textHeight*3)+(4*buffer), 50, textHeight);
+//				startYText.setBounds((3*buffer), (textHeight*4)+(5*buffer), 25, textHeight);
+//				startYPos.setBounds((3*buffer)+25, (textHeight*4)+(5*buffer), 50, textHeight);
+				sizeText.setBounds(buffer+colBuffer+col2Buffer, textHeight+(3*buffer), 75, textHeight);
+				sizeButton.setBounds(buffer+colBuffer+col2Buffer+75, textHeight+(3*buffer), 75, textHeight);
+				//rank_text.setBounds(buffer+colBuffer+col2Buffer , (textHeight*2)+(3*buffer), 100, textHeight);
+				widthText.setBounds((3*buffer)+colBuffer+col2Buffer , (textHeight*2)+(4*buffer), 50, textHeight);
+				widthVal.setBounds((3*buffer)+50+colBuffer+col2Buffer , (textHeight*2)+(4*buffer), 50, textHeight);
+				heightText.setBounds((3*buffer)+colBuffer+col2Buffer , (textHeight*3)+(5*buffer), 50, textHeight);
+				heightVal.setBounds((3*buffer)+50+colBuffer+col2Buffer , (textHeight*3)+(5*buffer), 50, textHeight);
+				//rankBText.setBounds((3*buffer)+colBuffer+col2Buffer , (textHeight*4)+(5*buffer), 50, textHeight);
+				//rankBTime.setBounds((3*buffer)+50+colBuffer+col2Buffer , (textHeight*4)+(5*buffer), 50, textHeight);
 
-				bg_button.addActionListener(e -> {
+				bgButton.addActionListener(e -> {
 					//TODO Get image file name and apply background
-					bg_name.setText("Not implemented yet!"); //Assign new file name to display
+					bgName.setText("Not implemented yet!"); //Assign new file name to display
 					//loadLevel();
 				});
 
-				size_button.addActionListener(e -> {
+				sizeButton.addActionListener(e -> {
 					//TODO Apply change to level size
 					//Change level size
-					//width_val.setText("Not implemented yet!");
-					width_val.setText("Nah!");
-					height_val.setText("Nope!");
+					//widthVal.setText("Not implemented yet!");
+					widthVal.setText("Nah!");
+					heightVal.setText("Nope!");
 					//loadLevel();
 				});
 
-				int oops_buffer = (2*text_height)+(7*buffer); //Apply to everything below here \/
+				int oopsBuffer = (2*textHeight)+(7*buffer); //Apply to everything below here \/
 
-//				bg_text.setBounds();
-//				bg_name.setBounds();
-//				size_text.setBounds();
-//				width_text.setBounds();
-//				height_text.setBounds();
-//				width_val.setBounds();
-//				height_val.setBounds();
+//				bgText.setBounds();
+//				bgName.setBounds();
+//				sizeText.setBounds();
+//				widthText.setBounds();
+//				heightText.setBounds();
+//				widthVal.setBounds();
+//				heightVal.setBounds();
 
-				editor_window.add(bg_text);
-				editor_window.add(bg_name);
-				editor_window.add(bg_button);
-				editor_window.add(size_text);
-				editor_window.add(size_button);
-				editor_window.add(width_text);
-				editor_window.add(height_text);
-				editor_window.add(width_val);
-				editor_window.add(height_val);
+				editorWindow.add(bgText);
+				editorWindow.add(bgName);
+				editorWindow.add(bgButton);
+				editorWindow.add(sizeText);
+				editorWindow.add(sizeButton);
+				editorWindow.add(widthText);
+				editorWindow.add(heightText);
+				editorWindow.add(widthVal);
+				editorWindow.add(heightVal);
 
 				//Starting/Ending Fields
 
-				JLabel sg_header_text = new JLabel("Start and Goal Positions");
-				JLabel start_text = new JLabel("Start:");
-				JLabel start_x_text = new JLabel("X: ");
-				JLabel start_y_text = new JLabel("Y: ");
-				JLabel goal_text = new JLabel("Goal:");
-				JLabel goal_x_text = new JLabel("X: ");
-				JLabel goal_y_text = new JLabel("Y: ");
+				JLabel sgHeaderText = new JLabel("Start and Goal Positions");
+				JLabel startText = new JLabel("Start:");
+				JLabel startXText = new JLabel("X: ");
+				JLabel startYText = new JLabel("Y: ");
+				JLabel goalText = new JLabel("Goal:");
+				JLabel goalXText = new JLabel("X: ");
+				JLabel goalYText = new JLabel("Y: ");
 
-				JTextField start_x_pos = new JTextField();
-				JTextField start_y_pos = new JTextField();
-				JTextField goal_x_pos = new JTextField();
-				JTextField goal_y_pos = new JTextField();
+				JTextField startXPos = new JTextField();
+				JTextField startYPos = new JTextField();
+				JTextField goalXPos = new JTextField();
+				JTextField goalYPos = new JTextField();
 
-				JButton start_button = new JButton("Edit");
-				JButton goal_button = new JButton("Edit");
+				JButton startButton = new JButton("Edit");
+				JButton goalButton = new JButton("Edit");
 
-				sg_header_text.setBounds(buffer, text_height+(3*buffer)+oops_buffer, 175, text_height);
-				start_text.setBounds(buffer, (text_height*2)+(3*buffer+oops_buffer), 50, text_height);
-				start_button.setBounds((2*buffer)+35, (text_height*2)+(3*buffer)+oops_buffer, 60, text_height);
-				start_x_text.setBounds((3*buffer), (text_height*3)+(4*buffer)+oops_buffer, 25, text_height);
-				start_x_pos.setBounds((3*buffer)+25, (text_height*3)+(4*buffer)+oops_buffer, 50, text_height);
-				start_y_text.setBounds((3*buffer), (text_height*4)+(5*buffer)+oops_buffer, 25, text_height);
-				start_y_pos.setBounds((3*buffer)+25, (text_height*4)+(5*buffer)+oops_buffer, 50, text_height);
+				sgHeaderText.setBounds(buffer, textHeight+(3*buffer)+oopsBuffer, 175, textHeight);
+				startText.setBounds(buffer, (textHeight*2)+(3*buffer+oopsBuffer), 50, textHeight);
+				startButton.setBounds((2*buffer)+35, (textHeight*2)+(3*buffer)+oopsBuffer, 60, textHeight);
+				startXText.setBounds((3*buffer), (textHeight*3)+(4*buffer)+oopsBuffer, 25, textHeight);
+				startXPos.setBounds((3*buffer)+25, (textHeight*3)+(4*buffer)+oopsBuffer, 50, textHeight);
+				startYText.setBounds((3*buffer), (textHeight*4)+(5*buffer)+oopsBuffer, 25, textHeight);
+				startYPos.setBounds((3*buffer)+25, (textHeight*4)+(5*buffer)+oopsBuffer, 50, textHeight);
 
-				//int col_buffer = 125;
-				goal_text.setBounds(buffer+col_buffer , (text_height*2)+(3*buffer)+oops_buffer, 50, text_height);
-				goal_button.setBounds((2*buffer)+35+col_buffer, (text_height*2)+(3*buffer)+oops_buffer, 60, text_height);
-				goal_x_text.setBounds((3*buffer)+col_buffer , (text_height*3)+(4*buffer)+oops_buffer, 25, text_height);
-				goal_x_pos.setBounds((3*buffer)+25+col_buffer , (text_height*3)+(4*buffer)+oops_buffer, 50, text_height);
-				goal_y_text.setBounds((3*buffer)+col_buffer , (text_height*4)+(5*buffer)+oops_buffer, 25, text_height);
-				goal_y_pos.setBounds((3*buffer)+25+col_buffer , (text_height*4)+(5*buffer)+oops_buffer, 50, text_height);
+				//int colBuffer = 125;
+				goalText.setBounds(buffer+colBuffer , (textHeight*2)+(3*buffer)+oopsBuffer, 50, textHeight);
+				goalButton.setBounds((2*buffer)+35+colBuffer, (textHeight*2)+(3*buffer)+oopsBuffer, 60, textHeight);
+				goalXText.setBounds((3*buffer)+colBuffer , (textHeight*3)+(4*buffer)+oopsBuffer, 25, textHeight);
+				goalXPos.setBounds((3*buffer)+25+colBuffer , (textHeight*3)+(4*buffer)+oopsBuffer, 50, textHeight);
+				goalYText.setBounds((3*buffer)+colBuffer , (textHeight*4)+(5*buffer)+oopsBuffer, 25, textHeight);
+				goalYPos.setBounds((3*buffer)+25+colBuffer , (textHeight*4)+(5*buffer)+oopsBuffer, 50, textHeight);
 
-				start_button.addActionListener(e -> {
+				startButton.addActionListener(e -> {
 					//TODO Enable manual selection of start position
-					System.out.println("BAP");
+					System.err.println("Unimplemented");
 				});
 
-				goal_button.addActionListener(e -> {
+				goalButton.addActionListener(e -> {
 					//TODO Enable manual selection of goal position
-					System.out.println("BLAH");
+					System.err.println("Unimplemented");
 				});
 
 				//Add all Starting/Ending Fields to the editor window
-				editor_window.add(sg_header_text);
-				editor_window.add(start_text);
-				editor_window.add(start_x_text);
-				editor_window.add(start_y_text);
-				editor_window.add(goal_text);
-				editor_window.add(goal_x_text);
-				editor_window.add(goal_y_text);
+				//Taken out because may not need
 
-				editor_window.add(start_x_pos);
-				editor_window.add(start_y_pos);
-				editor_window.add(goal_x_pos);
-				editor_window.add(goal_y_pos);
-
-				editor_window.add(start_button);
-				editor_window.add(goal_button);
+//				editorWindow.add(sgHeaderText);
+//				editorWindow.add(startText);
+//				editorWindow.add(startXText);
+//				editorWindow.add(startYText);
+//				editorWindow.add(goalText);
+//				editorWindow.add(goalXText);
+//				editorWindow.add(goalYText);
+//
+//				editorWindow.add(startXPos);
+//				editorWindow.add(startYPos);
+//				editorWindow.add(goalXPos);
+//				editorWindow.add(goalYPos);
+//
+//				editorWindow.add(startButton);
+//				editorWindow.add(goalButton);
 
 				//Goal Time Properties
 
-				JLabel rank_header_text = new JLabel("Ranking Thresholds (Seconds)");
+				JLabel rankHeaderText = new JLabel("Ranking Thresholds (Seconds)");
 				//JLabel rank_text = new JLabel("Time ");
-				JLabel rank_g_text = new JLabel("Gold: ");
-				JLabel rank_s_text = new JLabel("Silver: ");
-				JLabel rank_b_text = new JLabel("Bronze: ");
+				JLabel rankGText = new JLabel("Gold: ");
+				JLabel rankSText = new JLabel("Silver: ");
+				JLabel rankBText = new JLabel("Bronze: ");
 
-				JTextField rank_g_time = new JTextField();
-				JTextField rank_s_time = new JTextField();
-				JTextField rank_b_time = new JTextField();
+				JTextField rankGTime = new JTextField();
+				JTextField rankSTime = new JTextField();
+				JTextField rankBTime = new JTextField();
 
-				//int col2_buffer = 175;
-				rank_header_text.setBounds(buffer+col_buffer+col2_buffer, text_height+(3*buffer)+oops_buffer, 200, text_height);
-				//rank_text.setBounds(buffer+col_buffer+col2_buffer , (text_height*2)+(3*buffer), 100, text_height);
-				rank_g_text.setBounds((3*buffer)+col_buffer+col2_buffer , (text_height*2)+(3*buffer)+oops_buffer, 50, text_height);
-				rank_g_time.setBounds((3*buffer)+50+col_buffer+col2_buffer , (text_height*2)+(3*buffer)+oops_buffer, 50, text_height);
-				rank_s_text.setBounds((3*buffer)+col_buffer+col2_buffer , (text_height*3)+(4*buffer)+oops_buffer, 50, text_height);
-				rank_s_time.setBounds((3*buffer)+50+col_buffer+col2_buffer , (text_height*3)+(4*buffer)+oops_buffer, 50, text_height);
-				rank_b_text.setBounds((3*buffer)+col_buffer+col2_buffer , (text_height*4)+(5*buffer)+oops_buffer, 50, text_height);
-				rank_b_time.setBounds((3*buffer)+50+col_buffer+col2_buffer , (text_height*4)+(5*buffer)+oops_buffer, 50, text_height);
-				//rank_b_text.setBounds((3*buffer)+col_buffer+col2_buffer , (text_height*5)+(6*buffer), 50, text_height);
-				//rank_b_time.setBounds((3*buffer)+50+col_buffer+col2_buffer , (text_height*5)+(6*buffer), 50, text_height);
+				//int col2Buffer = 175;
+				rankHeaderText.setBounds(buffer+colBuffer+col2Buffer, textHeight+(3*buffer)+oopsBuffer, 200, textHeight);
+				//rank_text.setBounds(buffer+colBuffer+col2Buffer , (textHeight*2)+(3*buffer), 100, textHeight);
+				rankGText.setBounds((3*buffer)+colBuffer+col2Buffer , (textHeight*2)+(3*buffer)+oopsBuffer, 50, textHeight);
+				rankGTime.setBounds((3*buffer)+50+colBuffer+col2Buffer , (textHeight*2)+(3*buffer)+oopsBuffer, 50, textHeight);
+				rankSText.setBounds((3*buffer)+colBuffer+col2Buffer , (textHeight*3)+(4*buffer)+oopsBuffer, 50, textHeight);
+				rankSTime.setBounds((3*buffer)+50+colBuffer+col2Buffer , (textHeight*3)+(4*buffer)+oopsBuffer, 50, textHeight);
+				rankBText.setBounds((3*buffer)+colBuffer+col2Buffer , (textHeight*4)+(5*buffer)+oopsBuffer, 50, textHeight);
+				rankBTime.setBounds((3*buffer)+50+colBuffer+col2Buffer , (textHeight*4)+(5*buffer)+oopsBuffer, 50, textHeight);
+				//rankBText.setBounds((3*buffer)+colBuffer+col2Buffer , (textHeight*5)+(6*buffer), 50, textHeight);
+				//rankBTime.setBounds((3*buffer)+50+colBuffer+col2Buffer , (textHeight*5)+(6*buffer), 50, textHeight);
 
-				editor_window.add(rank_header_text);
-				//editor_window.add(rank_text);
-				editor_window.add(rank_g_text);
-				editor_window.add(rank_s_text);
-				editor_window.add(rank_b_text);
+				editorWindow.add(rankHeaderText);
+				//editorWindow.add(rank_text);
+				editorWindow.add(rankGText);
+				editorWindow.add(rankSText);
+				editorWindow.add(rankBText);
 
-				editor_window.add(rank_g_time);
-				editor_window.add(rank_s_time);
-				editor_window.add(rank_b_time);
+				editorWindow.add(rankGTime);
+				editorWindow.add(rankSTime);
+				editorWindow.add(rankBTime);
 
 				//Adding Entities
 
-				JLabel add_entity_header = new JLabel("Choose Entity to Add");
-				JComboBox entity_types = new JComboBox(creationOptions);
-				JButton entity_button = new JButton("Add Entity");
+				JLabel addEntityHeader = new JLabel("Choose Entity to Add");
+				JComboBox entityTypes = new JComboBox(creationOptions);
+				JButton entityButton = new JButton("Add Entity");
 //				JLabel entity_x_text = new JLabel("X: ");
 //				JLabel entity_y_text = new JLabel("Y: ");
 //				JTextField entity_x_val = new JTextField();
 //				JTextField entity_y_val = new JTextField();
 
-				add_entity_header.setBounds(buffer, (text_height*5)+(7*buffer)+oops_buffer, 175, text_height);
-				entity_types.setBounds(buffer, (text_height*6)+(8*buffer)+oops_buffer, 100, text_height);
-				entity_button.setBounds(100+(2*buffer), (text_height*6)+(8*buffer)+oops_buffer, 100, text_height);
+				addEntityHeader.setBounds(buffer, (textHeight*5)+(7*buffer)+oopsBuffer, 175, textHeight);
+				entityTypes.setBounds(buffer, (textHeight*6)+(8*buffer)+oopsBuffer, 100, textHeight);
+				entityButton.setBounds(100+(2*buffer), (textHeight*6)+(8*buffer)+oopsBuffer, 100, textHeight);
 
-				entity_button.addActionListener(e -> {
+				entityButton.addActionListener(e -> {
 					//TODO FIgure out why can't add object to center of screen
 
 					//getEntityParam();
 					//editEntity(adjustedMouseX,adjustedMouseY); //TESTING
 
-					entityIndex = entity_types.getSelectedIndex();
-					createXY(cxCamera,cyCamera);
-					System.out.println("BAP");
+					entityIndex = entityTypes.getSelectedIndex();
+					createXY(-cxCamera,-cyCamera);
+					//System.out.println("BAP");
 				});
 
-				editor_window.add(add_entity_header);
-				editor_window.add(entity_types);
-				editor_window.add(entity_button);
+				editorWindow.add(addEntityHeader);
+				editorWindow.add(entityTypes);
+				editorWindow.add(entityButton);
 
 				//TODO Add ability to edit entity parameters (on click/selecting only?)
 
-				JLabel edit_entity_header = new JLabel("Click a Stage Entity to Edit It");
-				//JComboBox entity_types = new JComboBox(creationOptions);
-				//JButton entity_button = new JButton("Add Entity");
+				JLabel editEntityHeader = new JLabel("Click a Stage Entity to Edit It");
+				//JComboBox entityTypes = new JComboBox(creationOptions);
+				//JButton entityButton = new JButton("Add Entity");
 
-				edit_entity_header.setBounds(100+(2*buffer), (text_height*7)+(10*buffer)+oops_buffer, 250, text_height);
+				editEntityHeader.setBounds(100+(2*buffer), (textHeight*7)+(10*buffer)+oopsBuffer, 250, textHeight);
 
-				editor_window.add(edit_entity_header);
+				editorWindow.add(editEntityHeader);
 
 				//On left click = get entity at coordinate via same looping method used in promptTemplate
 				//
@@ -1479,8 +1296,8 @@ public class LevelEditorController extends WorldController {
 				//promptTemplate
 
 				//Display Everything
-				editor_window.setLayout(null);
-				editor_window.setVisible(true);
+				editorWindow.setLayout(null);
+				editorWindow.setVisible(true);
 
 
 
@@ -1492,8 +1309,7 @@ public class LevelEditorController extends WorldController {
 					editEntity(adjustedMouseX, adjustedMouseY);
 				}
 				catch (Exception e){
-					System.out.println(e);
-					System.out.println("Derp?");
+					e.printStackTrace();
 				}
 			}
 		}
@@ -1545,13 +1361,16 @@ public class LevelEditorController extends WorldController {
 
 		// Text- independent of where you scroll
 		canvas.begin(); // DO NOT SCALE
-		float x_pos = canvas.getWidth()-425;
-		float y_pos = canvas.getHeight() - 15;
+		float xPos = canvas.getWidth()-425;
+		float yPos = canvas.getHeight() - 15;
 
-		canvas.drawTextStandard("HOLD SHIFT + MOVE CURSOR TO ADJUST THE CAMERA", x_pos, y_pos);
+		//TODO Figure out why this causes NullPointer Exception
+		//displayFont.setColor(Color.GREEN);
+
+		canvas.drawTextStandard("HOLD SHIFT + MOVE CURSOR TO ADJUST THE CAMERA", xPos, yPos);
 
 		if (isVimMode()) {
-			//float x_pos = (canvas.getWidth()/2)-100;
+			//float xPos = (canvas.getWidth()/2)-100;
 			canvas.drawTextStandard("VIM MODE ENABLED (Press V to toggle)", 5, canvas.getHeight() - 15);
 
 			if (showHelp) {
@@ -1564,21 +1383,21 @@ public class LevelEditorController extends WorldController {
 			}
 
 
-			canvas.drawTextStandard("MOUSE: " + adjustedMouseX + " , " + adjustedMouseY, 10.0f, 140.0f);
-			canvas.drawTextStandard(-cxCamera / worldScale.x + "," + -cyCamera / worldScale.y, 10.0f, 120.0f);
-			canvas.drawTextStandard("Level: " + currentLevel, 10.0f, 100.0f);
 			canvas.drawTextStandard("Creating: " + creationOptions[tentativeEntityIndex], 10.0f, 80.0f);
 			if (tentativeEntityIndex != entityIndex) {
 				canvas.drawTextStandard("Hit Enter to Select New Object Type.", 10.0f, 60.0f);
 			}
-			//else canvas.drawTextStandard("VIM MODE DISABLED (Press V to toggle)", x_pos, y_pos);
+
 		}
+		canvas.drawTextStandard("MOUSE: " + adjustedMouseX + " , " + adjustedMouseY, 10.0f, 140.0f);
+		canvas.drawTextStandard("Camera: " + (-cxCamera / worldScale.x) + "," + (-cyCamera / worldScale.y), 10.0f, 120.0f);
+		canvas.drawTextStandard("Level: " + currentLevel, 10.0f, 100.0f);
+
 		canvas.end();
 	}
 
 	@Override
 	public void postUpdate(float dt) {
-		// Add any objects created by actions
 		// Add any objects created by actions
 		while (!addQueue.isEmpty()) {
 			addObject(addQueue.poll());
