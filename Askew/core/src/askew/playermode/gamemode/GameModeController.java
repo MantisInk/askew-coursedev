@@ -22,7 +22,9 @@ import askew.playermode.WorldController;
 import askew.playermode.leveleditor.LevelModel;
 import askew.util.SoundController;
 import askew.util.json.JSONLoaderSaver;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -56,11 +58,15 @@ public class GameModeController extends WorldController {
 	private static boolean playerIsReady = false;
 
 	@Setter
-	private String loadLevel;
+	private String loadLevel, DEFAULT_LEVEL;
+	private int numLevel, MAX_LEVEL; 	// track int val of lvl #
 
 	private PhysicsController collisions;
 
 	private JSONLoaderSaver jsonLoaderSaver;
+	private float initFlowX;
+	private float initFlowY;
+	private Texture background;
 
 	/**
 	 * Preloads the assets for this controller.
@@ -76,6 +82,7 @@ public class GameModeController extends WorldController {
 		if (platformAssetState != AssetState.EMPTY) {
 			return;
 		}
+		manager.load("sound/music/askew.wav", Sound.class);
 		platformAssetState = AssetState.LOADING;
 		jsonLoaderSaver.setManager(manager);
 		super.preLoadContent(manager);
@@ -97,6 +104,8 @@ public class GameModeController extends WorldController {
 		}
 
 		//SoundController sounds = SoundController.getInstance();
+		SoundController.getInstance().allocate(manager, "sound/music/askew.wav");
+		background = manager.get("texture/background/background1.png", Texture.class);
 
 		super.loadContent(manager);
 		platformAssetState = AssetState.COMPLETE;
@@ -134,13 +143,25 @@ public class GameModeController extends WorldController {
 		collisions = new PhysicsController();
 		world.setContactListener(collisions);
 		sensorFixtures = new ObjectSet<Fixture>();
-		loadLevel = GlobalConfiguration.getInstance().getAsString("defaultLevel");
+		DEFAULT_LEVEL = GlobalConfiguration.getInstance().getAsString("defaultLevel");
+		MAX_LEVEL = GlobalConfiguration.getInstance().getAsInt("maxLevel");
+		loadLevel = DEFAULT_LEVEL;
 		jsonLoaderSaver = new JSONLoaderSaver();
 	}
 
-	public void setLevel(String levelName) {
-		loadLevel = levelName;
+	public void setLevel(int lvl) {
+		numLevel = lvl;
+		if (lvl == 0) {
+			loadLevel = DEFAULT_LEVEL;
+		} else if (lvl > MAX_LEVEL) {
+			loadLevel = "level"+MAX_LEVEL;
+			System.out.println("MM");
+			listener.exitScreen(this, EXIT_GM_MM);
+		} else
+			loadLevel = "level"+lvl;
 	}
+
+	public void incrLevel() {setLevel(numLevel+1);}
 
 	/**
 	 * Resets the status of the game so that we can play again.
@@ -172,7 +193,8 @@ public class GameModeController extends WorldController {
 		setComplete(false);
 		setFailure(false);
 		populateLevel();
-
+		if (!SoundController.getInstance().isActive("bgmusic"))
+			SoundController.getInstance().play("bgmusic","sound/music/askew.wav",true);
 	}
 
 	/**
@@ -180,7 +202,6 @@ public class GameModeController extends WorldController {
 	 */
 	private void populateLevel() {
 			jsonLoaderSaver.setScale(this.worldScale);
-
 			try {
 				LevelModel lm = jsonLoaderSaver.loadLevel(loadLevel);
 				System.out.println(loadLevel);
@@ -190,19 +211,19 @@ public class GameModeController extends WorldController {
 
 				for (Entity o : lm.getEntities()) {
 					// drawing
-					if (o instanceof Obstacle) {
-						addObject((Obstacle) o);
-					} else {
-						System.err.println("Trying to add non-obstacle ent!");
-					}
+
+					addObject( o);
 					if (o instanceof SlothModel) {
 						sloth = (SlothModel) o;
 						sloth.activateSlothPhysics(world);
 						collisions.setSloth(sloth);
+						initFlowX = sloth.getX();
+						initFlowY = sloth.getY();
 					}
 					if (o instanceof OwlModel) {
 						owl = (OwlModel) o;
 					}
+
 				}
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
@@ -276,19 +297,8 @@ public class GameModeController extends WorldController {
 
 	public void printHelp(){
 		//Display waiting text if not ready
-		//if (!PlatformController.getPlayerIsReady()) {//Boop
 		displayFont.setColor(Color.YELLOW);
-//			canvas.begin(); // DO NOT SCALE
-		//canvas.drawTextCentered("Hold R at the start!", displayFont, 0.0f);
-		//canvas.drawText(String text, BitmapFont font, float x, float y) {
-		SlothModel sloth = getSloth();
-//			float x_pos = -1 * sloth.getBody().getPosition().x * sloth.getDrawScale().x;
-//			float y_pos = -1 * sloth.getBody().getPosition().y * sloth.getDrawScale().y;
-		float x_pos = sloth.getBody().getPosition().x;
-		float y_pos = sloth.getBody().getPosition().y;
-		canvas.drawText("Hold RB/LB \n to start!", displayFont, 0.0f, 550.0f);
-//			canvas.end();
-		//}
+		canvas.drawText("Hold RB/LB \n to start!", displayFont, initFlowX * worldScale.x, initFlowY * worldScale.y + 200f);
 	}
 
 	/**
@@ -313,12 +323,12 @@ public class GameModeController extends WorldController {
 		sloth.setRightStickPressed(InputController.getInstance().getRightStickPressed());
 
 		//#TODO Collision states check
-		setComplete(collisions.isFlowKill());
+		setFailure(collisions.isFlowKill());
 
 		Body leftCollisionBody = collisions.getLeftBody();
 		Body rightCollisionBody = collisions.getRightBody();
 
-		if ((leftCollisionBody != null && leftCollisionBody.getUserData() == owl) || (rightCollisionBody != null && rightCollisionBody.getUserData() == owl)) {
+		if (collisions.isFlowWin()) {
 			System.out.println("VICTORY");
 			setComplete(true);
 		}
@@ -345,7 +355,12 @@ public class GameModeController extends WorldController {
 
 		if (isComplete()) {
 			System.out.println("GG");
-			listener.exitScreen(this, EXIT_GM_LE);
+			listener.exitScreen(this, EXIT_GM_GM);
+		}
+
+		if(isFailure()){
+			System.out.println("Fail");
+			reset();
 		}
 	}
 
@@ -357,19 +372,23 @@ public class GameModeController extends WorldController {
 
     	camTrans.translate(canvas.getWidth()/2,canvas.getHeight()/2);
 
-		sloth.drawGrab(canvas, camTrans);
+    	canvas.begin();
+		canvas.draw(background);
+		canvas.end();
+
 		canvas.begin(camTrans);
+		//canvas.draw(background, Color.WHITE, .25f*background.getWidth(),.75f * background.getHeight(),initFlowX*worldScale.x,initFlowY*worldScale.y,background.getWidth(), background.getHeight());
 
 		for(Entity obj : objects) {
 			obj.setDrawScale(worldScale);
 			obj.draw(canvas);
 		}
 
-
-
 		if (!playerIsReady)
 			printHelp();
 		canvas.end();
+		sloth.drawGrab(canvas, camTrans);
+
 
 		if (debug) {
 			canvas.beginDebug(camTrans);

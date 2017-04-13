@@ -1,0 +1,98 @@
+{
+  "levelModelVersion": 1,
+  "title": "level2",
+  "goalTimeGold": 30,
+  "goalTimeSilver": 45,
+  "goalTimeBronze": 60,
+  "height": 10,
+  "width": 10,
+  "entities": [
+    {
+      "CLASSNAME": "askew.entity.owl.OwlModel",
+      "INSTANCE": {
+        "x": 17.0,
+        "y": 8.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 13.5,
+        "y": 12.0,
+        "stiffLen": 0.0,
+        "angle": 225.0,
+        "linksize": 1.0,
+        "numLinks": 3.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 9.5,
+        "y": 13.0,
+        "stiffLen": 0.0,
+        "angle": 270.0,
+        "linksize": 1.0,
+        "numLinks": 2.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 5.0,
+        "y": 13.0,
+        "stiffLen": 0.0,
+        "angle": 270.0,
+        "linksize": 1.0,
+        "numLinks": 2.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": -1.0,
+        "y": 13.0,
+        "stiffLen": 0.0,
+        "angle": 270.0,
+        "linksize": 1.0,
+        "numLinks": 5.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": -5.0,
+        "y": 15.0,
+        "stiffLen": 0.0,
+        "angle": 270.0,
+        "linksize": 1.0,
+        "numLinks": 5.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.sloth.SlothModel",
+      "INSTANCE": {
+        "x": -3.0,
+        "y": 19.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.wall.WallModel",
+      "INSTANCE": {
+        "x": -14.0,
+        "y": 5.0,
+        "thorn": true,
+        "points": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          38.0,
+          1.0,
+          38.0,
+          0.0
+        ]
+      }
+    }
+  ]
+}

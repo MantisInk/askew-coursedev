@@ -75,7 +75,8 @@ public class JsonEntityFactory {
         float x = instance.get("x").getAsFloat();
         float y = instance.get("y").getAsFloat();
         float stiff = instance.get("stiffLen").getAsFloat();
-        branch = new StiffBranch(x, y, stiff, 0.25f, 1f,scale);
+        float angle = instance.get("angle").getAsFloat();
+        branch = new StiffBranch(x, y, stiff, 0.25f, 1f,scale, angle);
         branch.setDrawScale(scale.x, scale.y);
         branch.setTextures(manager);
         return branch;
@@ -86,7 +87,8 @@ public class JsonEntityFactory {
         float x = instance.get("x").getAsFloat();
         float y = instance.get("y").getAsFloat();
         float stiff = instance.get("stiffLen").getAsFloat();
-        branch = new StiffBranch(tr.final_norm.x, tr.final_norm.y, stiff, 0.25f, 1f,scale);
+        float angle = instance.get("angle").getAsFloat();
+        branch = new StiffBranch(tr.final_norm.x, tr.final_norm.y, stiff, 0.25f, 1f,scale, angle);
         branch.setDrawScale(scale.x, scale.y);
         branch.setTextures(manager);
         return branch;
@@ -141,5 +143,24 @@ public class JsonEntityFactory {
         ghost.setDrawScale(scale.x, scale.y);
         ghost.setTextures(manager);
         return ghost;
+    }
+
+    public static BackgroundEntity createBGEntity(MantisAssetManager manager, JsonObject instance, Vector2 scale) {
+        BackgroundEntity bge;
+        float x = instance.get("x").getAsFloat();
+        float y = instance.get("y").getAsFloat();
+        float width = instance.get("width").getAsFloat();
+        float height = instance.get("height").getAsFloat();
+        float depth = instance.get("depth").getAsFloat();
+        float angle = instance.get("angle").getAsFloat();
+        float alpha = instance.get("alpha").getAsFloat();
+        float scalex = instance.get("scalex").getAsFloat();
+        float scaley = instance.get("scaley").getAsFloat();
+        String tex = instance.get("texturePath").getAsString();
+
+        bge = new BackgroundEntity(x,y,width,height,depth,angle,alpha,scalex,scaley,tex);
+        bge.setTextures(manager);
+        bge.setDrawScale(scale);
+        return bge;
     }
 }

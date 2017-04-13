@@ -2,12 +2,14 @@ package askew.entity.owl;
 
 import askew.GameCanvas;
 import askew.MantisAssetManager;
+import askew.entity.FilterGroup;
 import askew.entity.obstacle.BoxObstacle;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.Filter;
 
 /**
  * The owl which must be reached at the end of every level.
@@ -22,7 +24,6 @@ public class OwlModel extends BoxObstacle  {
     private transient float owlHeight;
 
     private transient TextureRegion owlTextureRegion;
-    private transient float thirtyTwoPixelDensityScale;
 
     public float x;
     public float y;
@@ -43,6 +44,10 @@ public class OwlModel extends BoxObstacle  {
         this.setFriction(0);
         this.setRestitution(0);
         this.setSensor(true);
+        Filter f = new Filter();
+        f.maskBits = FilterGroup.SLOTH;
+        f.categoryBits = FilterGroup.WALL;
+        this.setFilterData(f);
         this.setName("owl");
     }
 
@@ -63,16 +68,16 @@ public class OwlModel extends BoxObstacle  {
         owlTextureRegion = new TextureRegion(owlTexture);
         // aspect ratio scaling
         this.owlHeight = getWidth() * ( owlTextureRegion.getRegionHeight() / owlTextureRegion.getRegionWidth());
-        thirtyTwoPixelDensityScale = 32f /owlTextureRegion.getRegionWidth();
         setTexture(owlTextureRegion);
     }
 
     @Override
     public void draw(GameCanvas canvas) {
-        // TODO: Help me figure out the draw scaling someone please
 
         if (texture != null) {
-            canvas.draw(texture, Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.x,getAngle(), thirtyTwoPixelDensityScale * OWL_WIDTH, thirtyTwoPixelDensityScale * owlHeight);
+            canvas.draw(texture,Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.x,getAngle(),
+                    (1.0f/texture.getRegionWidth()) *   getWidth() * getDrawScale().x * objectScale.x,
+                    (1.0f/texture.getRegionHeight()  * getHeight()* getDrawScale().y * objectScale.y));
         }
     }
 }

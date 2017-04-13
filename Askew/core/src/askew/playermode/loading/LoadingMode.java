@@ -258,6 +258,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 				this.progress = 1.0f;
 				playButton = new Texture(PLAY_BTN_FILE);
 				playButton.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+				listener.exitScreen(this, GDXRoot.CON_MM);
 			}
 		}
 	}
@@ -270,8 +271,9 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 	 * prefer this in lecture.
 	 */
 	private void draw() {
+		if (background == null) return;
 		canvas.begin();
-		canvas.draw(background, 0, 0);
+		canvas.draw(background);
 		if (playButton == null) {
 			drawProgress(canvas);
 		} else {
@@ -321,7 +323,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 			draw();
 
 			// We are are ready, notify our listener
-			if (isReady() && listener != null) {
+			if (playButton != null && listener != null) {
 				listener.exitScreen(this, GDXRoot.CON_MM);
 			}
 		}
@@ -496,8 +498,6 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
 
 	/** 
 	 * Called when a key is typed (UNSUPPORTED)
-	 *
-	 * @param keycode the key typed
 	 * @return whether to hand the event to other listeners. 
 	 */
 	public boolean keyTyped(char character) { 

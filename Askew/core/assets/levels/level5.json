@@ -1,0 +1,87 @@
+{
+  "levelModelVersion": 1,
+  "title": "level5",
+  "goalTimeGold": 30,
+  "goalTimeSilver": 45,
+  "goalTimeBronze": 60,
+  "height": 10,
+  "width": 10,
+  "entities": [
+    {
+      "CLASSNAME": "askew.entity.owl.OwlModel",
+      "INSTANCE": {
+        "x": 18.0,
+        "y": 10.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.wall.WallModel",
+      "INSTANCE": {
+        "x": -12.0,
+        "y": 3.0,
+        "thorn": true,
+        "points": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          40.0,
+          1.0,
+          40.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "pin": false,
+        "numLinks": 5.0,
+        "x": -2.0,
+        "y": 16.0,
+        "angle": 5.0,
+        "omega": -400.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "pin": false,
+        "numLinks": 6.0,
+        "x": 4.0,
+        "y": 21.0,
+        "angle": 5.0,
+        "omega": -100.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "pin": false,
+        "numLinks": 15.0,
+        "x": 13.0,
+        "y": 28.0,
+        "angle": 5.0,
+        "omega": -400.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": -5.0,
+        "y": 16.0,
+        "stiffLen": 0.0,
+        "angle": -90.0,
+        "linksize": 1.0,
+        "numLinks": 3.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.sloth.SlothModel",
+      "INSTANCE": {
+        "x": -3.5,
+        "y": 20.0
+      }
+    }
+  ]
+}

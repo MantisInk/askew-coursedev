@@ -178,7 +178,7 @@ public abstract class WorldController implements Screen {
 	public static final int EXIT_GM_LE = 4;
 	public static final int EXIT_LE_MM = 5;
 	public static final int EXIT_LE_GM = 6;
-	public static final int EXIT_MM_GM_OLD = 7;
+	public static final int EXIT_GM_GM = 7;
 
 	/** How many frames after winning/losing do we continue? */
 	public static final int EXIT_COUNT = 120;
@@ -191,9 +191,9 @@ public abstract class WorldController implements Screen {
 	public static final int WORLD_POSIT = 2;
 	
 	/** Width of the game world in Box2d units */
-	protected static final float DEFAULT_WIDTH  = 18.0f;
+	protected static final float DEFAULT_WIDTH  = 16.0f;
 	/** Height of the game world in Box2d units */
-	protected static final float DEFAULT_HEIGHT = 10.125f;
+	protected static final float DEFAULT_HEIGHT = 9f;
 	/** The default value of gravity (going down) */
 	protected static final float DEFAULT_GRAVITY = -4.9f;
 	

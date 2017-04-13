@@ -10,31 +10,37 @@
  */
 package askew.playermode.leveleditor;
 
-import askew.*;
+import askew.GameCanvas;
+import askew.GlobalConfiguration;
+import askew.InputController;
+import askew.MantisAssetManager;
+import askew.entity.BackgroundEntity;
 import askew.entity.Entity;
 import askew.entity.ghost.GhostModel;
-import askew.entity.owl.OwlModel;
-import askew.entity.wall.WallModel;
-import askew.util.json.JSONLoaderSaver;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Affine2;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.*;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import askew.playermode.WorldController;
-import askew.entity.obstacle.ComplexObstacle;
 import askew.entity.obstacle.Obstacle;
-import askew.entity.tree.Trunk;
+import askew.entity.owl.OwlModel;
+import askew.entity.sloth.SlothModel;
 import askew.entity.tree.PoleVault;
 import askew.entity.tree.StiffBranch;
 import askew.entity.tree.Tree;
+import askew.entity.tree.Trunk;
 import askew.entity.vine.Vine;
-import askew.entity.sloth.SlothModel;
+import askew.entity.wall.WallModel;
+import askew.playermode.WorldController;
 import askew.util.PooledList;
+import askew.util.json.JSONLoaderSaver;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Affine2;
+import com.badlogic.gdx.math.Vector2;
+import com.google.gson.JsonArray;
+import com.badlogic.gdx.physics.box2d.Contact;
+import com.badlogic.gdx.physics.box2d.ContactImpulse;
+import com.badlogic.gdx.physics.box2d.Manifold;
+import com.badlogic.gdx.physics.box2d.World;
+import com.google.gson.JsonObject;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -63,10 +69,14 @@ public class LevelEditorController extends WorldController {
 	private AssetState levelEditorAssetState = AssetState.EMPTY;
 
 	private JSONLoaderSaver jsonLoaderSaver;
+	@Getter @Setter
+	private MantisAssetManager mantisAssetManager;
 
 	private LevelModel levelModel;
 
 	private static ShapeRenderer gridLineRenderer = new ShapeRenderer();
+
+	private Texture background;
 
 	Affine2 camTrans;
 	float cxCamera;
@@ -75,6 +85,8 @@ public class LevelEditorController extends WorldController {
 	float adjustedMouseY;
 
 	protected Vector2 oneScale;
+
+	private boolean pressedL, prevPressedL;
 
 
 	@Getter
@@ -90,6 +102,7 @@ public class LevelEditorController extends WorldController {
 
 	public static final int UI_WAIT_SHORT = 2;
 	public static final int UI_WAIT_LONG = 15;
+	public static final int UI_WAIT_ETERNAL = 120;
 
 
 	public static final String[] creationOptions = {
@@ -102,7 +115,8 @@ public class LevelEditorController extends WorldController {
 			".WallModel",
 			".Tree",
 			".OwlModel",
-			".GhostModel"
+			".GhostModel",
+			".BackgroundEntity"
 	};
 
 	private boolean prompting;
@@ -154,6 +168,7 @@ public class LevelEditorController extends WorldController {
 	public void preLoadContent(MantisAssetManager manager) {
 		super.preLoadContent(manager);
 		jsonLoaderSaver.setManager(manager);
+		setMantisAssetManager(manager);
 	}
 
 	/**
@@ -167,13 +182,11 @@ public class LevelEditorController extends WorldController {
 	 * @param manager Reference to global asset manager.
 	 */
 	public void loadContent(MantisAssetManager manager) {
-		if (levelEditorAssetState != AssetState.LOADING) {
-			return;
-		}
-
 		super.loadContent(manager);
+		background = manager.get("texture/background/background1.png");
 		levelEditorAssetState = AssetState.COMPLETE;
 	}
+
 
 	/**
 	 * Creates and initialize a new instance of the platformer game
@@ -181,7 +194,8 @@ public class LevelEditorController extends WorldController {
 	 * The game has default gravity and other settings
 	 */
 	public LevelEditorController() {
-		super(36,18,0);
+//		super(36,18,0); I want this scale but for the sake of alpha:
+		super(DEFAULT_WIDTH,DEFAULT_HEIGHT,0);
 		setDebug(false);
 		setComplete(false);
 		setFailure(false);
@@ -194,7 +208,8 @@ public class LevelEditorController extends WorldController {
 		vimMode = false;
 		selectedEntity = false;
 		oneScale = new Vector2(1,1);
-
+		pressedL = false;
+		prevPressedL = false;
 	}
 
 	public void setLevel(String levelName) {
@@ -222,6 +237,7 @@ public class LevelEditorController extends WorldController {
 		setComplete(false);
 		setFailure(false);
 		populateLevel();
+
 		cxCamera = -canvas.getWidth() / 2;
 		cyCamera = -canvas.getHeight() / 2;
 	}
@@ -241,11 +257,11 @@ public class LevelEditorController extends WorldController {
 		}
 
 		for (Entity o : levelModel.getEntities()) {
-			if (o instanceof Obstacle) {
-				addObject((Obstacle) o);
-			} else {
-				System.err.println("UNSUPPORTED: Adding non obstacle entity");
-			}
+
+			addObject( o);
+
+			//System.err.println("UNSUPPORTED: Adding non obstacle entity");
+
 		}
 	}
 
@@ -266,7 +282,8 @@ public class LevelEditorController extends WorldController {
 		}
 
 		InputController input = InputController.getInstance();
-
+		prevPressedL = pressedL;
+		pressedL = input.isLKeyPressed();
 		if (input.didLeftButtonPress()) {
 			System.out.println("GM");
 			listener.exitScreen(this, EXIT_LE_GM);
@@ -284,8 +301,10 @@ public class LevelEditorController extends WorldController {
 	 * Type safety is overrated [trevor]
 	 * @param x
 	 * @param y
-     */
+	 */
 	private void createXY(float x, float y) {
+		float xorig = x;
+		float yorig = y;
 		x = Math.round(x);
 		y = Math.round(y);
 		switch (creationOptions[entityIndex]) {
@@ -306,7 +325,7 @@ public class LevelEditorController extends WorldController {
 				promptTemplate(pvTemplate);
 				break;
 			case ".StiffBranch":
-				StiffBranch sb = new StiffBranch(x,y, 3.0f, 0.25f, 1.0f,oneScale);
+				StiffBranch sb = new StiffBranch(x,y, 3.0f, 0.25f, 1.0f,oneScale, 0f);
 				promptTemplate(sb);
 				break;
 			case ".Tree":
@@ -325,6 +344,11 @@ public class LevelEditorController extends WorldController {
 				GhostModel ghost = new GhostModel(x,y,x+2,y+2);
 				promptTemplate(ghost);
 				break;
+			case ".BackgroundEntity":
+				BackgroundEntity bge = new BackgroundEntity(xorig,yorig);
+				promptTemplate(bge);
+				break;
+
 			default:
 				System.err.println("UNKNOWN ENT");
 				break;
@@ -558,8 +582,13 @@ public class LevelEditorController extends WorldController {
 				int boxHeight = Integer.parseInt(boxHeightVal.getText());
 
 				//Create box coordinates
-				for(int k=0;k<thornsPoints.size();k++){
+				// Clear thornpoints first
+				int s = thornsPoints.size();
+				for (int i = s-1; i >=0; i--) {
 					thornsPoints.remove(0);
+				}
+
+				for(int k=0;k<thornsPoints.size();k++){
 					if (k == 2 || k == 4) thornsPoints.add(boxWidth);
 					else if (k == 7 || k == 5) thornsPoints.add(boxHeight);
 					else thornsPoints.add(0);
@@ -817,12 +846,7 @@ public class LevelEditorController extends WorldController {
 
 	private void promptTemplateCallback(String json) {
 		Entity toAdd = jsonLoaderSaver.entityFromJson(json);
-		if (toAdd instanceof Obstacle) {
-			addObject((Obstacle) toAdd);
-		} else {
-			System.err.println(toAdd);
-			System.err.println("Unsupported nonobstacle entity");
-		}
+		addObject( toAdd);
 		prompting = false;
 	}
 
@@ -886,21 +910,21 @@ public class LevelEditorController extends WorldController {
 		float mouseX = InputController.getInstance().getCrossHair().x;
 		float mouseY = InputController.getInstance().getCrossHair().y;
 
-		adjustedMouseX = mouseX - (cxCamera + canvas.getWidth()/2) / worldScale.x;
-		adjustedMouseY = mouseY - (cyCamera + canvas.getHeight()/2) / worldScale.y;
+		adjustedMouseX = mouseX - (cxCamera + canvas.getWidth() / 2) / worldScale.x;
+		adjustedMouseY = mouseY - (cyCamera + canvas.getHeight() / 2) / worldScale.y;
 
 		//Toggle scrolling flag
 		setScrollEnabled(InputController.getInstance().isRShiftKeyPressed() ||
 				InputController.getInstance().isLShiftKeyPressed());
 
 		//Toggle "VIM" mode
-		if(InputController.getInstance().isVKeyPressed()) {
+		if (InputController.getInstance().isVKeyPressed()) {
 			setVimMode(!isVimMode());
 			inputRateLimiter = UI_WAIT_LONG;
 		}
 
 		//Allows user to move the camera/view of the level
-		if(isScrollEnabled()) {
+		if (isScrollEnabled()) {
 			if (mouseX < 1) {
 				// Pan left
 				cxCamera += 10;
@@ -919,7 +943,7 @@ public class LevelEditorController extends WorldController {
 
 
 		//If "VIM" mode is enabled
-		if(isVimMode()) {
+		if (isVimMode()) {
 			//Dispose of GUI because VIM
 			//editor_window.setVisible(false);
 			//editor_window.dispose();
@@ -992,23 +1016,24 @@ public class LevelEditorController extends WorldController {
 				inputRateLimiter = UI_WAIT_LONG;
 			}
 
+			// Global Config
+			if (InputController.getInstance().isGKeyPressed()) {
+				promptGlobalConfig();
+			}
+
 			// Background
 			if (InputController.getInstance().isBKeyPressed()) {
 				levelModel.setBackground(showInputDialog("What texture should the background be set to?"));
 				// TODO: Update the drawn background (after henry implements the engine)
+				background = getMantisAssetManager().get(levelModel.getBackground());
 			}
-
-			if (InputController.getInstance().isGKeyPressed()) {
-				promptGlobalConfig();
-			}
-		}
-		//GUI Mode Enabled
-		else{
-			if(!guiPrompt) {
+		} else {
+			//GUI Mode Enabled
+			if (!guiPrompt) {
 				//Prevent multiple windows from being created
 				guiPrompt = true;
 				//Window Settings
-				JFrame editorWindow = new JFrame();;
+				JFrame editorWindow = new JFrame();
 
 				//TODO Add scaling
 				int buttonWidth = 75;
@@ -1019,7 +1044,7 @@ public class LevelEditorController extends WorldController {
 				//int field_length = 150;
 				//int field_height= textHeight;
 
-				editorWindow.setSize(canvas.getWidth()*3/5, canvas.getHeight()*2/3);
+				editorWindow.setSize(canvas.getWidth() * 3 / 5, canvas.getHeight() * 2 / 3);
 
 				//"File Properties" Stuff
 				JLabel fileText = new JLabel("File Name: ");
@@ -1031,18 +1056,18 @@ public class LevelEditorController extends WorldController {
 				//fileText.setBounds(buffer, buffer, textLength, textHeight);
 				fileText.setBounds(buffer, buffer, 65, textHeight);
 				//file_button.setBounds(textLength+buffer, buffer, buttonWidth-20, buttonHeight);
-				fileName.setBounds(65+buffer, buffer, textLength, textHeight);
+				fileName.setBounds(65 + buffer, buffer, textLength, textHeight);
 				//levelText.setBounds(textLength+buttonWidth+(buffer*5), buffer, textLength, textHeight);
-				levelText.setBounds(65+textLength+(buffer*2), buffer, 75, textHeight);
-				levelName.setBounds(65+75+textLength+(buffer*2), buffer, textLength, textHeight);
+				levelText.setBounds(65 + textLength + (buffer * 2), buffer, 75, textHeight);
+				levelName.setBounds(65 + 75 + textLength + (buffer * 2), buffer, textLength, textHeight);
 				//level_button.setBounds(buttonWidth +(textLength*2)+(buffer*5), buffer, buttonWidth-20, buttonHeight);
 
 				//Load/Save Button
 				JButton loadButton = new JButton("Load");
 				JButton saveButton = new JButton("Save");
 
-				loadButton.setBounds(65+75+(2*textLength)+(buffer*3), buffer, buttonWidth, buttonHeight);
-				saveButton.setBounds(65+75+(2*textLength)+(buffer*3), (2*buffer)+buttonHeight, buttonWidth, buttonHeight);
+				loadButton.setBounds(65 + 75 + (2 * textLength) + (buffer * 3), buffer, buttonWidth, buttonHeight);
+				saveButton.setBounds(65 + 75 + (2 * textLength) + (buffer * 3), (2 * buffer) + buttonHeight, buttonWidth, buttonHeight);
 
 				loadButton.addActionListener(e -> {
 					loadLevel();
@@ -1084,7 +1109,6 @@ public class LevelEditorController extends WorldController {
 
 				//Stage Dimensions & Background
 
-				//STUFF
 				JLabel bgText = new JLabel("Current BG: ");
 				//JTextField bgName = new JTextField();
 				JLabel bgName = new JLabel("BACKGROUND_NAME");
@@ -1101,20 +1125,20 @@ public class LevelEditorController extends WorldController {
 				int colBuffer = 125; //New location
 				int col2Buffer = 175; //New location
 
-				bgText.setBounds(buffer, textHeight+(3*buffer), 75, textHeight);
-				bgName.setBounds(buffer+25, (textHeight*2)+(5*buffer), 200, textHeight);
-				bgButton.setBounds((2*buffer)+75, textHeight+(3*buffer), 60, textHeight);
+				bgText.setBounds(buffer, textHeight + (3 * buffer), 75, textHeight);
+				bgName.setBounds(buffer + 25, (textHeight * 2) + (5 * buffer), 200, textHeight);
+				bgButton.setBounds((2 * buffer) + 75, textHeight + (3 * buffer), 60, textHeight);
 //				startXText.setBounds((3*buffer), (textHeight*3)+(4*buffer), 25, textHeight);
 //				startXPos.setBounds((3*buffer)+25, (textHeight*3)+(4*buffer), 50, textHeight);
 //				startYText.setBounds((3*buffer), (textHeight*4)+(5*buffer), 25, textHeight);
 //				startYPos.setBounds((3*buffer)+25, (textHeight*4)+(5*buffer), 50, textHeight);
-				sizeText.setBounds(buffer+colBuffer+col2Buffer, textHeight+(3*buffer), 75, textHeight);
-				sizeButton.setBounds(buffer+colBuffer+col2Buffer+75, textHeight+(3*buffer), 75, textHeight);
+				sizeText.setBounds(buffer + colBuffer + col2Buffer, textHeight + (3 * buffer), 75, textHeight);
+				sizeButton.setBounds(buffer + colBuffer + col2Buffer + 75, textHeight + (3 * buffer), 75, textHeight);
 				//rank_text.setBounds(buffer+colBuffer+col2Buffer , (textHeight*2)+(3*buffer), 100, textHeight);
-				widthText.setBounds((3*buffer)+colBuffer+col2Buffer , (textHeight*2)+(4*buffer), 50, textHeight);
-				widthVal.setBounds((3*buffer)+50+colBuffer+col2Buffer , (textHeight*2)+(4*buffer), 50, textHeight);
-				heightText.setBounds((3*buffer)+colBuffer+col2Buffer , (textHeight*3)+(5*buffer), 50, textHeight);
-				heightVal.setBounds((3*buffer)+50+colBuffer+col2Buffer , (textHeight*3)+(5*buffer), 50, textHeight);
+				widthText.setBounds((3 * buffer) + colBuffer + col2Buffer, (textHeight * 2) + (4 * buffer), 50, textHeight);
+				widthVal.setBounds((3 * buffer) + 50 + colBuffer + col2Buffer, (textHeight * 2) + (4 * buffer), 50, textHeight);
+				heightText.setBounds((3 * buffer) + colBuffer + col2Buffer, (textHeight * 3) + (5 * buffer), 50, textHeight);
+				heightVal.setBounds((3 * buffer) + 50 + colBuffer + col2Buffer, (textHeight * 3) + (5 * buffer), 50, textHeight);
 				//rankBText.setBounds((3*buffer)+colBuffer+col2Buffer , (textHeight*4)+(5*buffer), 50, textHeight);
 				//rankBTime.setBounds((3*buffer)+50+colBuffer+col2Buffer , (textHeight*4)+(5*buffer), 50, textHeight);
 
@@ -1133,7 +1157,7 @@ public class LevelEditorController extends WorldController {
 					//loadLevel();
 				});
 
-				int oopsBuffer = (2*textHeight)+(7*buffer); //Apply to everything below here \/
+				int oopsBuffer = (2 * textHeight) + (7 * buffer); //Apply to everything below here \/
 
 //				bgText.setBounds();
 //				bgName.setBounds();
@@ -1171,21 +1195,21 @@ public class LevelEditorController extends WorldController {
 				JButton startButton = new JButton("Edit");
 				JButton goalButton = new JButton("Edit");
 
-				sgHeaderText.setBounds(buffer, textHeight+(3*buffer)+oopsBuffer, 175, textHeight);
-				startText.setBounds(buffer, (textHeight*2)+(3*buffer+oopsBuffer), 50, textHeight);
-				startButton.setBounds((2*buffer)+35, (textHeight*2)+(3*buffer)+oopsBuffer, 60, textHeight);
-				startXText.setBounds((3*buffer), (textHeight*3)+(4*buffer)+oopsBuffer, 25, textHeight);
-				startXPos.setBounds((3*buffer)+25, (textHeight*3)+(4*buffer)+oopsBuffer, 50, textHeight);
-				startYText.setBounds((3*buffer), (textHeight*4)+(5*buffer)+oopsBuffer, 25, textHeight);
-				startYPos.setBounds((3*buffer)+25, (textHeight*4)+(5*buffer)+oopsBuffer, 50, textHeight);
+				sgHeaderText.setBounds(buffer, textHeight + (3 * buffer) + oopsBuffer, 175, textHeight);
+				startText.setBounds(buffer, (textHeight * 2) + (3 * buffer + oopsBuffer), 50, textHeight);
+				startButton.setBounds((2 * buffer) + 35, (textHeight * 2) + (3 * buffer) + oopsBuffer, 60, textHeight);
+				startXText.setBounds((3 * buffer), (textHeight * 3) + (4 * buffer) + oopsBuffer, 25, textHeight);
+				startXPos.setBounds((3 * buffer) + 25, (textHeight * 3) + (4 * buffer) + oopsBuffer, 50, textHeight);
+				startYText.setBounds((3 * buffer), (textHeight * 4) + (5 * buffer) + oopsBuffer, 25, textHeight);
+				startYPos.setBounds((3 * buffer) + 25, (textHeight * 4) + (5 * buffer) + oopsBuffer, 50, textHeight);
 
 				//int colBuffer = 125;
-				goalText.setBounds(buffer+colBuffer , (textHeight*2)+(3*buffer)+oopsBuffer, 50, textHeight);
-				goalButton.setBounds((2*buffer)+35+colBuffer, (textHeight*2)+(3*buffer)+oopsBuffer, 60, textHeight);
-				goalXText.setBounds((3*buffer)+colBuffer , (textHeight*3)+(4*buffer)+oopsBuffer, 25, textHeight);
-				goalXPos.setBounds((3*buffer)+25+colBuffer , (textHeight*3)+(4*buffer)+oopsBuffer, 50, textHeight);
-				goalYText.setBounds((3*buffer)+colBuffer , (textHeight*4)+(5*buffer)+oopsBuffer, 25, textHeight);
-				goalYPos.setBounds((3*buffer)+25+colBuffer , (textHeight*4)+(5*buffer)+oopsBuffer, 50, textHeight);
+				goalText.setBounds(buffer + colBuffer, (textHeight * 2) + (3 * buffer) + oopsBuffer, 50, textHeight);
+				goalButton.setBounds((2 * buffer) + 35 + colBuffer, (textHeight * 2) + (3 * buffer) + oopsBuffer, 60, textHeight);
+				goalXText.setBounds((3 * buffer) + colBuffer, (textHeight * 3) + (4 * buffer) + oopsBuffer, 25, textHeight);
+				goalXPos.setBounds((3 * buffer) + 25 + colBuffer, (textHeight * 3) + (4 * buffer) + oopsBuffer, 50, textHeight);
+				goalYText.setBounds((3 * buffer) + colBuffer, (textHeight * 4) + (5 * buffer) + oopsBuffer, 25, textHeight);
+				goalYPos.setBounds((3 * buffer) + 25 + colBuffer, (textHeight * 4) + (5 * buffer) + oopsBuffer, 50, textHeight);
 
 				startButton.addActionListener(e -> {
 					//TODO Enable manual selection of start position
@@ -1229,14 +1253,14 @@ public class LevelEditorController extends WorldController {
 				JTextField rankBTime = new JTextField();
 
 				//int col2Buffer = 175;
-				rankHeaderText.setBounds(buffer+colBuffer+col2Buffer, textHeight+(3*buffer)+oopsBuffer, 200, textHeight);
+				rankHeaderText.setBounds(buffer + colBuffer + col2Buffer, textHeight + (3 * buffer) + oopsBuffer, 200, textHeight);
 				//rank_text.setBounds(buffer+colBuffer+col2Buffer , (textHeight*2)+(3*buffer), 100, textHeight);
-				rankGText.setBounds((3*buffer)+colBuffer+col2Buffer , (textHeight*2)+(3*buffer)+oopsBuffer, 50, textHeight);
-				rankGTime.setBounds((3*buffer)+50+colBuffer+col2Buffer , (textHeight*2)+(3*buffer)+oopsBuffer, 50, textHeight);
-				rankSText.setBounds((3*buffer)+colBuffer+col2Buffer , (textHeight*3)+(4*buffer)+oopsBuffer, 50, textHeight);
-				rankSTime.setBounds((3*buffer)+50+colBuffer+col2Buffer , (textHeight*3)+(4*buffer)+oopsBuffer, 50, textHeight);
-				rankBText.setBounds((3*buffer)+colBuffer+col2Buffer , (textHeight*4)+(5*buffer)+oopsBuffer, 50, textHeight);
-				rankBTime.setBounds((3*buffer)+50+colBuffer+col2Buffer , (textHeight*4)+(5*buffer)+oopsBuffer, 50, textHeight);
+				rankGText.setBounds((3 * buffer) + colBuffer + col2Buffer, (textHeight * 2) + (3 * buffer) + oopsBuffer, 50, textHeight);
+				rankGTime.setBounds((3 * buffer) + 50 + colBuffer + col2Buffer, (textHeight * 2) + (3 * buffer) + oopsBuffer, 50, textHeight);
+				rankSText.setBounds((3 * buffer) + colBuffer + col2Buffer, (textHeight * 3) + (4 * buffer) + oopsBuffer, 50, textHeight);
+				rankSTime.setBounds((3 * buffer) + 50 + colBuffer + col2Buffer, (textHeight * 3) + (4 * buffer) + oopsBuffer, 50, textHeight);
+				rankBText.setBounds((3 * buffer) + colBuffer + col2Buffer, (textHeight * 4) + (5 * buffer) + oopsBuffer, 50, textHeight);
+				rankBTime.setBounds((3 * buffer) + 50 + colBuffer + col2Buffer, (textHeight * 4) + (5 * buffer) + oopsBuffer, 50, textHeight);
 				//rankBText.setBounds((3*buffer)+colBuffer+col2Buffer , (textHeight*5)+(6*buffer), 50, textHeight);
 				//rankBTime.setBounds((3*buffer)+50+colBuffer+col2Buffer , (textHeight*5)+(6*buffer), 50, textHeight);
 
@@ -1260,9 +1284,9 @@ public class LevelEditorController extends WorldController {
 //				JTextField entity_x_val = new JTextField();
 //				JTextField entity_y_val = new JTextField();
 
-				addEntityHeader.setBounds(buffer, (textHeight*5)+(7*buffer)+oopsBuffer, 175, textHeight);
-				entityTypes.setBounds(buffer, (textHeight*6)+(8*buffer)+oopsBuffer, 100, textHeight);
-				entityButton.setBounds(100+(2*buffer), (textHeight*6)+(8*buffer)+oopsBuffer, 100, textHeight);
+				addEntityHeader.setBounds(buffer, (textHeight * 5) + (7 * buffer) + oopsBuffer, 175, textHeight);
+				entityTypes.setBounds(buffer, (textHeight * 6) + (8 * buffer) + oopsBuffer, 100, textHeight);
+				entityButton.setBounds(100 + (2 * buffer), (textHeight * 6) + (8 * buffer) + oopsBuffer, 100, textHeight);
 
 				entityButton.addActionListener(e -> {
 					//TODO FIgure out why can't add object to center of screen
@@ -1271,7 +1295,7 @@ public class LevelEditorController extends WorldController {
 					//editEntity(adjustedMouseX,adjustedMouseY); //TESTING
 
 					entityIndex = entityTypes.getSelectedIndex();
-					createXY(-cxCamera,-cyCamera);
+					createXY(-cxCamera / worldScale.x, -cyCamera / worldScale.y);
 					//System.out.println("BAP");
 				});
 
@@ -1285,7 +1309,7 @@ public class LevelEditorController extends WorldController {
 				//JComboBox entityTypes = new JComboBox(creationOptions);
 				//JButton entityButton = new JButton("Add Entity");
 
-				editEntityHeader.setBounds(100+(2*buffer), (textHeight*7)+(10*buffer)+oopsBuffer, 250, textHeight);
+				editEntityHeader.setBounds(100 + (2 * buffer), (textHeight * 7) + (10 * buffer) + oopsBuffer, 250, textHeight);
 
 				editorWindow.add(editEntityHeader);
 
@@ -1297,22 +1321,19 @@ public class LevelEditorController extends WorldController {
 				//Display Everything
 				editorWindow.setLayout(null);
 				editorWindow.setVisible(true);
-
-
-
 			}
 			//TODO Add mouse interactions with level
 
 			if (InputController.getInstance().isLeftClickPressed()) {
 				try {
 					editEntity(adjustedMouseX, adjustedMouseY);
-				}
-				catch (Exception e){
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
 		}
 	}
+
 
 	private void drawGridLines() {
 		// debug lines
@@ -1341,10 +1362,14 @@ public class LevelEditorController extends WorldController {
 	public void draw(float delta) {
 		canvas.clear();
 
+		//draw background
+		canvas.begin();
+		canvas.draw(background);
+		canvas.end();
+
 		// Translate camera to cx, cy
 		camTrans.setToTranslation(cxCamera, cyCamera);
 		camTrans.translate(canvas.getWidth()/2, canvas.getHeight()/2);
-
 		canvas.begin(camTrans);
 		for(Entity obj : objects) {
 			obj.draw(canvas);
@@ -1393,6 +1418,9 @@ public class LevelEditorController extends WorldController {
 		canvas.drawTextStandard("Level: " + currentLevel, 10.0f, 100.0f);
 
 		canvas.end();
+
+
+
 	}
 
 	@Override
