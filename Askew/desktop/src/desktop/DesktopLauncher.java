@@ -12,11 +12,10 @@
  */
 package desktop;
 
+import askew.GDXRoot;
 import com.badlogic.gdx.Files;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
-import askew.GDXRoot;
-import askew.GlobalConfiguration;
 
 /**
  * The main class of the game.
@@ -36,8 +35,8 @@ public class DesktopLauncher {
 	 */
 	public static void main (String[] arg) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-		config.width  = 1920;
-		config.height = 1080;
+		config.width  = 1024;
+		config.height = 576;
 		config.resizable = false;
 		config.fullscreen = false;
 		config.title = "Askew";
