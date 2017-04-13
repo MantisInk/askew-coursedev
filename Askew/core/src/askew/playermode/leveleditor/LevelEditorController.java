@@ -779,7 +779,6 @@ public class LevelEditorController extends WorldController {
 		if (!prompting) {
 			prompting = true;
 			String jsonOfTemplate = jsonLoaderSaver.gsonToJson(template);
-			System.out.println(jsonOfTemplate); //TEST
 			// flipping swing
 			JDialog mainFrame = new JDialog();
 			mainFrame.setSize(600,600);

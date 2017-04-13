@@ -349,9 +349,6 @@ public class InputController {
 		lShiftKeyPrevious = isLShiftKeyPressed();
 		rShiftKeyPrevious = isRShiftKeyPressed();
 
-		//System.out.println("Booooooooooooooooooooooooooooooooooop");
-
-
 		// Check to see if a GamePad is connected
 		if (xbox.isConnected()) {
 			readGamepad(bounds, scale);
@@ -459,7 +456,6 @@ public class InputController {
 		leftClickPressed = Gdx.input.isButtonPressed(Input.Buttons.LEFT);
 		rightClickPressed = Gdx.input.isButtonPressed(Input.Buttons.RIGHT);
 
-		//System.out.println("Bap");
 
 		// Keypresses for level editor hotkeys
 		sKeyPressed = Gdx.input.isKeyPressed(Input.Keys.S) && !sKeyPrevious;
