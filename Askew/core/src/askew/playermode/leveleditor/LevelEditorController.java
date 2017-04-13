@@ -84,6 +84,8 @@ public class LevelEditorController extends WorldController {
 	float adjustedMouseX;
 	float adjustedMouseY;
 
+	Entity selected;
+
 
 	protected Vector2 oneScale;
 
@@ -474,6 +476,16 @@ public class LevelEditorController extends WorldController {
 
 		// Create
 		if (InputController.getInstance().isLeftClickPressed()) {
+			if(mouseX* worldScale.x <= GUI_LEFT_BAR_WIDTH ){
+
+			}else if(mouseY * worldScale.y <= GUI_LOWER_BAR_HEIGHT){
+
+			}else{
+				Entity select = entityQuery();
+
+			}
+
+
 			createXY(adjustedMouseX,adjustedMouseY);
 		}
 
@@ -481,7 +493,7 @@ public class LevelEditorController extends WorldController {
 		if (InputController.getInstance().isRightClickPressed()) {
 			Entity select = entityQuery();
 			if (select != null) objects.remove(select);
-			inputRateLimiter = UI_WAIT_SHORT;
+			inputRateLimiter = UI_WAIT_LONG;
 		}
 
 		// Edit

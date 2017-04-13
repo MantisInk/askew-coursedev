@@ -48,8 +48,10 @@ public class InputController {
 
 	@Getter
 	private boolean rightClickPressed;
+	private boolean rightClickPrevious;
 	@Getter
 	private boolean leftClickPressed;
+	private boolean leftClickPrevious;
 
 	// Keyboard keys for the level editor
 	@Getter
@@ -277,6 +279,19 @@ public class InputController {
 
 	public boolean didBottomDPadPress() { return bottomDPadPressed && !bottomDPadPrevious; }
 
+	public boolean didLeftClick(){ return leftClickPressed && !leftClickPrevious; }
+
+	public boolean didLeftDrag(){ return leftClickPressed && leftClickPrevious; }
+
+	public boolean didLeftRelease(){ return !leftClickPressed && leftClickPrevious; }
+
+	public boolean didRightClick(){ return rightClickPressed && !leftClickPrevious; }
+
+	public boolean didRightDrag(){ return rightClickPressed && rightClickPrevious; }
+
+	public boolean didRightRelease(){ return !rightClickPressed && rightClickPrevious; }
+
+
 
 
 	/**
@@ -316,6 +331,9 @@ public class InputController {
 		rightDPadPrevious = rightDPadPressed;
 		leftDPadPrevious = leftDPadPressed;
 		bottomDPadPrevious = bottomDPadPressed;
+
+		leftClickPrevious = leftClickPressed;
+		rightClickPrevious = rightClickPressed;
 
 
 		// Check to see if a GamePad is connected
@@ -420,6 +438,7 @@ public class InputController {
 		if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
 			leftVertical -= 1.0f;
 		}
+
 
 		// Mouse results
 		leftClickPressed = Gdx.input.isButtonPressed(Input.Buttons.LEFT);
