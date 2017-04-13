@@ -42,6 +42,7 @@ class LevelModel {
         this.goalTimeSilver = 45;
         this.goalTimeBronze = 60;
         this.background = "texture/background/background1.png";
+        this.soundtrack = "TODO";
     }
 
     public void addEntity(Entity o) {

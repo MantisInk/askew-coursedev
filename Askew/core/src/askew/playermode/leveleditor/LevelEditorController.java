@@ -537,6 +537,7 @@ public class LevelEditorController extends WorldController {
 
 			parentWindow.setVisible(false);
 			parentWindow.dispose();
+			prompting = false;
 		});
 
 		okButton.setBounds(125, ((rowNum+1)*TEXT_HEIGHT)+((rowNum+1)* BUFFER), 100, TEXT_HEIGHT);
@@ -545,6 +546,7 @@ public class LevelEditorController extends WorldController {
 			deleteEntity(template);
 			parentWindow.setVisible(false);
 			parentWindow.dispose();
+			prompting = false;
 		});
 
 		panel.add(header);
@@ -581,6 +583,7 @@ public class LevelEditorController extends WorldController {
 			JsonObject levelJson = jsonLoaderSaver.gsonToJsonObject(levelModel);
 			grabUpdatedObjectValuesFromGUI(levelJson,editorWindow.getRootPane().getContentPane());
 			timeToSave = jsonLoaderSaver.levelFromJson(levelJson);
+			timeToSave.entities.clear();
 		}
 		for (Entity o : objects) {
 			timeToSave.addEntity(o);
@@ -619,6 +622,10 @@ public class LevelEditorController extends WorldController {
 	}
 
 	private void promptTemplate(Entity template) {
+		if (!vimMode) {
+			changeEntityParam(template);
+			return;
+		}
 		if (!prompting) {
 			prompting = true;
 			String jsonOfTemplate = jsonLoaderSaver.gsonToJson(template);
@@ -649,8 +656,10 @@ public class LevelEditorController extends WorldController {
 			prompting = true; //Use different constant? Can just use the same one?
 
 			JDialog entityDisplay = new JDialog();
+			entityDisplay.setUndecorated(true);
 			entityDisplay.setSize(600,600);
-			entityDisplay.setLocationRelativeTo(null);
+//			entityDisplay.setLocationRelativeTo(null);
+			entityDisplay.toFront();
 			JPanel panel = makeEntityWindow(template,entityDisplay);
 
 			entityDisplay.add(panel);
