@@ -131,6 +131,7 @@ public abstract class ComplexObstacle extends Obstacle {
 	 */
 	public void setPosition(float x, float y) {
 		if (body != null) {
+			System.out.println("tetstings");
 			positionCache.set(x,y);
 			body.setTransform(positionCache,body.getAngle());
 		} else {
@@ -1019,7 +1020,7 @@ public abstract class ComplexObstacle extends Obstacle {
 	 * primary purpose is to adjust changes to the fixture, which have to take place 
 	 * after collision.
 	 *
-	 * @param dt Timing values from parent loop
+	 * @param
 	 */
 	public void update(float delta) {
 		// Delegate to components
@@ -1073,5 +1074,8 @@ public abstract class ComplexObstacle extends Obstacle {
 			obj.drawDebug(canvas);
 		}
 	}
+
+	public abstract void build();
+	public abstract void rebuild(float x, float y);
 
 }

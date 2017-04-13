@@ -84,7 +84,6 @@ public class LevelEditorController extends WorldController {
 	float adjustedMouseX;
 	float adjustedMouseY;
 
-	Entity selected;
 
 
 	protected Vector2 oneScale;
@@ -109,8 +108,10 @@ public class LevelEditorController extends WorldController {
 
 	//In Pixels, divide by world scale for box2d.
 	public static final float GUI_LOWER_BAR_HEIGHT = 200.f;
-	public static final float GUI_LEFT_BAR_WIDTH = 200.f;
+	public static final float GUI_LEFT_BAR_WIDTH = 400.f;
 
+	private Entity selected;
+	private boolean dragging = false;
 
 
 	public static final String[] creationOptions = {
@@ -452,11 +453,11 @@ public class LevelEditorController extends WorldController {
 
 		if(InputController.getInstance().isShiftKeyPressed()) {
 			// Check for pan
-			if (mouseX < 2f ) {
+			if (mouseX < GUI_LEFT_BAR_WIDTH / worldScale.x ) {
 				// Pan left
 				adjustedCxCamera += 10/worldScale.x;
 			}
-			if (mouseY < 2f ) {
+			if (mouseY < GUI_LOWER_BAR_HEIGHT / worldScale.y ) {
 				// down
 				adjustedCyCamera += 10/worldScale.y;
 			}
@@ -475,18 +476,64 @@ public class LevelEditorController extends WorldController {
 
 
 		// Create
-		if (InputController.getInstance().isLeftClickPressed()) {
+		if (InputController.getInstance().didLeftClick()) {
 			if(mouseX* worldScale.x <= GUI_LEFT_BAR_WIDTH ){
 
 			}else if(mouseY * worldScale.y <= GUI_LOWER_BAR_HEIGHT){
 
 			}else{
-				Entity select = entityQuery();
+				selected = entityQuery();
+				System.out.println(selected);
+				dragging = false;
+				//get offset
+				//display stuff related to it
 
 			}
 
 
-			createXY(adjustedMouseX,adjustedMouseY);
+			//createXY(adjustedMouseX,adjustedMouseY);
+		}
+
+		if(InputController.getInstance().didLeftDrag()){
+			if(mouseX* worldScale.x <= GUI_LEFT_BAR_WIDTH ){
+
+			}else if(mouseY * worldScale.y <= GUI_LOWER_BAR_HEIGHT){
+
+			}else{
+				dragging = true;
+
+				if(selected != null) {
+					//objects.remove((selected));
+					selected.setPosition(adjustedMouseX, adjustedMouseY);
+					System.out.println(selected);
+
+
+				}
+				//get offset
+				//display stuff related to it
+
+			}
+
+		}
+
+		if(InputController.getInstance().didLeftRelease()){
+			if(mouseX* worldScale.x <= GUI_LEFT_BAR_WIDTH ){
+
+			}else if(mouseY * worldScale.y <= GUI_LOWER_BAR_HEIGHT){
+
+			}else{
+				dragging = false;
+				if(selected != null) {
+					selected.setPosition(adjustedMouseX, adjustedMouseY);
+
+
+				}
+				selected = null;
+				//get offset
+				//display stuff related to it
+
+			}
+
 		}
 
 		// Delete
@@ -628,6 +675,8 @@ public class LevelEditorController extends WorldController {
 		camTrans.setToTranslation(cxCamera * worldScale.x, cyCamera* worldScale.y);
 		canvas.begin(camTrans);
 		for(Entity obj : objects) {
+			obj.setDrawScale(worldScale);
+			//obj.setPosition(0,0);
 			obj.draw(canvas);
 		}
 		canvas.end();
@@ -645,18 +694,18 @@ public class LevelEditorController extends WorldController {
 			String[] splitHelp = HELP_TEXT.split("\\R");
 			float beginY = 7f * worldScale.y;
 			for (int i = 0; i < splitHelp.length; i++) {
-				canvas.drawTextStandard(splitHelp[i], 2f * worldScale.x, beginY);
+				canvas.drawTextStandard(splitHelp[i], GUI_LEFT_BAR_WIDTH + 10, beginY);
 				beginY -= .2 * worldScale.y;
 			}
 		}
 
 
-		canvas.drawTextStandard("MOUSE: " + adjustedMouseX + " , " + adjustedMouseY, 2f * worldScale.x, 2.8f * worldScale.y);
-		canvas.drawTextStandard(-adjustedCxCamera + "," + -adjustedCyCamera , 2f * worldScale.x, 2.6f * worldScale.y);
-		canvas.drawTextStandard("Level: " + currentLevel, 2f * worldScale.x, 2.4f * worldScale.y);
-		canvas.drawTextStandard("Creating: " + creationOptions[tentativeEntityIndex], 2f * worldScale.x, 2.2f * worldScale.y);
+		canvas.drawTextStandard("MOUSE: " + adjustedMouseX + " , " + adjustedMouseY, GUI_LEFT_BAR_WIDTH + 10, 2.8f * worldScale.y);
+		canvas.drawTextStandard(-adjustedCxCamera + "," + -adjustedCyCamera , GUI_LEFT_BAR_WIDTH + 10, 2.6f * worldScale.y);
+		canvas.drawTextStandard("Level: " + currentLevel, GUI_LEFT_BAR_WIDTH + 10, 2.4f * worldScale.y);
+		canvas.drawTextStandard("Creating: " + creationOptions[tentativeEntityIndex], GUI_LEFT_BAR_WIDTH + 10, 2.2f * worldScale.y);
 		if (tentativeEntityIndex != entityIndex) {
-			canvas.drawTextStandard("Hit Enter to Select New Object Type.", 2f * worldScale.x, 2f * worldScale.y);
+			canvas.drawTextStandard("Hit Enter to Select New Object Type.", GUI_LEFT_BAR_WIDTH + 10, 2f * worldScale.y);
 		}
 		canvas.end();
 

@@ -26,6 +26,8 @@ import com.badlogic.gdx.physics.box2d.Filter;
 import com.badlogic.gdx.physics.box2d.Joint;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * A vine with segments connected by revolute joints.
@@ -56,11 +58,18 @@ public class Vine extends ComplexObstacle {
 	protected transient float linksize = 1.0f;					/** The length of each vine piece*/
 	protected transient float spacing = 0.0f;					/** The spacing between each piece */
 
+	@Getter @Setter
 	protected float numLinks;									/** number of vine pieces */
+	@Getter @Setter
 	protected float x;											/** x-coord of top anchor */
+	@Getter @Setter
 	protected float y;											/** y-coord of bottom anchor */
+	@Getter @Setter
 	protected float angle;										/** starting angle of vine */
+	@Getter @Setter
 	protected float omega;										/** starting angular velocity of vine */
+	@Getter @Setter
+	private boolean pin = false; 								// default no bottom anchor
 
 
 	/**
@@ -118,6 +127,10 @@ public class Vine extends ComplexObstacle {
 	 */
 	public Vine(float x0, float y0, float x1, float y1, float lwidth, float lheight, boolean pinned, float angle, float omega) {
 		super(x0,y0);
+		build(x0,y0,x1,y1,lwidth,lheight,pinned,angle,omega);
+	}
+
+	public void build(float x0, float y0, float x1, float y1, float lwidth, float lheight, boolean pinned, float angle, float omega) {
 		pin = pinned;
 		setName(VINE_NAME);
 
@@ -129,44 +142,49 @@ public class Vine extends ComplexObstacle {
 		linksize = lheight;
 
 
-	    // Compute the bridge length
+		// Compute the bridge length
 		dimension = new Vector2(x1-x0,y1-y0);
-	    float length = dimension.len();
-	    Vector2 norm = new Vector2(dimension);
-	    norm.nor();
-	    norm.rotate(angle);
+		float length = dimension.len();
+		Vector2 norm = new Vector2(dimension);
+		norm.nor();
+		norm.rotate(angle);
 
-	    // If too small, only make one plank.
-	    int nLinks = (int)(length / linksize);
-	    if (nLinks <= 1) {
-	        nLinks = 1;
-	        linksize = length;
-	        spacing = 0;
-	    } else {
-	        spacing = length - nLinks * linksize;
-	        spacing /= (nLinks-1);
-	    }
+		// If too small, only make one plank.
+		int nLinks = (int)(length / linksize);
+		if (nLinks <= 1) {
+			nLinks = 1;
+			linksize = length;
+			spacing = 0;
+		} else {
+			spacing = length - nLinks * linksize;
+			spacing /= (nLinks-1);
+		}
 
-	    	    
-	    // Create the planks
+
+		// Create the planks
 		planksize.y = lheight;
 
-	    Vector2 pos = new Vector2();
-	    for (int ii = 0; ii < nLinks; ii++) {
-	        float t = ii*(linksize+spacing) + linksize/2.0f;
-	        pos.set(norm);
-	        pos.scl(t);
-	        pos.add(x0,y0);
-	        BoxObstacle plank = new BoxObstacle(pos.x, pos.y, planksize.x, planksize.y);
-	        plank.setName(PLANK_NAME+ii);
-	        plank.setDensity(BASIC_DENSITY);
-	        plank.setAngularVelocity(omega*(nLinks-ii-1)/(nLinks));
+		Vector2 pos = new Vector2();
+		for (int ii = 0; ii < nLinks; ii++) {
+			float t = ii*(linksize+spacing) + linksize/2.0f;
+			pos.set(norm);
+			pos.scl(t);
+			pos.add(x0,y0);
+			BoxObstacle plank = new BoxObstacle(pos.x, pos.y, planksize.x, planksize.y);
+			plank.setName(PLANK_NAME+ii);
+			plank.setDensity(BASIC_DENSITY);
+			plank.setAngularVelocity(omega*(nLinks-ii-1)/(nLinks));
 			Filter f = new Filter();
 			f.maskBits = FilterGroup.WALL | FilterGroup.SLOTH | FilterGroup.HAND;
 			f.categoryBits = FilterGroup.VINE;
 			plank.setFilterData(f);
-	        bodies.add(plank);
-	    }
+			bodies.add(plank);
+		}
+	}
+
+	public void rebuild(float x0, float y0, float x1, float y1, float lwidth, float lheight, boolean pinned, float angle, float omega) {
+		bodies.clear();
+		build(x0,y0,x1,y1,lwidth,lheight,pinned,angle,omega);
 	}
 
 	/**
