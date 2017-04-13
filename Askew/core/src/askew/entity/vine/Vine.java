@@ -189,7 +189,7 @@ public class Vine extends ComplexObstacle {
 		// Normally, we would do this in constructor, but we have
 		// reasons to not add the anchor to the bodies list.
 		Vector2 pos = bodies.get(0).getPosition();
-		pos.y -= linksize / 2;
+		pos.y += linksize/2;
 		start = new WheelObstacle(pos.x,pos.y,ANCHOR_RADIUS);
 		start.setName(ANCHOR_NAME+0);
 		start.setDensity(BASIC_DENSITY);
@@ -227,7 +227,7 @@ public class Vine extends ComplexObstacle {
 			Obstacle last = bodies.get(bodies.size-1);
 
 			pos = last.getPosition();
-			pos.y += linksize / 2;
+			pos.y += linksize;
 			finish = new WheelObstacle(pos.x,pos.y,ANCHOR_RADIUS);
 			finish.setName(ANCHOR_NAME+1);
 			finish.setDensity(BASIC_DENSITY);
