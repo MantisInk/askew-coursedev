@@ -68,6 +68,10 @@ public class LevelEditorController extends WorldController {
 	public static final int TEXT_HEIGHT = 20;
 	public static final int FIELD_TEXT_WIDTH = 75;
 	public static final int FIELD_BOX_WIDTH = 150;
+	public static final int BUTTON_WIDTH = 75;
+	public static final int BUTTON_HEIGHT = 30;
+	public static final int TEXT_LENGTH = 175;
+	public static final int TEXT_HEIGHT1 = 20;
 	/** Track asset loading from all instances and subclasses */
 	private AssetState levelEditorAssetState = AssetState.EMPTY;
 
@@ -533,16 +537,27 @@ public class LevelEditorController extends WorldController {
 		for (Entity o : objects) {
 			timeToSave.addEntity(o);
 		}
+		if (jsonLoaderSaver.saveLevel(timeToSave, currentLevel)) {
+			System.out.println("Saved!");
+		} else {
+			System.err.println("ERROR IN SAVE");
+		}
+		inputRateLimiter = UI_WAIT_LONG;
 	}
 
 	private void loadLevel(){
 		if (!loadingLevelPrompt) {
 			loadingLevelPrompt = true;
-			currentLevel = showInputDialog("What level do you want to load?");
-			reset();
+			loadLevel(showInputDialog("What level do you want to load?"));
 			loadingLevelPrompt = false;
 		}
 		inputRateLimiter = UI_WAIT_LONG;
+	}
+
+
+	private void loadLevel(String toLoad){
+		currentLevel = toLoad;
+		reset();
 	}
 
 	private void setLevelName(){
@@ -732,11 +747,6 @@ public class LevelEditorController extends WorldController {
 				loadLevel();
 			}
 
-			// Save
-			if (InputController.getInstance().isSKeyPressed()) {
-				saveLevel();
-			}
-
 			// Scroll backward ent
 			if (InputController.getInstance().isLeftKeyPressed()) {
 				tentativeEntityIndex = (tentativeEntityIndex + 1 + creationOptions.length) % creationOptions.length;
@@ -787,17 +797,11 @@ public class LevelEditorController extends WorldController {
 				JFrame editorWindow = new JFrame();
 
 				//TODO Add scaling
-				int buttonWidth = 75;
-				int buttonHeight = 30;
 				int buffer = 6;
-				int textLength = 175;
-				int textHeight = 20;
-				//int field_length = 150;
-				//int field_height= textHeight;
 
 				editorWindow.setSize(canvas.getWidth() * 3 / 5, canvas.getHeight() * 2 / 3);
 
-				//"File Properties" Stuff
+				//"File Properties"
 				JLabel fileText = new JLabel("File Name: ");
 				JLabel levelText = new JLabel("Level Name: ");
 
@@ -805,23 +809,23 @@ public class LevelEditorController extends WorldController {
 				JTextField levelName = new JTextField(currentLevel);
 
 				//fileText.setBounds(buffer, buffer, textLength, textHeight);
-				fileText.setBounds(buffer, buffer, 65, textHeight);
+				fileText.setBounds(buffer, buffer, 65, TEXT_HEIGHT1);
 				//file_button.setBounds(textLength+buffer, buffer, buttonWidth-20, buttonHeight);
-				fileName.setBounds(65 + buffer, buffer, textLength, textHeight);
+				fileName.setBounds(65 + buffer, buffer, TEXT_LENGTH, TEXT_HEIGHT1);
 				//levelText.setBounds(textLength+buttonWidth+(buffer*5), buffer, textLength, textHeight);
-				levelText.setBounds(65 + textLength + (buffer * 2), buffer, 75, textHeight);
-				levelName.setBounds(65 + 75 + textLength + (buffer * 2), buffer, textLength, textHeight);
+				levelText.setBounds(65 + TEXT_LENGTH + (buffer * 2), buffer, 75, TEXT_HEIGHT1);
+				levelName.setBounds(65 + 75 + TEXT_LENGTH + (buffer * 2), buffer, TEXT_LENGTH, TEXT_HEIGHT1);
 				//level_button.setBounds(buttonWidth +(textLength*2)+(buffer*5), buffer, buttonWidth-20, buttonHeight);
 
 				//Load/Save Button
 				JButton loadButton = new JButton("Load");
 				JButton saveButton = new JButton("Save");
 
-				loadButton.setBounds(65 + 75 + (2 * textLength) + (buffer * 3), buffer, buttonWidth, buttonHeight);
-				saveButton.setBounds(65 + 75 + (2 * textLength) + (buffer * 3), (2 * buffer) + buttonHeight, buttonWidth, buttonHeight);
+				loadButton.setBounds(65 + 75 + (2 * TEXT_LENGTH) + (buffer * 3), buffer, BUTTON_WIDTH, BUTTON_HEIGHT);
+				saveButton.setBounds(65 + 75 + (2 * TEXT_LENGTH) + (buffer * 3), (2 * buffer) + BUTTON_HEIGHT, BUTTON_WIDTH, BUTTON_HEIGHT);
 
 				loadButton.addActionListener(e -> {
-					loadLevel();
+					loadLevel(levelName.getText());
 				});
 
 				saveButton.addActionListener(e -> {
@@ -871,20 +875,20 @@ public class LevelEditorController extends WorldController {
 				int colBuffer = 125; //New location
 				int col2Buffer = 175; //New location
 
-				bgText.setBounds(buffer, textHeight + (3 * buffer), 75, textHeight);
-				bgName.setBounds(buffer + 25, (textHeight * 2) + (5 * buffer), 200, textHeight);
-				bgButton.setBounds((2 * buffer) + 75, textHeight + (3 * buffer), 60, textHeight);
+				bgText.setBounds(buffer, TEXT_HEIGHT1 + (3 * buffer), 75, TEXT_HEIGHT1);
+				bgName.setBounds(buffer + 25, (TEXT_HEIGHT1 * 2) + (5 * buffer), 200, TEXT_HEIGHT1);
+				bgButton.setBounds((2 * buffer) + 75, TEXT_HEIGHT1 + (3 * buffer), 60, TEXT_HEIGHT1);
 //				startXText.setBounds((3*buffer), (textHeight*3)+(4*buffer), 25, textHeight);
 //				startXPos.setBounds((3*buffer)+25, (textHeight*3)+(4*buffer), 50, textHeight);
 //				startYText.setBounds((3*buffer), (textHeight*4)+(5*buffer), 25, textHeight);
 //				startYPos.setBounds((3*buffer)+25, (textHeight*4)+(5*buffer), 50, textHeight);
-				sizeText.setBounds(buffer + colBuffer + col2Buffer, textHeight + (3 * buffer), 75, textHeight);
-				sizeButton.setBounds(buffer + colBuffer + col2Buffer + 75, textHeight + (3 * buffer), 75, textHeight);
+				sizeText.setBounds(buffer + colBuffer + col2Buffer, TEXT_HEIGHT1 + (3 * buffer), 75, TEXT_HEIGHT1);
+				sizeButton.setBounds(buffer + colBuffer + col2Buffer + 75, TEXT_HEIGHT1 + (3 * buffer), 75, TEXT_HEIGHT1);
 				//rank_text.setBounds(buffer+colBuffer+col2Buffer , (textHeight*2)+(3*buffer), 100, textHeight);
-				widthText.setBounds((3 * buffer) + colBuffer + col2Buffer, (textHeight * 2) + (4 * buffer), 50, textHeight);
-				widthVal.setBounds((3 * buffer) + 50 + colBuffer + col2Buffer, (textHeight * 2) + (4 * buffer), 50, textHeight);
-				heightText.setBounds((3 * buffer) + colBuffer + col2Buffer, (textHeight * 3) + (5 * buffer), 50, textHeight);
-				heightVal.setBounds((3 * buffer) + 50 + colBuffer + col2Buffer, (textHeight * 3) + (5 * buffer), 50, textHeight);
+				widthText.setBounds((3 * buffer) + colBuffer + col2Buffer, (TEXT_HEIGHT1 * 2) + (4 * buffer), 50, TEXT_HEIGHT1);
+				widthVal.setBounds((3 * buffer) + 50 + colBuffer + col2Buffer, (TEXT_HEIGHT1 * 2) + (4 * buffer), 50, TEXT_HEIGHT1);
+				heightText.setBounds((3 * buffer) + colBuffer + col2Buffer, (TEXT_HEIGHT1 * 3) + (5 * buffer), 50, TEXT_HEIGHT1);
+				heightVal.setBounds((3 * buffer) + 50 + colBuffer + col2Buffer, (TEXT_HEIGHT1 * 3) + (5 * buffer), 50, TEXT_HEIGHT1);
 				//rankBText.setBounds((3*buffer)+colBuffer+col2Buffer , (textHeight*4)+(5*buffer), 50, textHeight);
 				//rankBTime.setBounds((3*buffer)+50+colBuffer+col2Buffer , (textHeight*4)+(5*buffer), 50, textHeight);
 
@@ -903,7 +907,7 @@ public class LevelEditorController extends WorldController {
 					//loadLevel();
 				});
 
-				int oopsBuffer = (2 * textHeight) + (7 * buffer); //Apply to everything below here \/
+				int oopsBuffer = (2 * TEXT_HEIGHT1) + (7 * buffer); //Apply to everything below here \/
 
 //				bgText.setBounds();
 //				bgName.setBounds();
@@ -941,21 +945,21 @@ public class LevelEditorController extends WorldController {
 				JButton startButton = new JButton("Edit");
 				JButton goalButton = new JButton("Edit");
 
-				sgHeaderText.setBounds(buffer, textHeight + (3 * buffer) + oopsBuffer, 175, textHeight);
-				startText.setBounds(buffer, (textHeight * 2) + (3 * buffer + oopsBuffer), 50, textHeight);
-				startButton.setBounds((2 * buffer) + 35, (textHeight * 2) + (3 * buffer) + oopsBuffer, 60, textHeight);
-				startXText.setBounds((3 * buffer), (textHeight * 3) + (4 * buffer) + oopsBuffer, 25, textHeight);
-				startXPos.setBounds((3 * buffer) + 25, (textHeight * 3) + (4 * buffer) + oopsBuffer, 50, textHeight);
-				startYText.setBounds((3 * buffer), (textHeight * 4) + (5 * buffer) + oopsBuffer, 25, textHeight);
-				startYPos.setBounds((3 * buffer) + 25, (textHeight * 4) + (5 * buffer) + oopsBuffer, 50, textHeight);
+				sgHeaderText.setBounds(buffer, TEXT_HEIGHT1 + (3 * buffer) + oopsBuffer, 175, TEXT_HEIGHT1);
+				startText.setBounds(buffer, (TEXT_HEIGHT1 * 2) + (3 * buffer + oopsBuffer), 50, TEXT_HEIGHT1);
+				startButton.setBounds((2 * buffer) + 35, (TEXT_HEIGHT1 * 2) + (3 * buffer) + oopsBuffer, 60, TEXT_HEIGHT1);
+				startXText.setBounds((3 * buffer), (TEXT_HEIGHT1 * 3) + (4 * buffer) + oopsBuffer, 25, TEXT_HEIGHT1);
+				startXPos.setBounds((3 * buffer) + 25, (TEXT_HEIGHT1 * 3) + (4 * buffer) + oopsBuffer, 50, TEXT_HEIGHT1);
+				startYText.setBounds((3 * buffer), (TEXT_HEIGHT1 * 4) + (5 * buffer) + oopsBuffer, 25, TEXT_HEIGHT1);
+				startYPos.setBounds((3 * buffer) + 25, (TEXT_HEIGHT1 * 4) + (5 * buffer) + oopsBuffer, 50, TEXT_HEIGHT1);
 
 				//int colBuffer = 125;
-				goalText.setBounds(buffer + colBuffer, (textHeight * 2) + (3 * buffer) + oopsBuffer, 50, textHeight);
-				goalButton.setBounds((2 * buffer) + 35 + colBuffer, (textHeight * 2) + (3 * buffer) + oopsBuffer, 60, textHeight);
-				goalXText.setBounds((3 * buffer) + colBuffer, (textHeight * 3) + (4 * buffer) + oopsBuffer, 25, textHeight);
-				goalXPos.setBounds((3 * buffer) + 25 + colBuffer, (textHeight * 3) + (4 * buffer) + oopsBuffer, 50, textHeight);
-				goalYText.setBounds((3 * buffer) + colBuffer, (textHeight * 4) + (5 * buffer) + oopsBuffer, 25, textHeight);
-				goalYPos.setBounds((3 * buffer) + 25 + colBuffer, (textHeight * 4) + (5 * buffer) + oopsBuffer, 50, textHeight);
+				goalText.setBounds(buffer + colBuffer, (TEXT_HEIGHT1 * 2) + (3 * buffer) + oopsBuffer, 50, TEXT_HEIGHT1);
+				goalButton.setBounds((2 * buffer) + 35 + colBuffer, (TEXT_HEIGHT1 * 2) + (3 * buffer) + oopsBuffer, 60, TEXT_HEIGHT1);
+				goalXText.setBounds((3 * buffer) + colBuffer, (TEXT_HEIGHT1 * 3) + (4 * buffer) + oopsBuffer, 25, TEXT_HEIGHT1);
+				goalXPos.setBounds((3 * buffer) + 25 + colBuffer, (TEXT_HEIGHT1 * 3) + (4 * buffer) + oopsBuffer, 50, TEXT_HEIGHT1);
+				goalYText.setBounds((3 * buffer) + colBuffer, (TEXT_HEIGHT1 * 4) + (5 * buffer) + oopsBuffer, 25, TEXT_HEIGHT1);
+				goalYPos.setBounds((3 * buffer) + 25 + colBuffer, (TEXT_HEIGHT1 * 4) + (5 * buffer) + oopsBuffer, 50, TEXT_HEIGHT1);
 
 				startButton.addActionListener(e -> {
 					//TODO Enable manual selection of start position
@@ -999,14 +1003,14 @@ public class LevelEditorController extends WorldController {
 				JTextField rankBTime = new JTextField();
 
 				//int col2Buffer = 175;
-				rankHeaderText.setBounds(buffer + colBuffer + col2Buffer, textHeight + (3 * buffer) + oopsBuffer, 200, textHeight);
+				rankHeaderText.setBounds(buffer + colBuffer + col2Buffer, TEXT_HEIGHT1 + (3 * buffer) + oopsBuffer, 200, TEXT_HEIGHT1);
 				//rank_text.setBounds(buffer+colBuffer+col2Buffer , (textHeight*2)+(3*buffer), 100, textHeight);
-				rankGText.setBounds((3 * buffer) + colBuffer + col2Buffer, (textHeight * 2) + (3 * buffer) + oopsBuffer, 50, textHeight);
-				rankGTime.setBounds((3 * buffer) + 50 + colBuffer + col2Buffer, (textHeight * 2) + (3 * buffer) + oopsBuffer, 50, textHeight);
-				rankSText.setBounds((3 * buffer) + colBuffer + col2Buffer, (textHeight * 3) + (4 * buffer) + oopsBuffer, 50, textHeight);
-				rankSTime.setBounds((3 * buffer) + 50 + colBuffer + col2Buffer, (textHeight * 3) + (4 * buffer) + oopsBuffer, 50, textHeight);
-				rankBText.setBounds((3 * buffer) + colBuffer + col2Buffer, (textHeight * 4) + (5 * buffer) + oopsBuffer, 50, textHeight);
-				rankBTime.setBounds((3 * buffer) + 50 + colBuffer + col2Buffer, (textHeight * 4) + (5 * buffer) + oopsBuffer, 50, textHeight);
+				rankGText.setBounds((3 * buffer) + colBuffer + col2Buffer, (TEXT_HEIGHT1 * 2) + (3 * buffer) + oopsBuffer, 50, TEXT_HEIGHT1);
+				rankGTime.setBounds((3 * buffer) + 50 + colBuffer + col2Buffer, (TEXT_HEIGHT1 * 2) + (3 * buffer) + oopsBuffer, 50, TEXT_HEIGHT1);
+				rankSText.setBounds((3 * buffer) + colBuffer + col2Buffer, (TEXT_HEIGHT1 * 3) + (4 * buffer) + oopsBuffer, 50, TEXT_HEIGHT1);
+				rankSTime.setBounds((3 * buffer) + 50 + colBuffer + col2Buffer, (TEXT_HEIGHT1 * 3) + (4 * buffer) + oopsBuffer, 50, TEXT_HEIGHT1);
+				rankBText.setBounds((3 * buffer) + colBuffer + col2Buffer, (TEXT_HEIGHT1 * 4) + (5 * buffer) + oopsBuffer, 50, TEXT_HEIGHT1);
+				rankBTime.setBounds((3 * buffer) + 50 + colBuffer + col2Buffer, (TEXT_HEIGHT1 * 4) + (5 * buffer) + oopsBuffer, 50, TEXT_HEIGHT1);
 				//rankBText.setBounds((3*buffer)+colBuffer+col2Buffer , (textHeight*5)+(6*buffer), 50, textHeight);
 				//rankBTime.setBounds((3*buffer)+50+colBuffer+col2Buffer , (textHeight*5)+(6*buffer), 50, textHeight);
 
@@ -1030,9 +1034,9 @@ public class LevelEditorController extends WorldController {
 //				JTextField entity_x_val = new JTextField();
 //				JTextField entity_y_val = new JTextField();
 
-				addEntityHeader.setBounds(buffer, (textHeight * 5) + (7 * buffer) + oopsBuffer, 175, textHeight);
-				entityTypes.setBounds(buffer, (textHeight * 6) + (8 * buffer) + oopsBuffer, 100, textHeight);
-				entityButton.setBounds(100 + (2 * buffer), (textHeight * 6) + (8 * buffer) + oopsBuffer, 100, textHeight);
+				addEntityHeader.setBounds(buffer, (TEXT_HEIGHT1 * 5) + (7 * buffer) + oopsBuffer, 175, TEXT_HEIGHT1);
+				entityTypes.setBounds(buffer, (TEXT_HEIGHT1 * 6) + (8 * buffer) + oopsBuffer, 100, TEXT_HEIGHT1);
+				entityButton.setBounds(100 + (2 * buffer), (TEXT_HEIGHT1 * 6) + (8 * buffer) + oopsBuffer, 100, TEXT_HEIGHT1);
 
 				entityButton.addActionListener(e -> {
 					//TODO FIgure out why can't add object to center of screen
@@ -1055,7 +1059,7 @@ public class LevelEditorController extends WorldController {
 				//JComboBox entityTypes = new JComboBox(creationOptions);
 				//JButton entityButton = new JButton("Add Entity");
 
-				editEntityHeader.setBounds(100 + (2 * buffer), (textHeight * 7) + (10 * buffer) + oopsBuffer, 250, textHeight);
+				editEntityHeader.setBounds(100 + (2 * buffer), (TEXT_HEIGHT1 * 7) + (10 * buffer) + oopsBuffer, 250, TEXT_HEIGHT1);
 
 				editorWindow.add(editEntityHeader);
 
