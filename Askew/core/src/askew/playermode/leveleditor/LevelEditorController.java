@@ -34,9 +34,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Contact;
-import com.badlogic.gdx.physics.box2d.ContactImpulse;
-import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.World;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -66,7 +63,7 @@ public class LevelEditorController extends WorldController {
 
 	public static final int BUFFER = 5;
 	public static final int TEXT_HEIGHT = 20;
-	public static final int FIELD_TEXT_WIDTH = 75;
+	public static final int FIELD_TEXT_WIDTH = 150;
 	public static final int FIELD_BOX_WIDTH = 150;
 	public static final int BUTTON_WIDTH = 75;
 	public static final int BUTTON_HEIGHT = 30;
@@ -95,11 +92,12 @@ public class LevelEditorController extends WorldController {
 
 	private boolean pressedL, prevPressedL;
 
-
 	@Getter
 	private String currentLevel;
 
 	private String createClass;
+
+	JFrame editorWindow;
 
 	/** A decrementing int that helps prevent accidental repeats of actions through an arbitrary countdown */
 	private int inputRateLimiter = 0;
@@ -245,6 +243,10 @@ public class LevelEditorController extends WorldController {
 		setComplete(false);
 		setFailure(false);
 		populateLevel();
+		if (editorWindow != null) {
+			editorWindow.dispose();
+		}
+		guiPrompt = false;
 
 		cxCamera = -canvas.getWidth() / 2;
 		cyCamera = -canvas.getHeight() / 2;
@@ -265,11 +267,7 @@ public class LevelEditorController extends WorldController {
 		}
 
 		for (Entity o : levelModel.getEntities()) {
-
 			addObject( o);
-
-			//System.err.println("UNSUPPORTED: Adding non obstacle entity");
-
 		}
 	}
 
@@ -364,6 +362,51 @@ public class LevelEditorController extends WorldController {
 		inputRateLimiter = UI_WAIT_SHORT;
 	}
 
+	private int generateSwingPropertiesForEntity(JsonObject e, JFrame jPanel, int rowNum) {
+		for(Map.Entry<String,JsonElement> entry : e.entrySet()) {
+			// Add key
+			String key = entry.getKey();
+			JLabel paramText = new JLabel(key + ":");
+
+			JComponent valueComponent;
+			// Add value based on type
+			JsonElement value = entry.getValue();
+			if (value.isJsonArray()) {
+				// TODO (hard), recurse
+				System.err.println("TODO: JSON Array. Use Henry's click and drag!");
+				continue;
+			} else if (value.isJsonPrimitive()) {
+				JsonPrimitive primitive = value.getAsJsonPrimitive();
+				if (primitive.isBoolean()) {
+					valueComponent = new JCheckBox("",primitive.getAsBoolean());
+				} else if (primitive.isNumber()) {
+					valueComponent = new JTextField(primitive.getAsNumber().toString());
+				} else if (primitive.isString()) {
+					valueComponent = new JTextField(primitive.getAsString());
+				} else {
+					System.err.println("Unknown primitive type: " + entry);
+					continue;
+				}
+			} else if (value.isJsonObject()) {
+				System.err.println("Unknown object type: " + entry);
+				continue;
+			} else {
+				System.err.println("Unknown type: " + entry);
+				continue;
+			}
+
+			paramText.setSize(FIELD_TEXT_WIDTH, TEXT_HEIGHT);
+			valueComponent.setSize(FIELD_BOX_WIDTH, TEXT_HEIGHT);
+
+			// Update panel with key, value
+			jPanel.add(paramText);
+			jPanel.add(valueComponent);
+			rowNum++;
+		}
+
+		return rowNum;
+	}
+
 	private int generateSwingPropertiesForEntity(JsonObject e, JPanel jPanel, int rowNum) {
 		for(Map.Entry<String,JsonElement> entry : e.entrySet()) {
 			// Add key
@@ -409,7 +452,7 @@ public class LevelEditorController extends WorldController {
 		return rowNum;
 	}
 
-	private void grabUpdatedObjectValuesFromGUI(JsonObject entityProp, JPanel p) {
+	private void grabUpdatedObjectValuesFromGUI(JsonObject entityProp, Container p) {
 		for(Map.Entry<String,JsonElement> entry : entityProp.entrySet()) {
 			// Add key
 			String key = entry.getKey();
@@ -428,7 +471,7 @@ public class LevelEditorController extends WorldController {
 		}
 	}
 
-	private JsonElement findInPanel(String key, JPanel panel) {
+	private JsonElement findInPanel(String key, Container panel) {
 		boolean grabNext = false;
 		for (Component c : panel.getComponents()) {
 			if (grabNext) {
@@ -533,7 +576,12 @@ public class LevelEditorController extends WorldController {
 	private void saveLevel(){
 		System.out.println("Saving...");
 		LevelModel timeToSave = new LevelModel();
-		timeToSave.setTitle(currentLevel);
+		if (!vimMode) {
+			// Grab params from gui
+			JsonObject levelJson = jsonLoaderSaver.gsonToJsonObject(levelModel);
+			grabUpdatedObjectValuesFromGUI(levelJson,editorWindow.getRootPane().getContentPane());
+			timeToSave = jsonLoaderSaver.levelFromJson(levelJson);
+		}
 		for (Entity o : objects) {
 			timeToSave.addEntity(o);
 		}
@@ -789,290 +837,9 @@ public class LevelEditorController extends WorldController {
 				background = getMantisAssetManager().get(levelModel.getBackground());
 			}
 		} else {
-			//GUI Mode Enabled
 			if (!guiPrompt) {
-				//Prevent multiple windows from being created
-				guiPrompt = true;
-				//Window Settings
-				JFrame editorWindow = new JFrame();
-
-				//TODO Add scaling
-				int buffer = 6;
-
-				editorWindow.setSize(canvas.getWidth() * 3 / 5, canvas.getHeight() * 2 / 3);
-
-				//"File Properties"
-				JLabel fileText = new JLabel("File Name: ");
-				JLabel levelText = new JLabel("Level Name: ");
-
-				JTextField fileName = new JTextField("Temp");
-				JTextField levelName = new JTextField(currentLevel);
-
-				//fileText.setBounds(buffer, buffer, textLength, textHeight);
-				fileText.setBounds(buffer, buffer, 65, TEXT_HEIGHT1);
-				//file_button.setBounds(textLength+buffer, buffer, buttonWidth-20, buttonHeight);
-				fileName.setBounds(65 + buffer, buffer, TEXT_LENGTH, TEXT_HEIGHT1);
-				//levelText.setBounds(textLength+buttonWidth+(buffer*5), buffer, textLength, textHeight);
-				levelText.setBounds(65 + TEXT_LENGTH + (buffer * 2), buffer, 75, TEXT_HEIGHT1);
-				levelName.setBounds(65 + 75 + TEXT_LENGTH + (buffer * 2), buffer, TEXT_LENGTH, TEXT_HEIGHT1);
-				//level_button.setBounds(buttonWidth +(textLength*2)+(buffer*5), buffer, buttonWidth-20, buttonHeight);
-
-				//Load/Save Button
-				JButton loadButton = new JButton("Load");
-				JButton saveButton = new JButton("Save");
-
-				loadButton.setBounds(65 + 75 + (2 * TEXT_LENGTH) + (buffer * 3), buffer, BUTTON_WIDTH, BUTTON_HEIGHT);
-				saveButton.setBounds(65 + 75 + (2 * TEXT_LENGTH) + (buffer * 3), (2 * buffer) + BUTTON_HEIGHT, BUTTON_WIDTH, BUTTON_HEIGHT);
-
-				loadButton.addActionListener(e -> {
-					loadLevel(levelName.getText());
-				});
-
-				saveButton.addActionListener(e -> {
-					currentLevel = levelName.getText();
-					saveLevel();
-				});
-
-//				file_button.addActionListener(e -> {
-//					//editorWindow.setVisible(false);
-//					//editorWindow.dispose();
-//					//guiPrompt = false;
-//					System.out.println("BOOP");
-//				});
-//
-//				level_button.addActionListener(e -> {
-//					//editorWindow.setVisible(false);
-//					//editorWindow.dispose();
-//					//guiPrompt = false;
-//					setLevelName();
-//				});
-
-				//Add all file properties to the editor window
-				editorWindow.add(fileText);
-				editorWindow.add(fileName);
-				//editorWindow.add(file_button);
-				editorWindow.add(levelText);
-				editorWindow.add(levelName);
-				//editorWindow.add(level_button);
-				editorWindow.add(loadButton);
-				editorWindow.add(saveButton);
-
-				//Stage Dimensions & Background
-
-				JLabel bgText = new JLabel("Current BG: ");
-				//JTextField bgName = new JTextField();
-				JLabel bgName = new JLabel("BACKGROUND_NAME");
-				JButton bgButton = new JButton("Edit");
-				JLabel sizeText = new JLabel("Stage Size: ");
-				JButton sizeButton = new JButton("Apply");
-				JLabel widthText = new JLabel("Width: ");
-				JLabel heightText = new JLabel("Height: ");
-				JTextField widthVal = new JTextField();
-				JTextField heightVal = new JTextField();
-
-				//
-
-				int colBuffer = 125; //New location
-				int col2Buffer = 175; //New location
-
-				bgText.setBounds(buffer, TEXT_HEIGHT1 + (3 * buffer), 75, TEXT_HEIGHT1);
-				bgName.setBounds(buffer + 25, (TEXT_HEIGHT1 * 2) + (5 * buffer), 200, TEXT_HEIGHT1);
-				bgButton.setBounds((2 * buffer) + 75, TEXT_HEIGHT1 + (3 * buffer), 60, TEXT_HEIGHT1);
-//				startXText.setBounds((3*buffer), (textHeight*3)+(4*buffer), 25, textHeight);
-//				startXPos.setBounds((3*buffer)+25, (textHeight*3)+(4*buffer), 50, textHeight);
-//				startYText.setBounds((3*buffer), (textHeight*4)+(5*buffer), 25, textHeight);
-//				startYPos.setBounds((3*buffer)+25, (textHeight*4)+(5*buffer), 50, textHeight);
-				sizeText.setBounds(buffer + colBuffer + col2Buffer, TEXT_HEIGHT1 + (3 * buffer), 75, TEXT_HEIGHT1);
-				sizeButton.setBounds(buffer + colBuffer + col2Buffer + 75, TEXT_HEIGHT1 + (3 * buffer), 75, TEXT_HEIGHT1);
-				//rank_text.setBounds(buffer+colBuffer+col2Buffer , (textHeight*2)+(3*buffer), 100, textHeight);
-				widthText.setBounds((3 * buffer) + colBuffer + col2Buffer, (TEXT_HEIGHT1 * 2) + (4 * buffer), 50, TEXT_HEIGHT1);
-				widthVal.setBounds((3 * buffer) + 50 + colBuffer + col2Buffer, (TEXT_HEIGHT1 * 2) + (4 * buffer), 50, TEXT_HEIGHT1);
-				heightText.setBounds((3 * buffer) + colBuffer + col2Buffer, (TEXT_HEIGHT1 * 3) + (5 * buffer), 50, TEXT_HEIGHT1);
-				heightVal.setBounds((3 * buffer) + 50 + colBuffer + col2Buffer, (TEXT_HEIGHT1 * 3) + (5 * buffer), 50, TEXT_HEIGHT1);
-				//rankBText.setBounds((3*buffer)+colBuffer+col2Buffer , (textHeight*4)+(5*buffer), 50, textHeight);
-				//rankBTime.setBounds((3*buffer)+50+colBuffer+col2Buffer , (textHeight*4)+(5*buffer), 50, textHeight);
-
-				bgButton.addActionListener(e -> {
-					//TODO Get image file name and apply background
-					bgName.setText("Not implemented yet!"); //Assign new file name to display
-					//loadLevel();
-				});
-
-				sizeButton.addActionListener(e -> {
-					//TODO Apply change to level size
-					//Change level size
-					//widthVal.setText("Not implemented yet!");
-					widthVal.setText("Nah!");
-					heightVal.setText("Nope!");
-					//loadLevel();
-				});
-
-				int oopsBuffer = (2 * TEXT_HEIGHT1) + (7 * buffer); //Apply to everything below here \/
-
-//				bgText.setBounds();
-//				bgName.setBounds();
-//				sizeText.setBounds();
-//				widthText.setBounds();
-//				heightText.setBounds();
-//				widthVal.setBounds();
-//				heightVal.setBounds();
-
-				editorWindow.add(bgText);
-				editorWindow.add(bgName);
-				editorWindow.add(bgButton);
-				editorWindow.add(sizeText);
-				editorWindow.add(sizeButton);
-				editorWindow.add(widthText);
-				editorWindow.add(heightText);
-				editorWindow.add(widthVal);
-				editorWindow.add(heightVal);
-
-				//Starting/Ending Fields
-
-				JLabel sgHeaderText = new JLabel("Start and Goal Positions");
-				JLabel startText = new JLabel("Start:");
-				JLabel startXText = new JLabel("X: ");
-				JLabel startYText = new JLabel("Y: ");
-				JLabel goalText = new JLabel("Goal:");
-				JLabel goalXText = new JLabel("X: ");
-				JLabel goalYText = new JLabel("Y: ");
-
-				JTextField startXPos = new JTextField();
-				JTextField startYPos = new JTextField();
-				JTextField goalXPos = new JTextField();
-				JTextField goalYPos = new JTextField();
-
-				JButton startButton = new JButton("Edit");
-				JButton goalButton = new JButton("Edit");
-
-				sgHeaderText.setBounds(buffer, TEXT_HEIGHT1 + (3 * buffer) + oopsBuffer, 175, TEXT_HEIGHT1);
-				startText.setBounds(buffer, (TEXT_HEIGHT1 * 2) + (3 * buffer + oopsBuffer), 50, TEXT_HEIGHT1);
-				startButton.setBounds((2 * buffer) + 35, (TEXT_HEIGHT1 * 2) + (3 * buffer) + oopsBuffer, 60, TEXT_HEIGHT1);
-				startXText.setBounds((3 * buffer), (TEXT_HEIGHT1 * 3) + (4 * buffer) + oopsBuffer, 25, TEXT_HEIGHT1);
-				startXPos.setBounds((3 * buffer) + 25, (TEXT_HEIGHT1 * 3) + (4 * buffer) + oopsBuffer, 50, TEXT_HEIGHT1);
-				startYText.setBounds((3 * buffer), (TEXT_HEIGHT1 * 4) + (5 * buffer) + oopsBuffer, 25, TEXT_HEIGHT1);
-				startYPos.setBounds((3 * buffer) + 25, (TEXT_HEIGHT1 * 4) + (5 * buffer) + oopsBuffer, 50, TEXT_HEIGHT1);
-
-				//int colBuffer = 125;
-				goalText.setBounds(buffer + colBuffer, (TEXT_HEIGHT1 * 2) + (3 * buffer) + oopsBuffer, 50, TEXT_HEIGHT1);
-				goalButton.setBounds((2 * buffer) + 35 + colBuffer, (TEXT_HEIGHT1 * 2) + (3 * buffer) + oopsBuffer, 60, TEXT_HEIGHT1);
-				goalXText.setBounds((3 * buffer) + colBuffer, (TEXT_HEIGHT1 * 3) + (4 * buffer) + oopsBuffer, 25, TEXT_HEIGHT1);
-				goalXPos.setBounds((3 * buffer) + 25 + colBuffer, (TEXT_HEIGHT1 * 3) + (4 * buffer) + oopsBuffer, 50, TEXT_HEIGHT1);
-				goalYText.setBounds((3 * buffer) + colBuffer, (TEXT_HEIGHT1 * 4) + (5 * buffer) + oopsBuffer, 25, TEXT_HEIGHT1);
-				goalYPos.setBounds((3 * buffer) + 25 + colBuffer, (TEXT_HEIGHT1 * 4) + (5 * buffer) + oopsBuffer, 50, TEXT_HEIGHT1);
-
-				startButton.addActionListener(e -> {
-					//TODO Enable manual selection of start position
-					System.err.println("Unimplemented");
-				});
-
-				goalButton.addActionListener(e -> {
-					//TODO Enable manual selection of goal position
-					System.err.println("Unimplemented");
-				});
-
-				//Add all Starting/Ending Fields to the editor window
-				//Taken out because may not need
-
-//				editorWindow.add(sgHeaderText);
-//				editorWindow.add(startText);
-//				editorWindow.add(startXText);
-//				editorWindow.add(startYText);
-//				editorWindow.add(goalText);
-//				editorWindow.add(goalXText);
-//				editorWindow.add(goalYText);
-//
-//				editorWindow.add(startXPos);
-//				editorWindow.add(startYPos);
-//				editorWindow.add(goalXPos);
-//				editorWindow.add(goalYPos);
-//
-//				editorWindow.add(startButton);
-//				editorWindow.add(goalButton);
-
-				//Goal Time Properties
-
-				JLabel rankHeaderText = new JLabel("Ranking Thresholds (Seconds)");
-				//JLabel rank_text = new JLabel("Time ");
-				JLabel rankGText = new JLabel("Gold: ");
-				JLabel rankSText = new JLabel("Silver: ");
-				JLabel rankBText = new JLabel("Bronze: ");
-
-				JTextField rankGTime = new JTextField();
-				JTextField rankSTime = new JTextField();
-				JTextField rankBTime = new JTextField();
-
-				//int col2Buffer = 175;
-				rankHeaderText.setBounds(buffer + colBuffer + col2Buffer, TEXT_HEIGHT1 + (3 * buffer) + oopsBuffer, 200, TEXT_HEIGHT1);
-				//rank_text.setBounds(buffer+colBuffer+col2Buffer , (textHeight*2)+(3*buffer), 100, textHeight);
-				rankGText.setBounds((3 * buffer) + colBuffer + col2Buffer, (TEXT_HEIGHT1 * 2) + (3 * buffer) + oopsBuffer, 50, TEXT_HEIGHT1);
-				rankGTime.setBounds((3 * buffer) + 50 + colBuffer + col2Buffer, (TEXT_HEIGHT1 * 2) + (3 * buffer) + oopsBuffer, 50, TEXT_HEIGHT1);
-				rankSText.setBounds((3 * buffer) + colBuffer + col2Buffer, (TEXT_HEIGHT1 * 3) + (4 * buffer) + oopsBuffer, 50, TEXT_HEIGHT1);
-				rankSTime.setBounds((3 * buffer) + 50 + colBuffer + col2Buffer, (TEXT_HEIGHT1 * 3) + (4 * buffer) + oopsBuffer, 50, TEXT_HEIGHT1);
-				rankBText.setBounds((3 * buffer) + colBuffer + col2Buffer, (TEXT_HEIGHT1 * 4) + (5 * buffer) + oopsBuffer, 50, TEXT_HEIGHT1);
-				rankBTime.setBounds((3 * buffer) + 50 + colBuffer + col2Buffer, (TEXT_HEIGHT1 * 4) + (5 * buffer) + oopsBuffer, 50, TEXT_HEIGHT1);
-				//rankBText.setBounds((3*buffer)+colBuffer+col2Buffer , (textHeight*5)+(6*buffer), 50, textHeight);
-				//rankBTime.setBounds((3*buffer)+50+colBuffer+col2Buffer , (textHeight*5)+(6*buffer), 50, textHeight);
-
-				editorWindow.add(rankHeaderText);
-				//editorWindow.add(rank_text);
-				editorWindow.add(rankGText);
-				editorWindow.add(rankSText);
-				editorWindow.add(rankBText);
-
-				editorWindow.add(rankGTime);
-				editorWindow.add(rankSTime);
-				editorWindow.add(rankBTime);
-
-				//Adding Entities
-
-				JLabel addEntityHeader = new JLabel("Choose Entity to Add");
-				JComboBox entityTypes = new JComboBox(creationOptions);
-				JButton entityButton = new JButton("Add Entity");
-//				JLabel entity_x_text = new JLabel("X: ");
-//				JLabel entity_y_text = new JLabel("Y: ");
-//				JTextField entity_x_val = new JTextField();
-//				JTextField entity_y_val = new JTextField();
-
-				addEntityHeader.setBounds(buffer, (TEXT_HEIGHT1 * 5) + (7 * buffer) + oopsBuffer, 175, TEXT_HEIGHT1);
-				entityTypes.setBounds(buffer, (TEXT_HEIGHT1 * 6) + (8 * buffer) + oopsBuffer, 100, TEXT_HEIGHT1);
-				entityButton.setBounds(100 + (2 * buffer), (TEXT_HEIGHT1 * 6) + (8 * buffer) + oopsBuffer, 100, TEXT_HEIGHT1);
-
-				entityButton.addActionListener(e -> {
-					//TODO FIgure out why can't add object to center of screen
-
-					//getEntityParam();
-					//editEntity(adjustedMouseX,adjustedMouseY); //TESTING
-
-					entityIndex = entityTypes.getSelectedIndex();
-					createXY(-cxCamera / worldScale.x, -cyCamera / worldScale.y);
-					//System.out.println("BAP");
-				});
-
-				editorWindow.add(addEntityHeader);
-				editorWindow.add(entityTypes);
-				editorWindow.add(entityButton);
-
-				//TODO Add ability to edit entity parameters (on click/selecting only?)
-
-				JLabel editEntityHeader = new JLabel("Click a Stage Entity to Edit It");
-				//JComboBox entityTypes = new JComboBox(creationOptions);
-				//JButton entityButton = new JButton("Add Entity");
-
-				editEntityHeader.setBounds(100 + (2 * buffer), (TEXT_HEIGHT1 * 7) + (10 * buffer) + oopsBuffer, 250, TEXT_HEIGHT1);
-
-				editorWindow.add(editEntityHeader);
-
-				//On left click = get entity at coordinate via same looping method used in promptTemplate
-				//
-
-				//promptTemplate
-
-				//Display Everything
-				editorWindow.setLayout(null);
-				editorWindow.setVisible(true);
+				makeGuiWindow();
 			}
-			//TODO Add mouse interactions with level
 
 			if (InputController.getInstance().isLeftClickPressed()) {
 				try {
@@ -1084,6 +851,72 @@ public class LevelEditorController extends WorldController {
 		}
 	}
 
+	private void makeGuiWindow() {
+		//GUI Mode Enabled
+			//Prevent multiple windows from being created
+			guiPrompt = true;
+			//Window Settings
+			editorWindow = new JFrame();
+			GridLayout gridLayout = new GridLayout(12,2);
+			gridLayout.setVgap(2);
+			gridLayout.setHgap(10);
+
+			editorWindow.setLayout(gridLayout);
+
+			JsonObject levelJson = jsonLoaderSaver.gsonToJsonObject(levelModel);
+
+			//Load/Save/LevelName
+			JButton loadButton = new JButton("Load");
+			JButton saveButton = new JButton("Save");
+			JLabel fileLabel = new JLabel("File Name");
+			JTextField fileName = new JTextField(currentLevel);
+
+			loadButton.setSize(BUTTON_WIDTH,BUTTON_HEIGHT);
+			saveButton.setSize(BUTTON_WIDTH,BUTTON_HEIGHT);
+
+			loadButton.addActionListener(e -> {
+				loadLevel(fileName.getText());
+			});
+
+			saveButton.addActionListener(e -> {
+				currentLevel = fileName.getText();
+				saveLevel();
+			});
+
+			editorWindow.add(fileLabel);
+			editorWindow.add(fileName);
+			editorWindow.add(loadButton);
+			editorWindow.add(saveButton);
+
+			generateSwingPropertiesForEntity(levelJson,editorWindow,0);
+
+			editorWindow.setSize(canvas.getWidth() * 3 / 5, canvas.getHeight() * 2 / 3);
+
+			//Adding Entities
+			JLabel addEntityHeader = new JLabel("Choose Entity to Add");
+			JComboBox entityTypes = new JComboBox(creationOptions);
+			JButton entityButton = new JButton("Add Entity");
+
+			entityButton.addActionListener(e -> {
+				entityIndex = entityTypes.getSelectedIndex();
+				createXY(-cxCamera / worldScale.x, -cyCamera / worldScale.y);
+			});
+
+			editorWindow.add(addEntityHeader);
+			editorWindow.add(entityTypes);
+			editorWindow.add(entityButton);
+
+			//TODO Add ability to edit entity parameters (on click/selecting only?)
+
+			JLabel editEntityHeader = new JLabel("Click a Stage Entity to Edit It");
+
+			editEntityHeader.setSize(250, TEXT_HEIGHT1);
+
+			editorWindow.add(editEntityHeader);
+
+			//Display Everything
+			editorWindow.setVisible(true);
+	}
 
 	private void drawGridLines() {
 		// debug lines
@@ -1168,9 +1001,6 @@ public class LevelEditorController extends WorldController {
 		canvas.drawTextStandard("Level: " + currentLevel, 10.0f, 100.0f);
 
 		canvas.end();
-
-
-
 	}
 
 	@Override
@@ -1199,11 +1029,6 @@ public class LevelEditorController extends WorldController {
 			}
 		}
 	}
-
-	/** Unused ContactListener method */
-	public void postSolve(Contact contact, ContactImpulse impulse) {}
-	/** Unused ContactListener method */
-	public void preSolve(Contact contact, Manifold oldManifold) {}
 
 	@Override
 	public void setCanvas(GameCanvas canvas) {
