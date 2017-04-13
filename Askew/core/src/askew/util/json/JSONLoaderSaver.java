@@ -58,6 +58,15 @@ public class JSONLoaderSaver {
         return gson.toJson(o, Entity.class);
     }
 
+    public JsonObject gsonToJsonObject(Entity o) {
+        JsonParser jsonParser = new JsonParser();
+        return jsonParser.parse(gson.toJson(o, Entity.class)).getAsJsonObject();
+    }
+
+    public String stringFromJson(JsonElement o) {
+        return gson.toJson(o);
+    }
+
     public Entity entityFromJson(String s) {
         return gson.fromJson(s, Entity.class);
     }

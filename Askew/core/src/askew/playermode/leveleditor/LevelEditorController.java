@@ -35,6 +35,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Vector2;
+import com.google.gson.JsonArray;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.Manifold;
@@ -45,7 +46,9 @@ import lombok.Setter;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.Iterator;
 
 import static javax.swing.JOptionPane.showInputDialog;
@@ -110,13 +113,14 @@ public class LevelEditorController extends WorldController {
 			".StiffBranch",
 			".OwlModel",
 			".WallModel",
-			".Tree",
+			//".Tree",
 			".OwlModel",
 			".GhostModel",
 			".BackgroundEntity"
 	};
 
 	private boolean prompting;
+	private boolean guiPrompt;
 	private boolean showHelp;
 	private static final String HELP_TEXT = "Welcome to the help screen. You \n" +
 			"can hit H at any time to toggle this screen. Remember to save \n" +
@@ -136,8 +140,21 @@ public class LevelEditorController extends WorldController {
 			"T: Draw grid lines\n" +
 			"X: (xbox controller) switch to playing the level\n" +
 			"H: Toggle this help text";
+
 	private boolean loadingLevelPrompt;
 	private boolean shouldDrawGrid;
+
+	@Getter
+	@Setter
+	private boolean vimMode;
+
+	@Getter
+	@Setter
+	private boolean selectedEntity;
+
+	@Getter
+	@Setter
+	private boolean scrollEnabled;
 
 	/**
 	 * Preloads the assets for this controller.
@@ -189,10 +206,13 @@ public class LevelEditorController extends WorldController {
 		showHelp = true;
 		shouldDrawGrid = true;
 		camTrans = new Affine2();
+		vimMode = false;
+		selectedEntity = false;
 		oneScale = new Vector2(1,1);
 		pressedL = false;
 		prevPressedL = false;
 	}
+
 	public void setLevel(String levelName) {
 		currentLevel = levelName;
 	}
@@ -282,7 +302,7 @@ public class LevelEditorController extends WorldController {
 	 * Type safety is overrated [trevor]
 	 * @param x
 	 * @param y
-     */
+	 */
 	private void createXY(float x, float y) {
 		float xorig = x;
 		float yorig = y;
@@ -309,10 +329,10 @@ public class LevelEditorController extends WorldController {
 				StiffBranch sb = new StiffBranch(x,y, 3.0f, 0.25f, 1.0f,oneScale, 0f);
 				promptTemplate(sb);
 				break;
-			case ".Tree":
-				Tree tr = new Tree(x,y,5f, 3f, 0.25f, 1.0f, oneScale);
-				promptTemplate(tr);
-				break;
+//			case ".Tree":
+//				Tree tr = new Tree(x,y,5f, 3f, 0.25f, 1.0f, oneScale);
+//				promptTemplate(tr);
+//				break;
 			case ".OwlModel":
 				OwlModel owl = new OwlModel(x,y);
 				promptTemplate(owl);
@@ -337,6 +357,346 @@ public class LevelEditorController extends WorldController {
 		inputRateLimiter = UI_WAIT_SHORT;
 	}
 
+	/** Returns and ArrayList of parameters needed create a given game entity
+	 *
+	 * @param entityName The name of the entity as a string, ex ".SlothModel"
+	 * */
+	private ArrayList<String> getEntityParam(String entityName){
+		ArrayList<String> fieldNames = new ArrayList<String>();
+		fieldNames.add("x");
+		fieldNames.add("y");
+
+		switch (entityName) {
+			case ".SlothModel":
+				//No additional fields needed
+				break;
+			case ".Vine":
+				fieldNames.add("numLinks");
+				fieldNames.add("angle");
+				fieldNames.add("omega");
+				break;
+			case ".Trunk":
+				fieldNames.add("angle");
+				fieldNames.add("numLinks");
+				fieldNames.add("linksize");
+				fieldNames.add("stiffLen");
+				break;
+			case ".PoleVault":
+				fieldNames.add("angle");
+				fieldNames.add("numLinks");
+				fieldNames.add("linksize");
+				break;
+			case ".StiffBranch":
+				fieldNames.add("stiffLen");
+				break;
+			case ".OwlModel":
+				//No additional fields needed
+				break;
+			case ".WallModel":
+				fieldNames.add("thorn");
+				fieldNames.add("points");
+				break;
+			case ".GhostModel":
+				fieldNames.add("patroldx");
+				fieldNames.add("patroldy");
+				break;
+			default:
+				System.err.println("UNKNOWN ENT");
+				break;
+		}
+
+		return fieldNames;
+	}
+
+	private void createGuiWindow(){
+		//TODO Create clean way of making GUI window
+
+	}
+
+	/** Returns the pop-out window for editing parameters of individual entities as a JPanel
+	 *
+	 * @param template The entity to be edited
+	 * @param parentWindow The parent window for the window being created (used for button events)
+	 * @returns A JPanel specifically for the level editor GUI
+	 * */
+	private JPanel makeEntityWindow(Entity template, JDialog parentWindow){
+		JsonObject entityObject = jsonLoaderSaver.gsonToJsonObject(template);
+
+		JsonObject entityProp = entityObject.get("INSTANCE").getAsJsonObject();
+		String entityName = entityObject.get("CLASSNAME").getAsString();
+		entityName = entityName.substring(entityName.lastIndexOf("."));
+
+		ArrayList<String> params = getEntityParam(entityName);
+		ArrayList<JTextField> fieldObjects = new ArrayList<>();
+		//ArrayList<JComponent> fieldObjects = new ArrayList<>();
+
+		JPanel panel = new JPanel();
+		panel.setLayout(null);
+
+		int buffer = 5;
+		int textHeight = 20;
+		int rowNum = 0;
+		int fieldTextWidth = 75;
+		int fieldBoxWidth = 50;
+
+		JLabel header = new JLabel(entityName+" Properties (Please hit OK instead of X to closeout window)");
+		JButton okButton = new JButton("OK");
+		JButton deleteButton = new JButton("Delete Entity");
+
+		//Hard-coded for lambda purposes in the delete button ;w;
+		float x = entityProp.get("x").getAsFloat();
+		float y = entityProp.get("y").getAsFloat();
+
+		//Define top elements
+		header.setBounds(buffer, buffer, 500, textHeight);
+		rowNum++;
+		deleteButton.setBounds(buffer, (rowNum*textHeight)+((rowNum+1)*buffer), 150, textHeight);
+		rowNum++;
+
+		//Define field elements
+
+		if(entityName.equals(".WallModel")){
+			//Hard-coded since otherwise I don't know how to make it work because JRadioButton isn't a JTextField OTL
+
+			//Do X & Y components
+			for (int i = 0; i < 2; i++) {
+				String paramName = params.get(i);
+
+				float paramVal = entityProp.get(paramName).getAsFloat();
+				JLabel paramText = new JLabel(paramName + ":");
+				JTextField paramField = new JTextField("" + paramVal);
+
+				paramText.setBounds((2 * buffer), (rowNum * textHeight) + ((rowNum + 1) * buffer), fieldTextWidth, textHeight);
+				paramField.setBounds((3 * buffer) + fieldTextWidth, (rowNum * textHeight) + ((rowNum + 1) * buffer), fieldBoxWidth, textHeight);
+
+				panel.add(paramText);
+				panel.add(paramField);
+				fieldObjects.add(paramField);
+
+				rowNum++;
+			}
+
+			//Get everything else
+			boolean thornsFlag = entityProp.get("thorn").getAsBoolean();
+			JRadioButton yesThorn = new JRadioButton("Thorns");
+			JRadioButton noThorn = new JRadioButton("No Thorns");
+			ButtonGroup thornButtons = new ButtonGroup();
+
+			JsonArray thornsPoints = entityProp.get("points").getAsJsonArray();
+
+			//Holds the dimensions for the wall
+			int width = 0;
+			int height = 0;
+
+			//TODO Change from assuming shape is always a rectangle
+			try {
+				for (int k = 0; k < thornsPoints.size(); k++) {
+					int value = thornsPoints.get(k).getAsInt();
+					if (value > 0) {
+						if (k % 2 == 0) width = value;
+						else height = value;
+					}
+				}
+			}
+			catch (Exception e){
+				e.printStackTrace();
+			}
+
+			//Define wall parameter boxes
+			JLabel boxWidthText = new JLabel("Width: ");
+			JTextField boxWidthVal = new JTextField(""+width);
+			JLabel boxHeightText = new JLabel("Height: ");
+			JTextField boxHeightVal = new JTextField(""+height);
+
+			//Set value of radio buttons
+			if (thornsFlag) yesThorn.setSelected(true);
+			else noThorn.setSelected(true);
+
+			//Place radio buttons
+			yesThorn.setBounds((2*buffer), (rowNum*textHeight)+((rowNum+1)*buffer), 75, textHeight);
+			noThorn.setBounds((3*buffer)+75, (rowNum*textHeight)+((rowNum+1)*buffer), 100, textHeight);
+			rowNum++;
+
+			//Place wall parameter boxes
+			boxWidthText.setBounds((2*buffer), (rowNum*textHeight)+((rowNum+1)*buffer), fieldTextWidth, textHeight);
+			boxWidthVal.setBounds((3*buffer)+fieldTextWidth, (rowNum*textHeight)+((rowNum+1)*buffer), fieldBoxWidth, textHeight);
+			rowNum++;
+			boxHeightText.setBounds((2*buffer), (rowNum*textHeight)+((rowNum+1)*buffer), fieldTextWidth, textHeight);
+			boxHeightVal.setBounds((3*buffer)+fieldTextWidth, (rowNum*textHeight)+((rowNum+1)*buffer), fieldBoxWidth, textHeight);
+			rowNum++;
+
+			//Add radio buttons to button group
+			thornButtons.add(yesThorn);
+			thornButtons.add(noThorn);
+
+			//Add all elements to panel
+			panel.add(yesThorn);
+			panel.add(noThorn);
+			panel.add(boxWidthText);
+			panel.add(boxWidthVal);
+			panel.add(boxHeightText);
+			panel.add(boxHeightVal);
+
+			okButton.addActionListener((ActionEvent e) -> {
+
+				//Do X & Y components
+				for (int i = 0; i < 2; i++) {
+					String paramName = params.get(i);
+					JTextField fieldObject = fieldObjects.get(i);
+
+					entityProp.remove(paramName);
+					entityProp.addProperty(paramName, fieldObject.getText());
+				}
+
+				//Change thorn flag
+				entityProp.remove("thorn");
+				if (yesThorn.isSelected()) entityProp.addProperty("thorn", true);
+				else entityProp.addProperty("thorn", false);
+
+				int boxWidth = Integer.parseInt(boxWidthVal.getText());
+				int boxHeight = Integer.parseInt(boxHeightVal.getText());
+
+				//Create box coordinates
+				// Clear thornpoints first
+				int s = thornsPoints.size();
+				for (int i = s-1; i >=0; i--) {
+					thornsPoints.remove(0);
+				}
+
+				for(int k=0;k<thornsPoints.size();k++){
+					if (k == 2 || k == 4) thornsPoints.add(boxWidth);
+					else if (k == 7 || k == 5) thornsPoints.add(boxHeight);
+					else thornsPoints.add(0);
+				}
+
+				//Change box parameters
+				entityProp.remove("points");
+				entityProp.add("points", thornsPoints);
+
+				//Reassign object
+				entityObject.remove("INSTANCE");
+				entityObject.add("INSTANCE", entityProp);
+
+				//Get the string form of the entityObject
+				String stringJson = jsonLoaderSaver.stringFromJson(entityObject);
+				promptTemplateCallback(stringJson);
+
+				parentWindow.setVisible(false);
+				parentWindow.dispose();
+				//panel.setVisible(false);
+				//panel.dispose();
+			});
+			//End of sad times
+		}
+		//Anything that isn't a wall
+		else {
+
+			for (int i = 0; i < params.size(); i++) {
+				String paramName = params.get(i);
+				float paramVal = entityProp.get(paramName).getAsFloat();
+				JLabel paramText = new JLabel(paramName + ":");
+				JTextField paramField = new JTextField("" + paramVal);
+
+				paramText.setBounds((2 * buffer), (rowNum * textHeight) + ((rowNum + 1) * buffer), fieldTextWidth, textHeight);
+				paramField.setBounds((3 * buffer) + fieldTextWidth, (rowNum * textHeight) + ((rowNum + 1) * buffer), fieldBoxWidth, textHeight);
+
+				panel.add(paramText);
+				panel.add(paramField);
+				fieldObjects.add(paramField);
+				//}
+				rowNum++;
+			}
+
+			//Add okay button
+			//okButton.setBounds(125, ((rowNum + 1) * textHeight) + ((rowNum + 1) * buffer), 100, textHeight);
+
+			okButton.addActionListener(e -> {
+				for (int i = 0; i < params.size(); i++) {
+					String paramName = params.get(i);
+
+					JTextField fieldObject = fieldObjects.get(i);
+
+					entityProp.remove(paramName);
+					entityProp.addProperty(paramName, fieldObject.getText());
+
+				}
+
+				entityObject.remove("INSTANCE");
+				entityObject.add("INSTANCE", entityProp);
+
+				//Get the string form of the entityObject
+				String stringJson = jsonLoaderSaver.stringFromJson(entityObject);
+				promptTemplateCallback(stringJson);
+
+				parentWindow.setVisible(false);
+				parentWindow.dispose();
+				//panel.setVisible(false);
+				//panel.dispose();
+			});
+		}
+
+		okButton.setBounds(125, ((rowNum+1)*textHeight)+((rowNum+1)*buffer), 100, textHeight);
+
+		deleteButton.addActionListener(e -> {
+			deleteEntity(x,y);
+			parentWindow.setVisible(false);
+			parentWindow.dispose();
+			//panel.setVisible(false);
+			//panel.dispose();
+		});
+
+		panel.add(header);
+		panel.add(okButton);
+		panel.add(deleteButton);
+
+		return panel;
+
+	}
+
+	private void deleteEntity(float adjustedMouseX, float adjustedMouseY){
+		Entity select = entityQuery();
+		if (select != null) objects.remove(select);
+		inputRateLimiter = UI_WAIT_SHORT;
+	}
+
+	private void editEntity(float adjustedMouseX, float adjustedMouseY){
+		Entity select = entityQuery();
+		if (select != null) {
+			if(isVimMode()) promptTemplate(select);
+			else changeEntityParam(select);
+		}
+		inputRateLimiter = UI_WAIT_SHORT;
+	}
+
+	private void saveLevel(){
+		System.out.println("Saving...");
+		LevelModel timeToSave = new LevelModel();
+		timeToSave.setTitle(currentLevel);
+		for (Entity o : objects) {
+			timeToSave.addEntity(o);
+		}
+	}
+
+	private void loadLevel(){
+		if (!loadingLevelPrompt) {
+			loadingLevelPrompt = true;
+			currentLevel = showInputDialog("What level do you want to load?");
+			reset();
+			loadingLevelPrompt = false;
+		}
+		inputRateLimiter = UI_WAIT_LONG;
+	}
+
+	private void setLevelName(){
+		String prevLevel = currentLevel;
+		currentLevel = showInputDialog("What should we call this level?");
+
+		//If action cancelled or entry is empty
+		if(currentLevel.isEmpty()) currentLevel = prevLevel; // TODO Check if currentLevel == null
+
+		inputRateLimiter = UI_WAIT_LONG;
+	}
+
 	private void promptTemplate(Entity template) {
 		if (!prompting) {
 			prompting = true;
@@ -351,14 +711,30 @@ public class LevelEditorController extends WorldController {
 					new JTextArea(jsonOfTemplate,20,30);
 			panel.add(commentTextArea);
 			mainFrame.add(panel);
-			JButton okButton = new JButton("ok");
+			JButton okButton = new JButton("OK");
 			okButton.addActionListener(e -> {
+				objects.remove(template);
 				promptTemplateCallback(commentTextArea.getText());
 				mainFrame.setVisible(false);
 				mainFrame.dispose();
 			});
 			panel.add(okButton);
 			mainFrame.setVisible(true);
+		}
+	}
+
+	private void changeEntityParam(Entity template) {
+		if (!prompting) {
+			prompting = true; //Use different constant? Can just use the same one?
+
+			JDialog entityDisplay = new JDialog();
+			entityDisplay.setSize(600,600);
+			entityDisplay.setLocationRelativeTo(null);
+			JPanel panel = makeEntityWindow(template,entityDisplay);
+
+			entityDisplay.add(panel);
+			entityDisplay.setVisible(true);
+			//panel.setVisible(true);
 		}
 	}
 
@@ -383,7 +759,7 @@ public class LevelEditorController extends WorldController {
 					new JTextArea(jsonOfConfig,20,30);
 			panel.add(commentTextArea);
 			mainFrame.add(panel);
-			JButton okButton = new JButton("ok");
+			JButton okButton = new JButton("OK");
 			okButton.addActionListener(e -> {
 				JSONLoaderSaver.saveArbitrary("data/config.json",commentTextArea
 						.getText());
@@ -428,123 +804,430 @@ public class LevelEditorController extends WorldController {
 		float mouseX = InputController.getInstance().getCrossHair().x;
 		float mouseY = InputController.getInstance().getCrossHair().y;
 
-		adjustedMouseX = mouseX - (cxCamera + canvas.getWidth()/2) / worldScale.x;
-		adjustedMouseY = mouseY - (cyCamera + canvas.getHeight()/2) / worldScale.y;
+		adjustedMouseX = mouseX - (cxCamera + canvas.getWidth() / 2) / worldScale.x;
+		adjustedMouseY = mouseY - (cyCamera + canvas.getHeight() / 2) / worldScale.y;
 
+		//Toggle scrolling flag
+		setScrollEnabled(InputController.getInstance().isRShiftKeyPressed() ||
+				InputController.getInstance().isLShiftKeyPressed());
 
-		// Check for pan
-		if (mouseX < 1) {
-			// Pan left
-			cxCamera+= 10;
-		}
-		if (mouseY < 1) {
-			// down
-			cyCamera+= 10;
-		}
-		if (mouseX > (canvas.getWidth() / worldScale.x) - 1) {
-			cxCamera-= 10;
-		}
-		if (mouseY > (canvas.getHeight() / worldScale.y) - 1) {
-			cyCamera-= 10;
+		//Toggle "VIM" mode
+		if (InputController.getInstance().isVKeyPressed()) {
+			setVimMode(!isVimMode());
+			inputRateLimiter = UI_WAIT_LONG;
 		}
 
-		// Create
-		if (InputController.getInstance().isLeftClickPressed()) {
-			createXY(adjustedMouseX,adjustedMouseY);
-		}
-
-		// Delete
-		if (InputController.getInstance().isRightClickPressed()) {
-			Entity select = entityQuery();
-			if (select != null) objects.remove(select);
-			inputRateLimiter = UI_WAIT_SHORT;
-		}
-
-		// Edit
-		if (InputController.getInstance().isEKeyPressed()) {
-			Entity select = entityQuery();
-			if (select != null) {
-				promptTemplate(select);
-				objects.remove(select);
+		//Allows user to move the camera/view of the level
+		if (isScrollEnabled()) {
+			if (mouseX < 1) {
+				// Pan left
+				cxCamera += 10;
 			}
-			inputRateLimiter = UI_WAIT_SHORT;
-		}
-
-		// Name level
-		if (InputController.getInstance().isNKeyPressed()) {
-			currentLevel = showInputDialog("What should we call this level?");
-			inputRateLimiter = UI_WAIT_LONG;
-		}
-
-		// Load level
-		if (pressedL && !prevPressedL) {
-			if (!loadingLevelPrompt) {
-				loadingLevelPrompt = true;
-				currentLevel = showInputDialog("What level do you want to load?");
-				loadingLevelPrompt = false;
-				reset();
+			if (mouseY < 1) {
+				// down
+				cyCamera += 10;
 			}
-			inputRateLimiter = UI_WAIT_ETERNAL;
-		}
-
-		// Save
-		if (InputController.getInstance().isSKeyPressed()) {
-			System.out.println("Saving...");
-			LevelModel timeToSave = new LevelModel();
-			timeToSave.setTitle(currentLevel);
-			for (Entity o : objects) {
-				timeToSave.addEntity(o);
+			if (mouseX > (canvas.getWidth() / worldScale.x) - 1) {
+				cxCamera -= 10;
 			}
-			if (jsonLoaderSaver.saveLevel(timeToSave, currentLevel)) {
-				System.out.println("Saved!");
-			} else {
-				System.err.println("ERROR IN SAVE");
+			if (mouseY > (canvas.getHeight() / worldScale.y) - 1) {
+				cyCamera -= 10;
 			}
-			inputRateLimiter = UI_WAIT_LONG;
 		}
 
-		// Scroll backward ent
-		if (InputController.getInstance().isLeftKeyPressed()) {
-			tentativeEntityIndex = (tentativeEntityIndex + 1 + creationOptions.length) % creationOptions.length;
-			inputRateLimiter = UI_WAIT_LONG;
-		}
 
-		// Scroll forward ent
-		if (InputController.getInstance().isRightKeyPressed()) {
-			tentativeEntityIndex = (tentativeEntityIndex - 1 + creationOptions.length) % creationOptions.length;
-			inputRateLimiter = UI_WAIT_LONG;
-		}
+		//If "VIM" mode is enabled
+		if (isVimMode()) {
+			//Dispose of GUI because VIM
+			//editor_window.setVisible(false);
+			//editor_window.dispose();
+			//guiPrompt = false;
 
-		// Select ent
-		if (InputController.getInstance().isEnterKeyPressed()) {
-			entityIndex = tentativeEntityIndex;
-			inputRateLimiter = UI_WAIT_LONG;
-		}
+			guiPrompt = false;
 
-		// Help
-		if (InputController.getInstance().isHKeyPressed()) {
-			showHelp = !showHelp;
-			inputRateLimiter = UI_WAIT_LONG;
-		}
+			// Create
+			if (InputController.getInstance().isLeftClickPressed()) {
+				createXY(adjustedMouseX, adjustedMouseY);
+			}
 
-		// Grid
-		if (InputController.getInstance().isTKeyPressed()) {
-			shouldDrawGrid = !shouldDrawGrid;
-			inputRateLimiter = UI_WAIT_LONG;
-		}
+			// Delete
+			if (InputController.getInstance().isRightClickPressed()) {
+				deleteEntity(adjustedMouseX, adjustedMouseY);
+			}
 
-		// Background
-		if (InputController.getInstance().isBKeyPressed()) {
-			levelModel.setBackground(showInputDialog("What texture should the background be set to?"));
-			// TODO: Update the drawn background (after henry implements the engine)
-			background = getMantisAssetManager().get("texture/background/background1.png");
+			// Edit
+			if (InputController.getInstance().isEKeyPressed()) {
+				editEntity(adjustedMouseX, adjustedMouseY);
+			}
 
-		}
+			// Save
+			if (InputController.getInstance().isSKeyPressed()) {
+				saveLevel();
+			}
 
-		if (InputController.getInstance().isGKeyPressed()) {
-			promptGlobalConfig();
+			// Name level
+			if (InputController.getInstance().isNKeyPressed()) {
+				setLevelName();
+			}
+
+			// Load level
+			if (InputController.getInstance().isLKeyPressed()) {
+				loadLevel();
+			}
+
+			// Save
+			if (InputController.getInstance().isSKeyPressed()) {
+				saveLevel();
+			}
+
+			// Scroll backward ent
+			if (InputController.getInstance().isLeftKeyPressed()) {
+				tentativeEntityIndex = (tentativeEntityIndex + 1 + creationOptions.length) % creationOptions.length;
+				inputRateLimiter = UI_WAIT_LONG;
+			}
+
+			// Scroll forward ent
+			if (InputController.getInstance().isRightKeyPressed()) {
+				tentativeEntityIndex = (tentativeEntityIndex - 1 + creationOptions.length) % creationOptions.length;
+				inputRateLimiter = UI_WAIT_LONG;
+			}
+
+			// Select ent
+			if (InputController.getInstance().isEnterKeyPressed()) {
+				entityIndex = tentativeEntityIndex;
+				inputRateLimiter = UI_WAIT_LONG;
+			}
+
+			// Help
+			if (InputController.getInstance().isHKeyPressed()) {
+				showHelp = !showHelp;
+				inputRateLimiter = UI_WAIT_LONG;
+			}
+
+			// Grid
+			if (InputController.getInstance().isTKeyPressed()) {
+				shouldDrawGrid = !shouldDrawGrid;
+				inputRateLimiter = UI_WAIT_LONG;
+			}
+
+			// Global Config
+			if (InputController.getInstance().isGKeyPressed()) {
+				promptGlobalConfig();
+			}
+
+			// Background
+			if (InputController.getInstance().isBKeyPressed()) {
+				levelModel.setBackground(showInputDialog("What texture should the background be set to?"));
+				// TODO: Update the drawn background (after henry implements the engine)
+				background = getMantisAssetManager().get(levelModel.getBackground());
+			}
+		} else {
+			//GUI Mode Enabled
+			if (!guiPrompt) {
+				//Prevent multiple windows from being created
+				guiPrompt = true;
+				//Window Settings
+				JFrame editorWindow = new JFrame();
+
+				//TODO Add scaling
+				int buttonWidth = 75;
+				int buttonHeight = 30;
+				int buffer = 6;
+				int textLength = 175;
+				int textHeight = 20;
+				//int field_length = 150;
+				//int field_height= textHeight;
+
+				editorWindow.setSize(canvas.getWidth() * 3 / 5, canvas.getHeight() * 2 / 3);
+
+				//"File Properties" Stuff
+				JLabel fileText = new JLabel("File Name: ");
+				JLabel levelText = new JLabel("Level Name: ");
+
+				JTextField fileName = new JTextField("Temp");
+				JTextField levelName = new JTextField(currentLevel);
+
+				//fileText.setBounds(buffer, buffer, textLength, textHeight);
+				fileText.setBounds(buffer, buffer, 65, textHeight);
+				//file_button.setBounds(textLength+buffer, buffer, buttonWidth-20, buttonHeight);
+				fileName.setBounds(65 + buffer, buffer, textLength, textHeight);
+				//levelText.setBounds(textLength+buttonWidth+(buffer*5), buffer, textLength, textHeight);
+				levelText.setBounds(65 + textLength + (buffer * 2), buffer, 75, textHeight);
+				levelName.setBounds(65 + 75 + textLength + (buffer * 2), buffer, textLength, textHeight);
+				//level_button.setBounds(buttonWidth +(textLength*2)+(buffer*5), buffer, buttonWidth-20, buttonHeight);
+
+				//Load/Save Button
+				JButton loadButton = new JButton("Load");
+				JButton saveButton = new JButton("Save");
+
+				loadButton.setBounds(65 + 75 + (2 * textLength) + (buffer * 3), buffer, buttonWidth, buttonHeight);
+				saveButton.setBounds(65 + 75 + (2 * textLength) + (buffer * 3), (2 * buffer) + buttonHeight, buttonWidth, buttonHeight);
+
+				loadButton.addActionListener(e -> {
+					loadLevel();
+				});
+
+				saveButton.addActionListener(e -> {
+					//editorWindow.setVisible(false);
+					//editorWindow.dispose();
+					//guiPrompt = false;
+
+					currentLevel = levelName.getText();
+					saveLevel();
+					//System.out.println("BOOP");
+				});
+
+//				file_button.addActionListener(e -> {
+//					//editorWindow.setVisible(false);
+//					//editorWindow.dispose();
+//					//guiPrompt = false;
+//					System.out.println("BOOP");
+//				});
+//
+//				level_button.addActionListener(e -> {
+//					//editorWindow.setVisible(false);
+//					//editorWindow.dispose();
+//					//guiPrompt = false;
+//					setLevelName();
+//				});
+
+				//Add all file properties to the editor window
+				editorWindow.add(fileText);
+				editorWindow.add(fileName);
+				//editorWindow.add(file_button);
+				editorWindow.add(levelText);
+				editorWindow.add(levelName);
+				//editorWindow.add(level_button);
+				editorWindow.add(loadButton);
+				editorWindow.add(saveButton);
+
+				//Stage Dimensions & Background
+
+				JLabel bgText = new JLabel("Current BG: ");
+				//JTextField bgName = new JTextField();
+				JLabel bgName = new JLabel("BACKGROUND_NAME");
+				JButton bgButton = new JButton("Edit");
+				JLabel sizeText = new JLabel("Stage Size: ");
+				JButton sizeButton = new JButton("Apply");
+				JLabel widthText = new JLabel("Width: ");
+				JLabel heightText = new JLabel("Height: ");
+				JTextField widthVal = new JTextField();
+				JTextField heightVal = new JTextField();
+
+				//
+
+				int colBuffer = 125; //New location
+				int col2Buffer = 175; //New location
+
+				bgText.setBounds(buffer, textHeight + (3 * buffer), 75, textHeight);
+				bgName.setBounds(buffer + 25, (textHeight * 2) + (5 * buffer), 200, textHeight);
+				bgButton.setBounds((2 * buffer) + 75, textHeight + (3 * buffer), 60, textHeight);
+//				startXText.setBounds((3*buffer), (textHeight*3)+(4*buffer), 25, textHeight);
+//				startXPos.setBounds((3*buffer)+25, (textHeight*3)+(4*buffer), 50, textHeight);
+//				startYText.setBounds((3*buffer), (textHeight*4)+(5*buffer), 25, textHeight);
+//				startYPos.setBounds((3*buffer)+25, (textHeight*4)+(5*buffer), 50, textHeight);
+				sizeText.setBounds(buffer + colBuffer + col2Buffer, textHeight + (3 * buffer), 75, textHeight);
+				sizeButton.setBounds(buffer + colBuffer + col2Buffer + 75, textHeight + (3 * buffer), 75, textHeight);
+				//rank_text.setBounds(buffer+colBuffer+col2Buffer , (textHeight*2)+(3*buffer), 100, textHeight);
+				widthText.setBounds((3 * buffer) + colBuffer + col2Buffer, (textHeight * 2) + (4 * buffer), 50, textHeight);
+				widthVal.setBounds((3 * buffer) + 50 + colBuffer + col2Buffer, (textHeight * 2) + (4 * buffer), 50, textHeight);
+				heightText.setBounds((3 * buffer) + colBuffer + col2Buffer, (textHeight * 3) + (5 * buffer), 50, textHeight);
+				heightVal.setBounds((3 * buffer) + 50 + colBuffer + col2Buffer, (textHeight * 3) + (5 * buffer), 50, textHeight);
+				//rankBText.setBounds((3*buffer)+colBuffer+col2Buffer , (textHeight*4)+(5*buffer), 50, textHeight);
+				//rankBTime.setBounds((3*buffer)+50+colBuffer+col2Buffer , (textHeight*4)+(5*buffer), 50, textHeight);
+
+				bgButton.addActionListener(e -> {
+					//TODO Get image file name and apply background
+					bgName.setText("Not implemented yet!"); //Assign new file name to display
+					//loadLevel();
+				});
+
+				sizeButton.addActionListener(e -> {
+					//TODO Apply change to level size
+					//Change level size
+					//widthVal.setText("Not implemented yet!");
+					widthVal.setText("Nah!");
+					heightVal.setText("Nope!");
+					//loadLevel();
+				});
+
+				int oopsBuffer = (2 * textHeight) + (7 * buffer); //Apply to everything below here \/
+
+//				bgText.setBounds();
+//				bgName.setBounds();
+//				sizeText.setBounds();
+//				widthText.setBounds();
+//				heightText.setBounds();
+//				widthVal.setBounds();
+//				heightVal.setBounds();
+
+				editorWindow.add(bgText);
+				editorWindow.add(bgName);
+				editorWindow.add(bgButton);
+				editorWindow.add(sizeText);
+				editorWindow.add(sizeButton);
+				editorWindow.add(widthText);
+				editorWindow.add(heightText);
+				editorWindow.add(widthVal);
+				editorWindow.add(heightVal);
+
+				//Starting/Ending Fields
+
+				JLabel sgHeaderText = new JLabel("Start and Goal Positions");
+				JLabel startText = new JLabel("Start:");
+				JLabel startXText = new JLabel("X: ");
+				JLabel startYText = new JLabel("Y: ");
+				JLabel goalText = new JLabel("Goal:");
+				JLabel goalXText = new JLabel("X: ");
+				JLabel goalYText = new JLabel("Y: ");
+
+				JTextField startXPos = new JTextField();
+				JTextField startYPos = new JTextField();
+				JTextField goalXPos = new JTextField();
+				JTextField goalYPos = new JTextField();
+
+				JButton startButton = new JButton("Edit");
+				JButton goalButton = new JButton("Edit");
+
+				sgHeaderText.setBounds(buffer, textHeight + (3 * buffer) + oopsBuffer, 175, textHeight);
+				startText.setBounds(buffer, (textHeight * 2) + (3 * buffer + oopsBuffer), 50, textHeight);
+				startButton.setBounds((2 * buffer) + 35, (textHeight * 2) + (3 * buffer) + oopsBuffer, 60, textHeight);
+				startXText.setBounds((3 * buffer), (textHeight * 3) + (4 * buffer) + oopsBuffer, 25, textHeight);
+				startXPos.setBounds((3 * buffer) + 25, (textHeight * 3) + (4 * buffer) + oopsBuffer, 50, textHeight);
+				startYText.setBounds((3 * buffer), (textHeight * 4) + (5 * buffer) + oopsBuffer, 25, textHeight);
+				startYPos.setBounds((3 * buffer) + 25, (textHeight * 4) + (5 * buffer) + oopsBuffer, 50, textHeight);
+
+				//int colBuffer = 125;
+				goalText.setBounds(buffer + colBuffer, (textHeight * 2) + (3 * buffer) + oopsBuffer, 50, textHeight);
+				goalButton.setBounds((2 * buffer) + 35 + colBuffer, (textHeight * 2) + (3 * buffer) + oopsBuffer, 60, textHeight);
+				goalXText.setBounds((3 * buffer) + colBuffer, (textHeight * 3) + (4 * buffer) + oopsBuffer, 25, textHeight);
+				goalXPos.setBounds((3 * buffer) + 25 + colBuffer, (textHeight * 3) + (4 * buffer) + oopsBuffer, 50, textHeight);
+				goalYText.setBounds((3 * buffer) + colBuffer, (textHeight * 4) + (5 * buffer) + oopsBuffer, 25, textHeight);
+				goalYPos.setBounds((3 * buffer) + 25 + colBuffer, (textHeight * 4) + (5 * buffer) + oopsBuffer, 50, textHeight);
+
+				startButton.addActionListener(e -> {
+					//TODO Enable manual selection of start position
+					System.err.println("Unimplemented");
+				});
+
+				goalButton.addActionListener(e -> {
+					//TODO Enable manual selection of goal position
+					System.err.println("Unimplemented");
+				});
+
+				//Add all Starting/Ending Fields to the editor window
+				//Taken out because may not need
+
+//				editorWindow.add(sgHeaderText);
+//				editorWindow.add(startText);
+//				editorWindow.add(startXText);
+//				editorWindow.add(startYText);
+//				editorWindow.add(goalText);
+//				editorWindow.add(goalXText);
+//				editorWindow.add(goalYText);
+//
+//				editorWindow.add(startXPos);
+//				editorWindow.add(startYPos);
+//				editorWindow.add(goalXPos);
+//				editorWindow.add(goalYPos);
+//
+//				editorWindow.add(startButton);
+//				editorWindow.add(goalButton);
+
+				//Goal Time Properties
+
+				JLabel rankHeaderText = new JLabel("Ranking Thresholds (Seconds)");
+				//JLabel rank_text = new JLabel("Time ");
+				JLabel rankGText = new JLabel("Gold: ");
+				JLabel rankSText = new JLabel("Silver: ");
+				JLabel rankBText = new JLabel("Bronze: ");
+
+				JTextField rankGTime = new JTextField();
+				JTextField rankSTime = new JTextField();
+				JTextField rankBTime = new JTextField();
+
+				//int col2Buffer = 175;
+				rankHeaderText.setBounds(buffer + colBuffer + col2Buffer, textHeight + (3 * buffer) + oopsBuffer, 200, textHeight);
+				//rank_text.setBounds(buffer+colBuffer+col2Buffer , (textHeight*2)+(3*buffer), 100, textHeight);
+				rankGText.setBounds((3 * buffer) + colBuffer + col2Buffer, (textHeight * 2) + (3 * buffer) + oopsBuffer, 50, textHeight);
+				rankGTime.setBounds((3 * buffer) + 50 + colBuffer + col2Buffer, (textHeight * 2) + (3 * buffer) + oopsBuffer, 50, textHeight);
+				rankSText.setBounds((3 * buffer) + colBuffer + col2Buffer, (textHeight * 3) + (4 * buffer) + oopsBuffer, 50, textHeight);
+				rankSTime.setBounds((3 * buffer) + 50 + colBuffer + col2Buffer, (textHeight * 3) + (4 * buffer) + oopsBuffer, 50, textHeight);
+				rankBText.setBounds((3 * buffer) + colBuffer + col2Buffer, (textHeight * 4) + (5 * buffer) + oopsBuffer, 50, textHeight);
+				rankBTime.setBounds((3 * buffer) + 50 + colBuffer + col2Buffer, (textHeight * 4) + (5 * buffer) + oopsBuffer, 50, textHeight);
+				//rankBText.setBounds((3*buffer)+colBuffer+col2Buffer , (textHeight*5)+(6*buffer), 50, textHeight);
+				//rankBTime.setBounds((3*buffer)+50+colBuffer+col2Buffer , (textHeight*5)+(6*buffer), 50, textHeight);
+
+				editorWindow.add(rankHeaderText);
+				//editorWindow.add(rank_text);
+				editorWindow.add(rankGText);
+				editorWindow.add(rankSText);
+				editorWindow.add(rankBText);
+
+				editorWindow.add(rankGTime);
+				editorWindow.add(rankSTime);
+				editorWindow.add(rankBTime);
+
+				//Adding Entities
+
+				JLabel addEntityHeader = new JLabel("Choose Entity to Add");
+				JComboBox entityTypes = new JComboBox(creationOptions);
+				JButton entityButton = new JButton("Add Entity");
+//				JLabel entity_x_text = new JLabel("X: ");
+//				JLabel entity_y_text = new JLabel("Y: ");
+//				JTextField entity_x_val = new JTextField();
+//				JTextField entity_y_val = new JTextField();
+
+				addEntityHeader.setBounds(buffer, (textHeight * 5) + (7 * buffer) + oopsBuffer, 175, textHeight);
+				entityTypes.setBounds(buffer, (textHeight * 6) + (8 * buffer) + oopsBuffer, 100, textHeight);
+				entityButton.setBounds(100 + (2 * buffer), (textHeight * 6) + (8 * buffer) + oopsBuffer, 100, textHeight);
+
+				entityButton.addActionListener(e -> {
+					//TODO FIgure out why can't add object to center of screen
+
+					//getEntityParam();
+					//editEntity(adjustedMouseX,adjustedMouseY); //TESTING
+
+					entityIndex = entityTypes.getSelectedIndex();
+					createXY(-cxCamera / worldScale.x, -cyCamera / worldScale.y);
+					//System.out.println("BAP");
+				});
+
+				editorWindow.add(addEntityHeader);
+				editorWindow.add(entityTypes);
+				editorWindow.add(entityButton);
+
+				//TODO Add ability to edit entity parameters (on click/selecting only?)
+
+				JLabel editEntityHeader = new JLabel("Click a Stage Entity to Edit It");
+				//JComboBox entityTypes = new JComboBox(creationOptions);
+				//JButton entityButton = new JButton("Add Entity");
+
+				editEntityHeader.setBounds(100 + (2 * buffer), (textHeight * 7) + (10 * buffer) + oopsBuffer, 250, textHeight);
+
+				editorWindow.add(editEntityHeader);
+
+				//On left click = get entity at coordinate via same looping method used in promptTemplate
+				//
+
+				//promptTemplate
+
+				//Display Everything
+				editorWindow.setLayout(null);
+				editorWindow.setVisible(true);
+			}
+			//TODO Add mouse interactions with level
+
+			if (InputController.getInstance().isLeftClickPressed()) {
+				try {
+					editEntity(adjustedMouseX, adjustedMouseY);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
 		}
 	}
+
 
 	private void drawGridLines() {
 		// debug lines
@@ -596,23 +1279,38 @@ public class LevelEditorController extends WorldController {
 
 		// Text- independent of where you scroll
 		canvas.begin(); // DO NOT SCALE
-		if (showHelp) {
-			String[] splitHelp = HELP_TEXT.split("\\R");
-			float beginY = 500.0f;
-			for (int i = 0; i < splitHelp.length; i++) {
-				canvas.drawTextStandard(splitHelp[i], 90.0f, beginY);
-				beginY -= 20;
+		float xPos = canvas.getWidth()-425;
+		float yPos = canvas.getHeight() - 15;
+
+		//TODO Figure out why this causes NullPointer Exception
+		//displayFont.setColor(Color.GREEN);
+
+		canvas.drawTextStandard("HOLD SHIFT + MOVE CURSOR TO ADJUST THE CAMERA", xPos, yPos);
+
+		if (isVimMode()) {
+			//float xPos = (canvas.getWidth()/2)-100;
+			canvas.drawTextStandard("VIM MODE ENABLED (Press V to toggle)", 5, canvas.getHeight() - 15);
+
+			if (showHelp) {
+				String[] splitHelp = HELP_TEXT.split("\\R");
+				float beginY = 500.0f;
+				for (int i = 0; i < splitHelp.length; i++) {
+					canvas.drawTextStandard(splitHelp[i], 90.0f, beginY);
+					beginY -= 20;
+				}
 			}
+
+
+			canvas.drawTextStandard("Creating: " + creationOptions[tentativeEntityIndex], 10.0f, 80.0f);
+			if (tentativeEntityIndex != entityIndex) {
+				canvas.drawTextStandard("Hit Enter to Select New Object Type.", 10.0f, 60.0f);
+			}
+
 		}
-
-
 		canvas.drawTextStandard("MOUSE: " + adjustedMouseX + " , " + adjustedMouseY, 10.0f, 140.0f);
-		canvas.drawTextStandard(-cxCamera / worldScale.x + "," + -cyCamera / worldScale.y , 10.0f, 120.0f);
+		canvas.drawTextStandard("Camera: " + (-cxCamera / worldScale.x) + "," + (-cyCamera / worldScale.y), 10.0f, 120.0f);
 		canvas.drawTextStandard("Level: " + currentLevel, 10.0f, 100.0f);
-		canvas.drawTextStandard("Creating: " + creationOptions[tentativeEntityIndex], 10.0f, 80.0f);
-		if (tentativeEntityIndex != entityIndex) {
-			canvas.drawTextStandard("Hit Enter to Select New Object Type.", 10.0f, 60.0f);
-		}
+
 		canvas.end();
 
 

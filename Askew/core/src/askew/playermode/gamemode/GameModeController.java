@@ -261,7 +261,6 @@ public class GameModeController extends WorldController {
 			return false;
 		}
 
-
 		//Checks to see if player has selected the button on the starting screen
 		if(!playerIsReady){
 			if(checkReady()){
@@ -271,14 +270,6 @@ public class GameModeController extends WorldController {
 				return false;
 			}
 		}
-		//System.out.println("Boop");
-
-		//Put here?
-
-//		if (!isFailure() && avatar.getY() < -1) {
-//			setFailure(true);
-//			return false;
-//		}
 
 		return true;
 	}
@@ -290,44 +281,24 @@ public class GameModeController extends WorldController {
 	 * @return whether the player has pressed a button
 	 */
 	public boolean checkReady(){
-		InputController the_controller = InputController.getInstance();
+		InputController theController = InputController.getInstance();
 
-		//If the player pressed "A"
-		if(the_controller.didBottomButtonPress()){
+		//If the player pressed "RB"
+		if(theController.getRightGrab()){
 			return true;
 		}
-		//If the player pressed "X"
-//		else if(the_controller.didLeftButtonPress()){
-//			return true;
-//		}
-		//If the player pressed "B"
-		else if(the_controller.didRightButtonPress()){
-			return true;
-		}
-		//If the player pressed "Y"
-//		else if(the_controller.didTopButtonPress()){
-//			return true;
-//		}
-		else if(the_controller.getRightGrab()){
-			return true;
-		}
-		else if(the_controller.getLeftGrab()){
+		//If the player pressed "LB"
+		else if(theController.getLeftGrab()){
 			return true;
 		}
 
 		return false;
-		//return true;
 	}
 
 	public void printHelp(){
 		//Display waiting text if not ready
-		//if (!PlatformController.getPlayerIsReady()) {//Boop
 		displayFont.setColor(Color.YELLOW);
-//			canvas.begin(); // DO NOT SCALE
-		SlothModel sloth = getSloth();
-		canvas.drawText("Hold R \n to start!", displayFont, initFlowX * worldScale.x, initFlowY * worldScale.y + 200f);
-//			canvas.end();
-		//}
+		canvas.drawText("Hold RB/LB \n to start!", displayFont, initFlowX * worldScale.x, initFlowY * worldScale.y + 200f);
 	}
 
 	/**
