@@ -113,7 +113,7 @@ public class LevelEditorController extends WorldController {
 			".StiffBranch",
 			".OwlModel",
 			".WallModel",
-			".Tree",
+			//".Tree",
 			".OwlModel",
 			".GhostModel",
 			".BackgroundEntity"
@@ -140,6 +140,7 @@ public class LevelEditorController extends WorldController {
 			"T: Draw grid lines\n" +
 			"X: (xbox controller) switch to playing the level\n" +
 			"H: Toggle this help text";
+
 	private boolean loadingLevelPrompt;
 	private boolean shouldDrawGrid;
 
@@ -328,10 +329,10 @@ public class LevelEditorController extends WorldController {
 				StiffBranch sb = new StiffBranch(x,y, 3.0f, 0.25f, 1.0f,oneScale, 0f);
 				promptTemplate(sb);
 				break;
-			case ".Tree":
-				Tree tr = new Tree(x,y,5f, 3f, 0.25f, 1.0f, oneScale);
-				promptTemplate(tr);
-				break;
+//			case ".Tree":
+//				Tree tr = new Tree(x,y,5f, 3f, 0.25f, 1.0f, oneScale);
+//				promptTemplate(tr);
+//				break;
 			case ".OwlModel":
 				OwlModel owl = new OwlModel(x,y);
 				promptTemplate(owl);
@@ -388,14 +389,6 @@ public class LevelEditorController extends WorldController {
 			case ".StiffBranch":
 				fieldNames.add("stiffLen");
 				break;
-			case ".Tree":
-				fieldNames = getEntityParam(".Trunk");
-				ArrayList<String> branchList = getEntityParam(".StiffBranch");
-
-				for(int i=0;i<branchList.size();i++){
-					fieldNames.add(branchList.get(i));
-				}
-				break;
 			case ".OwlModel":
 				//No additional fields needed
 				break;
@@ -450,27 +443,9 @@ public class LevelEditorController extends WorldController {
 		JButton okButton = new JButton("OK");
 		JButton deleteButton = new JButton("Delete Entity");
 
-		//TODO Still figure out how to add Trees
-
 		//Hard-coded for lambda purposes in the delete button ;w;
 		float x = entityProp.get("x").getAsFloat();
 		float y = entityProp.get("y").getAsFloat();
-
-		//TODO Add back in for .Tree
-//			if (entityName == ".Tree"){
-//				trunkObject = entityProp.get("treeTrunk").getAsJsonObject();
-//				branchObject = entityProp.get("treeBranch").getAsJsonObject();
-//
-//				//Extract X and Y for each entity
-//			}
-//			else {
-//				//More assignments to make Java not complain
-//				trunkObject = entityProp;
-//				branchObject = entityProp;
-//
-//				x = entityProp.get("x").getAsFloat();
-//				y = entityProp.get("y").getAsFloat();
-//			}
 
 		//Define top elements
 		header.setBounds(buffer, buffer, 500, textHeight);
@@ -613,87 +588,6 @@ public class LevelEditorController extends WorldController {
 			});
 			//End of sad times
 		}
-		else if(entityName.equals(".Tree")){
-			System.err.println("Unimplemented");
-//					//TODO Add back in for .Tree
-//					//entityProp
-//					//trunkObject, branchObject
-//
-//					//Edit Trunk
-////					float trunk_links = trunkObject.get("numLinks").getAsFloat();
-////					//float current_links = trunkObject.get("numLinks").getAsFloat();
-////					JLabel trunk_link_text = new JLabel("Number of links");
-////					JTextField trunk_link_val = new JTextField(""+trunk_links);
-////					//float current_stiff = entityProp.get("stiffLen").getAsFloat();
-////					float trunk_stiff = trunkObject.get("stiffLen").getAsFloat();
-////					JLabel trunk_stiff_text = new JLabel("Trunk Stiffness");
-////					JTextField trunk_stiff_val = new JTextField(""+trunk_stiff);
-////
-////					trunk_link_text.setBounds((2*buffer), (3*textHeight)+(4*buffer), 100, textHeight);
-////					trunk_link_val.setBounds((3*buffer)+100, (3*textHeight)+(4*buffer), 50, textHeight);
-////					trunk_stiff_text.setBounds((2*buffer), (4*textHeight)+(5*buffer), 100, textHeight);
-////					trunk_stiff_val.setBounds((3*buffer)+100, (4*textHeight)+(5*buffer), 50, textHeight);
-////
-////					panel.add(trunk_link_text);
-////					panel.add(trunk_link_val);
-////					panel.add(trunk_stiff_text);
-////					panel.add(trunk_stiff_val);
-////
-////					//Edit Branch
-////
-////					float branch_stiff = branchObject.get("stiffLen").getAsFloat();
-////					//float current_branch = entityObject.get("stiffLen").getAsFloat();
-////					JLabel branch_stiff_text = new JLabel("Branch Stiffness");
-////					JTextField branch_stiff_val = new JTextField(""+branch_stiff);
-////
-////					branch_stiff_text.setBounds((2*buffer), (5*textHeight)+(6*buffer), 75, textHeight);
-////					branch_stiff_val.setBounds((3*buffer)+25, (5*textHeight)+(6*buffer), 50, textHeight);
-////
-////					panel.add(branch_stiff_text);
-////					panel.add(branch_stiff_val);
-////
-////					okButton.addActionListener(e -> {
-////						//Assign trunk parts
-////						trunkObject.remove("x");
-////						trunkObject.addProperty("x", x_pos_val.getText());
-////
-////						trunkObject.remove("y");
-////						trunkObject.addProperty("y", y_pos_val.getText());
-////
-////						trunkObject.remove("numLinks");
-////						trunkObject.addProperty("numLinks", link_val.getText());
-////
-////						trunkObject.remove("stiffLen");
-////						trunkObject.addProperty("stiffLen", stiff_val.getText());
-////
-////						entityProp.remove("treeTrunk");
-////						entityProp.addProperty("treeTrunk", stiff_val.getText());
-////
-////						//Assign branch parts
-////
-////						branchObject.remove("stiffLen");
-////						branchObject.addProperty("stiffLen", branch_val.getText());
-////
-////						entityProp.remove("treeBranch");
-////						entityProp.addProperty("treeBranch", stiff_val.getText());
-////
-////						//Put Everything Together
-////
-////						entityObject.remove("INSTANCE");
-////						entityObject.add("INSTANCE", entityProp);
-////
-////						String temp2 = jsonLoaderSaver.stringFromJson(entityObject);
-////						promptTemplateCallback(temp2);
-////
-////						mainFrame.setVisible(false);
-////						mainFrame.dispose();
-////						//panel.setVisible(false);
-////						//panel.dispose();
-////					});
-//
-//
-//					break;
-		}
 		//Anything that isn't a wall
 		else {
 
@@ -770,7 +664,6 @@ public class LevelEditorController extends WorldController {
 		if (select != null) {
 			if(isVimMode()) promptTemplate(select);
 			else changeEntityParam(select);
-			objects.remove(select);
 		}
 		inputRateLimiter = UI_WAIT_SHORT;
 	}
@@ -820,6 +713,7 @@ public class LevelEditorController extends WorldController {
 			mainFrame.add(panel);
 			JButton okButton = new JButton("OK");
 			okButton.addActionListener(e -> {
+				objects.remove(template);
 				promptTemplateCallback(commentTextArea.getText());
 				mainFrame.setVisible(false);
 				mainFrame.dispose();
