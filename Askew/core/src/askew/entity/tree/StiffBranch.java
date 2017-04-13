@@ -54,6 +54,7 @@ public class StiffBranch extends ComplexObstacle {
 	protected transient float linksize = 1.0f;						/* The length of each link */
 	protected transient float spacing = 0.0f;						/** The spacing between each link */
 
+	private float angle;											/** The starting angle of the branch (within joint limit) */
 	private float stiffLen;											/** The number of planks in the branch */
 	private float x, y;												/** The starting coords (bottom) of the branch */
 
@@ -73,6 +74,7 @@ public class StiffBranch extends ComplexObstacle {
 		this.stiffLen = width;
 		this.x = x;
 		this.y = y;
+		this.angle = 0f;
 		this.setObjectScale(scale);
 
 	}
@@ -82,6 +84,7 @@ public class StiffBranch extends ComplexObstacle {
 		this.stiffLen = width;
 		this.x = x;
 		this.y = y;
+		this.angle = angle;
 		this.setObjectScale(scale);
 	}
 
@@ -132,6 +135,8 @@ public class StiffBranch extends ComplexObstacle {
 			plank.setName(PLANK_NAME+ii);
 			plank.setDensity(BASIC_DENSITY);
 			plank.setMass(BASIC_MASS);
+			//plank.setAngle(-90-angle);
+			plank.setAngle((float)Math.toRadians(angle));
 			Filter f = new Filter();
 			f.maskBits = FilterGroup.WALL | FilterGroup.SLOTH | FilterGroup.HAND;
 			f.categoryBits = FilterGroup.VINE;

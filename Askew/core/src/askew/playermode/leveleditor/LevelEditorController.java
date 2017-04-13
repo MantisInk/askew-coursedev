@@ -306,7 +306,7 @@ public class LevelEditorController extends WorldController {
 				promptTemplate(pvTemplate);
 				break;
 			case ".StiffBranch":
-				StiffBranch sb = new StiffBranch(x,y, 3.0f, 0.25f, 1.0f,oneScale);
+				StiffBranch sb = new StiffBranch(x,y, 3.0f, 0.25f, 1.0f,oneScale, 0f);
 				promptTemplate(sb);
 				break;
 			case ".Tree":
