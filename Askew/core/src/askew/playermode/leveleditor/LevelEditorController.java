@@ -22,7 +22,6 @@ import askew.entity.owl.OwlModel;
 import askew.entity.sloth.SlothModel;
 import askew.entity.tree.PoleVault;
 import askew.entity.tree.StiffBranch;
-import askew.entity.tree.Tree;
 import askew.entity.tree.Trunk;
 import askew.entity.vine.Vine;
 import askew.entity.wall.WallModel;
@@ -35,7 +34,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Vector2;
-import com.google.gson.JsonArray;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.Manifold;
@@ -48,9 +46,7 @@ import lombok.Setter;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -364,7 +360,7 @@ public class LevelEditorController extends WorldController {
 		inputRateLimiter = UI_WAIT_SHORT;
 	}
 
-	private int recurseEntity(JsonObject e, JPanel jPanel, int rowNum) {
+	private int generateSwingPropertiesForEntity(JsonObject e, JPanel jPanel, int rowNum) {
 		for(Map.Entry<String,JsonElement> entry : e.entrySet()) {
 			// Add key
 			String key = entry.getKey();
@@ -380,7 +376,7 @@ public class LevelEditorController extends WorldController {
 			} else if (value.isJsonPrimitive()) {
 				JsonPrimitive primitive = value.getAsJsonPrimitive();
 				if (primitive.isBoolean()) {
-					valueComponent = new JCheckBox(key,primitive.getAsBoolean());
+					valueComponent = new JCheckBox("",primitive.getAsBoolean());
 				} else if (primitive.isNumber()) {
 					valueComponent = new JTextField(primitive.getAsNumber().toString());
 				} else if (primitive.isString()) {
@@ -407,6 +403,48 @@ public class LevelEditorController extends WorldController {
 		}
 
 		return rowNum;
+	}
+
+	private void updateObject(JsonObject entityProp, JPanel p) {
+		for(Map.Entry<String,JsonElement> entry : entityProp.entrySet()) {
+			// Add key
+			String key = entry.getKey();
+
+			JsonElement value = entry.getValue();
+			if (value.isJsonArray()) {
+				// TODO (hard), recurse
+				System.err.println("TODO: JSON Array");
+			} else if (value.isJsonPrimitive()) {
+				entityProp.add(key,findInPanel(key,p));
+			} else if (value.isJsonObject()) {
+				System.err.println("Unknown object type: " + entry);
+			} else {
+				System.err.println("Unknown type: " + entry);
+			}
+		}
+	}
+
+	private JsonElement findInPanel(String key, JPanel panel) {
+		boolean grabNext = false;
+		for (Component c : panel.getComponents()) {
+			if (grabNext) {
+				if (c instanceof JCheckBox) {
+					return new JsonPrimitive(((JCheckBox)c).isSelected());
+				} else if (c instanceof JTextField) {
+					return new JsonPrimitive((((JTextField)c).getText()));
+				} else {
+					System.err.println("UNKNOWN FOR " + key);
+					return null;
+				}
+			}
+			if (c instanceof JLabel) {
+				if (((JLabel) c).getText().equals(key+":")) {
+					grabNext = true;
+				}
+			}
+		}
+		System.err.println("CANT FIND " + key);
+		return null;
 	}
 
 	/** Returns the pop-out window for editing parameters of individual entities as a JPanel
@@ -442,13 +480,13 @@ public class LevelEditorController extends WorldController {
 		rowNum++;
 
 		// Add properties
-		rowNum = recurseEntity(entityProp,panel,rowNum);
+		rowNum = generateSwingPropertiesForEntity(entityProp,panel,rowNum);
 
 		//Add okay button
 		okButton.addActionListener(e -> {
-			// TODO: Go through GUI and grab changes here.
-
+			updateObject(entityProp,panel);
 			entityObject.add("INSTANCE", entityProp);
+			objects.remove(template);
 
 			//Get the string form of the entityObject
 			String stringJson = jsonLoaderSaver.stringFromJson(entityObject);
@@ -554,7 +592,6 @@ public class LevelEditorController extends WorldController {
 
 			entityDisplay.add(panel);
 			entityDisplay.setVisible(true);
-			//panel.setVisible(true);
 		}
 	}
 
