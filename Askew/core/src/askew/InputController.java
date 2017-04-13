@@ -74,6 +74,11 @@ public class InputController {
 	private boolean hKeyPressed;
 	@Getter
 	private boolean bKeyPressed;
+	@Getter
+	private boolean shiftKeyPressed;
+	@Getter
+	private boolean spaceKeyPressed;
+
 
 
 	// Fields to manage buttons
@@ -427,6 +432,8 @@ public class InputController {
 		eKeyPressed =  Gdx.input.isKeyPressed(Input.Keys.E);
 		gKeyPressed = Gdx.input.isKeyPressed(Input.Keys.G);
 		hKeyPressed = Gdx.input.isKeyPressed(Input.Keys.H);
+		shiftKeyPressed = Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT);
+		spaceKeyPressed = Gdx.input.isKeyPressed(Input.Keys.SPACE);
 
 		leftKeyPressed =  Gdx.input.isKeyPressed(Input.Keys.LEFT);
 		rightKeyPressed =  Gdx.input.isKeyPressed(Input.Keys.RIGHT);

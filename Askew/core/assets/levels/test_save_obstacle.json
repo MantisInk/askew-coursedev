@@ -10,8 +10,8 @@
     {
       "CLASSNAME": "askew.entity.sloth.SlothModel",
       "INSTANCE": {
-        "x": 3.6875,
-        "y": 16.25
+        "x": 0.0,
+        "y": 0.0
       }
     },
     {
@@ -323,6 +323,17 @@
         "scalex": 1.0,
         "scaley": 1.0,
         "texturePath": "texture/background/fern.png"
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "pin": false,
+        "numLinks": 5.0,
+        "x": 2.0,
+        "y": 0.0,
+        "angle": 5.0,
+        "omega": -400.0
       }
     }
   ]

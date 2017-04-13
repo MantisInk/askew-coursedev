@@ -74,12 +74,16 @@ public class LevelEditorController extends WorldController {
 	private static ShapeRenderer gridLineRenderer = new ShapeRenderer();
 
 	private Texture background;
+	private Texture grey;
 
 	Affine2 camTrans;
 	float cxCamera;
 	float cyCamera;
+	float adjustedCxCamera;
+	float adjustedCyCamera;
 	float adjustedMouseX;
 	float adjustedMouseY;
+
 
 	protected Vector2 oneScale;
 
@@ -100,6 +104,11 @@ public class LevelEditorController extends WorldController {
 	public static final int UI_WAIT_SHORT = 2;
 	public static final int UI_WAIT_LONG = 15;
 	public static final int UI_WAIT_ETERNAL = 120;
+
+	//In Pixels, divide by world scale for box2d.
+	public static final float GUI_LOWER_BAR_HEIGHT = 200.f;
+	public static final float GUI_LEFT_BAR_WIDTH = 200.f;
+
 
 
 	public static final String[] creationOptions = {
@@ -168,6 +177,7 @@ public class LevelEditorController extends WorldController {
 	public void loadContent(MantisAssetManager manager) {
 		super.loadContent(manager);
 		background = manager.get("texture/background/background1.png");
+		grey = manager.get("texture/leveleditor/grey.png");
 		levelEditorAssetState = AssetState.COMPLETE;
 	}
 
@@ -219,8 +229,9 @@ public class LevelEditorController extends WorldController {
 		setFailure(false);
 		populateLevel();
 
-		cxCamera = -canvas.getWidth() / 2;
-		cyCamera = -canvas.getHeight() / 2;
+		adjustedCxCamera = 0;
+		adjustedCyCamera = 0;
+		camUpdate();
 	}
 
 	/**
@@ -416,6 +427,12 @@ public class LevelEditorController extends WorldController {
 		return null;
 	}
 
+	public void camUpdate(){
+		cxCamera = adjustedCxCamera + (((bounds.getWidth()-(GUI_LEFT_BAR_WIDTH/worldScale.x) )/2f)+(GUI_LEFT_BAR_WIDTH / worldScale.x) );
+		cyCamera = adjustedCyCamera + (((bounds.getHeight()-(GUI_LOWER_BAR_HEIGHT/worldScale.y))/2f) + (GUI_LOWER_BAR_HEIGHT / worldScale.y));
+		System.out.println(cxCamera + " : " +cyCamera);
+	}
+
 	public void update(float dt) {
 
 		// Decrement rate limiter to allow new input
@@ -428,25 +445,32 @@ public class LevelEditorController extends WorldController {
 		float mouseX = InputController.getInstance().getCrossHair().x;
 		float mouseY = InputController.getInstance().getCrossHair().y;
 
-		adjustedMouseX = mouseX - (cxCamera + canvas.getWidth()/2) / worldScale.x;
-		adjustedMouseY = mouseY - (cyCamera + canvas.getHeight()/2) / worldScale.y;
+		adjustedMouseX = mouseX - cxCamera ;
+		adjustedMouseY = mouseY - cyCamera ;
 
+		if(InputController.getInstance().isShiftKeyPressed()) {
+			// Check for pan
+			if (mouseX < 2f ) {
+				// Pan left
+				adjustedCxCamera += 10/worldScale.x;
+			}
+			if (mouseY < 2f ) {
+				// down
+				adjustedCyCamera += 10/worldScale.y;
+			}
+			if (mouseX > (16f ) - 1) {
+				adjustedCxCamera -= 10/worldScale.x;
+			}
+			if (mouseY > (9f ) - 1) {
+				adjustedCyCamera -= 10/worldScale.y;
+			}
+			if(InputController.getInstance().isSpaceKeyPressed()){
+				adjustedCxCamera = 0;
+				adjustedCyCamera = 0;
+			}
+			camUpdate();
+		}
 
-		// Check for pan
-		if (mouseX < 1) {
-			// Pan left
-			cxCamera+= 10;
-		}
-		if (mouseY < 1) {
-			// down
-			cyCamera+= 10;
-		}
-		if (mouseX > (canvas.getWidth() / worldScale.x) - 1) {
-			cxCamera-= 10;
-		}
-		if (mouseY > (canvas.getHeight() / worldScale.y) - 1) {
-			cyCamera-= 10;
-		}
 
 		// Create
 		if (InputController.getInstance().isLeftClickPressed()) {
@@ -553,7 +577,7 @@ public class LevelEditorController extends WorldController {
 		float dpsW = ((canvas.getWidth()) / bounds.width);
 		float dpsH = ((canvas.getHeight()) / bounds.height);
 
-		for (float i = ((int)cxCamera % dpsW - dpsW); i < canvas.getWidth(); i += dpsW) {
+		for (float i = ((int)(cxCamera * worldScale.x) % dpsW - dpsW); i < canvas.getWidth(); i += dpsW) {
 			gridLineRenderer.begin(ShapeRenderer.ShapeType.Line);
 			gridLineRenderer.setColor(Color.FOREST);
 			gridLineRenderer.line(i, 0,i,canvas.getHeight());
@@ -561,12 +585,21 @@ public class LevelEditorController extends WorldController {
 		}
 
 		// horizontal
-		for (float i = ((int)cyCamera % dpsH - dpsH); i < canvas.getHeight(); i += dpsH) {
+		for (float i = ((int)(cyCamera * worldScale.x) % dpsH - dpsH); i < canvas.getHeight(); i += dpsH) {
 			gridLineRenderer.begin(ShapeRenderer.ShapeType.Line);
 			gridLineRenderer.setColor(Color.FOREST);
 			gridLineRenderer.line(0, i,canvas.getWidth(),i);
 			gridLineRenderer.end();
 		}
+	}
+
+	private void drawGUI(){
+		canvas.begin();
+		canvas.draw(grey,Color.WHITE,0,0,0,0,0,GUI_LEFT_BAR_WIDTH /grey.getWidth(), ((float)canvas.getHeight())/grey.getHeight());
+		canvas.draw(grey,Color.WHITE,0,0,GUI_LEFT_BAR_WIDTH,0,0,((float)canvas.getWidth() - GUI_LEFT_BAR_WIDTH) /grey.getWidth(), GUI_LOWER_BAR_HEIGHT/grey.getHeight());
+		//canvas.draw(grey,Color.WHITE,0,0,0,0,0,2.0f * worldScale.x /grey.getWidth(), 9.0f * worldScale.y/grey.getHeight());
+
+		canvas.end();
 	}
 
 	@Override
@@ -579,8 +612,8 @@ public class LevelEditorController extends WorldController {
 		canvas.end();
 
 		// Translate camera to cx, cy
-		camTrans.setToTranslation(cxCamera, cyCamera);
-		camTrans.translate(canvas.getWidth()/2, canvas.getHeight()/2);
+		camTrans.setToTranslation(0,0);
+		camTrans.setToTranslation(cxCamera * worldScale.x, cyCamera* worldScale.y);
 		canvas.begin(camTrans);
 		for(Entity obj : objects) {
 			obj.draw(canvas);
@@ -592,26 +625,26 @@ public class LevelEditorController extends WorldController {
 			drawGridLines();
 		}
 		canvas.end();
-
+		drawGUI();
 
 		// Text- independent of where you scroll
 		canvas.begin(); // DO NOT SCALE
 		if (showHelp) {
 			String[] splitHelp = HELP_TEXT.split("\\R");
-			float beginY = 500.0f;
+			float beginY = 7f * worldScale.y;
 			for (int i = 0; i < splitHelp.length; i++) {
-				canvas.drawTextStandard(splitHelp[i], 90.0f, beginY);
-				beginY -= 20;
+				canvas.drawTextStandard(splitHelp[i], 2f * worldScale.x, beginY);
+				beginY -= .2 * worldScale.y;
 			}
 		}
 
 
-		canvas.drawTextStandard("MOUSE: " + adjustedMouseX + " , " + adjustedMouseY, 10.0f, 140.0f);
-		canvas.drawTextStandard(-cxCamera / worldScale.x + "," + -cyCamera / worldScale.y , 10.0f, 120.0f);
-		canvas.drawTextStandard("Level: " + currentLevel, 10.0f, 100.0f);
-		canvas.drawTextStandard("Creating: " + creationOptions[tentativeEntityIndex], 10.0f, 80.0f);
+		canvas.drawTextStandard("MOUSE: " + adjustedMouseX + " , " + adjustedMouseY, 2f * worldScale.x, 2.8f * worldScale.y);
+		canvas.drawTextStandard(-adjustedCxCamera + "," + -adjustedCyCamera , 2f * worldScale.x, 2.6f * worldScale.y);
+		canvas.drawTextStandard("Level: " + currentLevel, 2f * worldScale.x, 2.4f * worldScale.y);
+		canvas.drawTextStandard("Creating: " + creationOptions[tentativeEntityIndex], 2f * worldScale.x, 2.2f * worldScale.y);
 		if (tentativeEntityIndex != entityIndex) {
-			canvas.drawTextStandard("Hit Enter to Select New Object Type.", 10.0f, 60.0f);
+			canvas.drawTextStandard("Hit Enter to Select New Object Type.", 2f * worldScale.x, 2f * worldScale.y);
 		}
 		canvas.end();
 
