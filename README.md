@@ -61,6 +61,7 @@ _**Note:** 360 degrees of motion is possible here_
 
 - There is little telling the player how to use the controls and what their goal is. We plan to add UI elements for the next prototype. Our goal for this prototype was to finalize our movement and implement new entities in order to get feedback from playtesters before moving forward implementing the remaining entities. 
 - We have a fullscreen mode for the game that scales very well, but unfortunately this doesn't work well with the GUI. The final submission of the game won't have this problem though as the level editor will not be there.
+- You can only scroll on the main menu using the directional pad and not the joystick.
 
 
 ## Maximizing Fun
