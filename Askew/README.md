@@ -12,7 +12,7 @@ _Used to take hold of vines and other parts of the stage!_
 - _**Left bumper (LB)**_: grab (_holding the bumper_) or release (_letting go of the bumper_) an object with **left** hand
 - _**Right bumper (LB)**_: grab (_holding the bumper_) or release (_letting go of the bumper_) an object with **right** hand
 
-_**NEW: Whenever you press RB or LB, a small yellow circle will appear over the respective hand. This circle will turn blue once that hand is grabbing an object. **_
+_**NEW: Whenever you press RB or LB, a small yellow circle will appear over the respective hand. This circle will turn blue once that hand is grabbing an object.**_
 
 #### Rules for Grabbing
 
@@ -27,6 +27,8 @@ _Used to gain momentum on vines to swing yourself across the stage!_
 
 _**Note:** 360 degrees of motion is possible here_
 
+**Tip:** if you ever forget which arm is which, my trick is that the black arm is on the left, and both words have l's in them, so I use the left joystick and button to use the that arm.
+
 
 #### _Tips for Swinging **(Updated)**_
 
@@ -39,7 +41,8 @@ _**Note:** 360 degrees of motion is possible here_
 
 ### Misc.
 - _**Start button**_: reset and start athe beginning of the stage
-- _**Any other button**_: Nothing
+- _**Y button**_: return to the main menu
+- _**Any other button**_: nothing
 
 
 ## Hints for Completing Stages
@@ -50,15 +53,23 @@ _**Note:** 360 degrees of motion is possible here_
 
 ## Known Issue(s)
 
-There is little telling the player how to use the controls and what their goal is. We plan to add UI elements for the next prototype. Our goal for this prototype was to finalize our movement and implement new entities in order to get feedback from playtesters before moving forward implementing the remaining entities. 
+- There is little telling the player how to use the controls and what their goal is. We plan to add UI elements for the next prototype. Our goal for this prototype was to finalize our movement and implement new entities in order to get feedback from playtesters before moving forward implementing the remaining entities. 
+- We have a fullscreen mode for the game that scales very well, but unfortunately this doesn't work well with the GUI. The final submission of the game won't have this problem though as the level editor will not be there.
 
 
 ## Maximizing Fun
 
-~If you reach the goal, you can actually grab its center point and swing around on it! Since we don't have a sequence for completing the stage, you can swing around it as much as you want! Yay! Congrats for reaching the victory spot!~ You can helicopter on rigid objects, but unfortunately no longer on the victory spot
+~~If you reach the goal, you can actually grab its center point and swing around on it! Since we don't have a sequence for completing the stage, you can swing around it as much as you want! Yay! Congrats for reaching the victory spot!~~ You can helicopter on rigid objects, but unfortunately no longer on the victory spot.
 
 
 ## Hard Mode
 
 - If you go to the level select, there's a secret stage listed as "level 0." It's our hardest level to date, and the majority of the team have only barely completed it. See if you can beat it!
 - If you can beat level 0, see if you can beat Henry's completion time of 30 seconds!
+
+## Level Editor
+
+- The level editor can be accessed via the main menu either by pressing _D_ on the keyboard _Y_ on the Xbox controller (pressing _Y_ on the Xbox controller anywhere else brings you to the main menu)
+- From the level editor, you can toggle between playing and editing a stage by pressing _X_ on the Xbox controller (make sure you place Flow as a starting point first though!)
+- You can leave the level editor by pressing _D_ on the keyboard _Y_ on the Xbox controller again (while not playing a stage in the level editor)
+
