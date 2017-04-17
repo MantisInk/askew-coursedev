@@ -244,6 +244,24 @@
         "x": 67.0,
         "y": 15.0
       }
+    },
+    {
+      "CLASSNAME": "askew.entity.wall.WallModel",
+      "INSTANCE": {
+        "x": -3.0,
+        "y": -3.0,
+        "thorn": true,
+        "points": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          85.0,
+          1.0,
+          85.0,
+          0.0
+        ]
+      }
     }
   ]
 }
