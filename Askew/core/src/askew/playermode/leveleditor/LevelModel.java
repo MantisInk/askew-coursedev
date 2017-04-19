@@ -14,15 +14,12 @@ class LevelModel {
     int levelModelVersion;
 
     int goalTimeGold;
-
     int goalTimeSilver;
-
     int goalTimeBronze;
+    float recordTime;
 
     String title;
-
     String background;
-
     String soundtrack;
 
     /** Meters. Height of level, not player view. */
@@ -41,6 +38,7 @@ class LevelModel {
         this.goalTimeGold = 30;
         this.goalTimeSilver = 45;
         this.goalTimeBronze = 60;
+        this.recordTime = 9999999;
         this.background = "texture/background/background1.png";
         this.soundtrack = "TODO";
     }

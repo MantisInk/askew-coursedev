@@ -4,6 +4,7 @@
   "goalTimeGold": 30,
   "goalTimeSilver": 45,
   "goalTimeBronze": 60,
+  "recordTime": 9999999,
   "height": 10,
   "width": 10,
   "entities": [
