@@ -99,13 +99,13 @@ public class GhostModel extends BoxObstacle  {
         if (faceRight) {
             if (!drawFrame.isFlipX())
                 drawFrame.flip(true,false);
-            canvas.draw(texture,Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.x,getAngle(),
+            canvas.draw(texture,Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),
                     (1.0f/texture.getRegionWidth()) *   getWidth() * getDrawScale().x * objectScale.x,
                     (1.0f/texture.getRegionHeight()  * getHeight()* getDrawScale().y * objectScale.y));
         } else {
             if (drawFrame.isFlipX())
                 drawFrame.flip(true,false);
-            canvas.draw(texture,Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.x,getAngle(),
+            canvas.draw(texture,Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),
                     (1.0f/texture.getRegionWidth()) *   getWidth() * getDrawScale().x * objectScale.x,
                     (1.0f/texture.getRegionHeight()  * getHeight()* getDrawScale().y * objectScale.y));
         }

@@ -176,7 +176,7 @@ public class BackgroundEntity extends Entity{
 
     public void draw(GameCanvas canvas, Color tint) {
         if (texture != null) {
-            canvas.draw(texture,tint,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.x,getAngle(),
+            canvas.draw(texture,tint,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),
                     (1.0f/texture.getRegionWidth()) *   getWidth() * getDrawScale().x * objectScale.x,
                     (1.0f/texture.getRegionHeight()  * getHeight()* getDrawScale().y * objectScale.y));
         }

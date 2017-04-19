@@ -136,6 +136,7 @@ public class Trunk extends ComplexObstacle {
 			plank.setDensity(BASIC_DENSITY);
 			plank.setAngle((float)Math.toRadians(angle));
 			plank.setBodyType(BodyDef.BodyType.StaticBody);
+			plank.setDrawScale(drawScale);
 			Filter f = new Filter();
 			f.maskBits = FilterGroup.WALL | FilterGroup.SLOTH | FilterGroup.HAND;
 			f.categoryBits = FilterGroup.VINE;
@@ -206,7 +207,7 @@ public class Trunk extends ComplexObstacle {
 		if (bodies.size == 0) {
 			return null;
 		}
-		return ((SimpleObstacle) bodies.get(0)).getTexture();
+		return ((BoxObstacle) bodies.get(0)).getTexture();
 	}
 
 	@Override
@@ -214,7 +215,7 @@ public class Trunk extends ComplexObstacle {
 		Texture managedTexture = manager.get("texture/branch/branch.png", Texture.class);
 		TextureRegion regionTexture = new TextureRegion(managedTexture);
 		for(Obstacle body : bodies) {
-			((SimpleObstacle)body).setTexture(regionTexture);
+			((BoxObstacle)body).setTexture(regionTexture);
 		}
 	}
 }
