@@ -152,8 +152,9 @@ public class GameModeController extends WorldController {
 		jsonLoaderSaver = new JSONLoaderSaver();
 	}
 
-	public void setLevel(int lvl) {
-		numLevel = lvl;
+	public void setLevel() {
+		//numLevel = lvl;
+		int lvl = GlobalConfiguration.getInstance().getCurrentLevel();
 		if (lvl == 0) {
 			loadLevel = DEFAULT_LEVEL;
 		} else if (lvl > MAX_LEVEL) {
@@ -164,14 +165,13 @@ public class GameModeController extends WorldController {
 			loadLevel = "level"+lvl;
 	}
 
-	public void incrLevel() {setLevel(numLevel+1);}
-
 	/**
 	 * Resets the status of the game so that we can play again.
 	 *
 	 * This method disposes of the world and creates a new one.
 	 */
 	public void reset() {
+
 		playerIsReady = false;
 		collisions.clearGrab();
 		Vector2 gravity = new Vector2(world.getGravity() );
@@ -195,6 +195,7 @@ public class GameModeController extends WorldController {
 		world.setContactListener(collisions);
 		setComplete(false);
 		setFailure(false);
+		setLevel();
 		populateLevel();
 		if (!SoundController.getInstance().isActive("bgmusic"))
 			SoundController.getInstance().play("bgmusic","sound/music/askew.wav",true);
@@ -366,6 +367,8 @@ public class GameModeController extends WorldController {
 				if (jsonLoaderSaver.saveLevel(lm, loadLevel))
 					System.out.println("New record time for this level!");
 			}
+			int current = GlobalConfiguration.getInstance().getCurrentLevel();
+			GlobalConfiguration.getInstance().setCurrentLevel(current+1);
 			System.out.println("GG");
 			listener.exitScreen(this, EXIT_GM_GM);
 		}

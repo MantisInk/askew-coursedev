@@ -64,4 +64,13 @@ public class GlobalConfiguration {
     public float getAsFloat(String key) {
         return dataBlob.get(key).getAsFloat();
     }
+
+    public int getCurrentLevel() {
+        return dataBlob.get("currentLevel").getAsInt();
+    }
+
+    public void setCurrentLevel(int lvl) {
+        dataBlob.remove("currentLevel");
+        dataBlob.addProperty("currentLevel",lvl);
+    }
 }

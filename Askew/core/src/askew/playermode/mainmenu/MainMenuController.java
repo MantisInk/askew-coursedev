@@ -1,5 +1,6 @@
 package askew.playermode.mainmenu;
 
+import askew.GlobalConfiguration;
 import askew.InputController;
 import askew.MantisAssetManager;
 import askew.playermode.WorldController;
@@ -148,14 +149,15 @@ public class MainMenuController extends WorldController {
             }
 
             if(input.didBottomButtonPress() && home_button == PLAY_BUTTON) {
-                selected = 1;
+                selected = GlobalConfiguration.getInstance().getCurrentLevel();
+                System.out.println("selected "+selected);
                 nextCon = "GM";
                 return;
             }
             else if(input.didBottomButtonPress() && home_button == LEVEL_SELECT_BUTTON) {
                 mode = LEVEL_SELECT;
                 select_button = CHOOSE_LEVEL;
-                selected = 0;
+                selected = 1;
             }
             else if(input.didBottomButtonPress() && home_button == QUIT_BUTTON) {
                 listener.exitScreen(this, EXIT_QUIT);
@@ -177,14 +179,15 @@ public class MainMenuController extends WorldController {
                 select_button = RETURN_HOME;
             }
             if(input.didBottomButtonPress() && select_button == RETURN_HOME) {
-                    System.out.println("return home");
-                    mode = HOME_SCREEN;
-                    home_button = PLAY_BUTTON;
+                System.out.println("return home");
+                mode = HOME_SCREEN;
+                home_button = PLAY_BUTTON;
             }
             else if(input.didBottomButtonPress() && select_button == CHOOSE_LEVEL){
-                    System.out.println("selected level");
-                    nextCon = "GM";
-                    return;
+                GlobalConfiguration.getInstance().setCurrentLevel(selected);
+                System.out.println("selected level");
+                nextCon = "GM";
+                return;
             }
         }
 
