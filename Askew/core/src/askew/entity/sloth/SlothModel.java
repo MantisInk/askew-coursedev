@@ -6,16 +6,15 @@ package askew.entity.sloth;
  * This the sloth!
  */
 
-import askew.MantisAssetManager;
 import askew.GameCanvas;
 import askew.GlobalConfiguration;
+import askew.MantisAssetManager;
 import askew.entity.FilterGroup;
 import askew.entity.obstacle.BoxObstacle;
 import askew.entity.obstacle.ComplexObstacle;
 import askew.entity.obstacle.Obstacle;
 import askew.entity.obstacle.SimpleObstacle;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -42,6 +41,10 @@ public class SlothModel extends ComplexObstacle  {
     private transient boolean GRABBING_HAND_HAS_TORQUE;
     private transient float OMEGA_NORMALIZER;
     private transient boolean TORQUE_BASED_MOVEMENT = false;
+
+    private transient int MOVEMENT_ORIGINAL = 0;
+    private transient int MOVEMENT_REVERSE = 1;
+    private transient int MOVEMENT_TOGGLE = 2;
 
 
 
@@ -93,9 +96,14 @@ public class SlothModel extends ComplexObstacle  {
     private transient boolean leftGrab;
     @Getter
     private transient boolean rightGrab;
+    private transient boolean prevLeftGrab;
+    private transient boolean prevRightGrab;
     private transient boolean leftStickPressed;
     private transient boolean rightStickPressed;
     private transient int flowFacingState;
+    private transient int movementMode;
+    private transient boolean leftGrabbing;
+    private transient boolean rightGrabbing;
 
     /**
      * Returns the texture index for the given body part
@@ -172,6 +180,9 @@ public class SlothModel extends ComplexObstacle  {
         this.ARM_DENSITY = GlobalConfiguration.getInstance().getAsFloat("flowArmDensity");
         this.TORQUE_BASED_MOVEMENT = GlobalConfiguration.getInstance()
                 .getAsBoolean("torqueBasedMovement");
+        this.movementMode = GlobalConfiguration.getInstance().getAsInt("flowMovementMode");
+        this.rightGrabbing = false;
+        this.leftGrabbing =  true;
         //this.shaper = new ShapeRenderer();
 
     }
@@ -620,11 +631,35 @@ public class SlothModel extends ComplexObstacle  {
     }
 
     public void setLeftGrab(boolean leftGrab) {
-        this.leftGrab = leftGrab;
+        if (movementMode == MOVEMENT_ORIGINAL)
+            this.leftGrab = leftGrab;
+        else if (movementMode == MOVEMENT_REVERSE)
+            this.leftGrab = !leftGrab;
+        else if (movementMode == MOVEMENT_TOGGLE && leftGrab) {
+            if (!leftGrabbing) {
+                leftGrabbing = true;
+            }
+            else {
+                leftGrabbing = false;
+            }
+            this.leftGrab = leftGrabbing;
+        }
     }
 
     public void setRightGrab(boolean rightGrab) {
-        this.rightGrab = rightGrab;
+        if (movementMode == MOVEMENT_ORIGINAL)
+            this.rightGrab = rightGrab;
+        else if (movementMode == MOVEMENT_REVERSE)
+            this.rightGrab = !rightGrab;
+        else if (movementMode == MOVEMENT_TOGGLE && rightGrab) {
+            if (!rightGrabbing) {
+                rightGrabbing = true;
+            }
+            else {
+                rightGrabbing = false;
+            }
+            this.rightGrab = rightGrabbing;
+        }
     }
 
     public void setLeftStickPressed(boolean leftStickPressed) {
@@ -680,7 +715,8 @@ public class SlothModel extends ComplexObstacle  {
 
     public void releaseLeft(World world) {
         if (leftGrabJoint != null) {
-            world.destroyJoint(leftGrabJoint);
+            if (movementMode != MOVEMENT_TOGGLE || (movementMode == MOVEMENT_TOGGLE && !leftGrabbing))
+                world.destroyJoint(leftGrabJoint);
         }
         leftGrabJoint = null;
     }
@@ -688,7 +724,8 @@ public class SlothModel extends ComplexObstacle  {
 
     public void releaseRight(World world) {
         if (rightGrabJoint != null) {
-            world.destroyJoint(rightGrabJoint);
+            if (movementMode != MOVEMENT_TOGGLE || (movementMode == MOVEMENT_TOGGLE && !rightGrabbing))
+                world.destroyJoint(rightGrabJoint);
         }
         rightGrabJoint = null;
     }

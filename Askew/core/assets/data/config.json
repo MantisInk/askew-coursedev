@@ -6,6 +6,7 @@
   "flowOmegaNormalizer": 5.0,
   "flowGravityScale": 0.7,
   "flowCanMoveGrabbingHand": true,
+  "flowMovementMode": 2,
   "vineDensity": 1.0,
   "fullscreen": false,
   "defaultLevel": "level0",
