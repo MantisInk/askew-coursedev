@@ -59,7 +59,10 @@ public class GameModeController extends WorldController {
 
 	@Setter
 	private String loadLevel, DEFAULT_LEVEL;
+	private LevelModel lm; 				// LevelModel for the level the player is currently on
 	private int numLevel, MAX_LEVEL; 	// track int val of lvl #
+
+	private float currentTime, recordTime;	// track current and record time to complete level
 
 	private PhysicsController collisions;
 
@@ -149,8 +152,9 @@ public class GameModeController extends WorldController {
 		jsonLoaderSaver = new JSONLoaderSaver();
 	}
 
-	public void setLevel(int lvl) {
-		numLevel = lvl;
+	public void setLevel() {
+		//numLevel = lvl;
+		int lvl = GlobalConfiguration.getInstance().getCurrentLevel();
 		if (lvl == 0) {
 			loadLevel = DEFAULT_LEVEL;
 		} else if (lvl > MAX_LEVEL) {
@@ -161,14 +165,13 @@ public class GameModeController extends WorldController {
 			loadLevel = "level"+lvl;
 	}
 
-	public void incrLevel() {setLevel(numLevel+1);}
-
 	/**
 	 * Resets the status of the game so that we can play again.
 	 *
 	 * This method disposes of the world and creates a new one.
 	 */
 	public void reset() {
+
 		playerIsReady = false;
 		collisions.clearGrab();
 		Vector2 gravity = new Vector2(world.getGravity() );
@@ -192,6 +195,7 @@ public class GameModeController extends WorldController {
 		world.setContactListener(collisions);
 		setComplete(false);
 		setFailure(false);
+		setLevel();
 		populateLevel();
 		if (!SoundController.getInstance().isActive("bgmusic"))
 			SoundController.getInstance().play("bgmusic","sound/music/askew.wav",true);
@@ -203,8 +207,9 @@ public class GameModeController extends WorldController {
 	private void populateLevel() {
 			jsonLoaderSaver.setScale(this.worldScale);
 			try {
-				LevelModel lm = jsonLoaderSaver.loadLevel(loadLevel);
+				lm = jsonLoaderSaver.loadLevel(loadLevel);
 				System.out.println(loadLevel);
+				recordTime = lm.getRecordTime();
 				if (lm == null) {
 					lm = new LevelModel();
 				}
@@ -228,6 +233,7 @@ public class GameModeController extends WorldController {
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			}
+			currentTime = 0f;
 
 	}
 
@@ -321,6 +327,7 @@ public class GameModeController extends WorldController {
 		sloth.setRightGrab(InputController.getInstance().getRightGrab());
 		sloth.setLeftStickPressed(InputController.getInstance().getLeftStickPressed());
 		sloth.setRightStickPressed(InputController.getInstance().getRightStickPressed());
+		currentTime += dt;
 
 		//#TODO Collision states check
 		setFailure(collisions.isFlowKill());
@@ -354,6 +361,14 @@ public class GameModeController extends WorldController {
 		SoundController.getInstance().update();
 
 		if (isComplete()) {
+			float record = currentTime;
+			if(record < lm.getRecordTime()) {
+				lm.setRecordTime(record);
+				if (jsonLoaderSaver.saveLevel(lm, loadLevel))
+					System.out.println("New record time for this level!");
+			}
+			int current = GlobalConfiguration.getInstance().getCurrentLevel();
+			GlobalConfiguration.getInstance().setCurrentLevel(current+1);
 			System.out.println("GG");
 			listener.exitScreen(this, EXIT_GM_GM);
 		}
@@ -374,6 +389,8 @@ public class GameModeController extends WorldController {
 
     	canvas.begin();
 		canvas.draw(background);
+		canvas.drawTextStandard("current time:    "+currentTime, 10f, 70f);
+		canvas.drawTextStandard("record time:     "+recordTime,10f,50f);
 		canvas.end();
 
 		canvas.begin(camTrans);

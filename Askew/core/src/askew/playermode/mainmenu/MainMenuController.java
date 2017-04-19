@@ -1,5 +1,6 @@
 package askew.playermode.mainmenu;
 
+import askew.GlobalConfiguration;
 import askew.InputController;
 import askew.MantisAssetManager;
 import askew.playermode.WorldController;
@@ -38,6 +39,9 @@ public class MainMenuController extends WorldController {
 
     private static final String FERN_TEXTURE = "texture/background/fern.png";
     private static final String MENU_BACKGROUND1_TEXTURE = "texture/background/menu1.png";
+
+    private boolean prevLeftUp, prevLeftDown,prevLeftLeft,prevLeftRight;        // keep track of previous joystick positions
+    private boolean leftUp, leftDown,leftLeft,leftRight;                        // track current joystick positions
     private static final String MENU_BACKGROUND2_TEXTURE = "texture/background/menu2.png";
 
     private Texture fern, menu1, menu2;
@@ -55,6 +59,14 @@ public class MainMenuController extends WorldController {
 
     public MainMenuController() {
         mode = PLAY_BUTTON;
+        prevLeftUp = false;
+        prevLeftDown = false;
+        prevLeftLeft = false;
+        prevLeftRight = false;
+        leftUp = false;
+        leftDown = false;
+        leftLeft = false;
+        leftRight = false;
     }
 
     @Override
@@ -74,15 +86,17 @@ public class MainMenuController extends WorldController {
             listener.exitScreen(this, EXIT_MM_LE);
             return false;
         }
-//        else if (input.didBottomButtonPress()) {
-//            System.out.println("GM_OLD");
-//            listener.exitScreen(this, EXIT_MM_GM_OLD);
-//            return false;
-//        }
-//        System.out.println("selected "+selected);
-//        System.out.println("mode "+mode);
-//        System.out.println("home "+home_button);
-//        System.out.println("select "+select_button);
+
+        prevLeftUp = leftUp;
+        prevLeftDown = leftDown;
+        prevLeftLeft = leftLeft;
+        prevLeftRight = leftRight;
+
+        leftUp = input.getLeftVertical()<-0.5;
+        leftDown = input.getLeftVertical()>0.5;
+        leftLeft = input.getLeftHorizontal()>0.5;
+        leftRight = input.getLeftHorizontal()<-0.5;
+
         prevMode = mode;
         return true;
     }
@@ -125,22 +139,25 @@ public class MainMenuController extends WorldController {
         if(mode == HOME_SCREEN) {
             if(mode!=prevMode)
                 return;
-            if (input.didTopDPadPress() && home_button > 0) {
-                home_button--;
+            else if (input.didTopDPadPress() || (!prevLeftUp && leftUp)) {
+                if (home_button > 0)
+                    home_button--;
             }
-            else if (input.didBottomDPadPress() && home_button < home_button_locs.length - 1) {
-                home_button++;
+            else if (input.didBottomDPadPress() || (!prevLeftDown && leftDown)) {
+                if (home_button < home_button_locs.length - 1)
+                    home_button++;
             }
 
             if(input.didBottomButtonPress() && home_button == PLAY_BUTTON) {
-                selected = 1;
+                selected = GlobalConfiguration.getInstance().getCurrentLevel();
+                System.out.println("selected "+selected);
                 nextCon = "GM";
                 return;
             }
             else if(input.didBottomButtonPress() && home_button == LEVEL_SELECT_BUTTON) {
                 mode = LEVEL_SELECT;
                 select_button = CHOOSE_LEVEL;
-                selected = 0;
+                selected = 1;
             }
             else if(input.didBottomButtonPress() && home_button == QUIT_BUTTON) {
                 listener.exitScreen(this, EXIT_QUIT);
@@ -149,27 +166,28 @@ public class MainMenuController extends WorldController {
         if(mode == LEVEL_SELECT) {
             if(mode!=prevMode)
                 return;
-            if(input.didLeftDPadPress() && selected < maxLevel && select_button == CHOOSE_LEVEL) {
+            if((input.didLeftDPadPress() || (leftLeft && !prevLeftLeft)) && selected < maxLevel && select_button == CHOOSE_LEVEL) {
                 selected++;
-            } else if(input.didRightDPadPress() && selected > minLevel && select_button == CHOOSE_LEVEL) {
+            } else if((input.didRightDPadPress() || (leftRight && !prevLeftRight)) && selected > minLevel && select_button == CHOOSE_LEVEL) {
                 selected--;
             }
 
-            if(input.didTopDPadPress()) {
+            if(input.didTopDPadPress() || (leftUp && !prevLeftUp)) {
                 select_button = CHOOSE_LEVEL;
             }
-            else if(input.didBottomDPadPress()){
+            else if(input.didBottomDPadPress() || (leftDown && !prevLeftDown)){
                 select_button = RETURN_HOME;
             }
             if(input.didBottomButtonPress() && select_button == RETURN_HOME) {
-                    System.out.println("return home");
-                    mode = HOME_SCREEN;
-                    home_button = PLAY_BUTTON;
+                System.out.println("return home");
+                mode = HOME_SCREEN;
+                home_button = PLAY_BUTTON;
             }
             else if(input.didBottomButtonPress() && select_button == CHOOSE_LEVEL){
-                    System.out.println("selected level");
-                    nextCon = "GM";
-                    return;
+                GlobalConfiguration.getInstance().setCurrentLevel(selected);
+                System.out.println("selected level");
+                nextCon = "GM";
+                return;
             }
         }
 
