@@ -1076,6 +1076,7 @@ public abstract class ComplexObstacle extends Obstacle {
 	}
 
 	public abstract void build();
+	public abstract void rebuild();
 	public abstract void rebuild(float x, float y);
 
 }

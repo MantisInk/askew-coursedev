@@ -145,6 +145,13 @@ public class Trunk extends ComplexObstacle {
 		final_norm = new Vector2(pos);
 		final_norm.add(0,linksize/2);
 	}
+	public void build(){}
+	public void rebuild(){}
+	public void rebuild(float x , float y){
+		this.x = x;
+		this.y = y;
+		rebuild();
+	}
 
 	/**
 	 * Creates the joints for this object.

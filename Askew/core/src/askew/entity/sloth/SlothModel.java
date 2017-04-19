@@ -162,6 +162,7 @@ public class SlothModel extends ComplexObstacle  {
         super(x,y);
         this.x = x;
         this.y = y;
+
         this.setObjectScale(1.0f/1.5f,1.0f/1.5f);
         this.SPIDERMAN_MODE = GlobalConfiguration.getInstance().getAsBoolean("flowGrabAnything");
         this.TWO_FREE_FORCE_MULTIPLIER = GlobalConfiguration.getInstance().getAsFloat("flowTwoFreeForceMultiplier");
@@ -174,6 +175,20 @@ public class SlothModel extends ComplexObstacle  {
                 .getAsBoolean("torqueBasedMovement");
         //this.shaper = new ShapeRenderer();
 
+    }
+
+    public void build(){
+        init();
+    }
+ 	public void rebuild(){
+        bodies.clear();
+        build();
+
+    }
+ 	public void rebuild(float x , float y){
+ 	    this.x = x;
+ 	    this.y = y;
+ 	    rebuild();
     }
 
     private void init() {
@@ -226,9 +241,7 @@ public class SlothModel extends ComplexObstacle  {
     public void setDrawScale(float x, float y) {
         super.setDrawScale(x,y);
 
-        if (partTextures != null && bodies.size == 0) {
-            init();
-        }
+
     }
 
     /**

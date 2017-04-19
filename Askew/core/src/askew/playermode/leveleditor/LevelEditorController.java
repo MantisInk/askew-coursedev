@@ -17,12 +17,12 @@ import askew.MantisAssetManager;
 import askew.entity.BackgroundEntity;
 import askew.entity.Entity;
 import askew.entity.ghost.GhostModel;
+import askew.entity.obstacle.ComplexObstacle;
 import askew.entity.obstacle.Obstacle;
 import askew.entity.owl.OwlModel;
 import askew.entity.sloth.SlothModel;
 import askew.entity.tree.PoleVault;
 import askew.entity.tree.StiffBranch;
-import askew.entity.tree.Tree;
 import askew.entity.tree.Trunk;
 import askew.entity.vine.Vine;
 import askew.entity.wall.WallModel;
@@ -35,10 +35,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Contact;
-import com.badlogic.gdx.physics.box2d.ContactImpulse;
-import com.badlogic.gdx.physics.box2d.Manifold;
-import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.physics.box2d.*;
 import com.google.gson.JsonObject;
 import lombok.Getter;
 import lombok.Setter;
@@ -87,6 +84,7 @@ public class LevelEditorController extends WorldController {
 
 
 	protected Vector2 oneScale;
+	private transient CircleShape grabGlow = new CircleShape();
 
 	private boolean pressedL, prevPressedL;
 
@@ -110,6 +108,9 @@ public class LevelEditorController extends WorldController {
 	public static final float GUI_LOWER_BAR_HEIGHT = 200.f;
 	public static final float GUI_LEFT_BAR_WIDTH = 400.f;
 
+	public float MAX_SNAP_DISTANCE = 1f;
+	public float CAMERA_PAN_SPEED = 20f;
+
 	private Entity selected;
 	private boolean dragging = false;
 
@@ -122,7 +123,6 @@ public class LevelEditorController extends WorldController {
 			".StiffBranch",
 			".OwlModel",
 			".WallModel",
-			".Tree",
 			".OwlModel",
 			".GhostModel",
 			".BackgroundEntity"
@@ -308,7 +308,7 @@ public class LevelEditorController extends WorldController {
 				promptTemplate(sTemplate);
 				break;
 			case ".Vine":
-				Vine vTemplate = new Vine(x,y,5.0f,0.25f,1.0f,oneScale, 5f, -400f);
+				Vine vTemplate = new Vine(x,y,5.0f, 5f, -400f);
 				promptTemplate(vTemplate);
 				break;
 			case ".Trunk":
@@ -322,10 +322,6 @@ public class LevelEditorController extends WorldController {
 			case ".StiffBranch":
 				StiffBranch sb = new StiffBranch(x,y, 3.0f, 0.25f, 1.0f,oneScale);
 				promptTemplate(sb);
-				break;
-			case ".Tree":
-				Tree tr = new Tree(x,y,5f, 3f, 0.25f, 1.0f, oneScale);
-				promptTemplate(tr);
 				break;
 			case ".OwlModel":
 				OwlModel owl = new OwlModel(x,y);
@@ -412,7 +408,7 @@ public class LevelEditorController extends WorldController {
 	}
 
 	public Entity entityQuery() {
-		float MAX_DISTANCE = 2f;
+
 		Entity found = null;
 		Vector2 mouse = new Vector2(adjustedMouseX, adjustedMouseY);
 		float minDistance = Float.MAX_VALUE;
@@ -424,7 +420,7 @@ public class LevelEditorController extends WorldController {
 			}
 		}
 
-		if (minDistance < MAX_DISTANCE) {
+		if (minDistance < MAX_SNAP_DISTANCE) {
 			return found;
 		}
 		return null;
@@ -455,17 +451,17 @@ public class LevelEditorController extends WorldController {
 			// Check for pan
 			if (mouseX < GUI_LEFT_BAR_WIDTH / worldScale.x ) {
 				// Pan left
-				adjustedCxCamera += 10/worldScale.x;
+				adjustedCxCamera += CAMERA_PAN_SPEED/worldScale.x;
 			}
 			if (mouseY < GUI_LOWER_BAR_HEIGHT / worldScale.y ) {
 				// down
-				adjustedCyCamera += 10/worldScale.y;
+				adjustedCyCamera += CAMERA_PAN_SPEED/worldScale.y;
 			}
 			if (mouseX > (16f ) - 1) {
-				adjustedCxCamera -= 10/worldScale.x;
+				adjustedCxCamera -= CAMERA_PAN_SPEED/worldScale.x;
 			}
 			if (mouseY > (9f ) - 1) {
-				adjustedCyCamera -= 10/worldScale.y;
+				adjustedCyCamera -= CAMERA_PAN_SPEED/worldScale.y;
 			}
 			if(InputController.getInstance().isSpaceKeyPressed()){
 				adjustedCxCamera = 0;
@@ -475,7 +471,7 @@ public class LevelEditorController extends WorldController {
 		}
 
 
-		// Create
+		// Left Click
 		if (InputController.getInstance().didLeftClick()) {
 			if(mouseX* worldScale.x <= GUI_LEFT_BAR_WIDTH ){
 
@@ -485,13 +481,14 @@ public class LevelEditorController extends WorldController {
 				selected = entityQuery();
 				System.out.println(selected);
 				dragging = false;
-				//get offset
-				//display stuff related to it
+				if(selected == null){
+					createXY(adjustedMouseX,adjustedMouseY);
+				}
 
 			}
 
 
-			//createXY(adjustedMouseX,adjustedMouseY);
+
 		}
 
 		if(InputController.getInstance().didLeftDrag()){
@@ -503,9 +500,14 @@ public class LevelEditorController extends WorldController {
 				dragging = true;
 
 				if(selected != null) {
-					//objects.remove((selected));
+
 					selected.setPosition(adjustedMouseX, adjustedMouseY);
-					System.out.println(selected);
+					if(selected instanceof ComplexObstacle) {
+
+						System.out.println("move complex");
+						((ComplexObstacle) selected).rebuild(adjustedMouseX,adjustedMouseY);
+						selected.setTextures(getMantisAssetManager());
+					}
 
 
 				}
@@ -525,7 +527,12 @@ public class LevelEditorController extends WorldController {
 				dragging = false;
 				if(selected != null) {
 					selected.setPosition(adjustedMouseX, adjustedMouseY);
+					if(selected instanceof ComplexObstacle) {
 
+						System.out.println("move complex");
+						((ComplexObstacle) selected).rebuild(adjustedMouseX,adjustedMouseY);
+						selected.setTextures(getMantisAssetManager());
+					}
 
 				}
 				selected = null;
@@ -652,6 +659,18 @@ public class LevelEditorController extends WorldController {
 		}
 	}
 
+	private void drawEntitySelector(){
+		grabGlow.setRadius(MAX_SNAP_DISTANCE);
+		Gdx.gl.glLineWidth(5);
+		canvas.beginDebug(camTrans);
+		Entity ent = entityQuery();
+		if(ent!= null)
+			canvas.drawPhysics(grabGlow, new Color(0xcfcf000f),ent.getX() , ent.getY() ,worldScale.x,worldScale.y );
+
+		canvas.endDebug();
+
+	}
+
 	private void drawGUI(){
 		canvas.begin();
 		canvas.draw(grey,Color.WHITE,0,0,0,0,0,GUI_LEFT_BAR_WIDTH /grey.getWidth(), ((float)canvas.getHeight())/grey.getHeight());
@@ -676,6 +695,9 @@ public class LevelEditorController extends WorldController {
 		canvas.begin(camTrans);
 		for(Entity obj : objects) {
 			obj.setDrawScale(worldScale);
+			if(obj instanceof Vine){
+				System.out.println(((Vine) obj).isActive());
+			}
 			//obj.setPosition(0,0);
 			obj.draw(canvas);
 		}
@@ -708,6 +730,8 @@ public class LevelEditorController extends WorldController {
 			canvas.drawTextStandard("Hit Enter to Select New Object Type.", GUI_LEFT_BAR_WIDTH + 10, 2f * worldScale.y);
 		}
 		canvas.end();
+
+		drawEntitySelector();
 
 
 

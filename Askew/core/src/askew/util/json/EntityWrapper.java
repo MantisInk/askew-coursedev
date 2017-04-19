@@ -58,8 +58,6 @@ public class EntityWrapper implements JsonSerializer<Entity>, JsonDeserializer<E
                 return JsonEntityFactory.createPoleVault(manager, instance, scale);
             case ".StiffBranch":
                 return JsonEntityFactory.createStiffBranch(manager, instance, scale);
-            case ".Tree":
-                return JsonEntityFactory.createTree(manager, instance, scale);
             case ".OwlModel":
                 return JsonEntityFactory.createOwl(manager, instance, scale);
             case ".WallModel":

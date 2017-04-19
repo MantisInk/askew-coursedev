@@ -139,6 +139,13 @@ public class StiffBranch extends ComplexObstacle {
 			bodies.add(plank);
 		}
 	}
+	public void build(){}
+	public void rebuild(){}
+	public void rebuild(float x , float y){
+		this.x = x;
+		this.y = y;
+		rebuild();
+	}
 
 	/**
 	 * Creates the joints for this object.
