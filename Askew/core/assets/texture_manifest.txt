@@ -14,3 +14,4 @@ texture/background/background1.png
 texture/background/menu1.png
 texture/background/menu2.png
 texture/leveleditor/grey.png
+texture/leveleditor/placeholder.png

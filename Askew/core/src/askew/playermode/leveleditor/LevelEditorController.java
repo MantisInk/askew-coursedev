@@ -111,6 +111,7 @@ public class LevelEditorController extends WorldController {
 	public float MAX_SNAP_DISTANCE = 1f;
 	public float CAMERA_PAN_SPEED = 20f;
 
+	private EntityTree entityTree;
 	private Entity selected;
 	private boolean dragging = false;
 
@@ -181,6 +182,7 @@ public class LevelEditorController extends WorldController {
 		super.loadContent(manager);
 		background = manager.get("texture/background/background1.png");
 		grey = manager.get("texture/leveleditor/grey.png");
+		entityTree.setTextures(manager);
 		levelEditorAssetState = AssetState.COMPLETE;
 	}
 
@@ -197,6 +199,7 @@ public class LevelEditorController extends WorldController {
 		setComplete(false);
 		setFailure(false);
 		jsonLoaderSaver = new JSONLoaderSaver();
+		entityTree = new EntityTree();
 		currentLevel = "test_save_obstacle";
 		createClass = ".SlothModel";
 		showHelp = true;
@@ -695,10 +698,6 @@ public class LevelEditorController extends WorldController {
 		canvas.begin(camTrans);
 		for(Entity obj : objects) {
 			obj.setDrawScale(worldScale);
-			if(obj instanceof Vine){
-				System.out.println(((Vine) obj).isActive());
-			}
-			//obj.setPosition(0,0);
 			obj.draw(canvas);
 		}
 		canvas.end();
