@@ -361,10 +361,11 @@ public class GameModeController extends WorldController {
 
 		if (isComplete()) {
 			float record = currentTime;
-			if(record < lm.getRecordTime())
+			if(record < lm.getRecordTime()) {
 				lm.setRecordTime(record);
-			if (jsonLoaderSaver.saveLevel(lm, loadLevel))
-				System.out.println("New record time for this level!");
+				if (jsonLoaderSaver.saveLevel(lm, loadLevel))
+					System.out.println("New record time for this level!");
+			}
 			System.out.println("GG");
 			listener.exitScreen(this, EXIT_GM_GM);
 		}
