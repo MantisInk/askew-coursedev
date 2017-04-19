@@ -59,7 +59,10 @@ public class GameModeController extends WorldController {
 
 	@Setter
 	private String loadLevel, DEFAULT_LEVEL;
+	private LevelModel lm; 				// LevelModel for the level the player is currently on
 	private int numLevel, MAX_LEVEL; 	// track int val of lvl #
+
+	private float currentTime, recordTime;	// track current and record time to complete level
 
 	private PhysicsController collisions;
 
@@ -203,8 +206,9 @@ public class GameModeController extends WorldController {
 	private void populateLevel() {
 			jsonLoaderSaver.setScale(this.worldScale);
 			try {
-				LevelModel lm = jsonLoaderSaver.loadLevel(loadLevel);
+				lm = jsonLoaderSaver.loadLevel(loadLevel);
 				System.out.println(loadLevel);
+				recordTime = lm.getRecordTime();
 				if (lm == null) {
 					lm = new LevelModel();
 				}
@@ -228,6 +232,7 @@ public class GameModeController extends WorldController {
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			}
+			currentTime = 0f;
 
 	}
 
@@ -321,6 +326,7 @@ public class GameModeController extends WorldController {
 		sloth.setRightGrab(InputController.getInstance().getRightGrab());
 		sloth.setLeftStickPressed(InputController.getInstance().getLeftStickPressed());
 		sloth.setRightStickPressed(InputController.getInstance().getRightStickPressed());
+		currentTime += dt;
 
 		//#TODO Collision states check
 		setFailure(collisions.isFlowKill());
@@ -354,6 +360,11 @@ public class GameModeController extends WorldController {
 		SoundController.getInstance().update();
 
 		if (isComplete()) {
+			float record = currentTime;
+			if(record < lm.getRecordTime())
+				lm.setRecordTime(record);
+			if (jsonLoaderSaver.saveLevel(lm, loadLevel))
+				System.out.println("New record time for this level!");
 			System.out.println("GG");
 			listener.exitScreen(this, EXIT_GM_GM);
 		}
@@ -374,6 +385,8 @@ public class GameModeController extends WorldController {
 
     	canvas.begin();
 		canvas.draw(background);
+		canvas.drawTextStandard("current time:    "+currentTime, 10f, 70f);
+		canvas.drawTextStandard("record time:     "+recordTime,10f,50f);
 		canvas.end();
 
 		canvas.begin(camTrans);
