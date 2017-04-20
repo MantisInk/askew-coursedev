@@ -13,6 +13,8 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Filter;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * A ghost which patrols between two points and murders Flow.
@@ -28,10 +30,14 @@ public class GhostModel extends BoxObstacle  {
 
     private transient TextureRegion ghostTextureRegion;
 
+    //JSON
+    @Getter @Setter
     private float x;
+    @Getter @Setter
     private float y;
-
+    @Getter @Setter
     private float patroldx;
+    @Getter @Setter
     private float patroldy;
 
     private transient boolean secondDestination;
@@ -148,6 +154,11 @@ public class GhostModel extends BoxObstacle  {
         // Move toward destination
         this.setX(this.getX() + (float) moveX * actualMoveDistance);
         this.setY(this.getY() + (float) moveY * actualMoveDistance);
+    }
+
+    public void fillJSON() {
+        this.x = getPosition().x;
+        this.y = getPosition().y;
     }
 }
 

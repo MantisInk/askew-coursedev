@@ -72,19 +72,25 @@ public class LevelEditorController extends WorldController {
 
 	private Texture background;
 	private Texture grey;
+	private Texture upFolder;
+	private Texture folder;
+	private Texture placeholder;
+	private Texture yellowbox;
 
 	Affine2 camTrans;
 	float cxCamera;
 	float cyCamera;
 	float adjustedCxCamera;
 	float adjustedCyCamera;
+	float mouseX;
+	float mouseY;
 	float adjustedMouseX;
 	float adjustedMouseY;
 
 
 
 	protected Vector2 oneScale;
-	private transient CircleShape grabGlow = new CircleShape();
+	private transient CircleShape circleShape = new CircleShape();
 
 	private boolean pressedL, prevPressedL;
 
@@ -114,6 +120,8 @@ public class LevelEditorController extends WorldController {
 	private EntityTree entityTree;
 	private Entity selected;
 	private boolean dragging = false;
+	private boolean creating = false;
+
 
 
 	public static final String[] creationOptions = {
@@ -182,6 +190,10 @@ public class LevelEditorController extends WorldController {
 		super.loadContent(manager);
 		background = manager.get("texture/background/background1.png");
 		grey = manager.get("texture/leveleditor/grey.png");
+		upFolder = manager.get("texture/leveleditor/up.png");
+		folder = manager.get("texture/leveleditor/folder.png");
+		placeholder = manager.get("texture/leveleditor/placeholder.png");
+		yellowbox = manager.get("texture/leveleditor/yellowbox.png");
 		entityTree.setTextures(manager);
 		levelEditorAssetState = AssetState.COMPLETE;
 	}
@@ -300,47 +312,41 @@ public class LevelEditorController extends WorldController {
 	 * @param x
 	 * @param y
      */
-	private void createXY(float x, float y) {
+	private Entity createXY(String name, float x, float y) {
 		float xorig = x;
 		float yorig = y;
 		x = Math.round(x);
 		y = Math.round(y);
-		switch (creationOptions[entityIndex]) {
-			case ".SlothModel":
-				SlothModel sTemplate = new SlothModel(x,y);
-				promptTemplate(sTemplate);
+
+		Entity entity = null;
+		//creationOptions[entityIndex]
+		switch (name) {
+			case "SlothModel":
+				entity = new SlothModel(x,y);
 				break;
-			case ".Vine":
-				Vine vTemplate = new Vine(x,y,5.0f, 5f, -400f);
-				promptTemplate(vTemplate);
+			case "Vine":
+				entity = new Vine(x,y,5.0f, 5f, -400f);
 				break;
-			case ".Trunk":
-				Trunk tTemplate = new Trunk(x,y, 5.0f, 0.25f, 1.0f, 3.0f,oneScale, 0);
-				promptTemplate(tTemplate);
+			case "Trunk":
+				entity = new Trunk(x,y, 5.0f, 0.25f, 1.0f, 3.0f,oneScale, 0);
 				break;
-			case ".PoleVault":
-				PoleVault pvTemplate = new PoleVault(x,y, 5.0f, 0.25f, 1.0f, oneScale, 0);
-				promptTemplate(pvTemplate);
+			case "PoleVault":
+				entity = new PoleVault(x,y, 5.0f, 0.25f, 1.0f, oneScale, 0);
 				break;
-			case ".StiffBranch":
-				StiffBranch sb = new StiffBranch(x,y, 3.0f, 0.25f, 1.0f,oneScale);
-				promptTemplate(sb);
+			case "StiffBranch":
+				entity = new StiffBranch(x,y, 3.0f, 0.25f, 1.0f,oneScale);
 				break;
-			case ".OwlModel":
-				OwlModel owl = new OwlModel(x,y);
-				promptTemplate(owl);
+			case "OwlModel":
+				entity = new OwlModel(x,y);
 				break;
-			case ".WallModel":
-				WallModel wall = new WallModel(x,y,new float[] {0,0,0f,1f,1f,1f,1f,0f}, false);
-				promptTemplate(wall);
+			case "WallModel":
+				entity = new WallModel(x,y,new float[] {0,0,0f,1f,1f,1f,1f,0f}, false);
 				break;
-			case ".GhostModel":
-				GhostModel ghost = new GhostModel(x,y,x+2,y+2);
-				promptTemplate(ghost);
+			case "GhostModel":
+				entity = new GhostModel(x,y,x+2,y+2);
 				break;
-			case ".BackgroundEntity":
-				BackgroundEntity bge = new BackgroundEntity(xorig,yorig);
-				promptTemplate(bge);
+			case "BackgroundEntity":
+				entity = new BackgroundEntity(xorig,yorig);
 				break;
 
 			default:
@@ -348,11 +354,14 @@ public class LevelEditorController extends WorldController {
 				break;
 		}
 		inputRateLimiter = UI_WAIT_SHORT;
+		return entity;
+
 	}
 
 	private void promptTemplate(Entity template) {
 		if (!prompting) {
 			prompting = true;
+			template.fillJSON();
 			String jsonOfTemplate = jsonLoaderSaver.gsonToJson(template);
 			// flipping swing
 			JDialog mainFrame = new JDialog();
@@ -444,8 +453,8 @@ public class LevelEditorController extends WorldController {
 		}
 
 		// Allow access to mouse coordinates for multiple inputs
-		float mouseX = InputController.getInstance().getCrossHair().x;
-		float mouseY = InputController.getInstance().getCrossHair().y;
+		mouseX = InputController.getInstance().getCrossHair().x;
+		mouseY = InputController.getInstance().getCrossHair().y;
 
 		adjustedMouseX = mouseX - cxCamera ;
 		adjustedMouseY = mouseY - cyCamera ;
@@ -480,12 +489,32 @@ public class LevelEditorController extends WorldController {
 
 			}else if(mouseY * worldScale.y <= GUI_LOWER_BAR_HEIGHT){
 
+				int button = getEntityMenuButton(mouseX * worldScale.x, mouseY * worldScale.y);
+				if(button == -2){
+					//do nothing
+				} else if(button == -1){
+					if(entityTree.current.parent != null){
+						entityTree.upFolder();
+					}
+				} else{
+					if(!entityTree.current.children.get(button).isLeaf){
+						entityTree.setCurrent(entityTree.current.children.get(button));
+					}else{
+						selected = createXY(entityTree.current.children.get(button).name,adjustedMouseX, adjustedMouseY);
+						if(selected != null) {
+							selected.setTextures(getMantisAssetManager());
+							creating = true;
+						}
+					}
+				}
+
+
 			}else{
-				selected = entityQuery();
-				System.out.println(selected);
+				creating = false;
 				dragging = false;
+				selected = entityQuery();
 				if(selected == null){
-					createXY(adjustedMouseX,adjustedMouseY);
+					createXY(creationOptions[entityIndex], adjustedMouseX,adjustedMouseY);
 				}
 
 			}
@@ -506,8 +535,6 @@ public class LevelEditorController extends WorldController {
 
 					selected.setPosition(adjustedMouseX, adjustedMouseY);
 					if(selected instanceof ComplexObstacle) {
-
-						System.out.println("move complex");
 						((ComplexObstacle) selected).rebuild(adjustedMouseX,adjustedMouseY);
 						selected.setTextures(getMantisAssetManager());
 					}
@@ -527,6 +554,8 @@ public class LevelEditorController extends WorldController {
 			}else if(mouseY * worldScale.y <= GUI_LOWER_BAR_HEIGHT){
 
 			}else{
+
+
 				dragging = false;
 				if(selected != null) {
 					selected.setPosition(adjustedMouseX, adjustedMouseY);
@@ -537,6 +566,9 @@ public class LevelEditorController extends WorldController {
 						selected.setTextures(getMantisAssetManager());
 					}
 
+				}
+				if(creating){
+					promptTemplate(selected);
 				}
 				selected = null;
 				//get offset
@@ -663,14 +695,81 @@ public class LevelEditorController extends WorldController {
 	}
 
 	private void drawEntitySelector(){
-		grabGlow.setRadius(MAX_SNAP_DISTANCE);
+		circleShape.setRadius(MAX_SNAP_DISTANCE);
 		Gdx.gl.glLineWidth(5);
 		canvas.beginDebug(camTrans);
 		Entity ent = entityQuery();
 		if(ent!= null)
-			canvas.drawPhysics(grabGlow, new Color(0xcfcf000f),ent.getX() , ent.getY() ,worldScale.x,worldScale.y );
+			canvas.drawPhysics(circleShape, new Color(0xcfcf000f),ent.getPosition().x , ent.getPosition().y ,worldScale.x,worldScale.y );
 
 		canvas.endDebug();
+
+	}
+	//ox and oy are bottom left corner
+	public boolean inBounds(float x ,float y, float ox ,float oy, float width, float height){
+		return  x >= ox && x <= ox + width && y >= oy && y <= oy + height;
+	}
+
+	private int getEntityMenuButton(float mousex, float mousey){
+		float margin = 18f;
+		float startx = GUI_LEFT_BAR_WIDTH + margin;
+		float starty = GUI_LOWER_BAR_HEIGHT - margin;
+		float sizex = 64f;
+		float sizey = 64f;
+
+		if(inBounds(mousex,mousey,startx,starty-sizey,sizex,sizey)) {
+			return -1;
+		}
+
+		for(int i = 0; i < entityTree.current.children.size(); i++) {
+			float x = startx + ((i + 1) * (sizex + margin));
+			float y = starty - sizey;
+			if (inBounds(mousex, mousey, x, y, sizex, sizey)) {
+				return i;
+			}
+
+		}
+
+		return  -2;
+
+	}
+	private void drawEntityMenu(){
+		float margin = 18f;
+		float startx = GUI_LEFT_BAR_WIDTH + margin;
+		float starty = GUI_LOWER_BAR_HEIGHT - margin;
+		float sizex = 64f;
+		float sizey = 64f;
+
+		float mousex = mouseX * worldScale.x;
+		float mousey = mouseY * worldScale.y;
+
+		Texture tex = upFolder;
+
+		if(entityTree.current.parent == null){
+			tex = placeholder;
+		}
+		if(inBounds(mousex,mousey,startx,starty-sizey,sizex,sizey)){
+			canvas.draw(yellowbox ,Color.WHITE,0,0,startx - 3f ,starty - sizey -3f ,0,(sizex+6f) /yellowbox.getWidth(), (sizey + 6f)/yellowbox.getHeight());
+		}
+		canvas.draw(tex ,Color.WHITE,0,tex.getHeight(),startx ,starty,0,sizex /tex.getWidth(), sizey/tex.getHeight());
+
+		for(int i = 0; i < entityTree.current.children.size(); i++){
+
+			tex = entityTree.current.children.get(i).texture;
+			if (!entityTree.current.children.get(i).isLeaf){
+				tex = folder;
+			}
+			float x = startx + ((i + 1) * (sizex + margin));
+			float y = starty - sizey;
+			if(inBounds(mousex,mousey,x,y,sizex,sizey)){
+				canvas.draw(yellowbox ,Color.WHITE,0,0,x - 3f ,y-3f ,0,(sizex+6f) /yellowbox.getWidth(), (sizey + 6f)/yellowbox.getHeight());
+			}
+			canvas.draw(tex ,Color.WHITE,0,0,x ,y,0,sizex /tex.getWidth(), sizey/tex.getHeight());
+			canvas.drawTextStandard(entityTree.current.children.get(i).name, x, y - 10f);
+
+
+		}
+
 
 	}
 
@@ -680,6 +779,7 @@ public class LevelEditorController extends WorldController {
 		canvas.draw(grey,Color.WHITE,0,0,GUI_LEFT_BAR_WIDTH,0,0,((float)canvas.getWidth() - GUI_LEFT_BAR_WIDTH) /grey.getWidth(), GUI_LOWER_BAR_HEIGHT/grey.getHeight());
 		//canvas.draw(grey,Color.WHITE,0,0,0,0,0,2.0f * worldScale.x /grey.getWidth(), 9.0f * worldScale.y/grey.getHeight());
 
+		drawEntityMenu();
 		canvas.end();
 	}
 

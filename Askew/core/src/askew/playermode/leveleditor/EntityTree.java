@@ -13,11 +13,11 @@ public class EntityTree {
     public EntityTree(){
         root = new ETNode(null, "Entities", "texture/leveleditor/placeholder.png", false);
 
-        ETNode backgrounds = new ETNode(root, "BackgroundEntities", "texture/leveleditor/placeholder.png", false);
-        ETNode sloth = new ETNode(root, "SlothModel", "texture/leveleditor/placeholder.png", true);
-        ETNode vine = new ETNode(root,"Vine", "texture/leveleditor/placeholder.png", true);
-        ETNode owlmodel = new ETNode(root,"OwlModel", "texture/leveleditor/placeholder.png", true);
-        ETNode sticks = new ETNode(root,"Sticks", "texture/leveleditor/placeholder.png", false);
+        ETNode backgrounds = new ETNode(root, "Background", "texture/background/fern.png", false);
+        ETNode sloth = new ETNode(root, "SlothModel", "texture/sloth/frontflow.png", true);
+        ETNode vine = new ETNode(root,"Vine", "texture/vine/vine.png", true);
+        ETNode owlmodel = new ETNode(root,"OwlModel", "texture/owl/owl.png", true);
+        ETNode sticks = new ETNode(root,"Sticks", "texture/branch/branch.png", false);
         ETNode trunk = new ETNode(sticks,"Trunk", "texture/leveleditor/placeholder.png", true);
         ETNode polevault = new ETNode(sticks,"PoleVault", "texture/leveleditor/placeholder.png", true);
         ETNode stiffbranch = new ETNode(sticks,"StiffBranch", "texture/leveleditor/placeholder.png", true);
@@ -45,6 +45,15 @@ public class EntityTree {
 
         current = root;
     }
+
+    public void setCurrent(ETNode e){
+        current = e;
+    }
+
+    public void upFolder(){
+        current = current.parent;
+    }
+
     public void setTextures(MantisAssetManager manager){
         String[] allPaths = manager.getTexturePaths();
         System.out.println("Background Entities:");

@@ -25,6 +25,7 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
 import com.badlogic.gdx.utils.ObjectSet;
 import lombok.Getter;
+import lombok.Setter;
 
 public class SlothModel extends ComplexObstacle  {
 
@@ -80,11 +81,13 @@ public class SlothModel extends ComplexObstacle  {
 
 
 
-    /** For drawing the force lines*/
-    //private Affine2 camTrans = new Affine2();
-
+    //JSON
+    @Getter @Setter
     public float x;
+    @Getter @Setter
     public float y;
+
+
     private transient float rightVert;
     private transient float leftHori;
     private transient float leftVert;

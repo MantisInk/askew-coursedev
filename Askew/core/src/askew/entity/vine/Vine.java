@@ -59,6 +59,7 @@ public class Vine extends ComplexObstacle {
 	protected transient float linksize = 1.0f;					/** The length of each vine piece*/
 	protected transient float spacing = 0.0f;					/** The spacing between each piece */
 
+	//JSON
 	@Getter @Setter
 	protected float numLinks;									/** number of vine pieces */
 	@Getter @Setter
@@ -266,5 +267,14 @@ public class Vine extends ComplexObstacle {
 		for(Obstacle body : bodies) {
 			((SimpleObstacle)body).setTexture(regionedTexture);
 		}
+	}
+
+	public void fillJSON() {
+		this.x = getPosition().x;
+		this.y = getPosition().y;
+		this.numLinks = numLinks;
+		this.pin = pin;
+		this.angle = angle;
+		this.omega = omega;
 	}
 }

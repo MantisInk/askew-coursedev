@@ -182,4 +182,8 @@ public class BackgroundEntity extends Entity{
         }
     }
 
+    public void fillJSON() {
+        this.x = getPosition().x;
+        this.y = getPosition().y;
+    }
 }

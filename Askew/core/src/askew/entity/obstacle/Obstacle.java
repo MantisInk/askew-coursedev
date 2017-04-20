@@ -939,4 +939,6 @@ public abstract class Obstacle extends Entity {
 	 */
 	public abstract void drawDebug(GameCanvas canvas);
 
+
+
 }
