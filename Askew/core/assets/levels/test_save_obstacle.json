@@ -58,6 +58,20 @@
         "omega": -400.0,
         "pin": false
       }
+    },
+    {
+      "CLASSNAME": "askew.entity.sloth.SlothModel",
+      "INSTANCE": {
+        "x": 1.2250004,
+        "y": 0.8254938
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.owl.OwlModel",
+      "INSTANCE": {
+        "x": -0.4916668,
+        "y": 0.3344307
+      }
     }
   ]
 }

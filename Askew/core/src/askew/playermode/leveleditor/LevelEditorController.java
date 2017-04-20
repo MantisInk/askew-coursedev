@@ -584,7 +584,7 @@ public class LevelEditorController extends WorldController {
 					selected = null;
 				}
 				else{
-			
+
 
 				}
 
