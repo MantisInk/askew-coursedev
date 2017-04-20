@@ -9,6 +9,7 @@ public class EntityTree {
 
     ETNode root;
     ETNode current;
+    boolean isBackground;
 
     public EntityTree(){
         root = new ETNode(null, "Entities", "texture/leveleditor/placeholder.png", false);
@@ -44,14 +45,22 @@ public class EntityTree {
 //            enemies.add(ghostmodel);
 
         current = root;
+        isBackground = false;
     }
 
     public void setCurrent(ETNode e){
         current = e;
+        if(current.name == "Background"){
+            isBackground = true;
+        }
     }
 
     public void upFolder(){
+        if(current.name == "Background"){
+            isBackground = false;
+        }
         current = current.parent;
+
     }
 
     public void setTextures(MantisAssetManager manager){

@@ -312,13 +312,16 @@ public class LevelEditorController extends WorldController {
 	 * @param x
 	 * @param y
      */
-	private Entity createXY(String name, float x, float y) {
+	private Entity createXY(EntityTree.ETNode node, float x, float y) {
 		float xorig = x;
 		float yorig = y;
 		x = Math.round(x);
 		y = Math.round(y);
 
 		Entity entity = null;
+		String name = node.name;
+
+
 		//creationOptions[entityIndex]
 		switch (name) {
 			case "SlothModel":
@@ -350,10 +353,18 @@ public class LevelEditorController extends WorldController {
 				break;
 
 			default:
-				System.err.println("UNKNOWN ENT");
+				//System.err.println("UNKNOWN ENT");
 				break;
 		}
+
+
 		inputRateLimiter = UI_WAIT_SHORT;
+		if(entityTree.isBackground){
+			entity = new BackgroundEntity(x,y,node.texturePath);
+		}
+		if(entity == null){
+			System.err.println("UNKNOWN ENT");
+		}
 		return entity;
 
 	}
@@ -500,7 +511,7 @@ public class LevelEditorController extends WorldController {
 					if(!entityTree.current.children.get(button).isLeaf){
 						entityTree.setCurrent(entityTree.current.children.get(button));
 					}else{
-						selected = createXY(entityTree.current.children.get(button).name,adjustedMouseX, adjustedMouseY);
+						selected = createXY(entityTree.current.children.get(button),adjustedMouseX, adjustedMouseY);
 						if(selected != null) {
 							selected.setTextures(getMantisAssetManager());
 							creating = true;
@@ -514,7 +525,7 @@ public class LevelEditorController extends WorldController {
 				dragging = false;
 				selected = entityQuery();
 				if(selected == null){
-					createXY(creationOptions[entityIndex], adjustedMouseX,adjustedMouseY);
+					//createXY(creationOptions[entityIndex], adjustedMouseX,adjustedMouseY);
 				}
 
 			}
@@ -555,24 +566,27 @@ public class LevelEditorController extends WorldController {
 
 			}else{
 
+				if(dragging) {
+					dragging = false;
+					if (selected != null) {
+						selected.setPosition(adjustedMouseX, adjustedMouseY);
+						if (selected instanceof ComplexObstacle) {
 
-				dragging = false;
-				if(selected != null) {
-					selected.setPosition(adjustedMouseX, adjustedMouseY);
-					if(selected instanceof ComplexObstacle) {
+							System.out.println("move complex");
+							((ComplexObstacle) selected).rebuild(adjustedMouseX, adjustedMouseY);
+							selected.setTextures(getMantisAssetManager());
+						}
 
-						System.out.println("move complex");
-						((ComplexObstacle) selected).rebuild(adjustedMouseX,adjustedMouseY);
-						selected.setTextures(getMantisAssetManager());
 					}
+					if (creating) {
+						promptTemplate(selected);
+					}
+					selected = null;
+				}
+				else{
+			
 
 				}
-				if(creating){
-					promptTemplate(selected);
-				}
-				selected = null;
-				//get offset
-				//display stuff related to it
 
 			}
 
