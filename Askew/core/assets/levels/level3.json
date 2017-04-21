@@ -1,11 +1,12 @@
 {
   "levelModelVersion": 1,
-  "title": "level3",
   "goalTimeGold": 30,
   "goalTimeSilver": 45,
   "goalTimeBronze": 60,
-  "height": 10,
-  "width": 10,
+  "recordTime": 8.221312,
+  "title": "level3",
+  "background": "texture/background/background1.png",
+  "soundtrack": "TODO",
   "entities": [
     {
       "CLASSNAME": "askew.entity.sloth.SlothModel",
@@ -35,12 +36,12 @@
     {
       "CLASSNAME": "askew.entity.vine.Vine",
       "INSTANCE": {
-        "pin": false,
         "numLinks": 5.0,
         "x": 8.0,
         "y": 14.5,
         "angle": 15.0,
-        "omega": -5.0
+        "omega": -5.0,
+        "pin": false
       }
     },
     {

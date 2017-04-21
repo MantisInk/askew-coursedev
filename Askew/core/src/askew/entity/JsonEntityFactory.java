@@ -75,7 +75,8 @@ public class JsonEntityFactory {
         float x = instance.get("x").getAsFloat();
         float y = instance.get("y").getAsFloat();
         float stiff = instance.get("stiffLen").getAsFloat();
-        branch = new StiffBranch(x, y, stiff, 0.25f, 1f,scale);
+        float angle = instance.get("angle").getAsFloat();
+        branch = new StiffBranch(x, y, stiff, 0.25f, 1f,scale, angle);
         branch.setDrawScale(scale.x, scale.y);
         branch.setTextures(manager);
         return branch;
@@ -86,7 +87,8 @@ public class JsonEntityFactory {
         float x = instance.get("x").getAsFloat();
         float y = instance.get("y").getAsFloat();
         float stiff = instance.get("stiffLen").getAsFloat();
-        branch = new StiffBranch(tr.final_norm.x, tr.final_norm.y, stiff, 0.25f, 1f,scale);
+        float angle = instance.get("angle").getAsFloat();
+        branch = new StiffBranch(tr.final_norm.x, tr.final_norm.y, stiff, 0.25f, 1f,scale, angle);
         branch.setDrawScale(scale.x, scale.y);
         branch.setTextures(manager);
         return branch;

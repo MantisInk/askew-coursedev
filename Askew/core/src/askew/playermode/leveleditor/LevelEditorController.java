@@ -1,7 +1,7 @@
 /*
  * PlatformController.java
  *
- * This is one of the files that you are expected to modify. Please limit changes to 
+ * This is one of the files that you are expected to modify. Please limit changes to
  * the regions that say INSERT CODE HERE.
  *
  * Author: Walker M. White
@@ -49,10 +49,10 @@ import static javax.swing.JOptionPane.showInputDialog;
 
 
 /**
- * Gameplay specific controller for the platformer game.  
+ * Gameplay specific controller for the platformer game.
  *
- * You will notice that asset loading is not done with static methods this time.  
- * Instance asset loading makes it easier to process our game modes in a loop, which 
+ * You will notice that asset loading is not done with static methods this time.
+ * Instance asset loading makes it easier to process our game modes in a loop, which
  * is much more scalable. However, we still want the assets themselves to be static.
  * This is the purpose of our AssetState variable; it ensures that multiple instances
  * place nicely with the static assets.
@@ -311,7 +311,7 @@ public class LevelEditorController extends WorldController {
 	 * Type safety is overrated [trevor]
 	 * @param x
 	 * @param y
-     */
+	 */
 	private Entity createXY(EntityTree.ETNode node, float x, float y) {
 		float xorig = x;
 		float yorig = y;

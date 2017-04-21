@@ -81,6 +81,28 @@ public class InputController {
 	@Getter
 	private boolean spaceKeyPressed;
 
+	@Getter
+	private boolean vKeyPressed;
+	@Getter
+	private boolean lShiftKeyPressed;
+	@Getter
+	private boolean rShiftKeyPressed;
+
+
+	private boolean sKeyPrevious;
+	private boolean nKeyPrevious;
+	private boolean lKeyPrevious;
+	private boolean leftKeyPrevious;
+	private boolean rightKeyPrevious;
+	private boolean enterKeyPrevious;
+	private boolean tKeyPrevious;
+	private boolean eKeyPrevious;
+	private boolean gKeyPrevious;
+	private boolean hKeyPrevious;
+	private boolean bKeyPrevious;
+	private boolean vKeyPrevious;
+	private boolean lShiftKeyPrevious;
+	private boolean rShiftKeyPrevious;
 
 
 	// Fields to manage buttons
@@ -335,6 +357,21 @@ public class InputController {
 		leftClickPrevious = leftClickPressed;
 		rightClickPrevious = rightClickPressed;
 
+		sKeyPrevious = isSKeyPressed();
+		nKeyPrevious = isNKeyPressed();
+		lKeyPrevious = isLKeyPressed();
+		leftKeyPrevious = isLeftKeyPressed();
+		rightKeyPrevious = isRightKeyPressed();
+		enterKeyPrevious = isEnterKeyPressed();
+		tKeyPrevious = isTKeyPressed();
+		eKeyPrevious = isEKeyPressed();
+		gKeyPrevious = isGKeyPressed();
+		hKeyPrevious = isHKeyPressed();
+		bKeyPrevious = isBKeyPressed();
+		vKeyPrevious = isVKeyPressed();
+		lShiftKeyPrevious = isLShiftKeyPressed();
+		rShiftKeyPrevious = isRShiftKeyPressed();
+
 
 		// Check to see if a GamePad is connected
 		if (xbox.isConnected()) {
@@ -444,21 +481,27 @@ public class InputController {
 		leftClickPressed = Gdx.input.isButtonPressed(Input.Buttons.LEFT);
 		rightClickPressed = Gdx.input.isButtonPressed(Input.Buttons.RIGHT);
 
+
 		// Keypresses for level editor hotkeys
-		sKeyPressed =  Gdx.input.isKeyPressed(Input.Keys.S);
-		nKeyPressed =  Gdx.input.isKeyPressed(Input.Keys.N);
-		lKeyPressed =  Gdx.input.isKeyPressed(Input.Keys.L);
-		eKeyPressed =  Gdx.input.isKeyPressed(Input.Keys.E);
-		gKeyPressed = Gdx.input.isKeyPressed(Input.Keys.G);
-		hKeyPressed = Gdx.input.isKeyPressed(Input.Keys.H);
+
+		sKeyPressed = Gdx.input.isKeyPressed(Input.Keys.S) && !sKeyPrevious;
+		nKeyPressed = Gdx.input.isKeyPressed(Input.Keys.N) && !nKeyPrevious;
+		lKeyPressed = Gdx.input.isKeyPressed(Input.Keys.L) && !lKeyPrevious;
+		eKeyPressed = Gdx.input.isKeyPressed(Input.Keys.E) && !eKeyPrevious;
+		gKeyPressed = Gdx.input.isKeyPressed(Input.Keys.G) && !gKeyPrevious;
+		hKeyPressed = Gdx.input.isKeyPressed(Input.Keys.H) && !hKeyPrevious;
+
+		leftKeyPressed = Gdx.input.isKeyPressed(Input.Keys.LEFT) && !leftKeyPrevious;
+		rightKeyPressed = Gdx.input.isKeyPressed(Input.Keys.RIGHT) && !rightKeyPrevious;
+		enterKeyPressed = Gdx.input.isKeyPressed(Input.Keys.ENTER) && !enterKeyPrevious;
+		tKeyPressed = Gdx.input.isKeyPressed(Input.Keys.T) && !tKeyPrevious;
+		bKeyPressed = Gdx.input.isKeyPressed(Input.Keys.B) && !bKeyPrevious;
+		vKeyPressed = Gdx.input.isKeyPressed(Input.Keys.V) && !vKeyPrevious;
+		lShiftKeyPressed = Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT);
+		rShiftKeyPressed = Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT);
 		shiftKeyPressed = Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT);
 		spaceKeyPressed = Gdx.input.isKeyPressed(Input.Keys.SPACE);
 
-		leftKeyPressed =  Gdx.input.isKeyPressed(Input.Keys.LEFT);
-		rightKeyPressed =  Gdx.input.isKeyPressed(Input.Keys.RIGHT);
-		enterKeyPressed =  Gdx.input.isKeyPressed(Input.Keys.ENTER);
-		tKeyPressed =  Gdx.input.isKeyPressed(Input.Keys.T);
-		bKeyPressed = Gdx.input.isKeyPressed(Input.Keys.B);
 		crosshair.set(Gdx.input.getX(), Gdx.input.getY());
 		crosshair.scl(1/scale.x,-1/scale.y);
 		crosshair.y += bounds.height;

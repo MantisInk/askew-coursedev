@@ -1,30 +1,13 @@
 {
   "levelModelVersion": 1,
-  "title": "level4",
   "goalTimeGold": 30,
   "goalTimeSilver": 45,
   "goalTimeBronze": 60,
-  "height": 10,
-  "width": 10,
+  "recordTime": 3.3477786,
+  "title": "level4",
+  "background": "texture/background/background1.png",
+  "soundtrack": "TODO",
   "entities": [
-    {
-      "CLASSNAME": "askew.entity.sloth.SlothModel",
-      "INSTANCE": {
-        "x": -2.0,
-        "y": 17.0
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.tree.Trunk",
-      "INSTANCE": {
-        "x": -3.0,
-        "y": 13.0,
-        "stiffLen": 0.0,
-        "angle": 270.0,
-        "linksize": 1.0,
-        "numLinks": 2.0
-      }
-    },
     {
       "CLASSNAME": "askew.entity.tree.Trunk",
       "INSTANCE": {
@@ -50,22 +33,22 @@
     {
       "CLASSNAME": "askew.entity.tree.PoleVault",
       "INSTANCE": {
+        "linksize": 1.0,
+        "numLinks": 4.0,
         "x": 1.5,
         "y": 9.0,
-        "angle": 0.0,
-        "linksize": 1.0,
-        "numLinks": 4.0
+        "angle": 0.0
       }
     },
     {
       "CLASSNAME": "askew.entity.vine.Vine",
       "INSTANCE": {
-        "pin": false,
         "numLinks": 5.0,
         "x": 11.5,
         "y": 15.0,
         "angle": 5.0,
-        "omega": -30.0
+        "omega": -30.0,
+        "pin": false
       }
     },
     {
@@ -91,6 +74,24 @@
           35.0,
           0.0
         ]
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.sloth.SlothModel",
+      "INSTANCE": {
+        "x": -3.0,
+        "y": 17.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": -4.0,
+        "y": 13.0,
+        "stiffLen": 0.0,
+        "angle": 270.0,
+        "linksize": 1.0,
+        "numLinks": 3.0
       }
     }
   ]

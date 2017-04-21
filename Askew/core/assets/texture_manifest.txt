@@ -1,11 +1,14 @@
 texture/background/background.png
 texture/branch/branch.png
 texture/owl/owl.png
-texture/sloth/dude.png
+texture/sloth/farleftflow.png
+texture/sloth/leftflow.png
 texture/sloth/hand.png
 texture/sloth/frontarm.png
 texture/sloth/backarm.png
 texture/sloth/frontflow.png
+texture/sloth/frontarm_moving.png
+texture/sloth/backarm_moving.png
 texture/vine/vine.png
 texture/wall/wall.png
 texture/wall/thorn.png
@@ -18,3 +21,4 @@ texture/leveleditor/placeholder.png
 texture/leveleditor/up.png
 texture/leveleditor/folder.png
 texture/leveleditor/yellowbox.png
+texture/background/pause.png

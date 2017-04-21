@@ -1,11 +1,12 @@
 {
   "levelModelVersion": 1,
-  "title": "level8",
   "goalTimeGold": 30,
   "goalTimeSilver": 45,
   "goalTimeBronze": 60,
-  "height": 10,
-  "width": 10,
+  "recordTime": 12.090612,
+  "title": "level8",
+  "background": "texture/background/background1.png",
+  "soundtrack": "TODO",
   "entities": [
     {
       "CLASSNAME": "askew.entity.wall.WallModel",
@@ -79,21 +80,21 @@
     {
       "CLASSNAME": "askew.entity.tree.PoleVault",
       "INSTANCE": {
+        "linksize": 1.0,
+        "numLinks": 5.0,
         "x": 11.0,
         "y": 11.0,
-        "angle": 0.0,
-        "linksize": 1.0,
-        "numLinks": 5.0
+        "angle": 0.0
       }
     },
     {
       "CLASSNAME": "askew.entity.tree.PoleVault",
       "INSTANCE": {
+        "linksize": 1.0,
+        "numLinks": 5.0,
         "x": 5.0,
         "y": 11.0,
-        "angle": 0.0,
-        "linksize": 1.0,
-        "numLinks": 5.0
+        "angle": 0.0
       }
     },
     {

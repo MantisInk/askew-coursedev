@@ -786,7 +786,7 @@ public abstract class SimpleObstacle extends Obstacle {
 	 */
 	public void draw(GameCanvas canvas, Color tint) {
 		if (texture != null) {
-			canvas.draw(texture,tint,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.x,getAngle(),100,100);
+			canvas.draw(texture,tint,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),1,1);
 		}
 	}
 	

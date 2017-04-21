@@ -54,8 +54,26 @@ public class JSONLoaderSaver {
         return true;
     }
 
+    public LevelModel levelFromJson(JsonObject olm) {
+        return gson.fromJson(olm, LevelModel.class);
+    }
+
     public String gsonToJson(Entity o) {
         return gson.toJson(o, Entity.class);
+    }
+
+    public JsonObject gsonToJsonObject(Entity o) {
+        JsonParser jsonParser = new JsonParser();
+        return jsonParser.parse(gson.toJson(o, Entity.class)).getAsJsonObject();
+    }
+
+    public JsonObject gsonToJsonObject(Object o) {
+        JsonParser jsonParser = new JsonParser();
+        return jsonParser.parse(gson.toJson(o)).getAsJsonObject();
+    }
+
+    public String stringFromJson(JsonElement o) {
+        return gson.toJson(o);
     }
 
     public Entity entityFromJson(String s) {
