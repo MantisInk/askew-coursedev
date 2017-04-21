@@ -20,7 +20,6 @@ import askew.entity.owl.OwlModel;
 import askew.entity.sloth.SlothModel;
 import askew.entity.tree.Trunk;
 import askew.entity.wall.WallModel;
-import askew.playermode.WorldController;
 import askew.util.SoundController;
 import askew.util.json.JSONLoaderSaver;
 import com.badlogic.gdx.audio.Sound;
@@ -239,9 +238,15 @@ public class TutorialModeController extends GameModeController {
 		platform.setTextures(manager);
 		addObject(platform);
 
-		Trunk branch = new Trunk(sloth_x,sloth_y+1.5f,10,0.25f,1,0,worldScale,-90.0f);
+		Trunk branch = new Trunk(sloth_x-1f,sloth_y+1.5f,11,0.25f,1,0,worldScale,-90.0f);
 		branch.setTextures(manager);
+		branch.setName("long branch");
 		addObject(branch);
+
+		Trunk branch1 = new Trunk(sloth_x-1f,sloth_y+1.5f,3,0.25f,1,0,worldScale,-90.0f);
+		branch1.setTextures(manager);
+		branch1.setName("short branch");
+		addObject(branch1);
 
 		//Create Ebb TODO Replace owl with Ebb
 		OwlModel ebb = new OwlModel(sloth_x + 10.5f, sloth_y);
@@ -499,7 +504,11 @@ public class TutorialModeController extends GameModeController {
 
 		for(Entity obj : objects) {
 			if(obj instanceof Trunk){
-				if(stepsDone >= MOVED_RIGHT){
+				if(stepsDone >= MOVED_RIGHT && ((Trunk) obj).getName().equals("short branch")){
+					obj.setDrawScale(worldScale);
+					obj.draw(canvas);
+				}
+				if(stepsDone >= GRABBED_LEFT && ((Trunk) obj).getName().equals("long branch")){
 					obj.setDrawScale(worldScale);
 					obj.draw(canvas);
 				}
