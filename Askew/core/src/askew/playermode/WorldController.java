@@ -22,6 +22,7 @@ import askew.MantisAssetManager;
 import askew.entity.Entity;
 import askew.entity.obstacle.Obstacle;
 import askew.playermode.gamemode.GameModeController;
+import askew.playermode.gamemode.TutorialModeController;
 import askew.util.FilmStrip;
 import askew.util.PooledList;
 import askew.util.ScreenListener;
@@ -180,6 +181,8 @@ public abstract class WorldController implements Screen {
 	public static final int EXIT_LE_MM = 5;
 	public static final int EXIT_LE_GM = 6;
 	public static final int EXIT_GM_GM = 7;
+	public static final int EXIT_GM_TL = 8;
+	public static final int EXIT_TL_GM = 9;
 
 	/** How many frames after winning/losing do we continue? */
 	public static final int EXIT_COUNT = 120;
@@ -481,6 +484,8 @@ public abstract class WorldController implements Screen {
 		if (input.didStartPress()) {
 			if(this instanceof GameModeController)
 				((GameModeController) this).pause();
+			else if(this instanceof TutorialModeController)
+				((TutorialModeController) this).pause();
 			else
 				reset();
 		}

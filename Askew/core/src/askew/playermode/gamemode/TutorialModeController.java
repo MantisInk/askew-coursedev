@@ -78,12 +78,17 @@ public class TutorialModeController extends WorldController {
 	private Texture pauseTexture;
 	private Texture fern;
 
-	private boolean movedRight;
-	private boolean grabbedRight;
-	private boolean movedLeft;
-	private boolean grabbedLeft;
-	private boolean swingLeft;
-	private boolean regrabLeft;
+	private final int DID_NOTHING = 0;
+	private final int MOVED_LEFT = 1;
+	private final int MOVED_RIGHT = 2;
+	private final int GRABBED_LEFT = 3;
+	private final int GRABBED_RIGHT = 4;
+	private final int SWING_LEFT = 5;
+	private final int REGRABBED_LEFT = 6;
+
+	private final float CONTROLLER_DEADZONE = 0.15f;
+
+	private int stepsDone = DID_NOTHING;
 
 	/**
 	 * Preloads the assets for this controller.
@@ -192,13 +197,6 @@ public class TutorialModeController extends WorldController {
 		collisions.clearGrab();
 		Vector2 gravity = new Vector2(world.getGravity() );
 
-		movedRight = false;
-		grabbedRight = false;
-		movedLeft = false;
-		grabbedLeft = false;
-		swingLeft = false;
-		regrabLeft = false;
-
 		InputController.getInstance().releaseGrabs();
 		for(Entity obj : objects) {
 			if( (obj instanceof Obstacle && !(obj instanceof SlothModel)))
@@ -221,6 +219,8 @@ public class TutorialModeController extends WorldController {
 		populateLevel();
 		if (!SoundController.getInstance().isActive("bgmusic"))
 			SoundController.getInstance().play("bgmusic","sound/music/askew.wav",true);
+
+		stepsDone=0;
 	}
 
 	/**
@@ -236,29 +236,40 @@ public class TutorialModeController extends WorldController {
 		sloth = new SlothModel(sloth_x ,sloth_y);
 		sloth.setTextures(manager);
 		addObject(sloth);
-
 		sloth.activateSlothPhysics(world);
 		collisions.setSloth(sloth);
 		initFlowX = sloth.getX();
 		initFlowY = sloth.getY();
 
-
-		///Create branch
-		Trunk branch = new Trunk(sloth_x,sloth_y+1.5f,10,0.25f,1,0,worldScale,-90.0f);
-		branch.setTextures(manager);
-		addObject(branch);
-
 		///Create wall
-
 		float[] points = {0.0f,0.0f, 0.0f,1.0f, 6.0f,1.0f, 6.0f,0.0f};
 		WallModel platform = new WallModel(sloth_x-2,sloth_y-1.5f,points,false);
 		platform.setTextures(manager);
 		addObject(platform);
 
+		Trunk branch = new Trunk(sloth_x,sloth_y+1.5f,10,0.25f,1,0,worldScale,-90.0f);
+		branch.setTextures(manager);
+		addObject(branch);
+
+//		if(stepsDone>MOVED_LEFT){
+//			///Create branch
+//			Trunk branch = new Trunk(sloth_x,sloth_y+1.5f,10,0.25f,1,0,worldScale,-90.0f);
+//			branch.setTextures(manager);
+//			addObject(branch);
+//
+//		}
+
 		//Create Ebb TODO Replace owl with Ebb
-		OwlModel ebb = new OwlModel(sloth_x+10.5f,sloth_y);
+		OwlModel ebb = new OwlModel(sloth_x + 10.5f, sloth_y);
 		ebb.setTextures(manager);
 		addObject(ebb);
+
+//		if(stepsDone>GRABBED_LEFT) {
+//			//Create Ebb TODO Replace owl with Ebb
+//			OwlModel ebb = new OwlModel(sloth_x + 10.5f, sloth_y);
+//			ebb.setTextures(manager);
+//			addObject(ebb);
+//		}
 
 	}
 
@@ -367,6 +378,7 @@ public class TutorialModeController extends WorldController {
 	 * @param dt Number of seconds since last animation frame
 	 */
 	public void update(float dt) {
+		InputController input = InputController.getInstance();
 		if (!paused) {
 			// Process actions in object model
 			sloth.setLeftHori(InputController.getInstance().getLeftHorizontal());
@@ -375,8 +387,33 @@ public class TutorialModeController extends WorldController {
 			sloth.setRightVert(InputController.getInstance().getRightVertical());
 			sloth.setLeftGrab(InputController.getInstance().getLeftGrab());
 			sloth.setRightGrab(InputController.getInstance().getRightGrab());
-			sloth.setLeftStickPressed(InputController.getInstance().getLeftStickPressed());
-			sloth.setRightStickPressed(InputController.getInstance().getRightStickPressed());
+			switch (stepsDone){
+				case DID_NOTHING:
+					sloth.setRightHori(0);
+					sloth.setRightVert(0);
+				case MOVED_LEFT:
+					sloth.setLeftGrab(false);
+				case MOVED_RIGHT:
+					sloth.setRightGrab(false);
+					break;
+				case GRABBED_LEFT:
+					sloth.setLeftGrab(true);
+					break;
+				case GRABBED_RIGHT:
+					sloth.setRightGrab(true);
+					//Set right arm to be 0 too?
+					break;
+				case SWING_LEFT:
+					//Let go of left grab
+					sloth.setRightGrab(true);
+					break;
+				case REGRABBED_LEFT:
+					//
+				default:
+					System.err.println(stepsDone);
+			}
+
+
 
 			//#TODO Collision states check
 			setFailure(collisions.isFlowKill());
@@ -389,14 +426,8 @@ public class TutorialModeController extends WorldController {
 				setComplete(true);
 			}
 
-			/*
-			movedRight = false;
-			grabbedRight = false;
-			movedLeft = false;
-			grabbedLeft = false;
-			swingLeft = false;
-			regrabLeft = false;
-			* */
+
+
 
 			// Physics tiem
 			// Gribby grab
@@ -419,6 +450,8 @@ public class TutorialModeController extends WorldController {
 			SoundController.getInstance().update();
 
 			if (isComplete()) {
+				int current = GlobalConfiguration.getInstance().getCurrentLevel();
+				GlobalConfiguration.getInstance().setCurrentLevel(current + 1);
 				System.out.println("GG");
 				listener.exitScreen(this, EXIT_TL_GM);
 			}
@@ -426,6 +459,48 @@ public class TutorialModeController extends WorldController {
 			if (isFailure()) {
 				System.out.println("Fail");
 				reset();
+			}
+
+			//Increment Steps
+			if(stepsDone==DID_NOTHING){
+				//Check for left joystick movement
+				if(Math.abs(input.getLeftHorizontal())>CONTROLLER_DEADZONE || Math.abs(input.getLeftVertical())>CONTROLLER_DEADZONE){
+					stepsDone++;
+				}
+			}
+			else if(stepsDone==MOVED_LEFT){
+				//Check for left joystick movement
+				if(Math.abs(input.getRightHorizontal())>CONTROLLER_DEADZONE || Math.abs(input.getRightVertical())>CONTROLLER_DEADZONE){
+					stepsDone++;
+				}
+			}
+			else if(stepsDone==MOVED_RIGHT){
+				//Check for left joystick movement
+				if(sloth.isActualLeftGrab()){
+					stepsDone++;
+				}
+			}
+			else if(stepsDone==GRABBED_LEFT){
+				//Check for left joystick movement
+				if(sloth.isActualRightGrab()){
+					stepsDone++;
+				}
+			}
+			else if(stepsDone==GRABBED_RIGHT){
+				//Check for left joystick movement
+				if(Math.abs(input.getLeftHorizontal())>CONTROLLER_DEADZONE || Math.abs(input.getLeftVertical())>CONTROLLER_DEADZONE){
+					stepsDone++;
+				}
+			}
+			else if(stepsDone==SWING_LEFT){
+				//Check for left joystick movement
+				if(sloth.isActualLeftGrab()){ //TODO Check for left hand crossing right hand
+					stepsDone++;
+				}
+			}
+			else if(stepsDone==REGRABBED_LEFT){
+				//Check for left joystick movement
+				stepsDone++;
 			}
 		}
 		prevPaused = paused;
@@ -446,8 +521,22 @@ public class TutorialModeController extends WorldController {
 		canvas.begin(camTrans);
 
 		for(Entity obj : objects) {
-			obj.setDrawScale(worldScale);
-			obj.draw(canvas);
+			if(obj instanceof Trunk){
+				if(stepsDone >= MOVED_RIGHT){
+					obj.setDrawScale(worldScale);
+					obj.draw(canvas);
+				}
+			}
+			else if(obj instanceof OwlModel){
+				if(stepsDone >= GRABBED_RIGHT){
+					obj.setDrawScale(worldScale);
+					obj.draw(canvas);
+				}
+			}
+			else {
+				obj.setDrawScale(worldScale);
+				obj.draw(canvas);
+			}
 		}
 
 		if (!playerIsReady && !paused)
