@@ -292,7 +292,6 @@ public class GameModeController extends WorldController {
 		}
 
 		if (paused) {
-			System.out.println("paused in update");
 			//InputController input = InputController.getInstance();
 			if (input.didBottomButtonPress() && pause_mode == PAUSE_RESUME) {
 				paused = false;
@@ -310,7 +309,6 @@ public class GameModeController extends WorldController {
 			if (input.didBottomDPadPress() && pause_mode < 2) {
 				pause_mode++;
 			}
-			System.out.println("pause mode is " + pause_mode);
 		}
 
 		//Checks to see if player has selected the button on the starting screen
@@ -367,11 +365,7 @@ public class GameModeController extends WorldController {
 	 * @param dt Number of seconds since last animation frame
 	 */
 	public void update(float dt) {
-		System.out.println("paused "+paused);
-		if (paused) {
-
-		} else {
-			System.out.println("not paused in update");
+		if (!paused) {
 			// Process actions in object model
 			sloth.setLeftHori(InputController.getInstance().getLeftHorizontal());
 			sloth.setLeftVert(InputController.getInstance().getLeftVertical());
