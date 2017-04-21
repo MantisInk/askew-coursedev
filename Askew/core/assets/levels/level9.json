@@ -3,7 +3,7 @@
   "goalTimeGold": 30,
   "goalTimeSilver": 45,
   "goalTimeBronze": 60,
-  "recordTime": 9999999,
+  "recordTime": 9999999.0,
   "background": "texture/background/background1.png",
   "soundtrack": "TODO",
   "entities": [
@@ -84,15 +84,6 @@
         "angle": 45.0,
         "linksize": 1.0,
         "numLinks": 5.0
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.tree.StiffBranch",
-      "INSTANCE": {
-        "angle": -45.0,
-        "stiffLen": 4.0,
-        "x": 32.0,
-        "y": 10.0
       }
     },
     {
@@ -262,6 +253,15 @@
         "angle": -25.0,
         "linksize": 1.0,
         "numLinks": 5.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.StiffBranch",
+      "INSTANCE": {
+        "angle": -45.0,
+        "stiffLen": 4.0,
+        "x": 31.5,
+        "y": 10.0
       }
     }
   ]
