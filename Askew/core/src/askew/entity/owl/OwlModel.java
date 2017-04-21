@@ -75,7 +75,7 @@ public class OwlModel extends BoxObstacle  {
     public void draw(GameCanvas canvas) {
 
         if (texture != null) {
-            canvas.draw(texture,Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.x,getAngle(),
+            canvas.draw(texture,Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),
                     (1.0f/texture.getRegionWidth()) *   getWidth() * getDrawScale().x * objectScale.x,
                     (1.0f/texture.getRegionHeight()  * getHeight()* getDrawScale().y * objectScale.y));
         }

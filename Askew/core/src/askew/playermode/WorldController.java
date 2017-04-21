@@ -327,8 +327,8 @@ public abstract class WorldController implements Screen {
 	 */
 	public void setCanvas(GameCanvas canvas) {
 		this.canvas = canvas;
-		this.worldScale.x = canvas.getWidth()/bounds.getWidth();
-		this.worldScale.y = canvas.getHeight()/bounds.getHeight();
+		this.worldScale.x = 1.0f * (float)canvas.getWidth()/(float)bounds.getWidth();
+		this.worldScale.y = 1.0f * (float)canvas.getHeight()/(float)bounds.getHeight();
 		//System.out.println("SETCANVAS SET SCALE");
 	}
 	
@@ -633,8 +633,8 @@ public abstract class WorldController implements Screen {
 	public void setWorldScale(GameCanvas canvas) {
 		//System.out.println("IN SET SCALE");
 		//System.out.println("pre set ("+scale.x+","+scale.y+")");
-		this.worldScale.x = canvas.getWidth()/bounds.getWidth();
-		this.worldScale.y = canvas.getHeight()/bounds.getHeight();
+		this.worldScale.x = 1.0f * (float)canvas.getWidth()/(float)bounds.getWidth();
+		this.worldScale.y = 1.0f * (float)canvas.getHeight()/(float)bounds.getHeight();
 		//System.out.println("post set ("+scale.x+","+scale.y+")");
 	}
 

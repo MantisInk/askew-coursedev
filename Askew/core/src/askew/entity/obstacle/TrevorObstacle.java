@@ -39,7 +39,7 @@ public class TrevorObstacle extends BoxObstacle {
 
     public void draw(GameCanvas canvas) {
         if (texture != null) {
-            canvas.draw(texture, tint, origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.x,getAngle(),1,1);
+            canvas.draw(texture, tint, origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),1,1);
         }
     }
 }

@@ -403,7 +403,7 @@ public class ObstacleSelector implements QueryCallback  {
 	 */
 	public void draw(GameCanvas canvas) {
 		if (texture != null) {
-			canvas.draw(texture,Color.WHITE,origin.x,origin.y,position.x*drawScale.x,position.y*drawScale.x,0,1,1);
+			canvas.draw(texture,Color.WHITE,origin.x,origin.y,position.x*drawScale.x,position.y*drawScale.y,0,1,1);
 		}
 	}
 	
