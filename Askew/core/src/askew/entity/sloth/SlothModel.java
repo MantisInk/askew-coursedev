@@ -60,7 +60,7 @@ public class SlothModel extends ComplexObstacle  {
     private static final float PI = (float)Math.PI;
 
     /** The number of DISTINCT body parts */
-    private static final int BODY_TEXTURE_COUNT = 6;
+    private static final int BODY_TEXTURE_COUNT = 8;
 
     private transient RevoluteJointDef leftGrabJointDef;
     private transient RevoluteJointDef rightGrabJointDef;
@@ -788,12 +788,16 @@ public class SlothModel extends ComplexObstacle  {
         Texture managedBackArm = manager.get("texture/sloth/backarm.png");
         Texture managedFlowLeft = manager.get("texture/sloth/leftflow.png");
         Texture managedFlowFarLeft = manager.get("texture/sloth/farleftflow.png");
+        Texture managedFrontArmMoving = manager.get("texture/sloth/frontarm_moving.png");
+        Texture managedBackArmMoving = manager.get("texture/sloth/backarm_moving.png");
         partTextures[0] = new TextureRegion(managedHand);
         partTextures[1] = new TextureRegion(managedFrontArm);
         partTextures[3] = new TextureRegion(managedBackArm);
         partTextures[4] = new TextureRegion(managedFlowFront);
         partTextures[2] = new TextureRegion(managedFlowLeft);
         partTextures[5] = new TextureRegion(managedFlowFarLeft);
+        partTextures[6] = new TextureRegion(managedFrontArmMoving);
+        partTextures[7] = new TextureRegion(managedBackArmMoving);
 
         if (bodies.size == 0) {
             init();
@@ -811,7 +815,7 @@ public class SlothModel extends ComplexObstacle  {
             BoxObstacle part = (BoxObstacle) bodies.get(x);
             TextureRegion texture = part.getTexture();
             if (texture != null) {
-
+                // different textures for flow's body
                 if (x == 0) {
                     if (flowFacingState > 3 && flowFacingState < 6){
                         part.setTexture(partTextures[2]);
@@ -836,6 +840,20 @@ public class SlothModel extends ComplexObstacle  {
                     } else {
                         part.setTexture(partTextures[4]);
                     }
+                }
+
+                // different textures for flow's arms if controlling
+                if (x == 1) {
+                    if (rightHori >= 0.15 || rightHori <= -0.15 || rightVert >= 0.15 || rightVert <= -0.15)
+                        part.setTexture(partTextures[6]);
+                    else
+                        part.setTexture(partTextures[1]);
+                }
+                if (x == 2) {
+                    if (leftHori >= 0.15 || leftHori <= -0.15 || leftVert >= 0.15 || leftVert <= -0.15)
+                        part.setTexture(partTextures[7]);
+                    else
+                        part.setTexture(partTextures[3]);
                 }
 
                 //If the body parts are from the right limb

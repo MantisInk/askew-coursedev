@@ -7,6 +7,8 @@ texture/sloth/hand.png
 texture/sloth/frontarm.png
 texture/sloth/backarm.png
 texture/sloth/frontflow.png
+texture/sloth/frontarm_moving.png
+texture/sloth/backarm_moving.png
 texture/vine/vine.png
 texture/wall/wall.png
 texture/wall/thorn.png
