@@ -188,7 +188,6 @@ public class SlothModel extends ComplexObstacle  {
     }
 
     private void init() {
-        System.out.println("HFUISFHSUIHFUIS");
         // We do not do anything yet.
         BoxObstacle part;
 
@@ -747,9 +746,6 @@ public class SlothModel extends ComplexObstacle  {
         Filter f = new Filter();
         f.maskBits = FilterGroup.VINE;
         f.categoryBits = FilterGroup.HAND;
-        System.out.println(bodies);
-        System.out.println(bodies.get(PART_LEFT_HAND));
-        System.out.println(bodies.get(PART_LEFT_HAND).getBody());
         sensorFixture1 = bodies.get(PART_LEFT_HAND).getBody().createFixture(sensorDef);
         sensorFixture1.setUserData("sloth left hand");
         sensorFixture2 = bodies.get(PART_RIGHT_HAND).getBody().createFixture(sensorDef);

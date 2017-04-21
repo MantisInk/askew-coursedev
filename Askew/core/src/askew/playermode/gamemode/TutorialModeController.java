@@ -21,7 +21,6 @@ import askew.entity.sloth.SlothModel;
 import askew.entity.tree.Trunk;
 import askew.entity.wall.WallModel;
 import askew.playermode.WorldController;
-import askew.playermode.leveleditor.LevelModel;
 import askew.util.SoundController;
 import askew.util.json.JSONLoaderSaver;
 import com.badlogic.gdx.audio.Sound;
@@ -34,9 +33,6 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.ObjectSet;
 import lombok.Getter;
-import lombok.Setter;
-
-import java.io.FileNotFoundException;
 
 /**
  * Gameplay specific controller for the platformer game.
@@ -49,12 +45,10 @@ import java.io.FileNotFoundException;
  */
 public class TutorialModeController extends WorldController {
 
-
 	Affine2 camTrans = new Affine2();
 
 	/** Track asset loading from all instances and subclasses */
 	private AssetState platformAssetState = AssetState.EMPTY;
-
 	private MantisAssetManager manager;
 
 	/** Track asset loading from all instances and subclasses */
@@ -85,10 +79,9 @@ public class TutorialModeController extends WorldController {
 	private final int GRABBED_RIGHT = 4;
 	private final int SWING_LEFT = 5;
 	private final int REGRABBED_LEFT = 6;
+	private int stepsDone = DID_NOTHING;
 
 	private final float CONTROLLER_DEADZONE = 0.15f;
-
-	private int stepsDone = DID_NOTHING;
 
 	/**
 	 * Preloads the assets for this controller.
