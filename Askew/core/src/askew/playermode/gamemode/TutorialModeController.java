@@ -18,6 +18,8 @@ import askew.entity.obstacle.BoxObstacle;
 import askew.entity.obstacle.Obstacle;
 import askew.entity.owl.OwlModel;
 import askew.entity.sloth.SlothModel;
+import askew.entity.tree.Trunk;
+import askew.entity.wall.WallModel;
 import askew.playermode.WorldController;
 import askew.playermode.leveleditor.LevelModel;
 import askew.util.SoundController;
@@ -45,13 +47,15 @@ import java.io.FileNotFoundException;
  * This is the purpose of our AssetState variable; it ensures that multiple instances
  * place nicely with the static assets.
  */
-public class GameModeController extends WorldController {
+public class TutorialModeController extends WorldController {
 
 
 	Affine2 camTrans = new Affine2();
 
 	/** Track asset loading from all instances and subclasses */
 	private AssetState platformAssetState = AssetState.EMPTY;
+
+	private MantisAssetManager manager;
 
 	/** Track asset loading from all instances and subclasses */
 	@Getter
@@ -60,13 +64,6 @@ public class GameModeController extends WorldController {
 	private boolean prevPaused = false;
 	// fern selection indicator locations for pause menu options
 	private Vector2[] pause_locs = {new Vector2(11f,4.8f), new Vector2(9f,3.9f), new Vector2(11f,3f)};
-
-	@Setter
-	private String loadLevel, DEFAULT_LEVEL;
-	private LevelModel lm; 				// LevelModel for the level the player is currently on
-	private int numLevel, MAX_LEVEL; 	// track int val of lvl #
-
-	private float currentTime, recordTime;	// track current and record time to complete level
 
 	private PhysicsController collisions;
 
@@ -80,6 +77,13 @@ public class GameModeController extends WorldController {
 	private Texture background;
 	private Texture pauseTexture;
 	private Texture fern;
+
+	private boolean movedRight;
+	private boolean grabbedRight;
+	private boolean movedLeft;
+	private boolean grabbedLeft;
+	private boolean swingLeft;
+	private boolean regrabLeft;
 
 	/**
 	 * Preloads the assets for this controller.
@@ -122,6 +126,8 @@ public class GameModeController extends WorldController {
 		pauseTexture = manager.get("texture/background/pause.png", Texture.class);
 		fern = manager.get("texture/background/fern.png");
 
+		this.manager = manager;
+
 		super.loadContent(manager);
 		platformAssetState = AssetState.COMPLETE;
 	}
@@ -150,7 +156,7 @@ public class GameModeController extends WorldController {
 	 *
 	 * The game has default gravity and other settings
 	 */
-	public GameModeController() {
+	public TutorialModeController() {
 		super(DEFAULT_WIDTH,DEFAULT_HEIGHT,DEFAULT_GRAVITY);
 		setDebug(false);
 		setComplete(false);
@@ -158,23 +164,9 @@ public class GameModeController extends WorldController {
 		collisions = new PhysicsController();
 		world.setContactListener(collisions);
 		sensorFixtures = new ObjectSet<Fixture>();
-		DEFAULT_LEVEL = GlobalConfiguration.getInstance().getAsString("defaultLevel");
-		MAX_LEVEL = GlobalConfiguration.getInstance().getAsInt("maxLevel");
-		loadLevel = DEFAULT_LEVEL;
-		jsonLoaderSaver = new JSONLoaderSaver();
-	}
 
-	public void setLevel() {
-		//numLevel = lvl;
-		int lvl = GlobalConfiguration.getInstance().getCurrentLevel();
-		if (lvl == 0) {
-			loadLevel = DEFAULT_LEVEL;
-		} else if (lvl > MAX_LEVEL) {
-			loadLevel = "level"+MAX_LEVEL;
-			System.out.println("MM");
-			listener.exitScreen(this, EXIT_GM_MM);
-		} else
-			loadLevel = "level"+lvl;
+		jsonLoaderSaver = new JSONLoaderSaver();
+
 	}
 
 	public void pause(){
@@ -200,6 +192,13 @@ public class GameModeController extends WorldController {
 		collisions.clearGrab();
 		Vector2 gravity = new Vector2(world.getGravity() );
 
+		movedRight = false;
+		grabbedRight = false;
+		movedLeft = false;
+		grabbedLeft = false;
+		swingLeft = false;
+		regrabLeft = false;
+
 		InputController.getInstance().releaseGrabs();
 		for(Entity obj : objects) {
 			if( (obj instanceof Obstacle && !(obj instanceof SlothModel)))
@@ -219,7 +218,6 @@ public class GameModeController extends WorldController {
 		world.setContactListener(collisions);
 		setComplete(false);
 		setFailure(false);
-		setLevel();
 		populateLevel();
 		if (!SoundController.getInstance().isActive("bgmusic"))
 			SoundController.getInstance().play("bgmusic","sound/music/askew.wav",true);
@@ -229,41 +227,38 @@ public class GameModeController extends WorldController {
 	 * Lays out the game geography.
 	 */
 	private void populateLevel() {
-			jsonLoaderSaver.setScale(this.worldScale);
-			try {
-				float level_num = Integer.parseInt(loadLevel.substring(5));
-				if (level_num==0){
-					System.out.println("Tutorial");
-					listener.exitScreen(this,EXIT_GM_TL);
-					return;
-				}
-				lm = jsonLoaderSaver.loadLevel(loadLevel);
-				System.out.println(loadLevel);
-				recordTime = lm.getRecordTime();
-				if (lm == null) {
-					lm = new LevelModel();
-				}
+		//TODO
 
-				for (Entity o : lm.getEntities()) {
-					// drawing
+		float sloth_x = 0;
+		float sloth_y = 0;
 
-					addObject( o);
-					if (o instanceof SlothModel) {
-						sloth = (SlothModel) o;
-						sloth.activateSlothPhysics(world);
-						collisions.setSloth(sloth);
-						initFlowX = sloth.getX();
-						initFlowY = sloth.getY();
-					}
-					if (o instanceof OwlModel) {
-						owl = (OwlModel) o;
-					}
+		//Create sloth
+		sloth = new SlothModel(sloth_x ,sloth_y);
+		sloth.setTextures(manager);
+		addObject(sloth);
 
-				}
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			}
-			currentTime = 0f;
+		sloth.activateSlothPhysics(world);
+		collisions.setSloth(sloth);
+		initFlowX = sloth.getX();
+		initFlowY = sloth.getY();
+
+
+		///Create branch
+		Trunk branch = new Trunk(sloth_x,sloth_y+1.5f,10,0.25f,1,0,worldScale,-90.0f);
+		branch.setTextures(manager);
+		addObject(branch);
+
+		///Create wall
+
+		float[] points = {0.0f,0.0f, 0.0f,1.0f, 6.0f,1.0f, 6.0f,0.0f};
+		WallModel platform = new WallModel(sloth_x-2,sloth_y-1.5f,points,false);
+		platform.setTextures(manager);
+		addObject(platform);
+
+		//Create Ebb TODO Replace owl with Ebb
+		OwlModel ebb = new OwlModel(sloth_x+10.5f,sloth_y);
+		ebb.setTextures(manager);
+		addObject(ebb);
 
 	}
 
@@ -382,7 +377,6 @@ public class GameModeController extends WorldController {
 			sloth.setRightGrab(InputController.getInstance().getRightGrab());
 			sloth.setLeftStickPressed(InputController.getInstance().getLeftStickPressed());
 			sloth.setRightStickPressed(InputController.getInstance().getRightStickPressed());
-			currentTime += dt;
 
 			//#TODO Collision states check
 			setFailure(collisions.isFlowKill());
@@ -394,6 +388,15 @@ public class GameModeController extends WorldController {
 				System.out.println("VICTORY");
 				setComplete(true);
 			}
+
+			/*
+			movedRight = false;
+			grabbedRight = false;
+			movedLeft = false;
+			grabbedLeft = false;
+			swingLeft = false;
+			regrabLeft = false;
+			* */
 
 			// Physics tiem
 			// Gribby grab
@@ -416,16 +419,8 @@ public class GameModeController extends WorldController {
 			SoundController.getInstance().update();
 
 			if (isComplete()) {
-				float record = currentTime;
-				if (record < lm.getRecordTime()) {
-					lm.setRecordTime(record);
-					if (jsonLoaderSaver.saveLevel(lm, loadLevel))
-						System.out.println("New record time for this level!");
-				}
-				int current = GlobalConfiguration.getInstance().getCurrentLevel();
-				GlobalConfiguration.getInstance().setCurrentLevel(current + 1);
 				System.out.println("GG");
-				listener.exitScreen(this, EXIT_GM_GM);
+				listener.exitScreen(this, EXIT_TL_GM);
 			}
 
 			if (isFailure()) {
@@ -446,12 +441,9 @@ public class GameModeController extends WorldController {
 
     	canvas.begin();
 		canvas.draw(background);
-		canvas.drawTextStandard("current time:    "+currentTime, 10f, 70f);
-		canvas.drawTextStandard("record time:     "+recordTime,10f,50f);
 		canvas.end();
 
 		canvas.begin(camTrans);
-		//canvas.draw(background, Color.WHITE, .25f*background.getWidth(),.75f * background.getHeight(),initFlowX*worldScale.x,initFlowY*worldScale.y,background.getWidth(), background.getHeight());
 
 		for(Entity obj : objects) {
 			obj.setDrawScale(worldScale);
