@@ -1,7 +1,8 @@
 texture/background/background.png
 texture/branch/branch.png
 texture/owl/owl.png
-texture/sloth/dude.png
+texture/sloth/farleftflow.png
+texture/sloth/leftflow.png
 texture/sloth/hand.png
 texture/sloth/frontarm.png
 texture/sloth/backarm.png

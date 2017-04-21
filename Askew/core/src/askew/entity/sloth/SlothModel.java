@@ -60,7 +60,7 @@ public class SlothModel extends ComplexObstacle  {
     private static final float PI = (float)Math.PI;
 
     /** The number of DISTINCT body parts */
-    private static final int BODY_TEXTURE_COUNT = 5;
+    private static final int BODY_TEXTURE_COUNT = 6;
 
     private transient RevoluteJointDef leftGrabJointDef;
     private transient RevoluteJointDef rightGrabJointDef;
@@ -100,7 +100,7 @@ public class SlothModel extends ComplexObstacle  {
     private transient boolean prevRightGrab;
     private transient boolean leftStickPressed;
     private transient boolean rightStickPressed;
-    private transient int flowFacingState;
+    private transient float flowFacingState;
     private transient int movementMode;
     private transient boolean leftGrabbing;
     private transient boolean rightGrabbing;
@@ -565,15 +565,16 @@ public class SlothModel extends ComplexObstacle  {
                         .getBody()
                         .applyForce(rx, ry, rightHand.getX(), rightHand.getY(), true);
         }
-        if (bodies.get(PART_BODY).getBody().getLinearVelocity().x > 0) {
-            flowFacingState++;
-        } else {
-            flowFacingState--;
-        }
-
-        // MAGIC NUMBERS (TREVOR)
-        if (flowFacingState > 20) flowFacingState = 20;
-        if (flowFacingState < -20) flowFacingState = -20;
+//        if (bodies.get(PART_BODY).getBody().getLinearVelocity().x > 0) {
+//            flowFacingState++;
+//        } else {
+//            flowFacingState--;
+//        }
+//
+//        // MAGIC NUMBERS (TREVOR)
+//        if (flowFacingState > 25) flowFacingState = 25;
+//        if (flowFacingState < -25) flowFacingState = -25;
+        flowFacingState = (int)bodies.get(PART_BODY).getBody().getLinearVelocity().x;
     }
 
 
@@ -785,12 +786,14 @@ public class SlothModel extends ComplexObstacle  {
         Texture managedFrontArm = manager.get("texture/sloth/frontarm.png");
         Texture managedFlowFront = manager.get("texture/sloth/frontflow.png");
         Texture managedBackArm = manager.get("texture/sloth/backarm.png");
-        Texture managedDude = manager.get("texture/sloth/dude.png");
+        Texture managedFlowLeft = manager.get("texture/sloth/leftflow.png");
+        Texture managedFlowFarLeft = manager.get("texture/sloth/farleftflow.png");
         partTextures[0] = new TextureRegion(managedHand);
         partTextures[1] = new TextureRegion(managedFrontArm);
         partTextures[3] = new TextureRegion(managedBackArm);
         partTextures[4] = new TextureRegion(managedFlowFront);
-        partTextures[2] = new TextureRegion(managedDude);
+        partTextures[2] = new TextureRegion(managedFlowLeft);
+        partTextures[5] = new TextureRegion(managedFlowFarLeft);
 
         if (bodies.size == 0) {
             init();
@@ -810,15 +813,25 @@ public class SlothModel extends ComplexObstacle  {
             if (texture != null) {
 
                 if (x == 0) {
-                    if (flowFacingState > 10) {
+                    if (flowFacingState > 3 && flowFacingState < 6){
                         part.setTexture(partTextures[2]);
                         if (!texture.isFlipX()) {
-                            texture.flip(true,false);
+                            texture.flip(true, false);
                         }
-                    } else if (flowFacingState < -10) {
+                    } else if (flowFacingState > 6) {
+                        part.setTexture(partTextures[5]);
+                        if (!texture.isFlipX()) {
+                            texture.flip(true, false);
+                        }
+                    } else if (flowFacingState < -3 && flowFacingState > -6) {
                         part.setTexture(partTextures[2]);
                         if (texture.isFlipX()) {
-                            texture.flip(true,false);
+                            texture.flip(true, false);
+                        }
+                    } else if (flowFacingState < -6) {
+                        part.setTexture(partTextures[5]);
+                        if (texture.isFlipX()) {
+                            texture.flip(true, false);
                         }
                     } else {
                         part.setTexture(partTextures[4]);
