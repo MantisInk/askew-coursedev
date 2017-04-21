@@ -292,6 +292,9 @@ public class GameModeController extends WorldController {
 			System.out.println("MM");
 			listener.exitScreen(this, EXIT_GM_MM);
 			return false;
+		} else if (input.didBottomButtonPress()) {
+			System.out.println("reset");
+			reset();
 		}
 
 		if (paused) {
