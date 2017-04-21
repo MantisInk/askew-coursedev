@@ -88,10 +88,10 @@ public class SlothModel extends ComplexObstacle  {
 
     public float x;
     public float y;
-    private transient float rightVert;
-    private transient float leftHori;
-    private transient float leftVert;
-    private transient float rightHori;
+    private transient float rightVert;      // right joystick y input
+    private transient float leftHori;       // left joystick z input
+    private transient float leftVert;       // left joystick y input
+    private transient float rightHori;      // right joystick x input
     @Getter
     private transient boolean leftGrab;
     @Getter
@@ -810,13 +810,13 @@ public class SlothModel extends ComplexObstacle  {
 
     @Override
     public void draw(GameCanvas canvas){
-        for(int x=bodies.size-1;x>=0;x--){
+        for(int body_ind = bodies.size-1; body_ind >= 0; body_ind--){
 
-            BoxObstacle part = (BoxObstacle) bodies.get(x);
+            BoxObstacle part = (BoxObstacle) bodies.get(body_ind);
             TextureRegion texture = part.getTexture();
             if (texture != null) {
                 // different textures for flow's body
-                if (x == 0) {
+                if (body_ind == 0) {
                     if (flowFacingState > 3 && flowFacingState < 6){
                         part.setTexture(partTextures[2]);
                         if (!texture.isFlipX()) {
@@ -843,13 +843,13 @@ public class SlothModel extends ComplexObstacle  {
                 }
 
                 // different textures for flow's arms if controlling
-                if (x == 1) {
+                if (body_ind == 1) {
                     if (rightHori >= 0.15 || rightHori <= -0.15 || rightVert >= 0.15 || rightVert <= -0.15)
                         part.setTexture(partTextures[6]);
                     else
                         part.setTexture(partTextures[1]);
                 }
-                if (x == 2) {
+                if (body_ind == 2) {
                     if (leftHori >= 0.15 || leftHori <= -0.15 || leftVert >= 0.15 || leftVert <= -0.15)
                         part.setTexture(partTextures[7]);
                     else
@@ -857,13 +857,13 @@ public class SlothModel extends ComplexObstacle  {
                 }
 
                 //If the body parts are from the right limb
-                if (x == 3 || x == 4) continue;
-                if (x == 1 || x == 4) {
+                if (body_ind == 3 || body_ind == 4) continue;
+                if (body_ind == 1 || body_ind == 4) {
                     part.draw(canvas, Color.WHITE);
                     part.draw(canvas, Color.WHITE);     //remove this line when you draw the head
                 }
                 //If the body parts are from the left limb
-                else if (x == 2 || x == 3) {
+                else if (body_ind == 2 || body_ind == 3) {
                     part.draw(canvas, Color.WHITE);
                 }
                 //If the body parts are not limbs

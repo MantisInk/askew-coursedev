@@ -292,6 +292,7 @@ public class LevelEditorController extends WorldController {
 		prevPressedL = pressedL;
 		pressedL = input.isLKeyPressed();
 		if (input.didLeftButtonPress()) {
+			// next line for example grabs int 9 from string currentLevel="level9"
 			int lvlNum = Integer.parseInt(currentLevel.substring(5));
 			GlobalConfiguration.getInstance().setCurrentLevel(lvlNum);
 			System.out.println("GM");
