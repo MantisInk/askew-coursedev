@@ -11,6 +11,7 @@
   "fullscreen": false,
   "defaultLevel": "level0",
   "torqueBasedMovement": true,
+  "timedLevels": false,
   "maxLevel": 9,
   "currentLevel": 1
 }

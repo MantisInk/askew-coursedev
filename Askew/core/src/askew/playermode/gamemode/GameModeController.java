@@ -67,6 +67,7 @@ public class GameModeController extends WorldController {
 	private int numLevel, MAX_LEVEL; 	// track int val of lvl #
 
 	private float currentTime, recordTime;	// track current and record time to complete level
+	private boolean timedLevels;
 
 	private PhysicsController collisions;
 
@@ -161,6 +162,7 @@ public class GameModeController extends WorldController {
 		DEFAULT_LEVEL = GlobalConfiguration.getInstance().getAsString("defaultLevel");
 		MAX_LEVEL = GlobalConfiguration.getInstance().getAsInt("maxLevel");
 		loadLevel = DEFAULT_LEVEL;
+		timedLevels = GlobalConfiguration.getInstance().getAsBoolean("timedLevels");
 		jsonLoaderSaver = new JSONLoaderSaver();
 	}
 
@@ -376,7 +378,8 @@ public class GameModeController extends WorldController {
 			sloth.setRightGrab(InputController.getInstance().getRightGrab());
 			sloth.setLeftStickPressed(InputController.getInstance().getLeftStickPressed());
 			sloth.setRightStickPressed(InputController.getInstance().getRightStickPressed());
-			currentTime += dt;
+			if (timedLevels)
+				currentTime += dt;
 
 			//#TODO Collision states check
 			setFailure(collisions.isFlowKill());
@@ -411,7 +414,7 @@ public class GameModeController extends WorldController {
 
 			if (isComplete()) {
 				float record = currentTime;
-				if (record < lm.getRecordTime()) {
+				if (record < lm.getRecordTime() && timedLevels) {
 					lm.setRecordTime(record);
 					if (jsonLoaderSaver.saveLevel(lm, loadLevel))
 						System.out.println("New record time for this level!");
