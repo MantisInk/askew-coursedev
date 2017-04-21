@@ -1,12 +1,12 @@
 {
   "levelModelVersion": 1,
-  "title": "level4",
   "goalTimeGold": 30,
   "goalTimeSilver": 45,
   "goalTimeBronze": 60,
-  "recordTime": 9999999,
-  "height": 10,
-  "width": 10,
+  "recordTime": 5.5945635,
+  "title": "level4",
+  "background": "texture/background/background1.png",
+  "soundtrack": "TODO",
   "entities": [
     {
       "CLASSNAME": "askew.entity.tree.Trunk",

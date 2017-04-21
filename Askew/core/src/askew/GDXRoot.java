@@ -14,6 +14,7 @@ package askew;/*
 
 import askew.playermode.WorldController;
 import askew.playermode.gamemode.GameModeController;
+import askew.playermode.gamemode.TutorialModeController;
 import askew.playermode.leveleditor.LevelEditorController;
 import askew.playermode.loading.LoadingMode;
 import askew.playermode.mainmenu.MainMenuController;
@@ -53,6 +54,7 @@ public class GDXRoot extends Game implements ScreenListener {
 	public static final int CON_MM = 0;
 	public static final int CON_GM = 1;
 	public static final int CON_LE = 2;
+	public static final int CON_TL = 3;
 
 	
 	/**
@@ -83,10 +85,11 @@ public class GDXRoot extends Game implements ScreenListener {
 		loading = new LoadingMode(canvas,manager,1);
 		
 		// Initialize the three game worlds
-		controllers = new WorldController[3];
+		controllers = new WorldController[4];
 		controllers[0] = new MainMenuController();
 		controllers[1] = new GameModeController();
 		controllers[2] = new LevelEditorController();
+		controllers[3] = new TutorialModeController();
 		for(int ii = 0; ii < controllers.length; ii++) {
 			controllers[ii].setWorldScale(canvas);
 			controllers[ii].preLoadContent(manager);
@@ -174,6 +177,16 @@ public class GDXRoot extends Game implements ScreenListener {
 			setScreen(controllers[current]);
 
 		} else if (exitCode == WorldController.EXIT_GM_GM) {
+			controllers[current].reset();
+			setScreen(controllers[current]);
+
+		} else if (exitCode == WorldController.EXIT_GM_TL) {
+			current = CON_TL;
+			controllers[current].reset();
+			setScreen(controllers[current]);
+
+		} else if (exitCode == WorldController.EXIT_TL_GM) {
+			current = CON_GM;
 			controllers[current].reset();
 			setScreen(controllers[current]);
 

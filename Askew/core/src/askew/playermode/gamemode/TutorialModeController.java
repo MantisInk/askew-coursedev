@@ -242,7 +242,7 @@ public class TutorialModeController extends WorldController {
 		initFlowY = sloth.getY();
 
 		///Create wall
-		float[] points = {0.0f,0.0f, 0.0f,1.0f, 6.0f,1.0f, 6.0f,0.0f};
+		float[] points = {-4.0f,0.0f, -4.0f,1.0f, 16.0f,1.0f, 16.0f,0.0f};
 		WallModel platform = new WallModel(sloth_x-2,sloth_y-1.5f,points,false);
 		platform.setTextures(manager);
 		addObject(platform);
@@ -408,7 +408,7 @@ public class TutorialModeController extends WorldController {
 					sloth.setRightGrab(true);
 					break;
 				case REGRABBED_LEFT:
-					//
+					break;
 				default:
 					System.err.println(stepsDone);
 			}
@@ -500,7 +500,7 @@ public class TutorialModeController extends WorldController {
 			}
 			else if(stepsDone==REGRABBED_LEFT){
 				//Check for left joystick movement
-				stepsDone++;
+				//stepsDone++;
 			}
 		}
 		prevPaused = paused;
