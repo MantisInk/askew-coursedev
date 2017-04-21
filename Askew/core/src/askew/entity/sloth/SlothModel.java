@@ -104,6 +104,8 @@ public class SlothModel extends ComplexObstacle  {
     private transient int movementMode;
     private transient boolean leftGrabbing;
     private transient boolean rightGrabbing;
+    @Getter
+    private transient boolean grabbedEntity;
 
     /**
      * Returns the texture index for the given body part
@@ -418,8 +420,6 @@ public class SlothModel extends ComplexObstacle  {
                 impulseL = impulseL * 6;
             }
 
-
-
             float dRTheta = 0f;
             float rcTheta = (float)Math.atan2(rightVert,rightHori);
             float rTheta = -rightArm.getAngle() + PI;
@@ -675,6 +675,7 @@ public class SlothModel extends ComplexObstacle  {
         Joint grabJoint;
         RevoluteJointDef grabJointDef;
         Obstacle hand;
+        grabbedEntity = false;
 
         if (leftHand) {
             grabJoint = leftGrabJoint;
@@ -712,6 +713,7 @@ public class SlothModel extends ComplexObstacle  {
         }
 
         joints.add(grabJoint);
+        grabbedEntity = true;
     }
 
     public void releaseLeft(World world) {

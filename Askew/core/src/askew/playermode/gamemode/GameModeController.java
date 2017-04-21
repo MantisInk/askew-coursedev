@@ -22,6 +22,7 @@ import askew.playermode.WorldController;
 import askew.playermode.leveleditor.LevelModel;
 import askew.util.SoundController;
 import askew.util.json.JSONLoaderSaver;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
@@ -66,6 +67,9 @@ public class GameModeController extends WorldController {
 		"sound/music/flowwantshisorherbaby.ogg"
 	};
 
+	public static final String GRAB_SOUND = "sound/effect/grab.wav";
+	Sound grabSound;
+
 	@Setter
 	private String loadLevel, DEFAULT_LEVEL;
 	private LevelModel lm; 				// LevelModel for the level the player is currently on
@@ -103,6 +107,9 @@ public class GameModeController extends WorldController {
 		for (String soundName : GAMEPLAY_MUSIC) {
 			manager.load(soundName, Sound.class);
 		}
+
+		manager.load(GRAB_SOUND, Sound.class);
+
 		platformAssetState = AssetState.LOADING;
 		jsonLoaderSaver.setManager(manager);
 		super.preLoadContent(manager);
@@ -127,6 +134,9 @@ public class GameModeController extends WorldController {
 		for (String soundName : GAMEPLAY_MUSIC) {
 			SoundController.getInstance().allocate(manager, soundName);
 		}
+
+//		SoundController.getInstance().allocate(manager, GRAB_SOUND);
+		grabSound = Gdx.audio.newSound(Gdx.files.internal(GRAB_SOUND));
 
 		background = manager.get("texture/background/background1.png", Texture.class);
 		pauseTexture = manager.get("texture/background/pause.png", Texture.class);
@@ -416,6 +426,10 @@ public class GameModeController extends WorldController {
 				sloth.grab(world, rightCollisionBody, false);
 			} else {
 				sloth.releaseRight(world);
+			}
+
+			if (sloth.isGrabbedEntity()) {
+				grabSound.play();
 			}
 
 			// Normal physics
