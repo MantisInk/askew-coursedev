@@ -1,12 +1,12 @@
 {
   "levelModelVersion": 1,
-  "title": "level3",
   "goalTimeGold": 30,
   "goalTimeSilver": 45,
   "goalTimeBronze": 60,
-  "recordTime": 9999999,
-  "height": 10,
-  "width": 10,
+  "recordTime": 3.3671117,
+  "title": "level3",
+  "background": "texture/background/background1.png",
+  "soundtrack": "TODO",
   "entities": [
     {
       "CLASSNAME": "askew.entity.sloth.SlothModel",
