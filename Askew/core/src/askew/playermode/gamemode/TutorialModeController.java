@@ -43,7 +43,7 @@ import lombok.Getter;
  * This is the purpose of our AssetState variable; it ensures that multiple instances
  * place nicely with the static assets.
  */
-public class TutorialModeController extends WorldController {
+public class TutorialModeController extends GameModeController {
 
 	Affine2 camTrans = new Affine2();
 
@@ -155,7 +155,7 @@ public class TutorialModeController extends WorldController {
 	 * The game has default gravity and other settings
 	 */
 	public TutorialModeController() {
-		super(DEFAULT_WIDTH,DEFAULT_HEIGHT,DEFAULT_GRAVITY);
+		super();
 		setDebug(false);
 		setComplete(false);
 		setFailure(false);
@@ -220,7 +220,6 @@ public class TutorialModeController extends WorldController {
 	 * Lays out the game geography.
 	 */
 	private void populateLevel() {
-		//TODO
 
 		float sloth_x = 0;
 		float sloth_y = 0;
@@ -244,25 +243,10 @@ public class TutorialModeController extends WorldController {
 		branch.setTextures(manager);
 		addObject(branch);
 
-//		if(stepsDone>MOVED_LEFT){
-//			///Create branch
-//			Trunk branch = new Trunk(sloth_x,sloth_y+1.5f,10,0.25f,1,0,worldScale,-90.0f);
-//			branch.setTextures(manager);
-//			addObject(branch);
-//
-//		}
-
 		//Create Ebb TODO Replace owl with Ebb
 		OwlModel ebb = new OwlModel(sloth_x + 10.5f, sloth_y);
 		ebb.setTextures(manager);
 		addObject(ebb);
-
-//		if(stepsDone>GRABBED_LEFT) {
-//			//Create Ebb TODO Replace owl with Ebb
-//			OwlModel ebb = new OwlModel(sloth_x + 10.5f, sloth_y);
-//			ebb.setTextures(manager);
-//			addObject(ebb);
-//		}
 
 	}
 
@@ -462,19 +446,19 @@ public class TutorialModeController extends WorldController {
 				}
 			}
 			else if(stepsDone==MOVED_LEFT){
-				//Check for left joystick movement
+				//Check for right joystick movement
 				if(Math.abs(input.getRightHorizontal())>CONTROLLER_DEADZONE || Math.abs(input.getRightVertical())>CONTROLLER_DEADZONE){
 					stepsDone++;
 				}
 			}
 			else if(stepsDone==MOVED_RIGHT){
-				//Check for left joystick movement
+				//Check for left grab
 				if(sloth.isActualLeftGrab()){
 					stepsDone++;
 				}
 			}
 			else if(stepsDone==GRABBED_LEFT){
-				//Check for left joystick movement
+				//Check for right grab
 				if(sloth.isActualRightGrab()){
 					stepsDone++;
 				}
@@ -486,13 +470,13 @@ public class TutorialModeController extends WorldController {
 				}
 			}
 			else if(stepsDone==SWING_LEFT){
-				//Check for left joystick movement
-				if(sloth.isActualLeftGrab()){ //TODO Check for left hand crossing right hand
+				//Check for left again
+				if(sloth.isActualLeftGrab()){ //TODO Check for left hand crossing right hand and grabbing
 					stepsDone++;
 				}
 			}
 			else if(stepsDone==REGRABBED_LEFT){
-				//Check for left joystick movement
+				//End of scripted checks, else if statement left here for sanity's sake
 				//stepsDone++;
 			}
 		}
