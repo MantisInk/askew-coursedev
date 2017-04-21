@@ -58,6 +58,7 @@ public class GameModeController extends WorldController {
 	private static boolean playerIsReady = false;
 	private boolean paused = false;
 	private boolean prevPaused = false;
+	// fern selection indicator locations for pause menu options
 	private Vector2[] pause_locs = {new Vector2(11f,4.8f), new Vector2(9f,3.9f), new Vector2(11f,3f)};
 
 	@Setter
