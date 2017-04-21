@@ -1,11 +1,14 @@
 texture/background/background.png
 texture/branch/branch.png
 texture/owl/owl.png
-texture/sloth/dude.png
+texture/sloth/farleftflow.png
+texture/sloth/leftflow.png
 texture/sloth/hand.png
 texture/sloth/frontarm.png
 texture/sloth/backarm.png
 texture/sloth/frontflow.png
+texture/sloth/frontarm_moving.png
+texture/sloth/backarm_moving.png
 texture/vine/vine.png
 texture/wall/wall.png
 texture/wall/thorn.png
@@ -13,3 +16,4 @@ texture/background/fern.png
 texture/background/background1.png
 texture/background/menu1.png
 texture/background/menu2.png
+texture/background/pause.png

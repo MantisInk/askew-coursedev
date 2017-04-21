@@ -56,6 +56,10 @@ public class GameModeController extends WorldController {
 	/** Track asset loading from all instances and subclasses */
 	@Getter
 	private static boolean playerIsReady = false;
+	private boolean paused = false;
+	private boolean prevPaused = false;
+	// fern selection indicator locations for pause menu options
+	private Vector2[] pause_locs = {new Vector2(11f,4.8f), new Vector2(9f,3.9f), new Vector2(11f,3f)};
 
 	@Setter
 	private String loadLevel, DEFAULT_LEVEL;
@@ -69,7 +73,13 @@ public class GameModeController extends WorldController {
 	private JSONLoaderSaver jsonLoaderSaver;
 	private float initFlowX;
 	private float initFlowY;
+	private int PAUSE_RESUME = 0;
+	private int PAUSE_RESTART = 1;
+	private int PAUSE_MAINMENU = 2;
+	private int pause_mode = PAUSE_RESUME;
 	private Texture background;
+	private Texture pauseTexture;
+	private Texture fern;
 
 	/**
 	 * Preloads the assets for this controller.
@@ -109,6 +119,8 @@ public class GameModeController extends WorldController {
 		//SoundController sounds = SoundController.getInstance();
 		SoundController.getInstance().allocate(manager, "sound/music/askew.wav");
 		background = manager.get("texture/background/background1.png", Texture.class);
+		pauseTexture = manager.get("texture/background/pause.png", Texture.class);
+		fern = manager.get("texture/background/fern.png");
 
 		super.loadContent(manager);
 		platformAssetState = AssetState.COMPLETE;
@@ -165,6 +177,17 @@ public class GameModeController extends WorldController {
 			loadLevel = "level"+lvl;
 	}
 
+	public void pause(){
+		if (!paused) {
+			paused = true;
+			pause_mode = PAUSE_RESUME;
+		}
+		else {
+			paused = false;
+		}
+		playerIsReady = false;
+	}
+
 	/**
 	 * Resets the status of the game so that we can play again.
 	 *
@@ -173,6 +196,7 @@ public class GameModeController extends WorldController {
 	public void reset() {
 
 		playerIsReady = false;
+		paused = false;
 		collisions.clearGrab();
 		Vector2 gravity = new Vector2(world.getGravity() );
 
@@ -255,6 +279,7 @@ public class GameModeController extends WorldController {
 		if (!super.preUpdate(dt)) {
 			return false;
 		}
+
 		InputController input = InputController.getInstance();
 
 		if (input.didLeftButtonPress() || input.isLKeyPressed()) {
@@ -265,6 +290,26 @@ public class GameModeController extends WorldController {
 			System.out.println("MM");
 			listener.exitScreen(this, EXIT_GM_MM);
 			return false;
+		}
+
+		if (paused) {
+			//InputController input = InputController.getInstance();
+			if (input.didBottomButtonPress() && pause_mode == PAUSE_RESUME) {
+				paused = false;
+				playerIsReady = false;
+			} else if (input.didBottomButtonPress() && pause_mode == PAUSE_RESTART) {
+				reset();
+			} else if (input.didBottomButtonPress() && pause_mode == PAUSE_MAINMENU) {
+				System.out.println("MM");
+				listener.exitScreen(this, EXIT_GM_MM);
+			}
+
+			if (input.didTopDPadPress() && pause_mode > 0) {
+				pause_mode--;
+			}
+			if (input.didBottomDPadPress() && pause_mode < 2) {
+				pause_mode++;
+			}
 		}
 
 		//Checks to see if player has selected the button on the starting screen
@@ -288,6 +333,9 @@ public class GameModeController extends WorldController {
 	 */
 	public boolean checkReady(){
 		InputController theController = InputController.getInstance();
+
+		if (paused)
+			return false;
 
 		//If the player pressed "RB"
 		if(theController.getRightGrab()){
@@ -318,65 +366,68 @@ public class GameModeController extends WorldController {
 	 * @param dt Number of seconds since last animation frame
 	 */
 	public void update(float dt) {
-		// Process actions in object model
-		sloth.setLeftHori(InputController.getInstance().getLeftHorizontal());
-		sloth.setLeftVert(InputController.getInstance().getLeftVertical());
-		sloth.setRightHori(InputController.getInstance().getRightHorizontal());
-		sloth.setRightVert(InputController.getInstance().getRightVertical());
-		sloth.setLeftGrab(InputController.getInstance().getLeftGrab());
-		sloth.setRightGrab(InputController.getInstance().getRightGrab());
-		sloth.setLeftStickPressed(InputController.getInstance().getLeftStickPressed());
-		sloth.setRightStickPressed(InputController.getInstance().getRightStickPressed());
-		currentTime += dt;
+		if (!paused) {
+			// Process actions in object model
+			sloth.setLeftHori(InputController.getInstance().getLeftHorizontal());
+			sloth.setLeftVert(InputController.getInstance().getLeftVertical());
+			sloth.setRightHori(InputController.getInstance().getRightHorizontal());
+			sloth.setRightVert(InputController.getInstance().getRightVertical());
+			sloth.setLeftGrab(InputController.getInstance().getLeftGrab());
+			sloth.setRightGrab(InputController.getInstance().getRightGrab());
+			sloth.setLeftStickPressed(InputController.getInstance().getLeftStickPressed());
+			sloth.setRightStickPressed(InputController.getInstance().getRightStickPressed());
+			currentTime += dt;
 
-		//#TODO Collision states check
-		setFailure(collisions.isFlowKill());
+			//#TODO Collision states check
+			setFailure(collisions.isFlowKill());
 
-		Body leftCollisionBody = collisions.getLeftBody();
-		Body rightCollisionBody = collisions.getRightBody();
+			Body leftCollisionBody = collisions.getLeftBody();
+			Body rightCollisionBody = collisions.getRightBody();
 
-		if (collisions.isFlowWin()) {
-			System.out.println("VICTORY");
-			setComplete(true);
-		}
-
-		// Physics tiem
-		// Gribby grab
-		if (sloth.isLeftGrab()) {
-			sloth.grab(world,leftCollisionBody, true);
-		} else {
-			sloth.releaseLeft(world);
-		}
-
-		if (sloth.isRightGrab()) {
-			sloth.grab(world,rightCollisionBody, false);
-		} else {
-			sloth.releaseRight(world);
-		}
-
-		// Normal physics
-		sloth.doThePhysics();
-
-		// If we use sound, we must remember this.
-		SoundController.getInstance().update();
-
-		if (isComplete()) {
-			float record = currentTime;
-			if(record < lm.getRecordTime()) {
-				lm.setRecordTime(record);
-				if (jsonLoaderSaver.saveLevel(lm, loadLevel))
-					System.out.println("New record time for this level!");
+			if (collisions.isFlowWin()) {
+				System.out.println("VICTORY");
+				setComplete(true);
 			}
-			int current = GlobalConfiguration.getInstance().getCurrentLevel();
-			GlobalConfiguration.getInstance().setCurrentLevel(current+1);
-			System.out.println("GG");
-			listener.exitScreen(this, EXIT_GM_GM);
-		}
 
-		if(isFailure()){
-			System.out.println("Fail");
-			reset();
+			// Physics tiem
+			// Gribby grab
+			if (sloth.isLeftGrab()) {
+				sloth.grab(world, leftCollisionBody, true);
+			} else {
+				sloth.releaseLeft(world);
+			}
+
+			if (sloth.isRightGrab()) {
+				sloth.grab(world, rightCollisionBody, false);
+			} else {
+				sloth.releaseRight(world);
+			}
+
+			// Normal physics
+			sloth.doThePhysics();
+
+			// If we use sound, we must remember this.
+			SoundController.getInstance().update();
+
+			if (isComplete()) {
+				float record = currentTime;
+				if (record < lm.getRecordTime()) {
+					lm.setRecordTime(record);
+					if (jsonLoaderSaver.saveLevel(lm, loadLevel))
+						System.out.println("New record time for this level!");
+				}
+				int current = GlobalConfiguration.getInstance().getCurrentLevel();
+				GlobalConfiguration.getInstance().setCurrentLevel(current + 1);
+				System.out.println("GG");
+				listener.exitScreen(this, EXIT_GM_GM);
+			}
+
+			if (isFailure()) {
+				System.out.println("Fail");
+				reset();
+			}
 		}
+		prevPaused = paused;
 	}
 
 	public void draw(float delta){
@@ -401,7 +452,7 @@ public class GameModeController extends WorldController {
 			obj.draw(canvas);
 		}
 
-		if (!playerIsReady)
+		if (!playerIsReady && !paused)
 			printHelp();
 		canvas.end();
 		sloth.drawGrab(canvas, camTrans);
@@ -424,6 +475,22 @@ public class GameModeController extends WorldController {
 			sloth.drawForces(canvas, camTrans);
 		}
 
+		// draw pause menu stuff over everything
+		if (paused) {
+			canvas.begin();
+			canvas.draw(pauseTexture);
+
+			canvas.draw(fern, Color.WHITE,fern.getWidth()/2, fern.getHeight()/2,
+					pause_locs[pause_mode].x * worldScale.x, pause_locs[pause_mode].y* worldScale.y,
+					0,worldScale.x/fern.getWidth(),worldScale.y/fern.getHeight());
+
+			canvas.end();
+		}
+
+		canvas.begin();
+		if (prevPaused && !paused && !playerIsReady)
+			printHelp();
+		canvas.end();
 	}
 
 }

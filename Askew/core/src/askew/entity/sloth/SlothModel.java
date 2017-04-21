@@ -6,16 +6,15 @@ package askew.entity.sloth;
  * This the sloth!
  */
 
-import askew.MantisAssetManager;
 import askew.GameCanvas;
 import askew.GlobalConfiguration;
+import askew.MantisAssetManager;
 import askew.entity.FilterGroup;
 import askew.entity.obstacle.BoxObstacle;
 import askew.entity.obstacle.ComplexObstacle;
 import askew.entity.obstacle.Obstacle;
 import askew.entity.obstacle.SimpleObstacle;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -43,6 +42,10 @@ public class SlothModel extends ComplexObstacle  {
     private transient float OMEGA_NORMALIZER;
     private transient boolean TORQUE_BASED_MOVEMENT = false;
 
+    private transient int MOVEMENT_ORIGINAL = 0;
+    private transient int MOVEMENT_REVERSE = 1;
+    private transient int MOVEMENT_TOGGLE = 2;
+
 
 
     /** Indices for the body parts in the bodies array */
@@ -57,7 +60,7 @@ public class SlothModel extends ComplexObstacle  {
     private static final float PI = (float)Math.PI;
 
     /** The number of DISTINCT body parts */
-    private static final int BODY_TEXTURE_COUNT = 5;
+    private static final int BODY_TEXTURE_COUNT = 8;
 
     private transient RevoluteJointDef leftGrabJointDef;
     private transient RevoluteJointDef rightGrabJointDef;
@@ -85,17 +88,22 @@ public class SlothModel extends ComplexObstacle  {
 
     public float x;
     public float y;
-    private transient float rightVert;
-    private transient float leftHori;
-    private transient float leftVert;
-    private transient float rightHori;
+    private transient float rightVert;      // right joystick y input
+    private transient float leftHori;       // left joystick z input
+    private transient float leftVert;       // left joystick y input
+    private transient float rightHori;      // right joystick x input
     @Getter
     private transient boolean leftGrab;
     @Getter
     private transient boolean rightGrab;
+    private transient boolean prevLeftGrab;
+    private transient boolean prevRightGrab;
     private transient boolean leftStickPressed;
     private transient boolean rightStickPressed;
-    private transient int flowFacingState;
+    private transient float flowFacingState;
+    private transient int movementMode;
+    private transient boolean leftGrabbing;
+    private transient boolean rightGrabbing;
 
     /**
      * Returns the texture index for the given body part
@@ -172,6 +180,9 @@ public class SlothModel extends ComplexObstacle  {
         this.ARM_DENSITY = GlobalConfiguration.getInstance().getAsFloat("flowArmDensity");
         this.TORQUE_BASED_MOVEMENT = GlobalConfiguration.getInstance()
                 .getAsBoolean("torqueBasedMovement");
+        this.movementMode = GlobalConfiguration.getInstance().getAsInt("flowMovementMode");
+        this.rightGrabbing = false;
+        this.leftGrabbing =  true;
         //this.shaper = new ShapeRenderer();
 
     }
@@ -554,15 +565,16 @@ public class SlothModel extends ComplexObstacle  {
                         .getBody()
                         .applyForce(rx, ry, rightHand.getX(), rightHand.getY(), true);
         }
-        if (bodies.get(PART_BODY).getBody().getLinearVelocity().x > 0) {
-            flowFacingState++;
-        } else {
-            flowFacingState--;
-        }
-
-        // MAGIC NUMBERS (TREVOR)
-        if (flowFacingState > 20) flowFacingState = 20;
-        if (flowFacingState < -20) flowFacingState = -20;
+//        if (bodies.get(PART_BODY).getBody().getLinearVelocity().x > 0) {
+//            flowFacingState++;
+//        } else {
+//            flowFacingState--;
+//        }
+//
+//        // MAGIC NUMBERS (TREVOR)
+//        if (flowFacingState > 25) flowFacingState = 25;
+//        if (flowFacingState < -25) flowFacingState = -25;
+        flowFacingState = (int)bodies.get(PART_BODY).getBody().getLinearVelocity().x;
     }
 
 
@@ -620,11 +632,35 @@ public class SlothModel extends ComplexObstacle  {
     }
 
     public void setLeftGrab(boolean leftGrab) {
-        this.leftGrab = leftGrab;
+        if (movementMode == MOVEMENT_ORIGINAL)
+            this.leftGrab = leftGrab;
+        else if (movementMode == MOVEMENT_REVERSE)
+            this.leftGrab = !leftGrab;
+        else if (movementMode == MOVEMENT_TOGGLE && leftGrab) {
+            if (!leftGrabbing) {
+                leftGrabbing = true;
+            }
+            else {
+                leftGrabbing = false;
+            }
+            this.leftGrab = leftGrabbing;
+        }
     }
 
     public void setRightGrab(boolean rightGrab) {
-        this.rightGrab = rightGrab;
+        if (movementMode == MOVEMENT_ORIGINAL)
+            this.rightGrab = rightGrab;
+        else if (movementMode == MOVEMENT_REVERSE)
+            this.rightGrab = !rightGrab;
+        else if (movementMode == MOVEMENT_TOGGLE && rightGrab) {
+            if (!rightGrabbing) {
+                rightGrabbing = true;
+            }
+            else {
+                rightGrabbing = false;
+            }
+            this.rightGrab = rightGrabbing;
+        }
     }
 
     public void setLeftStickPressed(boolean leftStickPressed) {
@@ -680,7 +716,8 @@ public class SlothModel extends ComplexObstacle  {
 
     public void releaseLeft(World world) {
         if (leftGrabJoint != null) {
-            world.destroyJoint(leftGrabJoint);
+            if (movementMode != MOVEMENT_TOGGLE || (movementMode == MOVEMENT_TOGGLE && !leftGrabbing))
+                world.destroyJoint(leftGrabJoint);
         }
         leftGrabJoint = null;
     }
@@ -688,7 +725,8 @@ public class SlothModel extends ComplexObstacle  {
 
     public void releaseRight(World world) {
         if (rightGrabJoint != null) {
-            world.destroyJoint(rightGrabJoint);
+            if (movementMode != MOVEMENT_TOGGLE || (movementMode == MOVEMENT_TOGGLE && !rightGrabbing))
+                world.destroyJoint(rightGrabJoint);
         }
         rightGrabJoint = null;
     }
@@ -748,12 +786,18 @@ public class SlothModel extends ComplexObstacle  {
         Texture managedFrontArm = manager.get("texture/sloth/frontarm.png");
         Texture managedFlowFront = manager.get("texture/sloth/frontflow.png");
         Texture managedBackArm = manager.get("texture/sloth/backarm.png");
-        Texture managedDude = manager.get("texture/sloth/dude.png");
+        Texture managedFlowLeft = manager.get("texture/sloth/leftflow.png");
+        Texture managedFlowFarLeft = manager.get("texture/sloth/farleftflow.png");
+        Texture managedFrontArmMoving = manager.get("texture/sloth/frontarm_moving.png");
+        Texture managedBackArmMoving = manager.get("texture/sloth/backarm_moving.png");
         partTextures[0] = new TextureRegion(managedHand);
         partTextures[1] = new TextureRegion(managedFrontArm);
         partTextures[3] = new TextureRegion(managedBackArm);
         partTextures[4] = new TextureRegion(managedFlowFront);
-        partTextures[2] = new TextureRegion(managedDude);
+        partTextures[2] = new TextureRegion(managedFlowLeft);
+        partTextures[5] = new TextureRegion(managedFlowFarLeft);
+        partTextures[6] = new TextureRegion(managedFrontArmMoving);
+        partTextures[7] = new TextureRegion(managedBackArmMoving);
 
         if (bodies.size == 0) {
             init();
@@ -766,36 +810,60 @@ public class SlothModel extends ComplexObstacle  {
 
     @Override
     public void draw(GameCanvas canvas){
-        for(int x=bodies.size-1;x>=0;x--){
+        for(int body_ind = bodies.size-1; body_ind >= 0; body_ind--){
 
-            BoxObstacle part = (BoxObstacle) bodies.get(x);
+            BoxObstacle part = (BoxObstacle) bodies.get(body_ind);
             TextureRegion texture = part.getTexture();
             if (texture != null) {
-
-                if (x == 0) {
-                    if (flowFacingState > 10) {
+                // different textures for flow's body
+                if (body_ind == 0) {
+                    if (flowFacingState > 3 && flowFacingState < 6){
                         part.setTexture(partTextures[2]);
                         if (!texture.isFlipX()) {
-                            texture.flip(true,false);
+                            texture.flip(true, false);
                         }
-                    } else if (flowFacingState < -10) {
+                    } else if (flowFacingState > 6) {
+                        part.setTexture(partTextures[5]);
+                        if (!texture.isFlipX()) {
+                            texture.flip(true, false);
+                        }
+                    } else if (flowFacingState < -3 && flowFacingState > -6) {
                         part.setTexture(partTextures[2]);
                         if (texture.isFlipX()) {
-                            texture.flip(true,false);
+                            texture.flip(true, false);
+                        }
+                    } else if (flowFacingState < -6) {
+                        part.setTexture(partTextures[5]);
+                        if (texture.isFlipX()) {
+                            texture.flip(true, false);
                         }
                     } else {
                         part.setTexture(partTextures[4]);
                     }
                 }
 
+                // different textures for flow's arms if controlling
+                if (body_ind == 1) {
+                    if (rightHori >= 0.15 || rightHori <= -0.15 || rightVert >= 0.15 || rightVert <= -0.15)
+                        part.setTexture(partTextures[6]);
+                    else
+                        part.setTexture(partTextures[1]);
+                }
+                if (body_ind == 2) {
+                    if (leftHori >= 0.15 || leftHori <= -0.15 || leftVert >= 0.15 || leftVert <= -0.15)
+                        part.setTexture(partTextures[7]);
+                    else
+                        part.setTexture(partTextures[3]);
+                }
+
                 //If the body parts are from the right limb
-                if (x == 3 || x == 4) continue;
-                if (x == 1 || x == 4) {
+                if (body_ind == 3 || body_ind == 4) continue;
+                if (body_ind == 1 || body_ind == 4) {
                     part.draw(canvas, Color.WHITE);
                     part.draw(canvas, Color.WHITE);     //remove this line when you draw the head
                 }
                 //If the body parts are from the left limb
-                else if (x == 2 || x == 3) {
+                else if (body_ind == 2 || body_ind == 3) {
                     part.draw(canvas, Color.WHITE);
                 }
                 //If the body parts are not limbs
