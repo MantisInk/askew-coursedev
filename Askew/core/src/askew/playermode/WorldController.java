@@ -21,6 +21,7 @@ import askew.InputController;
 import askew.MantisAssetManager;
 import askew.entity.Entity;
 import askew.entity.obstacle.Obstacle;
+import askew.playermode.gamemode.GameModeController;
 import askew.util.FilmStrip;
 import askew.util.PooledList;
 import askew.util.ScreenListener;
@@ -478,7 +479,10 @@ public abstract class WorldController implements Screen {
 		
 		// Handle resets
 		if (input.didStartPress()) {
-			reset();
+			if(this instanceof GameModeController)
+				((GameModeController) this).pause();
+			else
+				reset();
 		}
 
 		else if (input.didBackPressed()) {
