@@ -1,12 +1,12 @@
 {
   "levelModelVersion": 1,
+  "title": "level6",
   "goalTimeGold": 30,
   "goalTimeSilver": 45,
   "goalTimeBronze": 60,
-  "recordTime": 17.782782,
-  "title": "level6",
-  "background": "texture/background/background1.png",
-  "soundtrack": "TODO",
+  "recordTime": 9999999,
+  "height": 10,
+  "width": 10,
   "entities": [
     {
       "CLASSNAME": "askew.entity.tree.PoleVault",
