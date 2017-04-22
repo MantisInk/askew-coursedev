@@ -229,7 +229,6 @@ public class GameModeController extends WorldController {
 		objects.clear();
 		addQueue.clear();
 		world.dispose();
-
 		world = new World(gravity,false);
 		if(collisions == null){
 			collisions = new PhysicsController();
