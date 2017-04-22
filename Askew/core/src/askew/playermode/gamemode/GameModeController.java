@@ -22,6 +22,7 @@ import askew.playermode.WorldController;
 import askew.playermode.leveleditor.LevelModel;
 import askew.util.SoundController;
 import askew.util.json.JSONLoaderSaver;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
@@ -61,6 +62,14 @@ public class GameModeController extends WorldController {
 	// fern selection indicator locations for pause menu options
 	private Vector2[] pause_locs = {new Vector2(11f,4.8f), new Vector2(9f,3.9f), new Vector2(11f,3f)};
 
+	public static final String[] GAMEPLAY_MUSIC = new String[] {
+		"sound/music/askew.ogg",
+		"sound/music/flowwantshisorherbaby.ogg"
+	};
+
+	public static final String GRAB_SOUND = "sound/effect/grab.wav";
+	Sound grabSound;
+
 	@Setter
 	private String loadLevel, DEFAULT_LEVEL;
 	private LevelModel lm; 				// LevelModel for the level the player is currently on
@@ -96,7 +105,12 @@ public class GameModeController extends WorldController {
 		if (platformAssetState != AssetState.EMPTY) {
 			return;
 		}
-		manager.load("sound/music/askew.wav", Sound.class);
+		for (String soundName : GAMEPLAY_MUSIC) {
+			manager.load(soundName, Sound.class);
+		}
+
+		manager.load(GRAB_SOUND, Sound.class);
+
 		platformAssetState = AssetState.LOADING;
 		jsonLoaderSaver.setManager(manager);
 		super.preLoadContent(manager);
@@ -118,7 +132,13 @@ public class GameModeController extends WorldController {
 		}
 
 		//SoundController sounds = SoundController.getInstance();
-		SoundController.getInstance().allocate(manager, "sound/music/askew.wav");
+		for (String soundName : GAMEPLAY_MUSIC) {
+			SoundController.getInstance().allocate(manager, soundName);
+		}
+
+//		SoundController.getInstance().allocate(manager, GRAB_SOUND);
+		grabSound = Gdx.audio.newSound(Gdx.files.internal(GRAB_SOUND));
+
 		background = manager.get("texture/background/background1.png", Texture.class);
 		pauseTexture = manager.get("texture/background/pause.png", Texture.class);
 		fern = manager.get("texture/background/fern.png");
@@ -211,7 +231,6 @@ public class GameModeController extends WorldController {
 		objects.clear();
 		addQueue.clear();
 		world.dispose();
-
 		world = new World(gravity,false);
 		if(collisions == null){
 			collisions = new PhysicsController();
@@ -223,8 +242,13 @@ public class GameModeController extends WorldController {
 		setFailure(false);
 		setLevel();
 		populateLevel();
-		if (!SoundController.getInstance().isActive("bgmusic"))
-			SoundController.getInstance().play("bgmusic","sound/music/askew.wav",true);
+		SoundController instance = SoundController.getInstance();
+		if (instance.isActive("menumusic")) instance.stop("menumusic");
+		if (!instance.isActive("bgmusic"))
+			instance.play(
+					"bgmusic",
+					GAMEPLAY_MUSIC[(int)Math.floor(GAMEPLAY_MUSIC.length * Math.random())],
+					true);
 	}
 
 	/**
@@ -407,6 +431,10 @@ public class GameModeController extends WorldController {
 				sloth.grab(world, rightCollisionBody, false);
 			} else {
 				sloth.releaseRight(world);
+			}
+
+			if (sloth.isGrabbedEntity()) {
+				grabSound.play();
 			}
 
 			// Normal physics

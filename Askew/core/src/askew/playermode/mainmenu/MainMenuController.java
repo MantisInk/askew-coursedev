@@ -4,6 +4,8 @@ import askew.GlobalConfiguration;
 import askew.InputController;
 import askew.MantisAssetManager;
 import askew.playermode.WorldController;
+import askew.util.SoundController;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
@@ -43,10 +45,16 @@ public class MainMenuController extends WorldController {
     private boolean prevLeftUp, prevLeftDown,prevLeftLeft,prevLeftRight;        // keep track of previous joystick positions
     private boolean leftUp, leftDown,leftLeft,leftRight;                        // track current joystick positions
     private static final String MENU_BACKGROUND2_TEXTURE = "texture/background/menu2.png";
+    public static final String MENU_MUSIC = "sound/music/levelselect.ogg";
 
     private Texture fern, menu1, menu2;
 
     // player selected another mode
+
+    public void preLoadContent(MantisAssetManager manager) {
+        manager.load(MENU_MUSIC, Sound.class);
+        super.preLoadContent(manager);
+    }
     private String nextCon = "";
 
     @Override
@@ -55,6 +63,7 @@ public class MainMenuController extends WorldController {
         fern = manager.get(FERN_TEXTURE);
         menu1 = manager.get(MENU_BACKGROUND1_TEXTURE);
         menu2 = manager.get(MENU_BACKGROUND2_TEXTURE);
+        SoundController.getInstance().allocate(manager, MENU_MUSIC);
     }
 
     public MainMenuController() {
@@ -131,6 +140,9 @@ public class MainMenuController extends WorldController {
     @Override
     public void reset() {
         nextCon = "";
+        SoundController instance = SoundController.getInstance();
+        if (instance.isActive("bgmusic")) instance.stop("bgmusic");
+        if (!instance.isActive("menumusic")) instance.play("menumusic", MENU_MUSIC, true);
     }
 
     @Override
