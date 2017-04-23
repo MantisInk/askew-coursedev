@@ -200,6 +200,7 @@ public class GameModeController extends WorldController {
 	}
 
 	public void pause(){
+		prevPaused = paused;
 		if (!paused) {
 			paused = true;
 			pause_mode = PAUSE_RESUME;
@@ -328,23 +329,28 @@ public class GameModeController extends WorldController {
 		}
 
 		if (paused) {
+			if (!prevPaused) {
+				prevPaused = paused;
+				return false;
+			}
 			//InputController input = InputController.getInstance();
-			if (input.didBottomButtonPress() && pause_mode == PAUSE_RESUME) {
+			if ((input.didBottomButtonPress() || input.didEnterKeyPress()) && pause_mode == PAUSE_RESUME) {
 				paused = false;
 				playerIsReady = false;
-			} else if (input.didBottomButtonPress() && pause_mode == PAUSE_RESTART) {
+			} else if ((input.didBottomButtonPress() || input.didEnterKeyPress()) && pause_mode == PAUSE_RESTART) {
 				reset();
-			} else if (input.didBottomButtonPress() && pause_mode == PAUSE_MAINMENU) {
+			} else if ((input.didBottomButtonPress() || input.didEnterKeyPress()) && pause_mode == PAUSE_MAINMENU) {
 				System.out.println("MM");
 				listener.exitScreen(this, EXIT_GM_MM);
 			}
 
-			if (input.didTopDPadPress() && pause_mode > 0) {
+			if ((input.didTopDPadPress() || input.didUpArrowPress()) && pause_mode > 0) {
 				pause_mode--;
 			}
-			if (input.didBottomDPadPress() && pause_mode < 2) {
+			if ((input.didBottomDPadPress() || input.didDownArrowPress()) && pause_mode < 2) {
 				pause_mode++;
 			}
+
 		}
 
 		//Checks to see if player has selected the button on the starting screen
@@ -467,7 +473,6 @@ public class GameModeController extends WorldController {
 				reset();
 			}
 		}
-		prevPaused = paused;
 	}
 
 	public void draw(float delta){
