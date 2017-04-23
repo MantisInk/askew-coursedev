@@ -23,7 +23,6 @@ import askew.entity.wall.WallModel;
 import askew.util.json.JSONLoaderSaver;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -79,9 +78,9 @@ public class TutorialModeController extends GameModeController {
 
 	private final float CONTROLLER_DEADZONE = 0.15f;
 
-	TextureRegion[] joystickTextures;
-	TextureRegion[] LeftBumperTextures;
-	TextureRegion[] RightBumperTextures;
+	Texture[] joystickTextures = new Texture[3];
+	Texture[] LeftBumperTextures = new Texture[2];
+	Texture[] RightBumperTextures = new Texture[2];
 
 	private int joystick_idx;
 	private int left_bumper_idx;
@@ -91,13 +90,13 @@ public class TutorialModeController extends GameModeController {
 	private int left_bumper_ct;
 	private int right_bumper_ct;
 
-	TextureRegion joystickTexture0;
-	TextureRegion joystickTexture1;
-	TextureRegion joystickTexture2;
-	TextureRegion LeftBumperTexture0;
-	TextureRegion LeftBumperTexture1;
-	TextureRegion RightBumperTexture0;
-	TextureRegion RightBumperTexture1;
+	Texture joystickTexture0;
+	Texture joystickTexture1;
+	Texture joystickTexture2;
+	Texture LeftBumperTexture0;
+	Texture LeftBumperTexture1;
+	Texture RightBumperTexture0;
+	Texture RightBumperTexture1;
 
 
 	/**
@@ -132,13 +131,13 @@ public class TutorialModeController extends GameModeController {
 			return;
 		}
 
-		joystickTexture0 = manager.get("texture/tutorial/joystick0");
-		joystickTexture1 = manager.get("texture/tutorial/joystick1");
-		joystickTexture2 = manager.get("texture/tutorial/joystick2");
-		LeftBumperTexture0 = manager.get("texture/tutorial/bumperUpLeft");
-		LeftBumperTexture1 = manager.get("texture/tutorial/bumperDownLeft");
-		RightBumperTexture0 = manager.get("texture/tutorial/bumperUpRight");
-		RightBumperTexture1 = manager.get("texture/tutorial/bumperDownRight");
+		joystickTexture0 = manager.get("texture/tutorial/joystick0.png", Texture.class);
+		joystickTexture1 = manager.get("texture/tutorial/joystick1.png", Texture.class);
+		joystickTexture2 = manager.get("texture/tutorial/joystick2.png", Texture.class);
+		LeftBumperTexture0 = manager.get("texture/tutorial/bumperUpLeft.png", Texture.class);
+		LeftBumperTexture1 = manager.get("texture/tutorial/bumperDownLeft.png", Texture.class);
+		RightBumperTexture0 = manager.get("texture/tutorial/bumperUpRight.png", Texture.class);
+		RightBumperTexture1 = manager.get("texture/tutorial/bumperDownRight.png", Texture.class);
 
 		super.loadContent(manager);
 		background = manager.get("texture/background/background1.png", Texture.class);
@@ -166,8 +165,6 @@ public class TutorialModeController extends GameModeController {
 
 		jsonLoaderSaver = new JSONLoaderSaver();
 
-
-
 	}
 
 	public void pause(){
@@ -189,6 +186,22 @@ public class TutorialModeController extends GameModeController {
 	public void reset() {
 		super.reset();
 		stepsDone=0;
+		if (RightBumperTextures[0] == null) {
+			RightBumperTextures[0] = RightBumperTexture0;
+			RightBumperTextures[1] = RightBumperTexture1;
+		}
+		if (LeftBumperTextures[0] == null) {
+			LeftBumperTextures[0] = LeftBumperTexture0;
+			LeftBumperTextures[1] = LeftBumperTexture1;
+		}
+		if (joystickTextures[0] == null) {
+			joystickTextures[0] = joystickTexture0;
+			joystickTextures[1] = joystickTexture1;
+			joystickTextures[2] = joystickTexture2;
+		}
+		joystick_ct = 0;
+		left_bumper_ct = 0;
+		right_bumper_ct = 0;
 	}
 
 	/**
@@ -367,16 +380,8 @@ public class TutorialModeController extends GameModeController {
 					break;
 				default:
 					System.err.println(stepsDone);
+
 			}
-
-			joystick_ct = (joystick_ct++) % 30;
-			left_bumper_ct = (left_bumper_ct++) % 20;
-			right_bumper_ct = (right_bumper_ct++) % 20;
-
-
-			joystick_idx = joystick_ct%3;
-			left_bumper_idx = left_bumper_ct%2;
-			right_bumper_idx = right_bumper_ct%2;
 
 			//#TODO Collision states check
 			setFailure(collisions.isFlowKill());
@@ -388,8 +393,6 @@ public class TutorialModeController extends GameModeController {
 				System.out.println("VICTORY");
 				setComplete(true);
 			}
-
-
 
 
 			// Physics tiem
@@ -467,36 +470,22 @@ public class TutorialModeController extends GameModeController {
 			}
 		}
 		prevPaused = paused;
-	}
 
-	public void setTextures(MantisAssetManager manager) {
-		joystickTextures = new TextureRegion[3];
-		LeftBumperTextures = new TextureRegion[2];
-		RightBumperTextures = new TextureRegion[2];
-//		Texture bumperUR = manager.get("texture/tutorial/bumperUpRight.png");
-//		Texture bumperDR = manager.get("texture/tutorial/bumperDownRight.png");
-//		Texture bumperUL = manager.get("texture/tutorial/bumperUpLeft.png");
-//		Texture bumperDL = manager.get("texture/tutorial/bumperDownLeft.png");
-//		Texture stick0 = manager.get("texture/tutorial/joytick0.png");
-//		Texture stick1 = manager.get("texture/tutorial/joytick1.png");
-//		Texture stick2 = manager.get("texture/tutorial/joytick2.png");
-		//Texture bumper4 = manager.get("texture/tutorial/backarm_moving.png");
-		RightBumperTextures[0] = RightBumperTexture0;
-		RightBumperTextures[1] = RightBumperTexture1;
-		LeftBumperTextures [0] = LeftBumperTexture0;
-		LeftBumperTextures [1] = LeftBumperTexture1;
-		joystickTextures[0] = joystickTexture0;
-		joystickTextures[1] = joystickTexture1;
-		joystickTextures[2] = joystickTexture2;
-		//partTextures[7] = new TextureRegion(managedBackArmMoving);
+		joystick_ct++;
+		left_bumper_ct++;
+		right_bumper_ct++;
 
-//		if (bodies.size == 0) {
-//			init();
-//		} else {
-//			for(int ii = 0; ii <= 2; ii++) {
-//				((SimpleObstacle)bodies.get(ii)).setTexture(partTextures[partToAsset(ii)]);
-//			}
-//		}
+		joystick_ct = (joystick_ct) % 60;
+		left_bumper_ct = (left_bumper_ct) % 40;
+		right_bumper_ct = (right_bumper_ct) % 40;
+
+		joystick_idx = joystick_ct/20;
+		left_bumper_idx = left_bumper_ct/20;
+		right_bumper_idx = right_bumper_ct/20;
+
+		//System.out.println(joystick_ct + " " + left_bumper_ct + " " + right_bumper_ct);
+		//System.out.println(joystick_idx +  " " + left_bumper_idx + " " + right_bumper_idx);
+
 	}
 
 	public void draw(float delta){
@@ -577,16 +566,33 @@ public class TutorialModeController extends GameModeController {
 		canvas.end();
 
 		canvas.begin();
-		System.out.println(joystick_idx +  " " + left_bumper_idx + " " + right_bumper_idx);
 
-		TextureRegion joystickTexture = joystickTextures[joystick_idx];
-		TextureRegion LeftBumperTexture = LeftBumperTextures [left_bumper_idx];
-		TextureRegion RightBumperTexture = RightBumperTextures [right_bumper_idx];
+//		System.out.println(joystick_ct + " " + left_bumper_ct + " " + right_bumper_ct);
+//		System.out.println(joystick_idx +  " " + left_bumper_idx + " " + right_bumper_idx);
 
+		Texture joystickTexture = joystickTextures[joystick_idx];
+		Texture LeftBumperTexture = LeftBumperTextures [left_bumper_idx];
+		Texture RightBumperTexture = RightBumperTextures [right_bumper_idx];
 
-		canvas.draw(joystickTexture,500,500);
-		canvas.draw(LeftBumperTexture ,600,600);
-		canvas.draw(RightBumperTexture ,700,600);
+//		System.out.println(joystickTexture);
+//		System.out.println(LeftBumperTexture);
+//		System.out.println(RightBumperTexture);
+
+		if (stepsDone == DID_NOTHING || stepsDone == MOVED_LEFT) {
+			canvas.draw(joystickTexture, Color.WHITE, joystickTexture.getWidth() / 2, 0, 650, 650, 0, worldScale.x * 2 / joystickTexture.getWidth(), worldScale.y * 2 / joystickTexture.getHeight());
+		}
+		if (stepsDone == MOVED_RIGHT) {
+			canvas.draw(LeftBumperTexture, Color.WHITE, LeftBumperTexture.getWidth() / 2, 0, 650, 650, 0, worldScale.x * 2 / LeftBumperTexture.getWidth(), worldScale.y * 2 / LeftBumperTexture.getHeight());
+		}
+		if (stepsDone == GRABBED_LEFT) {
+			canvas.draw(RightBumperTexture, Color.WHITE, RightBumperTexture.getWidth() / 2, 0, 650, 650, 0, worldScale.x * 2 / RightBumperTexture.getWidth(), worldScale.y * 2 / RightBumperTexture.getHeight());
+		}
+
+		if (stepsDone >= GRABBED_RIGHT) {
+			canvas.draw(joystickTexture, Color.WHITE, joystickTexture.getWidth() / 2, 0, 550, 650, 0, worldScale.x * 2 / joystickTexture.getWidth(), worldScale.y * 2 / joystickTexture.getHeight());
+			canvas.draw(LeftBumperTexture, Color.WHITE, LeftBumperTexture.getWidth() / 2, 0, 750, 725, 0, worldScale.x * 2 / LeftBumperTexture.getWidth(), worldScale.y * 2 / LeftBumperTexture.getHeight());
+			canvas.draw(RightBumperTexture, Color.WHITE, RightBumperTexture.getWidth()/2, 0,750,575, 0, worldScale.x*2/RightBumperTexture.getWidth(), worldScale.y*2/RightBumperTexture.getHeight());
+		}
 		canvas.end();
 	}
 

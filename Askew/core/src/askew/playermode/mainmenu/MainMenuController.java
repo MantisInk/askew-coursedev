@@ -187,9 +187,9 @@ public class MainMenuController extends WorldController {
         if(mode == LEVEL_SELECT) {
             if(mode!=prevMode)
                 return;
-            if((input.didLeftDPadPress() || (leftLeft && !prevLeftLeft) || Gdx.input.isKeyPressed(Input.Keys.LEFT)) && selected < maxLevel && select_button == CHOOSE_LEVEL) {
+            if((input.didLeftDPadPress() || (leftLeft && !prevLeftLeft) || Gdx.input.isKeyPressed(Input.Keys.RIGHT)) && selected < maxLevel && select_button == CHOOSE_LEVEL) {
                 selected++;
-            } else if((input.didRightDPadPress() || (leftRight && !prevLeftRight) || Gdx.input.isKeyPressed(Input.Keys.RIGHT)) && selected > minLevel && select_button == CHOOSE_LEVEL) {
+            } else if((input.didRightDPadPress() || (leftRight && !prevLeftRight) || Gdx.input.isKeyPressed(Input.Keys.LEFT)) && selected > minLevel && select_button == CHOOSE_LEVEL) {
                 selected--;
             }
 
