@@ -151,8 +151,8 @@ public class MainMenuController extends WorldController {
     @Override
     public void update(float dt) {
         InputController input = InputController.getInstance();
-        System.out.print("enter "+input.didEnterKeyPress());
-        System.out.println("button "+input.didBottomButtonPress());
+//        System.out.print("enter "+input.didEnterKeyPress());
+//        System.out.println("button "+input.didBottomButtonPress());
         if(mode == HOME_SCREEN) {
             if(mode!=prevMode) {
                 return;
