@@ -18,11 +18,10 @@ import askew.entity.obstacle.BoxObstacle;
 import askew.entity.obstacle.Obstacle;
 import askew.entity.owl.OwlModel;
 import askew.entity.sloth.SlothModel;
-import askew.playermode.WorldController;
-import askew.playermode.leveleditor.LevelModel;
+import askew.entity.tree.Trunk;
+import askew.entity.wall.WallModel;
 import askew.util.SoundController;
 import askew.util.json.JSONLoaderSaver;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
@@ -33,9 +32,6 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.ObjectSet;
 import lombok.Getter;
-import lombok.Setter;
-
-import java.io.FileNotFoundException;
 
 /**
  * Gameplay specific controller for the platformer game.
@@ -46,13 +42,13 @@ import java.io.FileNotFoundException;
  * This is the purpose of our AssetState variable; it ensures that multiple instances
  * place nicely with the static assets.
  */
-public class GameModeController extends WorldController {
-
+public class TutorialModeController extends GameModeController {
 
 	Affine2 camTrans = new Affine2();
 
 	/** Track asset loading from all instances and subclasses */
 	private AssetState platformAssetState = AssetState.EMPTY;
+	private MantisAssetManager manager;
 
 	/** Track asset loading from all instances and subclasses */
 	@Getter
@@ -61,22 +57,6 @@ public class GameModeController extends WorldController {
 	private boolean prevPaused = false;
 	// fern selection indicator locations for pause menu options
 	private Vector2[] pause_locs = {new Vector2(11f,4.8f), new Vector2(9f,3.9f), new Vector2(11f,3f)};
-
-	public static final String[] GAMEPLAY_MUSIC = new String[] {
-		"sound/music/askew.ogg",
-		"sound/music/flowwantshisorherbaby.ogg"
-	};
-
-	public static final String GRAB_SOUND = "sound/effect/grab.wav";
-	Sound grabSound;
-
-	@Setter
-	private String loadLevel, DEFAULT_LEVEL;
-	private LevelModel lm; 				// LevelModel for the level the player is currently on
-	private int numLevel, MAX_LEVEL; 	// track int val of lvl #
-
-	private float currentTime, recordTime;	// track current and record time to complete level
-	private boolean timedLevels;
 
 	private PhysicsController collisions;
 
@@ -90,6 +70,17 @@ public class GameModeController extends WorldController {
 	private Texture background;
 	private Texture pauseTexture;
 	private Texture fern;
+
+	private final int DID_NOTHING = 0;
+	private final int MOVED_LEFT = 1;
+	private final int MOVED_RIGHT = 2;
+	private final int GRABBED_LEFT = 3;
+	private final int GRABBED_RIGHT = 4;
+	private final int SWING_LEFT = 5;
+	private final int REGRABBED_LEFT = 6;
+	private int stepsDone = DID_NOTHING;
+
+	private final float CONTROLLER_DEADZONE = 0.15f;
 
 	/**
 	 * Preloads the assets for this controller.
@@ -105,12 +96,7 @@ public class GameModeController extends WorldController {
 		if (platformAssetState != AssetState.EMPTY) {
 			return;
 		}
-		for (String soundName : GAMEPLAY_MUSIC) {
-			manager.load(soundName, Sound.class);
-		}
-
-		manager.load(GRAB_SOUND, Sound.class);
-
+		manager.load("sound/music/askew.wav", Sound.class);
 		platformAssetState = AssetState.LOADING;
 		jsonLoaderSaver.setManager(manager);
 		super.preLoadContent(manager);
@@ -132,16 +118,12 @@ public class GameModeController extends WorldController {
 		}
 
 		//SoundController sounds = SoundController.getInstance();
-		for (String soundName : GAMEPLAY_MUSIC) {
-			SoundController.getInstance().allocate(manager, soundName);
-		}
-
-//		SoundController.getInstance().allocate(manager, GRAB_SOUND);
-		grabSound = Gdx.audio.newSound(Gdx.files.internal(GRAB_SOUND));
-
+		SoundController.getInstance().allocate(manager, "sound/music/askew.wav");
 		background = manager.get("texture/background/background1.png", Texture.class);
 		pauseTexture = manager.get("texture/background/pause.png", Texture.class);
 		fern = manager.get("texture/background/fern.png");
+
+		this.manager = manager;
 
 		super.loadContent(manager);
 		platformAssetState = AssetState.COMPLETE;
@@ -171,32 +153,17 @@ public class GameModeController extends WorldController {
 	 *
 	 * The game has default gravity and other settings
 	 */
-	public GameModeController() {
-		super(DEFAULT_WIDTH,DEFAULT_HEIGHT,DEFAULT_GRAVITY);
+	public TutorialModeController() {
+		super();
 		setDebug(false);
 		setComplete(false);
 		setFailure(false);
 		collisions = new PhysicsController();
 		world.setContactListener(collisions);
 		sensorFixtures = new ObjectSet<Fixture>();
-		DEFAULT_LEVEL = GlobalConfiguration.getInstance().getAsString("defaultLevel");
-		MAX_LEVEL = GlobalConfiguration.getInstance().getAsInt("maxLevel");
-		loadLevel = DEFAULT_LEVEL;
-		timedLevels = GlobalConfiguration.getInstance().getAsBoolean("timedLevels");
-		jsonLoaderSaver = new JSONLoaderSaver();
-	}
 
-	public void setLevel() {
-		//numLevel = lvl;
-		int lvl = GlobalConfiguration.getInstance().getCurrentLevel();
-		if (lvl == 0) {
-			loadLevel = DEFAULT_LEVEL;
-		} else if (lvl > MAX_LEVEL) {
-			loadLevel = "level"+MAX_LEVEL;
-			System.out.println("MM");
-			listener.exitScreen(this, EXIT_GM_MM);
-		} else
-			loadLevel = "level"+lvl;
+		jsonLoaderSaver = new JSONLoaderSaver();
+
 	}
 
 	public void pause(){
@@ -231,6 +198,7 @@ public class GameModeController extends WorldController {
 		objects.clear();
 		addQueue.clear();
 		world.dispose();
+
 		world = new World(gravity,false);
 		if(collisions == null){
 			collisions = new PhysicsController();
@@ -240,56 +208,50 @@ public class GameModeController extends WorldController {
 		world.setContactListener(collisions);
 		setComplete(false);
 		setFailure(false);
-		setLevel();
 		populateLevel();
-		SoundController instance = SoundController.getInstance();
-		if (instance.isActive("menumusic")) instance.stop("menumusic");
-		if (!instance.isActive("bgmusic"))
-			instance.play(
-					"bgmusic",
-					GAMEPLAY_MUSIC[(int)Math.floor(GAMEPLAY_MUSIC.length * Math.random())],
-					true);
+		if (!SoundController.getInstance().isActive("bgmusic"))
+			SoundController.getInstance().play("bgmusic","sound/music/askew.wav",true);
+
+		stepsDone=0;
 	}
 
 	/**
 	 * Lays out the game geography.
 	 */
 	private void populateLevel() {
-			jsonLoaderSaver.setScale(this.worldScale);
-			try {
-				float level_num = Integer.parseInt(loadLevel.substring(5));
-				if (level_num==0){
-					System.out.println("Tutorial");
-					listener.exitScreen(this,EXIT_GM_TL);
-					return;
-				}
-				lm = jsonLoaderSaver.loadLevel(loadLevel);
-				System.out.println(loadLevel);
-				recordTime = lm.getRecordTime();
-				if (lm == null) {
-					lm = new LevelModel();
-				}
 
-				for (Entity o : lm.getEntities()) {
-					// drawing
+		float sloth_x = 0;
+		float sloth_y = 0;
 
-					addObject( o);
-					if (o instanceof SlothModel) {
-						sloth = (SlothModel) o;
-						sloth.activateSlothPhysics(world);
-						collisions.setSloth(sloth);
-						initFlowX = sloth.getX();
-						initFlowY = sloth.getY();
-					}
-					if (o instanceof OwlModel) {
-						owl = (OwlModel) o;
-					}
+		//Create sloth
+		sloth = new SlothModel(sloth_x ,sloth_y);
+		sloth.setTextures(manager);
+		addObject(sloth);
+		sloth.activateSlothPhysics(world);
+		collisions.setSloth(sloth);
+		initFlowX = sloth.getX();
+		initFlowY = sloth.getY();
 
-				}
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			}
-			currentTime = 0f;
+		///Create wall
+		float[] points = {-4.0f,0.0f, -4.0f,1.0f, 16.0f,1.0f, 16.0f,0.0f};
+		WallModel platform = new WallModel(sloth_x-2,sloth_y-1.5f,points,false);
+		platform.setTextures(manager);
+		addObject(platform);
+
+		Trunk branch = new Trunk(sloth_x-1f,sloth_y+1.5f,11,0.25f,1,0,worldScale,-90.0f);
+		branch.setTextures(manager);
+		branch.setName("long branch");
+		addObject(branch);
+
+		Trunk branch1 = new Trunk(sloth_x-1f,sloth_y+1.5f,3,0.25f,1,0,worldScale,-90.0f);
+		branch1.setTextures(manager);
+		branch1.setName("short branch");
+		addObject(branch1);
+
+		//Create Ebb TODO Replace owl with Ebb
+		OwlModel ebb = new OwlModel(sloth_x + 10.5f, sloth_y);
+		ebb.setTextures(manager);
+		addObject(ebb);
 
 	}
 
@@ -322,9 +284,6 @@ public class GameModeController extends WorldController {
 			System.out.println("MM");
 			listener.exitScreen(this, EXIT_GM_MM);
 			return false;
-		} else if (input.didBottomButtonPress() && !paused) {
-			System.out.println("reset");
-			reset();
 		}
 
 		if (paused) {
@@ -401,6 +360,7 @@ public class GameModeController extends WorldController {
 	 * @param dt Number of seconds since last animation frame
 	 */
 	public void update(float dt) {
+		InputController input = InputController.getInstance();
 		if (!paused) {
 			// Process actions in object model
 			sloth.setLeftHori(InputController.getInstance().getLeftHorizontal());
@@ -409,10 +369,33 @@ public class GameModeController extends WorldController {
 			sloth.setRightVert(InputController.getInstance().getRightVertical());
 			sloth.setLeftGrab(InputController.getInstance().getLeftGrab());
 			sloth.setRightGrab(InputController.getInstance().getRightGrab());
-			sloth.setLeftStickPressed(InputController.getInstance().getLeftStickPressed());
-			sloth.setRightStickPressed(InputController.getInstance().getRightStickPressed());
-			if (timedLevels)
-				currentTime += dt;
+			switch (stepsDone){
+				case DID_NOTHING:
+					sloth.setRightHori(0);
+					sloth.setRightVert(0);
+				case MOVED_LEFT:
+					sloth.setLeftGrab(false);
+				case MOVED_RIGHT:
+					sloth.setRightGrab(false);
+					break;
+				case GRABBED_LEFT:
+					sloth.setLeftGrab(true);
+					break;
+				case GRABBED_RIGHT:
+					sloth.setRightGrab(true);
+					//Set right arm to be 0 too?
+					break;
+				case SWING_LEFT:
+					//Let go of left grab
+					sloth.setRightGrab(true);
+					break;
+				case REGRABBED_LEFT:
+					break;
+				default:
+					System.err.println(stepsDone);
+			}
+
+
 
 			//#TODO Collision states check
 			setFailure(collisions.isFlowKill());
@@ -424,6 +407,9 @@ public class GameModeController extends WorldController {
 				System.out.println("VICTORY");
 				setComplete(true);
 			}
+
+
+
 
 			// Physics tiem
 			// Gribby grab
@@ -439,10 +425,6 @@ public class GameModeController extends WorldController {
 				sloth.releaseRight(world);
 			}
 
-			if (sloth.isGrabbedEntity()) {
-				grabSound.play();
-			}
-
 			// Normal physics
 			sloth.doThePhysics();
 
@@ -450,21 +432,57 @@ public class GameModeController extends WorldController {
 			SoundController.getInstance().update();
 
 			if (isComplete()) {
-				float record = currentTime;
-				if (record < lm.getRecordTime() && timedLevels) {
-					lm.setRecordTime(record);
-					if (jsonLoaderSaver.saveLevel(lm, loadLevel))
-						System.out.println("New record time for this level!");
-				}
 				int current = GlobalConfiguration.getInstance().getCurrentLevel();
 				GlobalConfiguration.getInstance().setCurrentLevel(current + 1);
 				System.out.println("GG");
-				listener.exitScreen(this, EXIT_GM_GM);
+				listener.exitScreen(this, EXIT_TL_GM);
 			}
 
 			if (isFailure()) {
 				System.out.println("Fail");
 				reset();
+			}
+
+			//Increment Steps
+			if(stepsDone==DID_NOTHING){
+				//Check for left joystick movement
+				if(Math.abs(input.getLeftHorizontal())>CONTROLLER_DEADZONE || Math.abs(input.getLeftVertical())>CONTROLLER_DEADZONE){
+					stepsDone++;
+				}
+			}
+			else if(stepsDone==MOVED_LEFT){
+				//Check for right joystick movement
+				if(Math.abs(input.getRightHorizontal())>CONTROLLER_DEADZONE || Math.abs(input.getRightVertical())>CONTROLLER_DEADZONE){
+					stepsDone++;
+				}
+			}
+			else if(stepsDone==MOVED_RIGHT){
+				//Check for left grab
+				if(sloth.isActualLeftGrab()){
+					stepsDone++;
+				}
+			}
+			else if(stepsDone==GRABBED_LEFT){
+				//Check for right grab
+				if(sloth.isActualRightGrab()){
+					stepsDone++;
+				}
+			}
+			else if(stepsDone==GRABBED_RIGHT){
+				//Check for left joystick movement
+				if(Math.abs(input.getLeftHorizontal())>CONTROLLER_DEADZONE || Math.abs(input.getLeftVertical())>CONTROLLER_DEADZONE){
+					stepsDone++;
+				}
+			}
+			else if(stepsDone==SWING_LEFT){
+				//Check for left again
+				if(sloth.isActualLeftGrab()){ //TODO Check for left hand crossing right hand and grabbing
+					stepsDone++;
+				}
+			}
+			else if(stepsDone==REGRABBED_LEFT){
+				//End of scripted checks, else if statement left here for sanity's sake
+				//stepsDone++;
 			}
 		}
 		prevPaused = paused;
@@ -480,16 +498,31 @@ public class GameModeController extends WorldController {
 
     	canvas.begin();
 		canvas.draw(background);
-		canvas.drawTextStandard("current time:    "+currentTime, 10f, 70f);
-		canvas.drawTextStandard("record time:     "+recordTime,10f,50f);
 		canvas.end();
 
 		canvas.begin(camTrans);
-		//canvas.draw(background, Color.WHITE, .25f*background.getWidth(),.75f * background.getHeight(),initFlowX*worldScale.x,initFlowY*worldScale.y,background.getWidth(), background.getHeight());
 
 		for(Entity obj : objects) {
-			obj.setDrawScale(worldScale);
-			obj.draw(canvas);
+			if(obj instanceof Trunk){
+				if(stepsDone >= MOVED_RIGHT && ((Trunk) obj).getName().equals("short branch")){
+					obj.setDrawScale(worldScale);
+					obj.draw(canvas);
+				}
+				if(stepsDone >= GRABBED_LEFT && ((Trunk) obj).getName().equals("long branch")){
+					obj.setDrawScale(worldScale);
+					obj.draw(canvas);
+				}
+			}
+			else if(obj instanceof OwlModel){
+				if(stepsDone >= GRABBED_RIGHT){
+					obj.setDrawScale(worldScale);
+					obj.draw(canvas);
+				}
+			}
+			else {
+				obj.setDrawScale(worldScale);
+				obj.draw(canvas);
+			}
 		}
 
 		if (!playerIsReady && !paused)

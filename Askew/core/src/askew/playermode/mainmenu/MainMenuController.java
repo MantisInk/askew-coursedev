@@ -20,6 +20,8 @@ public class MainMenuController extends WorldController {
     @Getter @Setter
     private int maxLevel = 10;
 
+    private int MAX_LEVEL;
+
     // main menu modes
     private final int HOME_SCREEN = 0;
     private final int LEVEL_SELECT = 1;
@@ -76,6 +78,7 @@ public class MainMenuController extends WorldController {
         leftDown = false;
         leftLeft = false;
         leftRight = false;
+        MAX_LEVEL = GlobalConfiguration.getInstance().getAsInt("maxLevel");
     }
 
     @Override
@@ -162,6 +165,10 @@ public class MainMenuController extends WorldController {
 
             if(input.didBottomButtonPress() && home_button == PLAY_BUTTON) {
                 selected = GlobalConfiguration.getInstance().getCurrentLevel();
+                if (selected > MAX_LEVEL) {
+                    selected = 1;
+                    GlobalConfiguration.getInstance().setCurrentLevel(selected);
+                }
                 System.out.println("selected "+selected);
                 nextCon = "GM";
                 return;
