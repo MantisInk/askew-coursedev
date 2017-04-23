@@ -6,6 +6,8 @@ import askew.MantisAssetManager;
 import askew.playermode.WorldController;
 import askew.util.SoundController;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
@@ -154,16 +156,16 @@ public class MainMenuController extends WorldController {
         if(mode == HOME_SCREEN) {
             if(mode!=prevMode)
                 return;
-            else if (input.didTopDPadPress() || (!prevLeftUp && leftUp)) {
+            else if (input.didTopDPadPress() || (Gdx.input.isKeyPressed(Input.Keys.UP)) || (!prevLeftUp && leftUp)) {
                 if (home_button > 0)
                     home_button--;
             }
-            else if (input.didBottomDPadPress() || (!prevLeftDown && leftDown)) {
+            else if (input.didBottomDPadPress() || (Gdx.input.isKeyPressed(Input.Keys.DOWN)) || (!prevLeftDown && leftDown)) {
                 if (home_button < home_button_locs.length - 1)
                     home_button++;
             }
 
-            if(input.didBottomButtonPress() && home_button == PLAY_BUTTON) {
+            if((input.didBottomButtonPress() || Gdx.input.isKeyPressed(Input.Keys.ENTER)) && home_button == PLAY_BUTTON) {
                 selected = GlobalConfiguration.getInstance().getCurrentLevel();
                 if (selected > MAX_LEVEL) {
                     selected = 1;
@@ -173,7 +175,7 @@ public class MainMenuController extends WorldController {
                 nextCon = "GM";
                 return;
             }
-            else if(input.didBottomButtonPress() && home_button == LEVEL_SELECT_BUTTON) {
+            else if((input.didBottomButtonPress() || Gdx.input.isKeyPressed(Input.Keys.ENTER)) && home_button == LEVEL_SELECT_BUTTON) {
                 mode = LEVEL_SELECT;
                 select_button = CHOOSE_LEVEL;
                 selected = 1;
@@ -185,24 +187,24 @@ public class MainMenuController extends WorldController {
         if(mode == LEVEL_SELECT) {
             if(mode!=prevMode)
                 return;
-            if((input.didLeftDPadPress() || (leftLeft && !prevLeftLeft)) && selected < maxLevel && select_button == CHOOSE_LEVEL) {
+            if((input.didLeftDPadPress() || (leftLeft && !prevLeftLeft) || Gdx.input.isKeyPressed(Input.Keys.LEFT)) && selected < maxLevel && select_button == CHOOSE_LEVEL) {
                 selected++;
-            } else if((input.didRightDPadPress() || (leftRight && !prevLeftRight)) && selected > minLevel && select_button == CHOOSE_LEVEL) {
+            } else if((input.didRightDPadPress() || (leftRight && !prevLeftRight) || Gdx.input.isKeyPressed(Input.Keys.RIGHT)) && selected > minLevel && select_button == CHOOSE_LEVEL) {
                 selected--;
             }
 
-            if(input.didTopDPadPress() || (leftUp && !prevLeftUp)) {
+            if(input.didTopDPadPress() || Gdx.input.isKeyPressed(Input.Keys.UP) || (leftUp && !prevLeftUp)) {
                 select_button = CHOOSE_LEVEL;
             }
-            else if(input.didBottomDPadPress() || (leftDown && !prevLeftDown)){
+            else if(input.didBottomDPadPress() || Gdx.input.isKeyPressed(Input.Keys.DOWN) || (leftDown && !prevLeftDown)){
                 select_button = RETURN_HOME;
             }
-            if(input.didBottomButtonPress() && select_button == RETURN_HOME) {
+            if((input.didBottomButtonPress() || Gdx.input.isKeyPressed(Input.Keys.ENTER)) && select_button == RETURN_HOME) {
                 System.out.println("return home");
                 mode = HOME_SCREEN;
                 home_button = PLAY_BUTTON;
             }
-            else if(input.didBottomButtonPress() && select_button == CHOOSE_LEVEL){
+            else if((input.didBottomButtonPress() || Gdx.input.isKeyPressed(Input.Keys.ENTER)) && select_button == CHOOSE_LEVEL){
                 GlobalConfiguration.getInstance().setCurrentLevel(selected);
                 System.out.println("selected level");
                 nextCon = "GM";
