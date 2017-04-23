@@ -132,12 +132,12 @@ public class GameModeController extends WorldController {
 		}
 
 		//SoundController sounds = SoundController.getInstance();
-		for (String soundName : GAMEPLAY_MUSIC) {
-			SoundController.getInstance().allocate(manager, soundName);
-		}
+//		for (String soundName : GAMEPLAY_MUSIC) {
+//			SoundController.getInstance().allocate(manager, soundName);
+//		}
 
 //		SoundController.getInstance().allocate(manager, GRAB_SOUND);
-		grabSound = Gdx.audio.newSound(Gdx.files.internal(GRAB_SOUND));
+		//grabSound = Gdx.audio.newSound(Gdx.files.internal(GRAB_SOUND));
 
 		background = manager.get("texture/background/background1.png", Texture.class);
 		pauseTexture = manager.get("texture/background/pause.png", Texture.class);
