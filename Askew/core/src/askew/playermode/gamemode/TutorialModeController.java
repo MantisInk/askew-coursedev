@@ -91,6 +91,14 @@ public class TutorialModeController extends GameModeController {
 	private int left_bumper_ct;
 	private int right_bumper_ct;
 
+	TextureRegion joystickTexture0;
+	TextureRegion joystickTexture1;
+	TextureRegion joystickTexture2;
+	TextureRegion LeftBumperTexture0;
+	TextureRegion LeftBumperTexture1;
+	TextureRegion RightBumperTexture0;
+	TextureRegion RightBumperTexture1;
+
 
 	/**
 	 * Preloads the assets for this controller.
@@ -119,6 +127,19 @@ public class TutorialModeController extends GameModeController {
 	 * @param manager Reference to global asset manager.
 	 */
 	public void loadContent(MantisAssetManager manager) {
+
+		if (platformAssetState != AssetState.LOADING) {
+			return;
+		}
+
+		joystickTexture0 = manager.get("texture/tutorial/joystick0");
+		joystickTexture1 = manager.get("texture/tutorial/joystick1");
+		joystickTexture2 = manager.get("texture/tutorial/joystick2");
+		LeftBumperTexture0 = manager.get("texture/tutorial/bumperUpLeft");
+		LeftBumperTexture1 = manager.get("texture/tutorial/bumperDownLeft");
+		RightBumperTexture0 = manager.get("texture/tutorial/bumperUpRight");
+		RightBumperTexture1 = manager.get("texture/tutorial/bumperDownRight");
+
 		super.loadContent(manager);
 		background = manager.get("texture/background/background1.png", Texture.class);
 	}
@@ -352,10 +373,11 @@ public class TutorialModeController extends GameModeController {
 			left_bumper_ct = (left_bumper_ct++) % 20;
 			right_bumper_ct = (right_bumper_ct++) % 20;
 
-			joystick_ct = joystick_ct%3;
-			left_bumper_ct = left_bumper_ct%2;
-			right_bumper_ct = right_bumper_ct%2;
-			
+
+			joystick_idx = joystick_ct%3;
+			left_bumper_idx = left_bumper_ct%2;
+			right_bumper_idx = right_bumper_ct%2;
+
 			//#TODO Collision states check
 			setFailure(collisions.isFlowKill());
 
@@ -451,21 +473,21 @@ public class TutorialModeController extends GameModeController {
 		joystickTextures = new TextureRegion[3];
 		LeftBumperTextures = new TextureRegion[2];
 		RightBumperTextures = new TextureRegion[2];
-		Texture bumperUR = manager.get("texture/tutorial/bumperUpRight.png");
-		Texture bumperDR = manager.get("texture/tutorial/bumperDownRight.png");
-		Texture bumperUL = manager.get("texture/tutorial/bumperUpLeft.png");
-		Texture bumperDL = manager.get("texture/tutorial/bumperDownLeft.png");
-		Texture stick0 = manager.get("texture/tutorial/joytick0.png");
-		Texture stick1 = manager.get("texture/tutorial/joytick1.png");
-		Texture stick2 = manager.get("texture/tutorial/joytick2.png");
+//		Texture bumperUR = manager.get("texture/tutorial/bumperUpRight.png");
+//		Texture bumperDR = manager.get("texture/tutorial/bumperDownRight.png");
+//		Texture bumperUL = manager.get("texture/tutorial/bumperUpLeft.png");
+//		Texture bumperDL = manager.get("texture/tutorial/bumperDownLeft.png");
+//		Texture stick0 = manager.get("texture/tutorial/joytick0.png");
+//		Texture stick1 = manager.get("texture/tutorial/joytick1.png");
+//		Texture stick2 = manager.get("texture/tutorial/joytick2.png");
 		//Texture bumper4 = manager.get("texture/tutorial/backarm_moving.png");
-		RightBumperTextures[0] = new TextureRegion(bumperUR);
-		RightBumperTextures[1] = new TextureRegion(bumperDR);
-		LeftBumperTextures [0] = new TextureRegion(bumperUL);
-		LeftBumperTextures [1] = new TextureRegion(bumperDL);
-		joystickTextures[0] = new TextureRegion(stick0);
-		joystickTextures[1] = new TextureRegion(stick1);
-		joystickTextures[2] = new TextureRegion(stick2);
+		RightBumperTextures[0] = RightBumperTexture0;
+		RightBumperTextures[1] = RightBumperTexture1;
+		LeftBumperTextures [0] = LeftBumperTexture0;
+		LeftBumperTextures [1] = LeftBumperTexture1;
+		joystickTextures[0] = joystickTexture0;
+		joystickTextures[1] = joystickTexture1;
+		joystickTextures[2] = joystickTexture2;
 		//partTextures[7] = new TextureRegion(managedBackArmMoving);
 
 //		if (bodies.size == 0) {
