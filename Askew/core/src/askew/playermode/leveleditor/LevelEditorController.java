@@ -323,7 +323,7 @@ public class LevelEditorController extends WorldController {
 				promptTemplate(sTemplate);
 				break;
 			case ".Vine":
-				Vine vTemplate = new Vine(x,y,5.0f,0.1f,1.0f,oneScale, 5f,
+				Vine vTemplate = new Vine(x,y,5.0f,oneScale, 5f,
 						-400f);
 				promptTemplate(vTemplate);
 				break;

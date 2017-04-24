@@ -42,6 +42,8 @@ public class Vine extends ComplexObstacle {
 	private static final String ANCHOR_NAME = "vine_pin";		/** The debug name for each anchor pin */
 	private static final float ANCHOR_RADIUS = 0.1f;			/** The radius of each anchor pin */
 	private transient float BASIC_DENSITY;						/** The density of each plank in the bridge */
+	private static final float VINE_COLLISION_WIDTH = 0.1f;
+	private static final float VINE_COLLISION_HEIGHT = 1f;
 
     public static final String VINE_TEXTURE = "texture/vine/vine.png";
 
@@ -74,32 +76,9 @@ public class Vine extends ComplexObstacle {
 	 * @param x  		The x position of the left anchor
 	 * @param y  		The y position of the left anchor
 	 * @param length		The length of the bridge
-	 * @param lwidth	The vine piece thickness
-	 * @param lheight	The vine piece length
 	 */
-	public Vine(float x, float y, float length, float lwidth, float lheight, Vector2 scale) {
-		this(x, y, x, y-length, lwidth, lheight, false, 5f, -400f);
-		numLinks = length;
-		this.x = x;
-		this.y = y;
-		this.angle = 5f;
-		this.omega = -400f;
-		this.setObjectScale(scale);
-
-	}
-
-	public Vine(float x, float y, float length, float lwidth, float lheight, Vector2 scale, float angle, float omega) {
-		this(x, y, x, y-length, lwidth, lheight, false, angle, omega);
-		numLinks = length;
-		this.x = x;
-		this.y = y;
-		this.angle = angle;
-		this.omega = omega;
-		this.setObjectScale(scale);
-	}
-
-	public Vine(float x, float y, float length, float lwidth, float lheight, Vector2 scale, boolean pinned, float angle, float omega) {
-		this(x, y, x, y-length, lwidth, lheight, pinned, angle, omega);
+	public Vine(float x, float y, float length, Vector2 scale, float angle, float omega) {
+		this(x, y, x, y-length, false, angle, omega);
 		numLinks = length;
 		this.x = x;
 		this.y = y;
@@ -115,10 +94,8 @@ public class Vine extends ComplexObstacle {
 	 * @param y0  		The y position of the left anchor
 	 * @param x1  		The x position of the right anchor
 	 * @param y1  		The y position of the right anchor
-	 * @param lwidth	The vine piece thickness
-	 * @param lheight	The vine piece length
 	 */
-	public Vine(float x0, float y0, float x1, float y1, float lwidth, float lheight, boolean pinned, float angle, float omega) {
+	public Vine(float x0, float y0, float x1, float y1, boolean pinned, float angle, float omega) {
 		super(x0,y0);
 		pin = pinned;
 		setName(VINE_NAME);
@@ -127,8 +104,8 @@ public class Vine extends ComplexObstacle {
 		this.BASIC_DENSITY = GlobalConfiguration.getInstance().getAsFloat("vineDensity");
 
 
-		planksize = new Vector2(lwidth,lheight);
-		linksize = lheight;
+		planksize = new Vector2(VINE_COLLISION_WIDTH,VINE_COLLISION_HEIGHT);
+		linksize = VINE_COLLISION_HEIGHT;
 
 
 	    // Compute the bridge length
@@ -151,7 +128,7 @@ public class Vine extends ComplexObstacle {
 
 	    	    
 	    // Create the planks
-		planksize.y = lheight;
+		planksize.y = VINE_COLLISION_HEIGHT;
 
 	    Vector2 pos = new Vector2();
 	    for (int ii = 0; ii < nLinks; ii++) {
