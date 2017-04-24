@@ -10,17 +10,7 @@ texture/tutorial/bumperDownLeft.png
 texture/tutorial/bumperUpLeft.png
 texture/tutorial/bumperDownRight.png
 texture/tutorial/bumperUpRight.png
-texture/ghost/Ghosty_1.png
-texture/ghost/Ghosty_2.png
-texture/ghost/Ghosty_3.png
-texture/ghost/Ghosty_4.png
-texture/ghost/Ghosty_5.png
-texture/ghost/Ghosty_6.png
 texture/icon.png
-texture/owl/owl.png
-texture/packed/packed.atlas
-texture/packed/packed.png
-texture/packed/packed2.png
 texture/sloth/arm.png
 texture/sloth/backarm.png
 texture/sloth/backarm_moving.png
@@ -33,3 +23,4 @@ texture/sloth/leftflow.png
 texture/vine/vine.png
 texture/wall/thorn.png
 texture/wall/wall.png
+texture/branch/branch.png

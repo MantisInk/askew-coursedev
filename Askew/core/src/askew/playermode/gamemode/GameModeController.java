@@ -145,7 +145,7 @@ public class GameModeController extends WorldController {
 		if (platformAssetState != AssetState.LOADING) {
 			return;
 		}
-		
+
 		for (String soundName : GAMEPLAY_MUSIC) {
 			SoundController.getInstance().allocate(manager, soundName);
 		}
@@ -268,7 +268,10 @@ public class GameModeController extends WorldController {
 		SoundController instance = SoundController.getInstance();
 		if (instance.isActive("menumusic")) instance.stop("menumusic");
 		if (instance.isActive("bgmusic")) instance.stop("bgmusic");
-		instance.play("bgmusic", selectedTrack, true);
+		if (selectedTrack != null) {
+			instance.play("bgmusic", selectedTrack, true);
+
+		}
 
 		if (!instance.isActive("fallmusic")) {
 			instance.play("fallmusic",
