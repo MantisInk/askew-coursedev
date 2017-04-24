@@ -33,7 +33,7 @@ _Used to gain momentum on vines to swing yourself across the stage!_
 
 _**Note:** 360 degrees of motion is possible here_
 
-**Tip:** if you ever forget which arm is which, my trick is that the black arm is on the left, and both words have l's in them, so I use the left joystick and button to use the that arm.
+**Tip:** if you ever forget which arm is which, my trick is that the black arm is on the left, and both words have l's in them, so I use the left joystick and button to use the that arm. Alternatively your right arm is your "bRighter" (or "bRIGHTer") arm.
 
 
 #### _Tips for Swinging **(Updated)**_
@@ -46,8 +46,9 @@ _**Note:** 360 degrees of motion is possible here_
 
 
 ### Misc.
-- _**Start button**_: reset and start athe beginning of the stage
-- _**Y button**_: return to the main menu
+- _**Start button**_: pause the game, allowing you to restart the stage or return to the main menu
+- _**Y button**_: (if in a stage) activate the level editor for the given stage
+- _**A button**_: restarts the level (used for faster playtesting)
 - _**Any other button**_: nothing
 
 
