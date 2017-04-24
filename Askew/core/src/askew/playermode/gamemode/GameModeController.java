@@ -145,7 +145,7 @@ public class GameModeController extends WorldController {
 		if (platformAssetState != AssetState.LOADING) {
 			return;
 		}
-
+		
 		for (String soundName : GAMEPLAY_MUSIC) {
 			SoundController.getInstance().allocate(manager, soundName);
 		}
