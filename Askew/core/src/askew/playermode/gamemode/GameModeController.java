@@ -25,6 +25,7 @@ import askew.util.json.JSONLoaderSaver;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Vector2;
@@ -64,7 +65,8 @@ public class GameModeController extends WorldController {
 
 	public static final String[] GAMEPLAY_MUSIC = new String[] {
 		"sound/music/askew.ogg",
-		"sound/music/flowwantshisorherbaby.ogg"
+		"sound/music/flowwantshisorherbaby.ogg",
+		"sound/music/youdidit.ogg"
 	};
 
 	public static final String GRAB_SOUND = "sound/effect/grab.wav";
@@ -72,13 +74,13 @@ public class GameModeController extends WorldController {
 
 	@Setter
 	private String loadLevel, DEFAULT_LEVEL;
-	private LevelModel lm; 				// LevelModel for the level the player is currently on
+	private LevelModel levelModel; 				// LevelModel for the level the player is currently on
 	private int numLevel, MAX_LEVEL; 	// track int val of lvl #
 
 	private float currentTime, recordTime;	// track current and record time to complete level
-	private boolean timedLevels;
+	private boolean storeTimeRecords;
 
-	private PhysicsController collisions;
+	protected PhysicsController collisions;
 
 	private JSONLoaderSaver jsonLoaderSaver;
 	private float initFlowX;
@@ -87,9 +89,13 @@ public class GameModeController extends WorldController {
 	private int PAUSE_RESTART = 1;
 	private int PAUSE_MAINMENU = 2;
 	private int pause_mode = PAUSE_RESUME;
-	private Texture background;
+	protected Texture background;
 	private Texture pauseTexture;
 	private Texture fern;
+
+	/** The opacity of the black text covering the screen. Game can start
+	 * when this is zero. */
+	private float coverOpacity;
 
 	/**
 	 * Preloads the assets for this controller.
@@ -157,7 +163,7 @@ public class GameModeController extends WorldController {
 	// Physics objects for the game
 	/** Reference to the character avatar */
 
-	private static SlothModel sloth;
+	protected SlothModel sloth;
 	private static OwlModel owl;
 
 	/** Reference to the goalDoor (for collision detection) */
@@ -182,7 +188,7 @@ public class GameModeController extends WorldController {
 		DEFAULT_LEVEL = GlobalConfiguration.getInstance().getAsString("defaultLevel");
 		MAX_LEVEL = GlobalConfiguration.getInstance().getAsInt("maxLevel");
 		loadLevel = DEFAULT_LEVEL;
-		timedLevels = GlobalConfiguration.getInstance().getAsBoolean("timedLevels");
+		storeTimeRecords = GlobalConfiguration.getInstance().getAsBoolean("storeTimeRecords");
 		jsonLoaderSaver = new JSONLoaderSaver();
 	}
 
@@ -200,6 +206,7 @@ public class GameModeController extends WorldController {
 	}
 
 	public void pause(){
+		prevPaused = paused;
 		if (!paused) {
 			paused = true;
 			pause_mode = PAUSE_RESUME;
@@ -216,7 +223,7 @@ public class GameModeController extends WorldController {
 	 * This method disposes of the world and creates a new one.
 	 */
 	public void reset() {
-
+		coverOpacity = 2f; // start at 2 for 1 second of full black
 		playerIsReady = false;
 		paused = false;
 		collisions.clearGrab();
@@ -254,7 +261,7 @@ public class GameModeController extends WorldController {
 	/**
 	 * Lays out the game geography.
 	 */
-	private void populateLevel() {
+	protected void populateLevel() {
 			jsonLoaderSaver.setScale(this.worldScale);
 			try {
 				float level_num = Integer.parseInt(loadLevel.substring(5));
@@ -263,14 +270,14 @@ public class GameModeController extends WorldController {
 					listener.exitScreen(this,EXIT_GM_TL);
 					return;
 				}
-				lm = jsonLoaderSaver.loadLevel(loadLevel);
+				levelModel = jsonLoaderSaver.loadLevel(loadLevel);
 				System.out.println(loadLevel);
-				recordTime = lm.getRecordTime();
-				if (lm == null) {
-					lm = new LevelModel();
+				recordTime = levelModel.getRecordTime();
+				if (levelModel == null) {
+					levelModel = new LevelModel();
 				}
 
-				for (Entity o : lm.getEntities()) {
+				for (Entity o : levelModel.getEntities()) {
 					// drawing
 
 					addObject( o);
@@ -294,7 +301,7 @@ public class GameModeController extends WorldController {
 	}
 
 	/**For drawing force lines*/
-	public static SlothModel getSloth(){return sloth;}
+	public SlothModel getSloth(){return sloth;}
 
 	/**
 	 * Returns whether to process the update loop
@@ -322,12 +329,16 @@ public class GameModeController extends WorldController {
 			System.out.println("MM");
 			listener.exitScreen(this, EXIT_GM_MM);
 			return false;
-		} else if (input.didBottomButtonPress() && !paused) {
+		} else if (input.didRightButtonPress() && !paused) {
 			System.out.println("reset");
 			reset();
 		}
 
 		if (paused) {
+			if (!prevPaused) {
+				prevPaused = paused;
+				return false;
+			}
 			//InputController input = InputController.getInstance();
 			if (input.didBottomButtonPress() && pause_mode == PAUSE_RESUME) {
 				paused = false;
@@ -339,12 +350,13 @@ public class GameModeController extends WorldController {
 				listener.exitScreen(this, EXIT_GM_MM);
 			}
 
-			if (input.didTopDPadPress() && pause_mode > 0) {
+			if ((input.didTopDPadPress() || input.didUpArrowPress()) && pause_mode > 0) {
 				pause_mode--;
 			}
-			if (input.didBottomDPadPress() && pause_mode < 2) {
+			if ((input.didBottomDPadPress() || input.didDownArrowPress()) && pause_mode < 2) {
 				pause_mode++;
 			}
+
 		}
 
 		//Checks to see if player has selected the button on the starting screen
@@ -403,22 +415,33 @@ public class GameModeController extends WorldController {
 	public void update(float dt) {
 		if (!paused) {
 			// Process actions in object model
+			Body leftCollisionBody = collisions.getLeftBody();
+			Body rightCollisionBody = collisions.getRightBody();
+
 			sloth.setLeftHori(InputController.getInstance().getLeftHorizontal());
 			sloth.setLeftVert(InputController.getInstance().getLeftVertical());
 			sloth.setRightHori(InputController.getInstance().getRightHorizontal());
 			sloth.setRightVert(InputController.getInstance().getRightVertical());
-			sloth.setLeftGrab(InputController.getInstance().getLeftGrab());
-			sloth.setRightGrab(InputController.getInstance().getRightGrab());
+			boolean didSafe = InputController.getInstance()
+					.getRightGrab();
+			if (sloth.controlMode == 0) {
+				// TODO: Make more elegant - trevor
+				sloth.setLeftGrab(InputController.getInstance().getLeftGrab());
+				sloth.setRightGrab(InputController.getInstance().getRightGrab());
+			} else {
+				if (!didSafe) {
+					sloth.setOneGrab(InputController.getInstance()
+							.isBottomButtonPressed());
+				}
+				sloth.setSafeGrab(didSafe, leftCollisionBody,
+						rightCollisionBody, world);
+			}
 			sloth.setLeftStickPressed(InputController.getInstance().getLeftStickPressed());
 			sloth.setRightStickPressed(InputController.getInstance().getRightStickPressed());
-			if (timedLevels)
-				currentTime += dt;
+			currentTime += dt;
 
 			//#TODO Collision states check
 			setFailure(collisions.isFlowKill());
-
-			Body leftCollisionBody = collisions.getLeftBody();
-			Body rightCollisionBody = collisions.getRightBody();
 
 			if (collisions.isFlowWin()) {
 				System.out.println("VICTORY");
@@ -427,16 +450,18 @@ public class GameModeController extends WorldController {
 
 			// Physics tiem
 			// Gribby grab
-			if (sloth.isLeftGrab()) {
-				sloth.grab(world, leftCollisionBody, true);
-			} else {
-				sloth.releaseLeft(world);
-			}
+			if (sloth.controlMode == 0 || !didSafe) {
+				if (sloth.isLeftGrab()) {
+					sloth.grab(world, leftCollisionBody, true);
+				} else {
+					sloth.releaseLeft(world);
+				}
 
-			if (sloth.isRightGrab()) {
-				sloth.grab(world, rightCollisionBody, false);
-			} else {
-				sloth.releaseRight(world);
+				if (sloth.isRightGrab()) {
+					sloth.grab(world, rightCollisionBody, false);
+				} else {
+					sloth.releaseRight(world);
+				}
 			}
 
 			if (sloth.isGrabbedEntity()) {
@@ -451,9 +476,9 @@ public class GameModeController extends WorldController {
 
 			if (isComplete()) {
 				float record = currentTime;
-				if (record < lm.getRecordTime() && timedLevels) {
-					lm.setRecordTime(record);
-					if (jsonLoaderSaver.saveLevel(lm, loadLevel))
+				if (record < levelModel.getRecordTime() && storeTimeRecords) {
+					levelModel.setRecordTime(record);
+					if (jsonLoaderSaver.saveLevel(levelModel, loadLevel))
 						System.out.println("New record time for this level!");
 				}
 				int current = GlobalConfiguration.getInstance().getCurrentLevel();
@@ -467,7 +492,6 @@ public class GameModeController extends WorldController {
 				reset();
 			}
 		}
-		prevPaused = paused;
 	}
 
 	public void draw(float delta){
@@ -492,7 +516,7 @@ public class GameModeController extends WorldController {
 			obj.draw(canvas);
 		}
 
-		if (!playerIsReady && !paused)
+		if (!playerIsReady && !paused && coverOpacity <= 0)
 			printHelp();
 		canvas.end();
 		sloth.drawGrab(canvas, camTrans);
@@ -514,6 +538,20 @@ public class GameModeController extends WorldController {
 			canvas.end();
 			sloth.drawForces(canvas, camTrans);
 		}
+
+		if (coverOpacity > 0) {
+			Gdx.gl.glEnable(GL20.GL_BLEND);
+			displayFont.setColor(Color.WHITE);
+			Color coverColor = new Color(0,0,0,coverOpacity);
+			canvas.drawRectangle(coverColor,0,0,canvas.getWidth(), canvas
+					.getHeight());
+			coverOpacity -= (1/60f); // 2 second cover
+			Gdx.gl.glDisable(GL20.GL_BLEND);
+			canvas.begin();
+			canvas.drawTextCentered(levelModel.getTitle(), displayFont, 0f);
+			canvas.end();
+		}
+
 
 		// draw pause menu stuff over everything
 		if (paused) {

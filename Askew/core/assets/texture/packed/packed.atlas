@@ -1,54 +1,158 @@
 
 packed.png
-size: 1024,1024
+size: 2048,2048
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
 Ghosty
   rotate: false
-  xy: 2, 2
+  xy: 2, 170
   size: 290, 523
   orig: 290, 523
   offset: 0, 0
   index: 1
 Ghosty
   rotate: false
-  xy: 294, 2
+  xy: 1648, 1519
   size: 290, 523
   orig: 290, 523
   offset: 0, 0
   index: 2
 Ghosty
   rotate: false
-  xy: 294, 2
+  xy: 1648, 1519
   size: 290, 523
   orig: 290, 523
   offset: 0, 0
   index: 6
 Ghosty
   rotate: false
-  xy: 586, 2
+  xy: 294, 170
   size: 290, 523
   orig: 290, 523
   offset: 0, 0
   index: 3
 Ghosty
   rotate: false
-  xy: 586, 2
+  xy: 294, 170
   size: 290, 523
   orig: 290, 523
   offset: 0, 0
   index: 5
-
-packed2.png
-size: 512,1024
-format: RGBA8888
-filter: Nearest,Nearest
-repeat: none
 Ghosty
   rotate: false
-  xy: 2, 2
+  xy: 1648, 994
   size: 290, 523
   orig: 290, 523
   offset: 0, 0
   index: 4
+idleowl
+  rotate: false
+  xy: 2, 695
+  size: 827, 1347
+  orig: 827, 1347
+  offset: 0, 0
+  index: 3
+idleowl
+  rotate: false
+  xy: 831, 687
+  size: 815, 1355
+  orig: 815, 1355
+  offset: 0, 0
+  index: 4
+owlfly
+  rotate: false
+  xy: 1648, 620
+  size: 313, 372
+  orig: 313, 372
+  offset: 0, 0
+  index: 1
+owlfly
+  rotate: false
+  xy: 586, 242
+  size: 364, 443
+  orig: 364, 443
+  offset: 0, 0
+  index: 8
+owlfly
+  rotate: false
+  xy: 952, 364
+  size: 333, 321
+  orig: 333, 321
+  offset: 0, 0
+  index: 2
+owlfly
+  rotate: false
+  xy: 1287, 405
+  size: 342, 280
+  orig: 342, 280
+  offset: 0, 0
+  index: 4
+owlfly
+  rotate: false
+  xy: 1631, 360
+  size: 362, 258
+  orig: 362, 258
+  offset: 0, 0
+  index: 5
+owlfly
+  rotate: false
+  xy: 2, 2
+  size: 356, 166
+  orig: 356, 166
+  offset: 0, 0
+  index: 3
+owlfly
+  rotate: false
+  xy: 952, 124
+  size: 358, 238
+  orig: 358, 238
+  offset: 0, 0
+  index: 7
+owlfly
+  rotate: false
+  xy: 1312, 177
+  size: 313, 226
+  orig: 313, 226
+  offset: 0, 0
+  index: 6
+
+packed2.png
+size: 2048,2048
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+idleowl
+  rotate: false
+  xy: 2, 2
+  size: 813, 1351
+  orig: 813, 1351
+  offset: 0, 0
+  index: 5
+idleowl
+  rotate: false
+  xy: 817, 21
+  size: 824, 1332
+  orig: 824, 1332
+  offset: 0, 0
+  index: 2
+
+packed3.png
+size: 2048,2048
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+idleowl
+  rotate: false
+  xy: 2, 2
+  size: 810, 1321
+  orig: 810, 1321
+  offset: 0, 0
+  index: 6
+idleowl
+  rotate: false
+  xy: 814, 25
+  size: 806, 1298
+  orig: 806, 1298
+  offset: 0, 0
+  index: 1
