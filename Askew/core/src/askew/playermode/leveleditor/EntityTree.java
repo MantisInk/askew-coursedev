@@ -17,7 +17,7 @@ public class EntityTree {
         ETNode backgrounds = new ETNode(root, "Background", "texture/background/fern.png", false);
         ETNode sloth = new ETNode(root, "SlothModel", "texture/sloth/frontflow.png", true);
         ETNode vine = new ETNode(root,"Vine", "texture/vine/vine.png", true);
-        ETNode owlmodel = new ETNode(root,"OwlModel", "texture/owl/owl.png", true);
+        ETNode owlmodel = new ETNode(root,"OwlModel", "texture/leveleditor/placeholder.png", true);
         ETNode sticks = new ETNode(root,"Sticks", "texture/branch/branch.png", false);
         ETNode trunk = new ETNode(sticks,"Trunk", "texture/leveleditor/placeholder.png", true);
         ETNode polevault = new ETNode(sticks,"PoleVault", "texture/leveleditor/placeholder.png", true);
