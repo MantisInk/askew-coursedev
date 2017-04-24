@@ -16,3 +16,10 @@ texture/background/background1.png
 texture/background/menu1.png
 texture/background/menu2.png
 texture/background/pause.png
+texture/tutorial/joystick0.png
+texture/tutorial/joystick1.png
+texture/tutorial/joystick2.png
+texture/tutorial/bumperDownLeft.png
+texture/tutorial/bumperUpLeft.png
+texture/tutorial/bumperDownRight.png
+texture/tutorial/bumperUpRight.png

@@ -88,7 +88,7 @@ public class GameModeController extends WorldController {
 	private int PAUSE_RESTART = 1;
 	private int PAUSE_MAINMENU = 2;
 	private int pause_mode = PAUSE_RESUME;
-	private Texture background;
+	protected Texture background;
 	private Texture pauseTexture;
 	private Texture fern;
 
@@ -205,6 +205,7 @@ public class GameModeController extends WorldController {
 	}
 
 	public void pause(){
+		prevPaused = paused;
 		if (!paused) {
 			paused = true;
 			pause_mode = PAUSE_RESUME;
@@ -333,6 +334,10 @@ public class GameModeController extends WorldController {
 		}
 
 		if (paused) {
+			if (!prevPaused) {
+				prevPaused = paused;
+				return false;
+			}
 			//InputController input = InputController.getInstance();
 			if (input.didRightButtonPress() && pause_mode == PAUSE_RESUME) {
 				paused = false;
@@ -344,12 +349,13 @@ public class GameModeController extends WorldController {
 				listener.exitScreen(this, EXIT_GM_MM);
 			}
 
-			if (input.didTopDPadPress() && pause_mode > 0) {
+			if ((input.didTopDPadPress() || input.didUpArrowPress()) && pause_mode > 0) {
 				pause_mode--;
 			}
-			if (input.didBottomDPadPress() && pause_mode < 2) {
+			if ((input.didBottomDPadPress() || input.didDownArrowPress()) && pause_mode < 2) {
 				pause_mode++;
 			}
+
 		}
 
 		//Checks to see if player has selected the button on the starting screen
@@ -486,7 +492,6 @@ public class GameModeController extends WorldController {
 				reset();
 			}
 		}
-		prevPaused = paused;
 	}
 
 	public void draw(float delta){
