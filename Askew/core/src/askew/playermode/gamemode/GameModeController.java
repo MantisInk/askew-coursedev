@@ -25,6 +25,7 @@ import askew.util.json.JSONLoaderSaver;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Vector2;
@@ -72,7 +73,7 @@ public class GameModeController extends WorldController {
 
 	@Setter
 	private String loadLevel, DEFAULT_LEVEL;
-	private LevelModel lm; 				// LevelModel for the level the player is currently on
+	private LevelModel levelModel; 				// LevelModel for the level the player is currently on
 	private int numLevel, MAX_LEVEL; 	// track int val of lvl #
 
 	private float currentTime, recordTime;	// track current and record time to complete level
@@ -90,6 +91,10 @@ public class GameModeController extends WorldController {
 	private Texture background;
 	private Texture pauseTexture;
 	private Texture fern;
+
+	/** The opacity of the black text covering the screen. Game can start
+	 * when this is zero. */
+	private float coverOpacity;
 
 	/**
 	 * Preloads the assets for this controller.
@@ -216,7 +221,7 @@ public class GameModeController extends WorldController {
 	 * This method disposes of the world and creates a new one.
 	 */
 	public void reset() {
-
+		coverOpacity = 2f; // start at 2 for 1 second of full black
 		playerIsReady = false;
 		paused = false;
 		collisions.clearGrab();
@@ -263,14 +268,14 @@ public class GameModeController extends WorldController {
 					listener.exitScreen(this,EXIT_GM_TL);
 					return;
 				}
-				lm = jsonLoaderSaver.loadLevel(loadLevel);
+				levelModel = jsonLoaderSaver.loadLevel(loadLevel);
 				System.out.println(loadLevel);
-				recordTime = lm.getRecordTime();
-				if (lm == null) {
-					lm = new LevelModel();
+				recordTime = levelModel.getRecordTime();
+				if (levelModel == null) {
+					levelModel = new LevelModel();
 				}
 
-				for (Entity o : lm.getEntities()) {
+				for (Entity o : levelModel.getEntities()) {
 					// drawing
 
 					addObject( o);
@@ -465,9 +470,9 @@ public class GameModeController extends WorldController {
 
 			if (isComplete()) {
 				float record = currentTime;
-				if (record < lm.getRecordTime() && timedLevels) {
-					lm.setRecordTime(record);
-					if (jsonLoaderSaver.saveLevel(lm, loadLevel))
+				if (record < levelModel.getRecordTime() && timedLevels) {
+					levelModel.setRecordTime(record);
+					if (jsonLoaderSaver.saveLevel(levelModel, loadLevel))
 						System.out.println("New record time for this level!");
 				}
 				int current = GlobalConfiguration.getInstance().getCurrentLevel();
@@ -506,7 +511,7 @@ public class GameModeController extends WorldController {
 			obj.draw(canvas);
 		}
 
-		if (!playerIsReady && !paused)
+		if (!playerIsReady && !paused && coverOpacity <= 0)
 			printHelp();
 		canvas.end();
 		sloth.drawGrab(canvas, camTrans);
@@ -528,6 +533,23 @@ public class GameModeController extends WorldController {
 			canvas.end();
 			sloth.drawForces(canvas, camTrans);
 		}
+
+		if (coverOpacity > 0) {
+			Gdx.gl.glEnable(GL20.GL_BLEND);
+			displayFont.setColor(Color.WHITE);
+			Color coverColor = new Color(0,0,0,coverOpacity);
+			System.out.println(coverOpacity);
+			canvas.drawRectangle(coverColor,0,0,canvas.getWidth(), canvas
+					.getHeight());
+			coverOpacity -= (1/60f); // 2 second cover
+			Gdx.gl.glDisable(GL20.GL_BLEND);
+			canvas.begin();
+			canvas.drawTextCentered(levelModel.getTitle(), displayFont, 0f);
+			canvas.end();
+		} else {
+
+		}
+
 
 		// draw pause menu stuff over everything
 		if (paused) {
