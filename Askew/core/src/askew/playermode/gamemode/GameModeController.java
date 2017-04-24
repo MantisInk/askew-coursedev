@@ -450,7 +450,7 @@ public class GameModeController extends WorldController {
 
 			// Physics tiem
 			// Gribby grab
-			if (!didSafe) {
+			if (sloth.controlMode == 0 || !didSafe) {
 				if (sloth.isLeftGrab()) {
 					sloth.grab(world, leftCollisionBody, true);
 				} else {
@@ -551,8 +551,6 @@ public class GameModeController extends WorldController {
 			canvas.begin();
 			canvas.drawTextCentered(levelModel.getTitle(), displayFont, 0f);
 			canvas.end();
-		} else {
-
 		}
 
 

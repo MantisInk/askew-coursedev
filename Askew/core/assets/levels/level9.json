@@ -6,6 +6,7 @@
   "recordTime": 9999999.0,
   "background": "texture/background/background1.png",
   "soundtrack": "TODO",
+  "title": "We forgot to name this one",
   "entities": [
     {
       "CLASSNAME": "askew.entity.vine.Vine",
