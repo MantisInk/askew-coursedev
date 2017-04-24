@@ -8,11 +8,11 @@ public class MyPacker {
     public static void main (String[] args) throws Exception {
         Scanner in = new Scanner(System.in);
         System.out.println("inputDir");
-        String inputDir = in.next();
+        String inputDir = "texture/animated";
         System.out.println("outputDir");
-        String outputDir = in.next();
+        String outputDir = "texture/packed";
         System.out.println("packFileName");
-        String packFileName = in.next();
+        String packFileName = "packed";
         TexturePacker.process(inputDir, outputDir, packFileName);
     }
 }

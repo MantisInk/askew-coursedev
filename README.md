@@ -48,8 +48,9 @@ _**Note:** 360 degrees of motion is possible here_
 
 
 ### Misc.
-- _**Start button**_: reset and start athe beginning of the stage
-- _**Y button**_: return to the main menu
+- _**Start button**_: pause the game, allowing you to restart the stage or return to the main menu
+- _**Y button**_: (if in a stage) activate the level editor for the given stage
+- _**A button**_: restarts the level (used for faster playtesting)
 - _**Any other button**_: nothing
 
 
@@ -81,5 +82,6 @@ _**Note:** 360 degrees of motion is possible here_
 - The level editor can be accessed via the main menu either by pressing _D_ on the keyboard _Y_ on the Xbox controller (pressing _Y_ on the Xbox controller anywhere else brings you to the main menu)
 - From the level editor, you can toggle between playing and editing a stage by pressing _X_ on the Xbox controller (make sure you place Flow as a starting point first though!)
 - You can leave the level editor by pressing _D_ on the keyboard _Y_ on the Xbox controller again (while not playing a stage in the level editor)
+
 
 
