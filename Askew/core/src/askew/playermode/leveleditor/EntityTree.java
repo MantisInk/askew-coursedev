@@ -60,12 +60,11 @@ public class EntityTree {
             isBackground = false;
         }
         current = current.parent;
-
     }
 
     public void setTextures(MantisAssetManager manager){
         String[] allPaths = manager.getTexturePaths();
-        System.out.println("Background Entities:");
+        //System.out.println("Background Entities:");
         for (String s : allPaths){
             if(s.contains("/background/")){
                 String[] parts = s.split("/");
@@ -73,12 +72,11 @@ public class EntityTree {
                 String name = file.substring(0,file.indexOf("."));
                 System.out.println("BG: " + name);
                 ETNode bg = new ETNode(root.children.get(0), name, s, true);
-
             }
         }
         setTextures(manager,root);
-        System.out.println("Entity Tree Structure: ");
-        System.out.println(this);
+        //System.out.println("Entity Tree Structure: ");
+        //System.out.println(this);
 
     }
 
@@ -94,7 +92,6 @@ public class EntityTree {
     public String toString(){
         return root.toString();
     }
-
 
     public class ETNode {
 
@@ -115,7 +112,6 @@ public class EntityTree {
             }
             if(parent != null)
                 parent.add(this);
-
         }
 
         public void add(ETNode e){

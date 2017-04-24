@@ -372,7 +372,6 @@ public class InputController {
 		lShiftKeyPrevious = isLShiftKeyPressed();
 		rShiftKeyPrevious = isRShiftKeyPressed();
 
-
 		// Check to see if a GamePad is connected
 		if (xbox.isConnected()) {
 			readGamepad(bounds, scale);

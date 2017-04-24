@@ -131,7 +131,6 @@ public abstract class ComplexObstacle extends Obstacle {
 	 */
 	public void setPosition(float x, float y) {
 		if (body != null) {
-			System.out.println("tetstings");
 			positionCache.set(x,y);
 			body.setTransform(positionCache,body.getAngle());
 		} else {
