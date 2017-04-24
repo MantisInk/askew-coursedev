@@ -87,7 +87,7 @@ public class GameModeController extends WorldController {
 	private int PAUSE_RESTART = 1;
 	private int PAUSE_MAINMENU = 2;
 	private int pause_mode = PAUSE_RESUME;
-	private Texture background;
+	protected Texture background;
 	private Texture pauseTexture;
 	private Texture fern;
 

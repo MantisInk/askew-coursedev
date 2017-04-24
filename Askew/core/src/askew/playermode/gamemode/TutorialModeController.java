@@ -63,7 +63,6 @@ public class TutorialModeController extends GameModeController {
 	private int PAUSE_RESTART = 1;
 	private int PAUSE_MAINMENU = 2;
 	private int pause_mode = PAUSE_RESUME;
-	private Texture background;
 	private Texture pauseTexture;
 	private Texture fern;
 
@@ -134,11 +133,7 @@ public class TutorialModeController extends GameModeController {
 	 * @param manager Reference to global asset manager.
 	 */
 	public void loadContent(MantisAssetManager manager) {
-
-		if (platformAssetState != AssetState.LOADING) {
-			return;
-		}
-
+		super.loadContent(manager);
 		joystickTexture0 = manager.get("texture/tutorial/joystick0.png", Texture.class);
 		joystickTexture1 = manager.get("texture/tutorial/joystick1.png", Texture.class);
 		joystickTexture2 = manager.get("texture/tutorial/joystick2.png", Texture.class);
@@ -146,9 +141,6 @@ public class TutorialModeController extends GameModeController {
 		LeftBumperTexture1 = manager.get("texture/tutorial/bumperDownLeft.png", Texture.class);
 		RightBumperTexture0 = manager.get("texture/tutorial/bumperUpRight.png", Texture.class);
 		RightBumperTexture1 = manager.get("texture/tutorial/bumperDownRight.png", Texture.class);
-
-		super.loadContent(manager);
-		background = manager.get("texture/background/background1.png", Texture.class);
 	}
 
 	// Physics objects for the game
