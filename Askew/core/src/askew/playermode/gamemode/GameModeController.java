@@ -322,19 +322,19 @@ public class GameModeController extends WorldController {
 			System.out.println("MM");
 			listener.exitScreen(this, EXIT_GM_MM);
 			return false;
-		} else if (input.didBottomButtonPress() && !paused) {
+		} else if (input.didRightButtonPress() && !paused) {
 			System.out.println("reset");
 			reset();
 		}
 
 		if (paused) {
 			//InputController input = InputController.getInstance();
-			if (input.didBottomButtonPress() && pause_mode == PAUSE_RESUME) {
+			if (input.didRightButtonPress() && pause_mode == PAUSE_RESUME) {
 				paused = false;
 				playerIsReady = false;
-			} else if (input.didBottomButtonPress() && pause_mode == PAUSE_RESTART) {
+			} else if (input.didRightButtonPress() && pause_mode == PAUSE_RESTART) {
 				reset();
-			} else if (input.didBottomButtonPress() && pause_mode == PAUSE_MAINMENU) {
+			} else if (input.didRightButtonPress() && pause_mode == PAUSE_MAINMENU) {
 				System.out.println("MM");
 				listener.exitScreen(this, EXIT_GM_MM);
 			}
@@ -403,12 +403,27 @@ public class GameModeController extends WorldController {
 	public void update(float dt) {
 		if (!paused) {
 			// Process actions in object model
+			Body leftCollisionBody = collisions.getLeftBody();
+			Body rightCollisionBody = collisions.getRightBody();
+
 			sloth.setLeftHori(InputController.getInstance().getLeftHorizontal());
 			sloth.setLeftVert(InputController.getInstance().getLeftVertical());
 			sloth.setRightHori(InputController.getInstance().getRightHorizontal());
 			sloth.setRightVert(InputController.getInstance().getRightVertical());
-			sloth.setLeftGrab(InputController.getInstance().getLeftGrab());
-			sloth.setRightGrab(InputController.getInstance().getRightGrab());
+			boolean didSafe = InputController.getInstance()
+					.getRightGrab();
+			if (sloth.controlMode == 0) {
+				// TODO: Make more elegant - trevor
+				sloth.setLeftGrab(InputController.getInstance().getLeftGrab());
+				sloth.setRightGrab(InputController.getInstance().getRightGrab());
+			} else {
+				if (!didSafe) {
+					sloth.setOneGrab(InputController.getInstance()
+							.isBottomButtonPressed());
+				}
+				sloth.setSafeGrab(didSafe, leftCollisionBody,
+						rightCollisionBody, world);
+			}
 			sloth.setLeftStickPressed(InputController.getInstance().getLeftStickPressed());
 			sloth.setRightStickPressed(InputController.getInstance().getRightStickPressed());
 			if (timedLevels)
@@ -417,9 +432,6 @@ public class GameModeController extends WorldController {
 			//#TODO Collision states check
 			setFailure(collisions.isFlowKill());
 
-			Body leftCollisionBody = collisions.getLeftBody();
-			Body rightCollisionBody = collisions.getRightBody();
-
 			if (collisions.isFlowWin()) {
 				System.out.println("VICTORY");
 				setComplete(true);
@@ -427,16 +439,18 @@ public class GameModeController extends WorldController {
 
 			// Physics tiem
 			// Gribby grab
-			if (sloth.isLeftGrab()) {
-				sloth.grab(world, leftCollisionBody, true);
-			} else {
-				sloth.releaseLeft(world);
-			}
+			if (!didSafe) {
+				if (sloth.isLeftGrab()) {
+					sloth.grab(world, leftCollisionBody, true);
+				} else {
+					sloth.releaseLeft(world);
+				}
 
-			if (sloth.isRightGrab()) {
-				sloth.grab(world, rightCollisionBody, false);
-			} else {
-				sloth.releaseRight(world);
+				if (sloth.isRightGrab()) {
+					sloth.grab(world, rightCollisionBody, false);
+				} else {
+					sloth.releaseRight(world);
+				}
 			}
 
 			if (sloth.isGrabbedEntity()) {

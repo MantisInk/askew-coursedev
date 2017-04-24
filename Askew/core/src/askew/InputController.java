@@ -102,6 +102,7 @@ public class InputController {
 	private boolean startButtonPressed;
 	private boolean startButtonPrevious;
 
+	@Getter
 	private boolean leftButtonPressed;
 	private boolean leftButtonPrevious;
 
@@ -259,6 +260,10 @@ public class InputController {
 	 */
 	public boolean didBottomButtonPress() {
 		return bottomButtonPressed && !bottomButtonPrevious;
+	}
+
+	public boolean isBottomButtonPressed() {
+		return bottomButtonPressed;
 	}
 
 	public boolean didStartPress() {

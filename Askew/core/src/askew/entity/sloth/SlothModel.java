@@ -37,12 +37,14 @@ public class SlothModel extends ComplexObstacle  {
     private transient float GRAVITY_SCALE;
     private transient boolean GRABBING_HAND_HAS_TORQUE;
     private transient float OMEGA_NORMALIZER;
+    public transient int controlMode;
 
-    private transient int MOVEMENT_ORIGINAL = 0;
-    private transient int MOVEMENT_REVERSE = 1;
-    private transient int MOVEMENT_TOGGLE = 2;
+    public static final int GRAB_ORIGINAL = 0;
+    public static final int GRAB_REVERSE = 1;
+    public static final int GRAB_TOGGLE = 2;
 
-
+    public static final int CONTROLS_ORIGINAL = 0;
+    public static final int CONTROLS_ONE_ARM = 1;
 
     /** Indices for the body parts in the bodies array */
     private static final int PART_NONE = -1;
@@ -102,6 +104,8 @@ public class SlothModel extends ComplexObstacle  {
     private transient boolean rightGrabbing;
     @Getter
     private transient boolean grabbedEntity;
+    private transient boolean leftCanGrabOrIsGrabbing;
+    private transient boolean didSafeGrab;
 
     /**
      * Returns the texture index for the given body part
@@ -175,6 +179,8 @@ public class SlothModel extends ComplexObstacle  {
         this.OMEGA_NORMALIZER = GlobalConfiguration.getInstance().getAsFloat("flowOmegaNormalizer");
         this.ARM_DENSITY = GlobalConfiguration.getInstance().getAsFloat("flowArmDensity");
         this.movementMode = GlobalConfiguration.getInstance().getAsInt("flowMovementMode");
+        this.controlMode = GlobalConfiguration.getInstance().getAsInt
+                ("flowControlMode");
         this.rightGrabbing = false;
         this.leftGrabbing =  true;
     }
@@ -363,6 +369,20 @@ public class SlothModel extends ComplexObstacle  {
 
         Obstacle rightArm = bodies.get(PART_RIGHT_ARM);
         Obstacle leftArm = bodies.get(PART_LEFT_ARM);
+
+        if (controlMode == CONTROLS_ONE_ARM) {
+            if (leftCanGrabOrIsGrabbing && isActualLeftGrab() ||
+                    (!leftCanGrabOrIsGrabbing && !isActualRightGrab())) {
+                rightHori = leftHori;
+                rightVert = leftVert;
+                leftHori = 0;
+                leftVert = 0;
+            } else {
+                rightHori = 0;
+                rightVert = 0;
+            }
+        }
+
         //TODO REDUCE MAGIC NUMBERS ( HENRY )
         // Apply forces
         float lcTheta = (float)Math.atan2(leftVert,leftHori);
@@ -380,7 +400,6 @@ public class SlothModel extends ComplexObstacle  {
         float impulseL = 0;
         if(totalRotL * dLTheta < 0 && lLength > .4f){
             impulseL = ((leftHand.getMass() * ARM_XOFFSET * ARM_XOFFSET) + leftArm.getInertia()) * leftArm.getAngularVelocity() * -1 * 60/2;
-
         }
 
         if(isActualLeftGrab()){
@@ -517,17 +536,16 @@ public class SlothModel extends ComplexObstacle  {
         }
 
         canvas.endDebug();
-
     }
 
     public void setLeftGrab(boolean leftGrab) {
-        if (movementMode == MOVEMENT_ORIGINAL)
+        if (movementMode == GRAB_ORIGINAL)
             this.leftGrab = leftGrab;
-        else if (movementMode == MOVEMENT_REVERSE)
+        else if (movementMode == GRAB_REVERSE)
             this.leftGrab = !leftGrab;
-        else if (movementMode == MOVEMENT_TOGGLE && leftGrab) {
+        else if (movementMode == GRAB_TOGGLE && leftGrab) {
             if (!leftGrabbing) {
-                leftGrabbing = true;
+                leftGrabbing = (controlMode == CONTROLS_ORIGINAL);
             }
             else {
                 leftGrabbing = false;
@@ -537,11 +555,11 @@ public class SlothModel extends ComplexObstacle  {
     }
 
     public void setRightGrab(boolean rightGrab) {
-        if (movementMode == MOVEMENT_ORIGINAL)
+        if (movementMode == GRAB_ORIGINAL)
             this.rightGrab = rightGrab;
-        else if (movementMode == MOVEMENT_REVERSE)
+        else if (movementMode == GRAB_REVERSE)
             this.rightGrab = !rightGrab;
-        else if (movementMode == MOVEMENT_TOGGLE && rightGrab) {
+        else if (movementMode == GRAB_TOGGLE && rightGrab) {
             if (!rightGrabbing) {
                 rightGrabbing = true;
             }
@@ -603,8 +621,8 @@ public class SlothModel extends ComplexObstacle  {
 
     public void releaseLeft(World world) {
         if (leftGrabJoint != null) {
-            if (movementMode != MOVEMENT_TOGGLE || (movementMode == MOVEMENT_TOGGLE && !leftGrabbing))
-                world.destroyJoint(leftGrabJoint);
+            if (movementMode != GRAB_TOGGLE || !leftGrabbing) world.destroyJoint(leftGrabJoint);
+            leftCanGrabOrIsGrabbing = false;
         }
         leftGrabJoint = null;
     }
@@ -612,8 +630,8 @@ public class SlothModel extends ComplexObstacle  {
 
     public void releaseRight(World world) {
         if (rightGrabJoint != null) {
-            if (movementMode != MOVEMENT_TOGGLE || (movementMode == MOVEMENT_TOGGLE && !rightGrabbing))
-                world.destroyJoint(rightGrabJoint);
+            if (movementMode != GRAB_TOGGLE || !rightGrabbing) world.destroyJoint(rightGrabJoint);
+            leftCanGrabOrIsGrabbing = true;
         }
         rightGrabJoint = null;
     }
@@ -743,12 +761,30 @@ public class SlothModel extends ComplexObstacle  {
                 //If the body parts are from the right limb
                 if (body_ind == 3 || body_ind == 4) continue;
                 if (body_ind == 1 || body_ind == 4) {
-                    part.draw(canvas, Color.WHITE);
-                    part.draw(canvas, Color.WHITE);     //remove this line when you draw the head
+                    // right limb
+                    if (controlMode == CONTROLS_ONE_ARM) {
+                        if ( (leftCanGrabOrIsGrabbing && isActualLeftGrab())
+                                || (!leftCanGrabOrIsGrabbing &&
+                                !isActualRightGrab()))
+                            part.draw(canvas, Color
+                                .WHITE);
+                        else part.draw(canvas, Color.BLACK);
+                    } else {
+                        part.draw(canvas, Color.WHITE);
+                    }
                 }
                 //If the body parts are from the left limb
                 else if (body_ind == 2 || body_ind == 3) {
-                    part.draw(canvas, Color.WHITE);
+                    // left limb
+                    if (controlMode == CONTROLS_ONE_ARM) {
+                        if ( (leftCanGrabOrIsGrabbing && !isActualLeftGrab())
+                                || (!leftCanGrabOrIsGrabbing && isActualRightGrab()))
+                            part.draw(canvas,
+                                Color.WHITE);
+                        else part.draw(canvas, Color.BLACK);
+                    } else {
+                        part.draw(canvas, Color.WHITE);
+                    }
                 }
                 //If the body parts are not limbs
                 else {
@@ -759,6 +795,54 @@ public class SlothModel extends ComplexObstacle  {
         //Commented out because the vine images disappear when this is used here?
         //drawForces();
 
+    }
+
+    /**
+     * Sets the grab for one handed mode
+     * @param b
+     */
+    public void setOneGrab(boolean b) {
+        grabbedEntity = false;
+        if (leftCanGrabOrIsGrabbing) {
+            rightGrab = false;
+            setLeftGrab(b);
+        } else {
+            leftGrab = false;
+            setRightGrab(b);
+        }
+    }
+
+    /**
+     * For one handed mode: release current hand and grab with other, only if
+     * the operation is guaranteed to succeed
+     * @param leftButtonPressed
+     * @param leftCollisionBody
+     * @param rightCollisionBody
+     * @param world
+     */
+    public void setSafeGrab(boolean leftButtonPressed, Body leftCollisionBody, Body rightCollisionBody, World world) {
+        grabbedEntity = false;
+        if (leftButtonPressed) {
+            if (!didSafeGrab) {
+                if (isActualLeftGrab()) {
+                    if (rightCollisionBody != null) {
+                        releaseLeft(world);
+                        grab(world, rightCollisionBody, false);
+                        didSafeGrab = true;
+                    }
+                } else {
+                    if (isActualRightGrab()) {
+                        if (leftCollisionBody != null) {
+                            releaseRight(world);
+                            grab(world, leftCollisionBody, true);
+                            didSafeGrab = true;
+                        }
+                    }
+                }
+            }
+        } else {
+            didSafeGrab = false;
+        }
     }
 }
 
