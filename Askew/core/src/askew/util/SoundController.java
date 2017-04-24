@@ -22,6 +22,9 @@ import com.badlogic.gdx.assets.*;
 import com.badlogic.gdx.audio.*;
 import com.badlogic.gdx.utils.*;
 
+import java.util.IdentityHashMap;
+import java.util.Map;
+
 /**
  * A singleton class for controlling sound effects in LibGDX
  * 
@@ -101,6 +104,8 @@ public class SoundController {
 	private IdentityMap<String,ActiveSound> actives;
 	/** Support class for garbage collection */
 	private Array<String> collection;
+
+	private IdentityMap<String,Sound> customVolumes;
 	
 	
 	/** The number of animation frames before a key can be reused */
@@ -119,6 +124,7 @@ public class SoundController {
 		soundbank = new IdentityMap<String,Sound>();
 		actives = new IdentityMap<String,ActiveSound>();
 		collection = new Array<String>();
+		customVolumes = new IdentityMap<String,Sound>();
 		cooldown = DEFAULT_COOL;
 		timeLimit = DEFAULT_LIMIT;
 		frameLimit = DEFAULT_FRAME;
@@ -354,6 +360,12 @@ public class SoundController {
 	 */
 	public boolean isActive(String key) {
 		return actives.containsKey(key);
+	}
+
+	public void setVolume(String key, float volume) {
+		ActiveSound activeSound = actives.get(key);
+		if (activeSound == null) return;
+		activeSound.sound.setVolume(activeSound.id,volume);
 	}
 	
 	/**
