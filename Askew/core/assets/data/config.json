@@ -10,7 +10,7 @@
   "vineDensity": 1.0,
   "fullscreen": false,
   "defaultLevel": "level0",
-  "timedLevels": false,
+  "storeTimeRecords": false,
   "maxLevel": 9,
   "currentLevel": 1
 }

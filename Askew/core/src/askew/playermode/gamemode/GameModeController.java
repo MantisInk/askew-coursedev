@@ -77,7 +77,7 @@ public class GameModeController extends WorldController {
 	private int numLevel, MAX_LEVEL; 	// track int val of lvl #
 
 	private float currentTime, recordTime;	// track current and record time to complete level
-	private boolean timedLevels;
+	private boolean storeTimeRecords;
 
 	protected PhysicsController collisions;
 
@@ -187,7 +187,7 @@ public class GameModeController extends WorldController {
 		DEFAULT_LEVEL = GlobalConfiguration.getInstance().getAsString("defaultLevel");
 		MAX_LEVEL = GlobalConfiguration.getInstance().getAsInt("maxLevel");
 		loadLevel = DEFAULT_LEVEL;
-		timedLevels = GlobalConfiguration.getInstance().getAsBoolean("timedLevels");
+		storeTimeRecords = GlobalConfiguration.getInstance().getAsBoolean("storeTimeRecords");
 		jsonLoaderSaver = new JSONLoaderSaver();
 	}
 
@@ -437,8 +437,7 @@ public class GameModeController extends WorldController {
 			}
 			sloth.setLeftStickPressed(InputController.getInstance().getLeftStickPressed());
 			sloth.setRightStickPressed(InputController.getInstance().getRightStickPressed());
-			if (timedLevels)
-				currentTime += dt;
+			currentTime += dt;
 
 			//#TODO Collision states check
 			setFailure(collisions.isFlowKill());
@@ -476,7 +475,7 @@ public class GameModeController extends WorldController {
 
 			if (isComplete()) {
 				float record = currentTime;
-				if (record < levelModel.getRecordTime() && timedLevels) {
+				if (record < levelModel.getRecordTime() && storeTimeRecords) {
 					levelModel.setRecordTime(record);
 					if (jsonLoaderSaver.saveLevel(levelModel, loadLevel))
 						System.out.println("New record time for this level!");
@@ -543,7 +542,6 @@ public class GameModeController extends WorldController {
 			Gdx.gl.glEnable(GL20.GL_BLEND);
 			displayFont.setColor(Color.WHITE);
 			Color coverColor = new Color(0,0,0,coverOpacity);
-			System.out.println(coverOpacity);
 			canvas.drawRectangle(coverColor,0,0,canvas.getWidth(), canvas
 					.getHeight());
 			coverOpacity -= (1/60f); // 2 second cover
