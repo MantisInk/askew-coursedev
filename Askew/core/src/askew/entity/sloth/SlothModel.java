@@ -30,17 +30,13 @@ public class SlothModel extends ComplexObstacle  {
     /** Constants for tuning sloth behaviour */
     private static final float HAND_DENSITY = 10.0f;
     private transient float ARM_DENSITY;
-    private static final float HEAD_DENSITY = 1.0f;
     private static final float BODY_DENSITY = 1.25f;
-    private transient float TWO_FREE_FORCE_MULTIPLIER;
     private transient float TORQUE;
     private static final boolean BODY_FIXED_ROTATION = true;
     private static final boolean HANDS_FIXED_ROTATION = true;
     private transient float GRAVITY_SCALE;
-    private transient boolean SPIDERMAN_MODE;
     private transient boolean GRABBING_HAND_HAS_TORQUE;
     private transient float OMEGA_NORMALIZER;
-    private transient boolean TORQUE_BASED_MOVEMENT = false;
 
     private transient int MOVEMENT_ORIGINAL = 0;
     private transient int MOVEMENT_REVERSE = 1;
@@ -173,20 +169,14 @@ public class SlothModel extends ComplexObstacle  {
         this.x = x;
         this.y = y;
         this.setObjectScale(1.0f/1.5f,1.0f/1.5f);
-        this.SPIDERMAN_MODE = GlobalConfiguration.getInstance().getAsBoolean("flowGrabAnything");
-        this.TWO_FREE_FORCE_MULTIPLIER = GlobalConfiguration.getInstance().getAsFloat("flowTwoFreeForceMultiplier");
         this.TORQUE = GlobalConfiguration.getInstance().getAsFloat("flowTorque");
         this.GRAVITY_SCALE = GlobalConfiguration.getInstance().getAsFloat("flowGravityScale");
         this.GRABBING_HAND_HAS_TORQUE = GlobalConfiguration.getInstance().getAsBoolean("flowCanMoveGrabbingHand");
         this.OMEGA_NORMALIZER = GlobalConfiguration.getInstance().getAsFloat("flowOmegaNormalizer");
         this.ARM_DENSITY = GlobalConfiguration.getInstance().getAsFloat("flowArmDensity");
-        this.TORQUE_BASED_MOVEMENT = GlobalConfiguration.getInstance()
-                .getAsBoolean("torqueBasedMovement");
         this.movementMode = GlobalConfiguration.getInstance().getAsInt("flowMovementMode");
         this.rightGrabbing = false;
         this.leftGrabbing =  true;
-        //this.shaper = new ShapeRenderer();
-
     }
 
     private void init() {
@@ -267,20 +257,20 @@ public class SlothModel extends ComplexObstacle  {
         }
 
         //width and height are in box2d units
-        float dwidth  = width*objectScale.x;
-        float dheight = height*objectScale.x;
+        float dWidth  = width*objectScale.x;
+        float dHeight = height*objectScale.x;
 
 
         BoxObstacle body;
         if(collides){
-            body = new BoxObstacle(partCache.x, partCache.y, dwidth, dheight);
+            body = new BoxObstacle(partCache.x, partCache.y, dWidth, dHeight);
             Filter f = new Filter();
             f.maskBits = FilterGroup.WALL;
             f.categoryBits = FilterGroup.SLOTH;
             body.setFilterData(f);
         }
         else{
-            body = new BoxObstacle(partCache.x, partCache.y, dwidth, dheight);
+            body = new BoxObstacle(partCache.x, partCache.y, dWidth, dHeight);
             body.setFriction(.4f);
             Filter f = new Filter();
             f.maskBits = FilterGroup.NOCOLLIDE;
@@ -308,9 +298,6 @@ public class SlothModel extends ComplexObstacle  {
     protected boolean createJoints(World world) {
         assert bodies.size > 0;
 
-        // ARM TO ARM WOW
-//        createJoint(world, PART_LEFT_ARM, PART_RIGHT_ARM, ARM_XOFFSET/2, 0, -ARM_XOFFSET/2, 0);
-
         // BODY TO ARM WOW
         createJoint(world, PART_BODY, PART_RIGHT_ARM, SHOULDER_XOFFSET/2, SHOULDER_YOFFSET, -ARM_XOFFSET/2, 0);
         createJoint(world, PART_BODY, PART_LEFT_ARM, SHOULDER_XOFFSET/2, SHOULDER_YOFFSET, -ARM_XOFFSET/2, 0);
@@ -318,9 +305,6 @@ public class SlothModel extends ComplexObstacle  {
         // HANDS
         createJoint(world, PART_LEFT_ARM, PART_LEFT_HAND, HAND_XOFFSET, 0, 0, 0);
         createJoint(world, PART_RIGHT_ARM, PART_RIGHT_HAND, HAND_XOFFSET, 0, 0, 0);
-
-        // This is bad but i do sensors here
-//        activateSlothPhysics();
 
         return true;
     }
@@ -335,9 +319,6 @@ public class SlothModel extends ComplexObstacle  {
         jointDef.localAnchorA.set(anchorA);
         jointDef.localAnchorB.set(anchorB);
         jointDef.collideConnected = false;
-        //jointDef.lowerAngle = (float) (- Math.PI/4);
-        //jointDef.upperAngle = (float) (Math.PI/4);
-        //jointDef.enableLimit = true;
         Joint joint = world.createJoint(jointDef);
         joints.add(joint);
     }
@@ -358,22 +339,10 @@ public class SlothModel extends ComplexObstacle  {
         this.rightVert = rightVert;
     }
 
-//    public static Obstacle getLeftArm(){
-//        return bodies.get(3);
-//    }
-//
-//    public static Obstacle getRightArm(){
-//        return bodies.get(2);
-//    }
-
     //theta is in radians between 0 and pi
     public float calculateTorque(float deltaTheta, float omega){
         //return (float) Math.max(-1.0f,Math.min(1.0f, 1.2 * Math.sin(deltaTheta)));
         return (float)((10.0 / (1 + Math.exp(omega + (deltaTheta *4)))) - 5);//#MAGIC 4, DELTA THETA NORMALIZER
-    }
-
-    public float calculateTorqueOld(float deltaTheta){
-        return (float) Math.max(-1.0f,Math.min(1.0f, 1.2 * Math.sin(deltaTheta)));
     }
 
     /**
@@ -381,7 +350,7 @@ public class SlothModel extends ComplexObstacle  {
      */
 
     public float angleDiff(float goal, float current){
-        float diff = (float)(goal - current);
+        float diff = goal - current;
         if(diff > PI){ diff -= (PI + PI);}
         if(diff < -PI){ diff += (PI + PI);}
         return diff;
@@ -389,191 +358,111 @@ public class SlothModel extends ComplexObstacle  {
 
 
     public void doThePhysics() {
-        if (TORQUE_BASED_MOVEMENT || (leftGrabJoint == null && rightGrabJoint == null)) {
-            Obstacle rightHand = bodies.get(PART_RIGHT_HAND);
-            Obstacle leftHand = bodies.get(PART_LEFT_HAND);
+        Obstacle rightHand = bodies.get(PART_RIGHT_HAND);
+        Obstacle leftHand = bodies.get(PART_LEFT_HAND);
 
-            Obstacle rightArm = bodies.get(PART_RIGHT_ARM);
-            Obstacle leftArm = bodies.get(PART_LEFT_ARM);
-            //TODO REDUCE MAGIC NUMBERS ( HENRY )
-            // Apply forces
-            float dLTheta = 0f;
-            float lcTheta = (float)Math.atan2(leftVert,leftHori); // correct
-            float lTheta = (-leftArm.getAngle()) + PI;
-            lTheta = ((lTheta%(2*PI)) + (2*PI)) % (2*PI) - PI; //ltheta is correct
-            float lav = leftArm.getAngularVelocity() * 2;
-            float lLength = (float)Math.sqrt((leftVert * leftVert) + (leftHori * leftHori));
-            dLTheta = angleDiff(lcTheta,lTheta);
+        Obstacle rightArm = bodies.get(PART_RIGHT_ARM);
+        Obstacle leftArm = bodies.get(PART_LEFT_ARM);
+        //TODO REDUCE MAGIC NUMBERS ( HENRY )
+        // Apply forces
+        float lcTheta = (float)Math.atan2(leftVert,leftHori);
+        float lTheta = (-leftArm.getAngle()) + PI;
+        lTheta = ((lTheta%(2*PI)) + (2*PI)) % (2*PI) - PI;
+        float lav = leftArm.getAngularVelocity() * 2;
+        float lLength = (float)Math.sqrt((leftVert * leftVert) + (leftHori * leftHori));
+        float dLTheta = angleDiff(lcTheta,lTheta);
 
-            //antiwobble
-            float nextLTheta = -leftArm.getAngle()+PI - leftArm.getAngularVelocity()/20f;
-            nextLTheta = ((nextLTheta%(2*PI)) + (2*PI)) % (2*PI) - PI; //ltheta is correct
-            float totalRotL = angleDiff(lcTheta,nextLTheta);
+        //antiwobble
+        float nextLTheta = -leftArm.getAngle()+PI - leftArm.getAngularVelocity()/20f;
+        nextLTheta = ((nextLTheta%(2*PI)) + (2*PI)) % (2*PI) - PI;
+        float totalRotL = angleDiff(lcTheta,nextLTheta);
 
-            float impulseL = 0;
-            if(totalRotL * dLTheta < 0 && lLength > .4f){
-                impulseL = ((leftHand.getMass() * ARM_XOFFSET * ARM_XOFFSET) + leftArm.getInertia()) * leftArm.getAngularVelocity() * -1 * 60/2;
+        float impulseL = 0;
+        if(totalRotL * dLTheta < 0 && lLength > .4f){
+            impulseL = ((leftHand.getMass() * ARM_XOFFSET * ARM_XOFFSET) + leftArm.getInertia()) * leftArm.getAngularVelocity() * -1 * 60/2;
 
-            }
-
-            if(isActualLeftGrab()){
-                impulseL = impulseL * 6;
-            }
-
-            float dRTheta = 0f;
-            float rcTheta = (float)Math.atan2(rightVert,rightHori);
-            float rTheta = -rightArm.getAngle() + PI;
-            rTheta = ((rTheta%(2*PI)) + (2*PI)) % (2*PI) - PI;
-            float rav = rightArm.getAngularVelocity() * 2;
-            float rLength = (float)Math.sqrt((rightVert * rightVert) + (rightHori * rightHori));
-            dRTheta = angleDiff(rcTheta,rTheta);
-
-            //antiwobble
-            float nextRTheta = -rightArm.getAngle()+PI - rightArm.getAngularVelocity()/20f;
-            nextRTheta = ((nextRTheta%(2*PI)) + (2*PI)) % (2*PI) - PI; //ltheta is correct
-            float totalRotR = angleDiff(rcTheta, nextRTheta);
-
-            float impulseR = 0;
-            if(totalRotR * dRTheta < 0 && rLength > .4f){
-                impulseR = ((rightHand.getMass() * ARM_XOFFSET * ARM_XOFFSET) + rightArm.getInertia()) * rightArm.getAngularVelocity() * -1 * 60/2;
-
-            }
-
-            if(isActualRightGrab()){
-                impulseR = impulseR * 6;
-            }
-
-
-
-            //countertorque left stick on right arm
-            float dLcRTheta = 0f; // How much left controller affects right arm
-            float invlcTheta = (float)Math.atan2(-leftVert,-leftHori);
-            dLcRTheta = angleDiff(invlcTheta, rTheta);
-
-            //countertorque right stick on left arm
-            float dRcLTheta = 0f; // How much right controller affects left arm
-            float invrcTheta = (float)Math.atan2(-rightVert,-rightHori);
-            dRcLTheta = angleDiff(invrcTheta, lTheta);
-
-            //anticounterwobble right arm
-            float cwtrL = angleDiff(invrcTheta, nextLTheta);
-            float cwtrR = angleDiff(invlcTheta, nextRTheta);
-
-
-
-
-
-
-            float counterfactor = .3f;
-            float counterfR =0;
-            float counterfL = 0;
-            float cimpulseR = 0;
-            float cimpulseL = 0;
-            if (isActualLeftGrab()  &&  rLength > .4f) {
-                counterfL = counterfactor * calculateTorque(dRcLTheta, lav / OMEGA_NORMALIZER);
-                if(dRcLTheta * cwtrL < 0 ){
-                    cimpulseL = ((leftHand.getMass() * ARM_XOFFSET * ARM_XOFFSET) + leftArm.getInertia()) * leftArm.getAngularVelocity() * -1 * 60 * 3 * (1-lLength) ;
-                }
-            }
-            if (isActualRightGrab()  && lLength > .4f) {
-                counterfR = counterfactor * calculateTorque(dLcRTheta, rav / OMEGA_NORMALIZER);
-                if(dLcRTheta * cwtrR < 0){
-                    cimpulseR = ((rightHand.getMass() * ARM_XOFFSET * ARM_XOFFSET) + rightArm.getInertia()) * rightArm.getAngularVelocity() * -1 * 60 * 3 * (1-rLength) ;
-                }
-            }
-
-
-
-
-
-
-
-
-
-            float forceLeft =  calculateTorque(dLTheta,lav/OMEGA_NORMALIZER); //#MAGIC 20f default, omega normalizer
-            
-            if(impulseL > 0)
-                forceLeft = 0;
-
-            float forceRight = calculateTorque(dRTheta,rav/OMEGA_NORMALIZER);
-            if(impulseR > 0)
-                forceRight = 0;
-
-            float ltorque = TORQUE * ((forceLeft  * lLength) + TORQUE * (counterfL * rLength  )) + impulseL + cimpulseL;
-            float rtorque = TORQUE * ((forceRight * rLength) + TORQUE * ( counterfR * lLength )) + impulseR + cimpulseR;
-            forceL.set((float) (ltorque * Math.sin(lTheta)),(float) (ltorque * Math.cos(lTheta)));
-            forceR.set((float) (rtorque * Math.sin(rTheta)),(float) (rtorque * Math.cos(rTheta)));
-
-            if ((GRABBING_HAND_HAS_TORQUE || !isActualLeftGrab()) )
-                leftArm
-                        .getBody()
-                        .applyTorque(ltorque,true);
-            if ((GRABBING_HAND_HAS_TORQUE || !isActualRightGrab()) )
-                rightArm
-                        .getBody()
-                        .applyTorque(rtorque, true);
-
-            //Draw the lines for the forces
-
-            float left_x = leftHori*TWO_FREE_FORCE_MULTIPLIER;
-            float left_y = -leftVert*TWO_FREE_FORCE_MULTIPLIER;
-
-            float right_x = rightHori*TWO_FREE_FORCE_MULTIPLIER;
-            float right_y = -rightVert*TWO_FREE_FORCE_MULTIPLIER;
-        } else {
-            Obstacle rightHand = bodies.get(PART_RIGHT_HAND);
-            Obstacle leftHand = bodies.get(PART_LEFT_HAND);
-
-            Obstacle rightArm = bodies.get(PART_RIGHT_ARM);
-            Obstacle leftArm = bodies.get(PART_LEFT_ARM);
-            //TODO CALCULATE TORQUE
-            // Apply forces
-            float dLTheta = 0f;
-            float dRTheta = 0f;
-
-
-            float lcTheta = (float)Math.atan2(leftVert,leftHori);
-            float lTheta = leftArm.getAngle();
-            lTheta = -(lTheta+PI)%(2*PI)-PI;
-            float lLength = (float)Math.sqrt((leftVert * leftVert) + (leftHori * leftHori));
-            dLTheta = (float)(lTheta - lcTheta);
-            dLTheta = (dLTheta+PI)%(2*PI)-PI;
-
-            float rcTheta = (float)Math.atan2(rightVert,rightHori);
-            float rTheta = rightArm.getAngle();
-            rTheta = -(rTheta+PI)%(2*PI)-PI;
-            float rLength = (float)Math.sqrt((rightVert * rightVert) + (rightHori * rightHori));
-            dRTheta = (float)(rTheta - rcTheta);
-            dRTheta = (dRTheta+PI)%(2*PI)-PI;
-
-            float forceLeft = calculateTorqueOld(-dLTheta);
-            float lx = (float) (TORQUE * -Math.sin(lTheta) * forceLeft * lLength);
-            float ly = (float) (TORQUE * -Math.cos(lTheta) * forceLeft * lLength);
-            forceL.set(lx,ly);
-
-            float forceRight = calculateTorqueOld(-dRTheta);
-            float rx = (float) (TORQUE * -Math.sin(rTheta) * forceRight * rLength);
-            float ry = (float) (TORQUE * -Math.cos(rTheta) * forceRight * rLength);
-            forceR.set(rx,ry);
-
-            if (isActualRightGrab() && !isActualLeftGrab())
-                leftHand
-                        .getBody()
-                        .applyForce(lx, ly, leftHand.getX(), leftHand.getY(), true);
-            if (!isActualRightGrab() && isActualLeftGrab())
-                rightHand
-                        .getBody()
-                        .applyForce(rx, ry, rightHand.getX(), rightHand.getY(), true);
         }
-//        if (bodies.get(PART_BODY).getBody().getLinearVelocity().x > 0) {
-//            flowFacingState++;
-//        } else {
-//            flowFacingState--;
-//        }
-//
-//        // MAGIC NUMBERS (TREVOR)
-//        if (flowFacingState > 25) flowFacingState = 25;
-//        if (flowFacingState < -25) flowFacingState = -25;
+
+        if(isActualLeftGrab()){
+            impulseL = impulseL * 6;
+        }
+
+        float rcTheta = (float)Math.atan2(rightVert,rightHori);
+        float rTheta = -rightArm.getAngle() + PI;
+        rTheta = ((rTheta%(2*PI)) + (2*PI)) % (2*PI) - PI;
+        float rav = rightArm.getAngularVelocity() * 2;
+        float rLength = (float)Math.sqrt((rightVert * rightVert) + (rightHori * rightHori));
+        float dRTheta = angleDiff(rcTheta,rTheta);
+
+        //antiwobble
+        float nextRTheta = -rightArm.getAngle()+PI - rightArm.getAngularVelocity()/20f;
+        nextRTheta = ((nextRTheta%(2*PI)) + (2*PI)) % (2*PI) - PI; //ltheta is correct
+        float totalRotR = angleDiff(rcTheta, nextRTheta);
+
+        float impulseR = 0;
+        if(totalRotR * dRTheta < 0 && rLength > .4f){
+            impulseR = ((rightHand.getMass() * ARM_XOFFSET * ARM_XOFFSET) + rightArm.getInertia()) * rightArm.getAngularVelocity() * -1 * 60/2;
+        }
+
+        if(isActualRightGrab()){
+            impulseR = impulseR * 6;
+        }
+
+        //countertorque left stick on right arm
+        float dLcRTheta = 0f; // How much left controller affects right arm
+        float invlcTheta = (float)Math.atan2(-leftVert,-leftHori);
+        dLcRTheta = angleDiff(invlcTheta, rTheta);
+
+        //countertorque right stick on left arm
+        float dRcLTheta = 0f; // How much right controller affects left arm
+        float invrcTheta = (float)Math.atan2(-rightVert,-rightHori);
+        dRcLTheta = angleDiff(invrcTheta, lTheta);
+
+        //anticounterwobble right arm
+        float cwtrL = angleDiff(invrcTheta, nextLTheta);
+        float cwtrR = angleDiff(invlcTheta, nextRTheta);
+
+        float counterfactor = .3f;
+        float counterfR =0;
+        float counterfL = 0;
+        float cimpulseR = 0;
+        float cimpulseL = 0;
+        if (isActualLeftGrab()  &&  rLength > .4f) {
+            counterfL = counterfactor * calculateTorque(dRcLTheta, lav / OMEGA_NORMALIZER);
+            if(dRcLTheta * cwtrL < 0 ){
+                cimpulseL = ((leftHand.getMass() * ARM_XOFFSET * ARM_XOFFSET) + leftArm.getInertia()) * leftArm.getAngularVelocity() * -1 * 60 * 3 * (1-lLength) ;
+            }
+        }
+        if (isActualRightGrab()  && lLength > .4f) {
+            counterfR = counterfactor * calculateTorque(dLcRTheta, rav / OMEGA_NORMALIZER);
+            if(dLcRTheta * cwtrR < 0){
+                cimpulseR = ((rightHand.getMass() * ARM_XOFFSET * ARM_XOFFSET) + rightArm.getInertia()) * rightArm.getAngularVelocity() * -1 * 60 * 3 * (1-rLength) ;
+            }
+        }
+
+        float forceLeft =  calculateTorque(dLTheta,lav/OMEGA_NORMALIZER); //#MAGIC 20f default, omega normalizer
+        float forceRight = calculateTorque(dRTheta,rav/OMEGA_NORMALIZER);
+
+        if(impulseL > 0)
+            forceLeft = 0;
+
+        if(impulseR > 0)
+            forceRight = 0;
+
+        float lTorque = TORQUE * ((forceLeft  * lLength) + TORQUE * (counterfL * rLength  )) + impulseL + cimpulseL;
+        float rTorque = TORQUE * ((forceRight * rLength) + TORQUE * ( counterfR * lLength )) + impulseR + cimpulseR;
+        forceL.set((float) (lTorque * Math.sin(lTheta)),(float) (lTorque * Math.cos(lTheta)));
+        forceR.set((float) (rTorque * Math.sin(rTheta)),(float) (rTorque * Math.cos(rTheta)));
+
+        if ((GRABBING_HAND_HAS_TORQUE || !isActualLeftGrab()) )
+            leftArm
+                    .getBody()
+                    .applyTorque(lTorque,true);
+        if ((GRABBING_HAND_HAS_TORQUE || !isActualRightGrab()) )
+            rightArm
+                    .getBody()
+                    .applyTorque(rTorque, true);
+
         flowFacingState = (int)bodies.get(PART_BODY).getBody().getLinearVelocity().x;
     }
 
@@ -694,11 +583,7 @@ public class SlothModel extends ComplexObstacle  {
         grabJointDef = new RevoluteJointDef();
         grabJointDef.bodyA = hand.getBody(); // barrier
 
-        if (target == null) {
-            return;
-        } else {
-            grabJointDef.bodyB = target;
-        }
+        grabJointDef.bodyB = target;
         grabJointDef.localAnchorA.set(anchorHand);
         grabJointDef.localAnchorB.set(anchorTarget);
         grabJointDef.collideConnected = false;
@@ -736,7 +621,6 @@ public class SlothModel extends ComplexObstacle  {
     public void activateSlothPhysics(World world) {
         float MN_SENSOR_HEIGHT = HAND_HEIGHT/2f;
         float MN_SENSOR_WIDTH = HAND_WIDTH/2f;
-        //float MN_SHRINK = 0.6f;
         Vector2 sensorCenter = new Vector2(0, 0);
         FixtureDef sensorDef = new FixtureDef();
         sensorDef.density = 0.0f;
@@ -762,7 +646,6 @@ public class SlothModel extends ComplexObstacle  {
         grabPointR = world.createBody(bd);
         grabPointL.setTransform(-5f, -5f, 0f);
         grabPointR.setTransform(-5f, -5f, 0f);
-
     }
 
     public float getTorqueForce(float torque, float r, float theta){
@@ -813,7 +696,6 @@ public class SlothModel extends ComplexObstacle  {
     @Override
     public void draw(GameCanvas canvas){
         for(int body_ind = bodies.size-1; body_ind >= 0; body_ind--){
-
             BoxObstacle part = (BoxObstacle) bodies.get(body_ind);
             TextureRegion texture = part.getTexture();
             if (texture != null) {
@@ -874,9 +756,6 @@ public class SlothModel extends ComplexObstacle  {
                 }
             }
         }
-
-
-
         //Commented out because the vine images disappear when this is used here?
         //drawForces();
 

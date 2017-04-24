@@ -1,7 +1,6 @@
 {
   "flowGrabAnything": false,
   "flowArmDensity": 1.1,
-  "flowTwoFreeForceMultiplier": 5.0,
   "flowTorque": 3.5,
   "flowOmegaNormalizer": 5.0,
   "flowGravityScale": 0.7,
@@ -10,7 +9,6 @@
   "vineDensity": 1.0,
   "fullscreen": false,
   "defaultLevel": "level0",
-  "torqueBasedMovement": true,
   "timedLevels": false,
   "maxLevel": 9,
   "currentLevel": 1
