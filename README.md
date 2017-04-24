@@ -28,12 +28,14 @@ You are only able to grab branches and vines.
 ### Swinging
 _Used to gain momentum on vines to swing yourself across the stage!_
 
-- _**Left joystick**_: swing **darker** arm in whichever diretion you tilt
-- _**Right joystick**_: swing **lighter** arm in whichever diretion you tilt
+- _**Left joystick**_: swing **darker** arm in whichever direction you tilt
+- _**Right joystick**_: swing **lighter** arm in whichever direction you tilt
 
 _**Note:** 360 degrees of motion is possible here_
 
-**Tip:** if you ever forget which arm is which, my trick is that the black arm is on the left, and both words have l's in them, so I use the left joystick and button to use the that arm.
+**Tips:**
+- If you ever forget which arm is which, my trick is that the black arm is on the left, and both words have l's in them, so I use the left joystick and button to use the that arm.
+- Another trick is that the _right_ arm is the arm with the b_right_ color.
 
 
 #### _Tips for Swinging **(Updated)**_
