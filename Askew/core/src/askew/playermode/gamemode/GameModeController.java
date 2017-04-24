@@ -64,9 +64,9 @@ public class GameModeController extends WorldController {
 	private Vector2[] pause_locs = {new Vector2(11f,4.8f), new Vector2(9f,3.9f), new Vector2(11f,3f)};
 
 	public static final String[] GAMEPLAY_MUSIC = new String[] {
-		"sound/music/askew.ogg",
-		"sound/music/flowwantshisorherbaby.ogg",
-		"sound/music/youdidit.ogg"
+			"sound/music/askew.ogg",
+			"sound/music/flowwantshisorherbaby.ogg",
+			"sound/music/youdidit.ogg"
 	};
 
 	public static final String GRAB_SOUND = "sound/effect/grab.wav";
@@ -98,6 +98,8 @@ public class GameModeController extends WorldController {
 	private static final float NEAR_FALL_DEATH_DISTANCE = 38;
 	private static final float LOWEST_ENTITY_FALL_DEATH_THRESHOLD = 40;
 	private float fallDeathHeight;
+	private String selectedTrack;
+	private String lastLevel;
 
 	/** The opacity of the black text covering the screen. Game can start
 	 * when this is zero. */
@@ -261,19 +263,17 @@ public class GameModeController extends WorldController {
 		setFailure(false);
 		setLevel();
 		populateLevel();
+
+		// Setup sound
 		SoundController instance = SoundController.getInstance();
 		if (instance.isActive("menumusic")) instance.stop("menumusic");
 		if (instance.isActive("bgmusic")) instance.stop("bgmusic");
-		if (!instance.isActive("bgmusic")) {
-			instance.play(
-					"bgmusic",
-					GAMEPLAY_MUSIC[(int)Math.floor(GAMEPLAY_MUSIC.length * Math.random())],
-					true);
-		}
+		instance.play("bgmusic", selectedTrack, true);
 
 		if (!instance.isActive("fallmusic")) {
 			instance.play("fallmusic",
 					FALL_MUSIC, true);
+			instance.setVolume("fallmusic",0);
 		} else {
 			instance.setVolume("fallmusic",0);
 		}
@@ -283,41 +283,46 @@ public class GameModeController extends WorldController {
 	 * Lays out the game geography.
 	 */
 	protected void populateLevel() {
-			jsonLoaderSaver.setScale(this.worldScale);
-			try {
-				float level_num = Integer.parseInt(loadLevel.substring(5));
-				if (level_num==0){
-					System.out.println("Tutorial");
-					listener.exitScreen(this,EXIT_GM_TL);
-					return;
-				}
-				levelModel = jsonLoaderSaver.loadLevel(loadLevel);
-				System.out.println(loadLevel);
-				recordTime = levelModel.getRecordTime();
-				if (levelModel == null) {
-					levelModel = new LevelModel();
-				}
-
-				for (Entity o : levelModel.getEntities()) {
-					// drawing
-
-					addObject( o);
-					if (o instanceof SlothModel) {
-						sloth = (SlothModel) o;
-						sloth.activateSlothPhysics(world);
-						collisions.setSloth(sloth);
-						initFlowX = sloth.getX();
-						initFlowY = sloth.getY();
-					}
-					if (o instanceof OwlModel) {
-						owl = (OwlModel) o;
-					}
-
-				}
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
+		jsonLoaderSaver.setScale(this.worldScale);
+		// Are we loading a new level?
+		if (lastLevel == null || !lastLevel.equals(loadLevel)) {
+			selectedTrack = GAMEPLAY_MUSIC[(int)Math.floor(GAMEPLAY_MUSIC.length * Math.random())];
+		}
+		lastLevel = loadLevel;
+		try {
+			float level_num = Integer.parseInt(loadLevel.substring(5));
+			if (level_num==0){
+				System.out.println("Tutorial");
+				listener.exitScreen(this,EXIT_GM_TL);
+				return;
 			}
-			currentTime = 0f;
+
+			levelModel = jsonLoaderSaver.loadLevel(loadLevel);
+			recordTime = levelModel.getRecordTime();
+			if (levelModel == null) {
+				levelModel = new LevelModel();
+			}
+
+			for (Entity o : levelModel.getEntities()) {
+				// drawing
+
+				addObject( o);
+				if (o instanceof SlothModel) {
+					sloth = (SlothModel) o;
+					sloth.activateSlothPhysics(world);
+					collisions.setSloth(sloth);
+					initFlowX = sloth.getX();
+					initFlowY = sloth.getY();
+				}
+				if (o instanceof OwlModel) {
+					owl = (OwlModel) o;
+				}
+
+			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		currentTime = 0f;
 
 	}
 
@@ -547,9 +552,9 @@ public class GameModeController extends WorldController {
 		camTrans.setToTranslation(-1 * sloth.getBody().getPosition().x * worldScale.x
 				, -1 * sloth.getBody().getPosition().y * worldScale.y);
 
-    	camTrans.translate(canvas.getWidth()/2,canvas.getHeight()/2);
+		camTrans.translate(canvas.getWidth()/2,canvas.getHeight()/2);
 
-    	canvas.begin();
+		canvas.begin();
 		canvas.draw(background);
 		canvas.drawTextStandard("current time:    "+currentTime, 10f, 70f);
 		canvas.drawTextStandard("record time:     "+recordTime,10f,50f);
