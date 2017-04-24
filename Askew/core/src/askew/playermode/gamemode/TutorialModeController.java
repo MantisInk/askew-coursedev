@@ -79,24 +79,16 @@ public class TutorialModeController extends GameModeController {
 
 	private final float CONTROLLER_DEADZONE = 0.15f;
 
-<<<<<<< HEAD
-	TextureRegion[] joystickTextures;
-	TextureRegion[] LeftBumperTextures;
-	TextureRegion[] RightBumperTextures;
 
-=======
 	Texture[] joystickTextures = new Texture[3];
 	Texture[] LeftBumperTextures = new Texture[2];
 	Texture[] RightBumperTextures = new Texture[2];
 
-	// indices for animation frames
->>>>>>> 9876a5ec50c58b033875c2c84fd2d7553ef279f6
 	private int joystick_idx;
 	private int left_bumper_idx;
 	private int right_bumper_idx;
 
-<<<<<<< HEAD
-=======
+
 	// intermediary counters for updating animation frames
 	private int joystick_ct;
 	private int left_bumper_ct;
@@ -116,7 +108,6 @@ public class TutorialModeController extends GameModeController {
 	Texture RightBumperTexture0;
 	Texture RightBumperTexture1;
 
->>>>>>> 9876a5ec50c58b033875c2c84fd2d7553ef279f6
 
 	/**
 	 * Preloads the assets for this controller.
@@ -129,14 +120,6 @@ public class TutorialModeController extends GameModeController {
 	 * @param manager Reference to global asset manager.
 	 */
 	public void preLoadContent(MantisAssetManager manager) {
-<<<<<<< HEAD
-		if (platformAssetState != AssetState.EMPTY) {
-			return;
-		}
-		manager.load("sound/music/askew.ogg", Sound.class);
-		platformAssetState = AssetState.LOADING;
-=======
->>>>>>> 9876a5ec50c58b033875c2c84fd2d7553ef279f6
 		jsonLoaderSaver.setManager(manager);
 		super.preLoadContent(manager);
 		this.manager = manager;
@@ -153,21 +136,6 @@ public class TutorialModeController extends GameModeController {
 	 * @param manager Reference to global asset manager.
 	 */
 	public void loadContent(MantisAssetManager manager) {
-<<<<<<< HEAD
-		if (platformAssetState != AssetState.LOADING) {
-			return;
-		}
-
-		//SoundController sounds = SoundController.getInstance();
-		SoundController.getInstance().allocate(manager, "sound/music/askew.ogg");
-		background = manager.get("texture/background/background1.png", Texture.class);
-		pauseTexture = manager.get("texture/background/pause.png", Texture.class);
-		fern = manager.get("texture/background/fern.png");
-
-		this.manager = manager;
-
-=======
->>>>>>> 9876a5ec50c58b033875c2c84fd2d7553ef279f6
 		super.loadContent(manager);
 		joystickTexture0 = manager.get("texture/tutorial/joystick0.png", Texture.class);
 		joystickTexture1 = manager.get("texture/tutorial/joystick1.png", Texture.class);
@@ -198,12 +166,6 @@ public class TutorialModeController extends GameModeController {
 		world.setContactListener(collisions);
 		sensorFixtures = new ObjectSet<Fixture>();
 		jsonLoaderSaver = new JSONLoaderSaver();
-<<<<<<< HEAD
-
-
-
-=======
->>>>>>> 9876a5ec50c58b033875c2c84fd2d7553ef279f6
 	}
 
 	public void pause(){
@@ -240,17 +202,6 @@ public class TutorialModeController extends GameModeController {
 			joystickTextures[1] = joystickTexture1;
 			joystickTextures[2] = joystickTexture2;
 		}
-<<<<<<< HEAD
-		collisions.reset();
-
-		world.setContactListener(collisions);
-		setComplete(false);
-		setFailure(false);
-		populateLevel();
-//		if (!SoundController.getInstance().isActive("bgmusic"))
-//			SoundController.getInstance().play("bgmusic","sound/music/askew.ogg",true);
-=======
->>>>>>> 9876a5ec50c58b033875c2c84fd2d7553ef279f6
 
 		// reset animation frames
 		joystick_ct = 0;
@@ -434,14 +385,6 @@ public class TutorialModeController extends GameModeController {
 					break;
 				default:
 					System.err.println(stepsDone);
-<<<<<<< HEAD
-			}
-
-			joystick_idx = (joystick_idx++) % 30;
-			left_bumper_idx = (left_bumper_idx++) % 20;
-			right_bumper_idx = (right_bumper_idx++) % 20;
-=======
->>>>>>> 9876a5ec50c58b033875c2c84fd2d7553ef279f6
 
 			}
 
@@ -550,9 +493,9 @@ public class TutorialModeController extends GameModeController {
 	}
 
 	public void setTextures(MantisAssetManager manager) {
-		joystickTextures = new TextureRegion[3];
-		LeftBumperTextures = new TextureRegion[2];
-		RightBumperTextures = new TextureRegion[2];
+		joystickTextures = new Texture[3];
+		LeftBumperTextures = new Texture[2];
+		RightBumperTextures = new Texture[2];
 		Texture bumperUR = manager.get("texture/tutorial/bumperUpRight.png");
 		Texture bumperDR = manager.get("texture/tutorial/bumperDownRight.png");
 		Texture bumperUL = manager.get("texture/tutorial/bumperUpLeft.png");
@@ -561,13 +504,13 @@ public class TutorialModeController extends GameModeController {
 		Texture stick1 = manager.get("texture/tutorial/joytick1.png");
 		Texture stick2 = manager.get("texture/tutorial/joytick2.png");
 		//Texture bumper4 = manager.get("texture/tutorial/backarm_moving.png");
-		RightBumperTextures[0] = new TextureRegion(bumperUR);
-		RightBumperTextures[1] = new TextureRegion(bumperDR);
-		LeftBumperTextures [0] = new TextureRegion(bumperUL);
-		LeftBumperTextures [1] = new TextureRegion(bumperDL);
-		joystickTextures[0] = new TextureRegion(stick0);
-		joystickTextures[1] = new TextureRegion(stick1);
-		joystickTextures[2] = new TextureRegion(stick2);
+		RightBumperTextures[0] = bumperUR;
+		RightBumperTextures[1] = bumperDR;
+		LeftBumperTextures [0] = bumperUL;
+		LeftBumperTextures [1] = bumperDL;
+		joystickTextures[0] = stick0;
+		joystickTextures[1] = stick1;
+		joystickTextures[2] = stick2;
 		//partTextures[7] = new TextureRegion(managedBackArmMoving);
 
 //		if (bodies.size == 0) {
@@ -656,16 +599,6 @@ public class TutorialModeController extends GameModeController {
 			printHelp();
 		canvas.end();
 
-<<<<<<< HEAD
-		canvas.begin();
-		TextureRegion joystickTexture = joystickTextures[right_bumper_idx/10];
-		TextureRegion LeftBumperTexture = LeftBumperTextures [right_bumper_idx/10];
-		TextureRegion RightBumperTexture = RightBumperTextures [right_bumper_idx/10];
-
-		canvas.draw(joystickTexture,500,500);
-		canvas.draw(LeftBumperTexture ,600,600);
-		canvas.draw(RightBumperTexture ,700,600);
-=======
 		// draw instructional animations
 		canvas.begin();
 		joystickTexture = joystickTextures[joystick_idx];
@@ -683,7 +616,6 @@ public class TutorialModeController extends GameModeController {
 			canvas.draw(LeftBumperTexture, Color.WHITE, LeftBumperTexture.getWidth() / 2, 0, 750, 725, 0, worldScale.x * 2 / LeftBumperTexture.getWidth(), worldScale.y * 2 / LeftBumperTexture.getHeight());
 			canvas.draw(RightBumperTexture, Color.WHITE, RightBumperTexture.getWidth()/2, 0,750,575, 0, worldScale.x*2/RightBumperTexture.getWidth(), worldScale.y*2/RightBumperTexture.getHeight());
 		}
->>>>>>> 9876a5ec50c58b033875c2c84fd2d7553ef279f6
 		canvas.end();
 	}
 

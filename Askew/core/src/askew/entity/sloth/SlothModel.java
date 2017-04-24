@@ -38,6 +38,10 @@ public class SlothModel extends ComplexObstacle  {
     private transient boolean GRABBING_HAND_HAS_TORQUE;
     private transient float OMEGA_NORMALIZER;
     public transient int controlMode;
+    /** After flying this distance, flow starts to experience some serious
+     * air resitance.
+     */
+    private static final float FLOW_RESISTANCE_DAMPING_LAMBDA = 23f;
 
     public static final int GRAB_ORIGINAL = 0;
     public static final int GRAB_REVERSE = 1;
@@ -106,6 +110,8 @@ public class SlothModel extends ComplexObstacle  {
     private transient boolean grabbedEntity;
     private transient boolean leftCanGrabOrIsGrabbing;
     private transient boolean didSafeGrab;
+    private boolean setLastGrabX;
+    private float lastGrabX;
 
     /**
      * Returns the texture index for the given body part
@@ -483,6 +489,12 @@ public class SlothModel extends ComplexObstacle  {
                     .applyTorque(rTorque, true);
 
         flowFacingState = (int)bodies.get(PART_BODY).getBody().getLinearVelocity().x;
+
+        // Anti GIMP - slow flow based on x velocity
+        float flowVelocity = Math.abs(this.bodies.get(PART_BODY).getVX());
+        float damping = (float) Math.exp(flowVelocity /
+                FLOW_RESISTANCE_DAMPING_LAMBDA) - 1;
+        bodies.get(PART_BODY).setLinearDamping(damping);
     }
 
 
