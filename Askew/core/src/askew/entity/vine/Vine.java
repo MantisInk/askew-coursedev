@@ -14,10 +14,12 @@
  */
 package askew.entity.vine;
 
+import askew.GameCanvas;
 import askew.MantisAssetManager;
 import askew.GlobalConfiguration;
 import askew.entity.FilterGroup;
 import askew.entity.obstacle.*;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
@@ -280,4 +282,20 @@ public class Vine extends ComplexObstacle {
             ((SimpleObstacle)body).setTexture(regionedTexture);
         }
     }
+
+	/**
+	 * Draws the physics object.
+	 *
+	 * @param canvas Drawing context
+	 */
+	public void draw(GameCanvas canvas) {
+		// Delegate to components
+		for(Obstacle obj : bodies) {
+			if (obj instanceof BoxObstacle) {
+				BoxObstacle boxy = (BoxObstacle) obj;
+				boxy.drawCustomSize(canvas, Color.WHITE,5,1);
+			}
+		}
+	}
+
 }

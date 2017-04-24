@@ -233,4 +233,15 @@ public class BoxObstacle extends SimpleObstacle {
 		}
 	}
 
+	public void drawCustomSize(GameCanvas canvas, Color tint, float xScale,
+							   float yScale) {
+		if (texture != null) {
+			canvas.draw(texture,tint,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),
+					(1.0f/texture.getRegionWidth()) *   getWidth() *
+							getDrawScale().x * xScale * getObjectScale().x ,
+					(1.0f/texture.getRegionHeight() * yScale  * getHeight()*
+							getDrawScale().y * getObjectScale().y));
+		}
+	}
+
 }
