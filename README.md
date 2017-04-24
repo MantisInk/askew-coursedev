@@ -35,7 +35,7 @@ _**Note:** 360 degrees of motion is possible here_
 
 **Tips:**
 - If you ever forget which arm is which, my trick is that the black arm is on the left, and both words have l's in them, so I use the left joystick and button to use the that arm.
-- Another trick is that the _right_ arm is the arm with the b_right_ color.
+- Another trick is that the _right_ arm is the arm with the b _right_ color.
 
 
 #### _Tips for Swinging **(Updated)**_
