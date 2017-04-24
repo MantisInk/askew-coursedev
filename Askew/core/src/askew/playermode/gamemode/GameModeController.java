@@ -65,7 +65,8 @@ public class GameModeController extends WorldController {
 
 	public static final String[] GAMEPLAY_MUSIC = new String[] {
 		"sound/music/askew.ogg",
-		"sound/music/flowwantshisorherbaby.ogg"
+		"sound/music/flowwantshisorherbaby.ogg",
+		"sound/music/youdidit.ogg"
 	};
 
 	public static final String GRAB_SOUND = "sound/effect/grab.wav";
@@ -339,12 +340,12 @@ public class GameModeController extends WorldController {
 				return false;
 			}
 			//InputController input = InputController.getInstance();
-			if (input.didRightButtonPress() && pause_mode == PAUSE_RESUME) {
+			if (input.didBottomButtonPress() && pause_mode == PAUSE_RESUME) {
 				paused = false;
 				playerIsReady = false;
-			} else if (input.didRightButtonPress() && pause_mode == PAUSE_RESTART) {
+			} else if (input.didBottomButtonPress() && pause_mode == PAUSE_RESTART) {
 				reset();
-			} else if (input.didRightButtonPress() && pause_mode == PAUSE_MAINMENU) {
+			} else if (input.didBottomButtonPress() && pause_mode == PAUSE_MAINMENU) {
 				System.out.println("MM");
 				listener.exitScreen(this, EXIT_GM_MM);
 			}
