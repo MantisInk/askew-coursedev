@@ -58,8 +58,6 @@ public class TutorialModeController extends GameModeController {
 	// fern selection indicator locations for pause menu options
 	private Vector2[] pause_locs = {new Vector2(11f,4.8f), new Vector2(9f,3.9f), new Vector2(11f,3f)};
 
-	private PhysicsController collisions;
-
 	private JSONLoaderSaver jsonLoaderSaver;
 	private float initFlowX;
 	private float initFlowY;
@@ -93,13 +91,8 @@ public class TutorialModeController extends GameModeController {
 	 * @param manager Reference to global asset manager.
 	 */
 	public void preLoadContent(MantisAssetManager manager) {
-		if (platformAssetState != AssetState.EMPTY) {
-			return;
-		}
-		manager.load("sound/music/askew.wav", Sound.class);
-		platformAssetState = AssetState.LOADING;
-		jsonLoaderSaver.setManager(manager);
 		super.preLoadContent(manager);
+		this.manager = manager;
 	}
 
 	/**
@@ -113,37 +106,12 @@ public class TutorialModeController extends GameModeController {
 	 * @param manager Reference to global asset manager.
 	 */
 	public void loadContent(MantisAssetManager manager) {
-		if (platformAssetState != AssetState.LOADING) {
-			return;
-		}
-
-		//SoundController sounds = SoundController.getInstance();
-		SoundController.getInstance().allocate(manager, "sound/music/askew.wav");
-		background = manager.get("texture/background/background1.png", Texture.class);
-		pauseTexture = manager.get("texture/background/pause.png", Texture.class);
-		fern = manager.get("texture/background/fern.png");
-
-		this.manager = manager;
-
 		super.loadContent(manager);
-		platformAssetState = AssetState.COMPLETE;
+		background = manager.get("texture/background/background1.png", Texture.class);
 	}
-
-
-	// Physics constants for initialization
-	/** The new heavier gravity for this world (so it is not so floaty) */
-	private static final float  DEFAULT_GRAVITY = -10.7f;
-
-
 
 	// Physics objects for the game
 	/** Reference to the character avatar */
-
-	private static SlothModel sloth;
-	private static OwlModel owl;
-
-	/** Reference to the goalDoor (for collision detection) */
-	private BoxObstacle goalDoor;
 
 	/** Mark set to handle more sophisticated collision callbacks */
 	protected ObjectSet<Fixture> sensorFixtures;
@@ -183,43 +151,16 @@ public class TutorialModeController extends GameModeController {
 	 * This method disposes of the world and creates a new one.
 	 */
 	public void reset() {
-
-		playerIsReady = false;
-		paused = false;
-		collisions.clearGrab();
-		Vector2 gravity = new Vector2(world.getGravity() );
-
-		InputController.getInstance().releaseGrabs();
-		for(Entity obj : objects) {
-			if( (obj instanceof Obstacle && !(obj instanceof SlothModel)))
-				((Obstacle)obj).deactivatePhysics(world);
-		}
-
-		objects.clear();
-		addQueue.clear();
-		world.dispose();
-
-		world = new World(gravity,false);
-		if(collisions == null){
-			collisions = new PhysicsController();
-		}
-		collisions.reset();
-
-		world.setContactListener(collisions);
-		setComplete(false);
-		setFailure(false);
-		populateLevel();
-		if (!SoundController.getInstance().isActive("bgmusic"))
-			SoundController.getInstance().play("bgmusic","sound/music/askew.wav",true);
-
+		super.reset();
 		stepsDone=0;
 	}
 
 	/**
 	 * Lays out the game geography.
 	 */
-	private void populateLevel() {
-
+	@Override
+	protected void populateLevel() {
+		System.out.println("populating");
 		float sloth_x = 0;
 		float sloth_y = 0;
 
@@ -254,9 +195,6 @@ public class TutorialModeController extends GameModeController {
 		addObject(ebb);
 
 	}
-
-	/**For drawing force lines*/
-	public static SlothModel getSloth(){return sloth;}
 
 	/**
 	 * Returns whether to process the update loop
@@ -394,8 +332,6 @@ public class TutorialModeController extends GameModeController {
 				default:
 					System.err.println(stepsDone);
 			}
-
-
 
 			//#TODO Collision states check
 			setFailure(collisions.isFlowKill());

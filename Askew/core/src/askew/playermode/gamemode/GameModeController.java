@@ -78,7 +78,7 @@ public class GameModeController extends WorldController {
 	private float currentTime, recordTime;	// track current and record time to complete level
 	private boolean timedLevels;
 
-	private PhysicsController collisions;
+	protected PhysicsController collisions;
 
 	private JSONLoaderSaver jsonLoaderSaver;
 	private float initFlowX;
@@ -157,7 +157,7 @@ public class GameModeController extends WorldController {
 	// Physics objects for the game
 	/** Reference to the character avatar */
 
-	private static SlothModel sloth;
+	protected SlothModel sloth;
 	private static OwlModel owl;
 
 	/** Reference to the goalDoor (for collision detection) */
@@ -254,7 +254,7 @@ public class GameModeController extends WorldController {
 	/**
 	 * Lays out the game geography.
 	 */
-	private void populateLevel() {
+	protected void populateLevel() {
 			jsonLoaderSaver.setScale(this.worldScale);
 			try {
 				float level_num = Integer.parseInt(loadLevel.substring(5));
@@ -294,7 +294,7 @@ public class GameModeController extends WorldController {
 	}
 
 	/**For drawing force lines*/
-	public static SlothModel getSloth(){return sloth;}
+	public SlothModel getSloth(){return sloth;}
 
 	/**
 	 * Returns whether to process the update loop
