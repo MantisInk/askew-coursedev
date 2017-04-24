@@ -3,8 +3,8 @@
   "goalTimeGold": 30,
   "goalTimeSilver": 45,
   "goalTimeBronze": 60,
-  "recordTime": 2.5343964,
-  "title": "level1",
+  "recordTime": 9999999,
+  "title": "Clever Level 1 Title",
   "background": "texture/background/background1.png",
   "soundtrack": "TODO",
   "entities": [

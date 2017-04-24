@@ -4,9 +4,11 @@ import askew.GameCanvas;
 import askew.MantisAssetManager;
 import askew.entity.FilterGroup;
 import askew.entity.obstacle.BoxObstacle;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Filter;
@@ -26,6 +28,9 @@ public class OwlModel extends BoxObstacle  {
     private transient float owlHeight;
 
     private transient TextureRegion owlTextureRegion;
+    private transient Animation idleAnimation;
+    private transient Animation flyAnimation;
+    private transient float elapseTime;
 
     //JSON
     @Getter @Setter
@@ -69,20 +74,34 @@ public class OwlModel extends BoxObstacle  {
 
     @Override
     public void setTextures(MantisAssetManager manager) {
-        Texture owlTexture = manager.get(OWL_TEXTURE);
-        owlTextureRegion = new TextureRegion(owlTexture);
+        idleAnimation = new Animation(0.25f, manager.getTextureAtlas()
+                .findRegions
+                ("idleowl"), Animation.PlayMode.LOOP);
+        flyAnimation = new Animation(0.127f, manager.getTextureAtlas().findRegions
+                ("owlfly"), Animation.PlayMode.LOOP);
+        if (idleAnimation.getKeyFrames().length == 0)
+            System.err.println("did not find anim");
+        owlTextureRegion = idleAnimation.getKeyFrame(0);
+        setTexture(owlTextureRegion);
         // aspect ratio scaling
         this.owlHeight = getWidth() * ( owlTextureRegion.getRegionHeight() / owlTextureRegion.getRegionWidth());
-        setTexture(owlTextureRegion);
+        if (flyAnimation.getKeyFrames().length == 0)
+            System.err.println("did not find anim");
     }
 
     @Override
     public void draw(GameCanvas canvas) {
+        elapseTime += Gdx.graphics.getDeltaTime();
+        elapseTime += Gdx.graphics.getDeltaTime();
 
-        if (texture != null) {
-            canvas.draw(texture,Color.WHITE,origin.x,origin.y,getPosition().x*drawScale.x,getPosition().y*drawScale.y,getAngle(),
-                    (1.0f/texture.getRegionWidth()) *   getWidth() * getDrawScale().x * objectScale.x,
-                    (1.0f/texture.getRegionHeight()  * getHeight()* getDrawScale().y * objectScale.y));
+        if (elapseTime == 0) return;
+
+        TextureRegion drawFrame = idleAnimation.getKeyFrame(elapseTime, true);
+
+        if (drawFrame != null) {
+            canvas.draw(drawFrame,Color.WHITE,origin.x,origin.y,getPosition().x*drawScale.x,getPosition().y*drawScale.y,getAngle(),
+                    (1.0f/drawFrame.getRegionWidth()) *   getWidth() * getDrawScale().x * objectScale.x,
+                    (1.0f/drawFrame.getRegionHeight()  * getHeight()* getDrawScale().y * objectScale.y));
         }
     }
 

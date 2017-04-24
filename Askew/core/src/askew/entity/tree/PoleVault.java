@@ -184,7 +184,7 @@ public class PoleVault extends ComplexObstacle {
 		Vector2 anchor2 = new Vector2(0, -linksize / 2);
 
 
-		pos.y -= linksize / 2;
+		pos.y += linksize / 2;
 		start = new WheelObstacle(pos.x,pos.y,TRUNK_PIN_RADIUS);
 		start.setName(TRUNK_PIN_NAME+0);
 		start.setDensity(BASIC_DENSITY);

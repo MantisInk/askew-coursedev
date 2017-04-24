@@ -109,6 +109,7 @@ public class InputController {
 	private boolean startButtonPressed;
 	private boolean startButtonPrevious;
 
+	@Getter
 	private boolean leftButtonPressed;
 	private boolean leftButtonPrevious;
 
@@ -137,6 +138,14 @@ public class InputController {
 
 	private boolean bottomDPadPressed;
 	private boolean bottomDPadPrevious;
+
+	@Getter
+	private boolean upKeyPressed;
+	private boolean upKeyPrevious;
+
+	@Getter
+	private boolean downKeyPressed;
+	private boolean downKeyPrevious;
 
 
 
@@ -268,6 +277,10 @@ public class InputController {
 		return bottomButtonPressed && !bottomButtonPrevious;
 	}
 
+	public boolean isBottomButtonPressed() {
+		return bottomButtonPressed;
+	}
+
 	public boolean didStartPress() {
 		return startButtonPressed && !startButtonPrevious;
 	}
@@ -312,6 +325,22 @@ public class InputController {
 	public boolean didRightDrag(){ return rightClickPressed && rightClickPrevious; }
 
 	public boolean didRightRelease(){ return !rightClickPressed && rightClickPrevious; }
+
+	public boolean didUpArrowPress() {return upKeyPressed && !upKeyPrevious;}
+
+	public boolean didRightArrowPress() {
+		// for some reason left/right is flipped
+		return leftKeyPressed && !leftKeyPrevious;
+	}
+
+	public boolean didLeftArrowPress() {
+		// for some reason left/right is flipped
+		return rightKeyPressed&& !rightKeyPrevious;
+	}
+
+	public boolean didDownArrowPress() {return downKeyPressed && !downKeyPrevious;}
+
+	public boolean didEnterKeyPress() {return enterKeyPressed && !enterKeyPrevious;}
 
 
 
@@ -371,6 +400,8 @@ public class InputController {
 		vKeyPrevious = isVKeyPressed();
 		lShiftKeyPrevious = isLShiftKeyPressed();
 		rShiftKeyPrevious = isRShiftKeyPressed();
+		upKeyPrevious = isUpKeyPressed();
+		downKeyPrevious = isDownKeyPressed();
 
 		// Check to see if a GamePad is connected
 		if (xbox.isConnected()) {
@@ -453,10 +484,16 @@ public class InputController {
 		// Give priority to gamepad results
 		startButtonPressed = (secondary && startButtonPressed) || (Gdx.input.isKeyPressed(Input.Keys.R));
 		topButtonPressed = (secondary && topButtonPressed) || (Gdx.input.isKeyPressed(Input.Keys.D));
-		bottomButtonPressed = (secondary && bottomButtonPressed) || (Gdx.input.isKeyPressed(Input.Keys.UP));
+		bottomButtonPressed = (secondary && bottomButtonPressed);// || (Gdx.input.isKeyPressed(Input.Keys.UP));
 		rightButtonPressed = (secondary && rightButtonPressed) || (Gdx.input.isKeyPressed(Input.Keys.P));
 		leftButtonPressed = (secondary && leftButtonPressed) ;//(Gdx.input.isKeyPressed(Input.Keys.N));
 		backButtonPressed = (secondary && backButtonPressed) || (Gdx.input.isKeyPressed(Input.Keys.ESCAPE));
+
+		// for some reason left/right arrows are switched
+//		upArrowPressed = (secondary && upArrowPressed) || (Gdx.input.isKeyPressed(Input.Keys.UP));
+//		rightArrowPressed = (secondary && rightArrowPressed) || (Gdx.input.isKeyPressed(Input.Keys.LEFT));
+//		leftArrowPressed = (secondary && leftArrowPressed) || (Gdx.input.isKeyPressed(Input.Keys.RIGHT));
+//		downArrowPressed = (secondary && downArrowPressed) || (Gdx.input.isKeyPressed(Input.Keys.DOWN));
 
 		// Directional controls
 		leftHorizontal = (secondary ? leftHorizontal : 0.0f);
@@ -496,10 +533,16 @@ public class InputController {
 		tKeyPressed = Gdx.input.isKeyPressed(Input.Keys.T) && !tKeyPrevious;
 		bKeyPressed = Gdx.input.isKeyPressed(Input.Keys.B) && !bKeyPrevious;
 		vKeyPressed = Gdx.input.isKeyPressed(Input.Keys.V) && !vKeyPrevious;
+
 		lShiftKeyPressed = Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT);
 		rShiftKeyPressed = Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT);
 		shiftKeyPressed = Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT);
 		spaceKeyPressed = Gdx.input.isKeyPressed(Input.Keys.SPACE);
+
+		lShiftKeyPressed = Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) && !lShiftKeyPressed;
+		rShiftKeyPressed = Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT) && !rShiftKeyPressed;
+		upKeyPressed = Gdx.input.isKeyPressed(Input.Keys.UP) && !upKeyPrevious;
+		downKeyPressed = Gdx.input.isKeyPressed(Input.Keys.DOWN) && !downKeyPrevious;
 
 		crosshair.set(Gdx.input.getX(), Gdx.input.getY());
 		crosshair.scl(1/scale.x,-1/scale.y);

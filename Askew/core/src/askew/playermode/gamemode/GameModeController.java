@@ -22,8 +22,10 @@ import askew.playermode.WorldController;
 import askew.playermode.leveleditor.LevelModel;
 import askew.util.SoundController;
 import askew.util.json.JSONLoaderSaver;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Vector2;
@@ -61,14 +63,27 @@ public class GameModeController extends WorldController {
 	// fern selection indicator locations for pause menu options
 	private Vector2[] pause_locs = {new Vector2(11f,4.8f), new Vector2(9f,3.9f), new Vector2(11f,3f)};
 
+	public static final String[] GAMEPLAY_MUSIC = new String[] {
+			"sound/music/askew.ogg",
+			"sound/music/flowwantshisorherbaby.ogg",
+			"sound/music/youdidit.ogg"
+	};
+
+	public static final String GRAB_SOUND = "sound/effect/grab.wav";
+	public static final String FALL_MUSIC = "sound/music/fallingtoyourdeath" +
+			".ogg";
+
+	Sound grabSound;
+
 	@Setter
 	private String loadLevel, DEFAULT_LEVEL;
-	private LevelModel lm; 				// LevelModel for the level the player is currently on
+	private LevelModel levelModel; 				// LevelModel for the level the player is currently on
 	private int numLevel, MAX_LEVEL; 	// track int val of lvl #
 
 	private float currentTime, recordTime;	// track current and record time to complete level
+	private boolean storeTimeRecords;
 
-	private PhysicsController collisions;
+	protected PhysicsController collisions;
 
 	private JSONLoaderSaver jsonLoaderSaver;
 	private float initFlowX;
@@ -77,9 +92,18 @@ public class GameModeController extends WorldController {
 	private int PAUSE_RESTART = 1;
 	private int PAUSE_MAINMENU = 2;
 	private int pause_mode = PAUSE_RESUME;
-	private Texture background;
+	protected Texture background;
 	private Texture pauseTexture;
 	private Texture fern;
+	private static final float NEAR_FALL_DEATH_DISTANCE = 38;
+	private static final float LOWEST_ENTITY_FALL_DEATH_THRESHOLD = 40;
+	private float fallDeathHeight;
+	private String selectedTrack;
+	private String lastLevel;
+
+	/** The opacity of the black text covering the screen. Game can start
+	 * when this is zero. */
+	private float coverOpacity;
 
 	/**
 	 * Preloads the assets for this controller.
@@ -95,7 +119,13 @@ public class GameModeController extends WorldController {
 		if (platformAssetState != AssetState.EMPTY) {
 			return;
 		}
-		manager.load("sound/music/askew.wav", Sound.class);
+		for (String soundName : GAMEPLAY_MUSIC) {
+			manager.load(soundName, Sound.class);
+		}
+		manager.load(FALL_MUSIC, Sound.class);
+
+		manager.load(GRAB_SOUND, Sound.class);
+
 		platformAssetState = AssetState.LOADING;
 		jsonLoaderSaver.setManager(manager);
 		super.preLoadContent(manager);
@@ -116,8 +146,13 @@ public class GameModeController extends WorldController {
 			return;
 		}
 
-		//SoundController sounds = SoundController.getInstance();
-		SoundController.getInstance().allocate(manager, "sound/music/askew.wav");
+		for (String soundName : GAMEPLAY_MUSIC) {
+			SoundController.getInstance().allocate(manager, soundName);
+		}
+		SoundController.getInstance().allocate(manager, FALL_MUSIC);
+
+		grabSound = Gdx.audio.newSound(Gdx.files.internal(GRAB_SOUND));
+
 		background = manager.get("texture/background/background1.png", Texture.class);
 		pauseTexture = manager.get("texture/background/pause.png", Texture.class);
 		fern = manager.get("texture/background/fern.png");
@@ -136,7 +171,7 @@ public class GameModeController extends WorldController {
 	// Physics objects for the game
 	/** Reference to the character avatar */
 
-	private static SlothModel sloth;
+	protected SlothModel sloth;
 	private static OwlModel owl;
 
 	/** Reference to the goalDoor (for collision detection) */
@@ -161,6 +196,7 @@ public class GameModeController extends WorldController {
 		DEFAULT_LEVEL = GlobalConfiguration.getInstance().getAsString("defaultLevel");
 		MAX_LEVEL = GlobalConfiguration.getInstance().getAsInt("maxLevel");
 		loadLevel = DEFAULT_LEVEL;
+		storeTimeRecords = GlobalConfiguration.getInstance().getAsBoolean("storeTimeRecords");
 		jsonLoaderSaver = new JSONLoaderSaver();
 	}
 
@@ -178,6 +214,7 @@ public class GameModeController extends WorldController {
 	}
 
 	public void pause(){
+		prevPaused = paused;
 		if (!paused) {
 			paused = true;
 			pause_mode = PAUSE_RESUME;
@@ -194,22 +231,27 @@ public class GameModeController extends WorldController {
 	 * This method disposes of the world and creates a new one.
 	 */
 	public void reset() {
-
+		coverOpacity = 2f; // start at 2 for 1 second of full black
 		playerIsReady = false;
 		paused = false;
 		collisions.clearGrab();
 		Vector2 gravity = new Vector2(world.getGravity() );
 
 		InputController.getInstance().releaseGrabs();
+		fallDeathHeight = Float.MAX_VALUE;
 		for(Entity obj : objects) {
 			if( (obj instanceof Obstacle && !(obj instanceof SlothModel)))
 				((Obstacle)obj).deactivatePhysics(world);
+			float potentialFallDeath = obj.getY() -
+					LOWEST_ENTITY_FALL_DEATH_THRESHOLD;
+			if (potentialFallDeath < fallDeathHeight) {
+				fallDeathHeight = potentialFallDeath;
+			}
 		}
 
 		objects.clear();
 		addQueue.clear();
 		world.dispose();
-
 		world = new World(gravity,false);
 		if(collisions == null){
 			collisions = new PhysicsController();
@@ -221,48 +263,74 @@ public class GameModeController extends WorldController {
 		setFailure(false);
 		setLevel();
 		populateLevel();
-		if (!SoundController.getInstance().isActive("bgmusic"))
-			SoundController.getInstance().play("bgmusic","sound/music/askew.wav",true);
+
+		// Setup sound
+		SoundController instance = SoundController.getInstance();
+		if (instance.isActive("menumusic")) instance.stop("menumusic");
+		if (instance.isActive("bgmusic")) instance.stop("bgmusic");
+		if (selectedTrack != null) {
+			instance.play("bgmusic", selectedTrack, true);
+
+		}
+
+		if (!instance.isActive("fallmusic")) {
+			instance.play("fallmusic",
+					FALL_MUSIC, true);
+			instance.setVolume("fallmusic",0);
+		} else {
+			instance.setVolume("fallmusic",0);
+		}
 	}
 
 	/**
 	 * Lays out the game geography.
 	 */
-	private void populateLevel() {
-			jsonLoaderSaver.setScale(this.worldScale);
-			try {
-				lm = jsonLoaderSaver.loadLevel(loadLevel);
-				System.out.println(loadLevel);
-				recordTime = lm.getRecordTime();
-				if (lm == null) {
-					lm = new LevelModel();
-				}
-
-				for (Entity o : lm.getEntities()) {
-					// drawing
-
-					addObject( o);
-					if (o instanceof SlothModel) {
-						sloth = (SlothModel) o;
-						sloth.activateSlothPhysics(world);
-						collisions.setSloth(sloth);
-						initFlowX = sloth.getX();
-						initFlowY = sloth.getY();
-					}
-					if (o instanceof OwlModel) {
-						owl = (OwlModel) o;
-					}
-
-				}
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
+	protected void populateLevel() {
+		jsonLoaderSaver.setScale(this.worldScale);
+		// Are we loading a new level?
+		if (lastLevel == null || !lastLevel.equals(loadLevel)) {
+			selectedTrack = GAMEPLAY_MUSIC[(int)Math.floor(GAMEPLAY_MUSIC.length * Math.random())];
+		}
+		lastLevel = loadLevel;
+		try {
+			float level_num = Integer.parseInt(loadLevel.substring(5));
+			if (level_num==0){
+				System.out.println("Tutorial");
+				listener.exitScreen(this,EXIT_GM_TL);
+				return;
 			}
-			currentTime = 0f;
+
+			levelModel = jsonLoaderSaver.loadLevel(loadLevel);
+			recordTime = levelModel.getRecordTime();
+			if (levelModel == null) {
+				levelModel = new LevelModel();
+			}
+
+			for (Entity o : levelModel.getEntities()) {
+				// drawing
+
+				addObject( o);
+				if (o instanceof SlothModel) {
+					sloth = (SlothModel) o;
+					sloth.activateSlothPhysics(world);
+					collisions.setSloth(sloth);
+					initFlowX = sloth.getX();
+					initFlowY = sloth.getY();
+				}
+				if (o instanceof OwlModel) {
+					owl = (OwlModel) o;
+				}
+
+			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		currentTime = 0f;
 
 	}
 
 	/**For drawing force lines*/
-	public static SlothModel getSloth(){return sloth;}
+	public SlothModel getSloth(){return sloth;}
 
 	/**
 	 * Returns whether to process the update loop
@@ -290,9 +358,16 @@ public class GameModeController extends WorldController {
 			System.out.println("MM");
 			listener.exitScreen(this, EXIT_GM_MM);
 			return false;
+		} else if (input.didRightButtonPress() && !paused) {
+			System.out.println("reset");
+			reset();
 		}
 
 		if (paused) {
+			if (!prevPaused) {
+				prevPaused = paused;
+				return false;
+			}
 			//InputController input = InputController.getInstance();
 			if (input.didBottomButtonPress() && pause_mode == PAUSE_RESUME) {
 				paused = false;
@@ -304,12 +379,13 @@ public class GameModeController extends WorldController {
 				listener.exitScreen(this, EXIT_GM_MM);
 			}
 
-			if (input.didTopDPadPress() && pause_mode > 0) {
+			if ((input.didTopDPadPress() || input.didUpArrowPress()) && pause_mode > 0) {
 				pause_mode--;
 			}
-			if (input.didBottomDPadPress() && pause_mode < 2) {
+			if ((input.didBottomDPadPress() || input.didDownArrowPress()) && pause_mode < 2) {
 				pause_mode++;
 			}
+
 		}
 
 		//Checks to see if player has selected the button on the starting screen
@@ -368,21 +444,33 @@ public class GameModeController extends WorldController {
 	public void update(float dt) {
 		if (!paused) {
 			// Process actions in object model
+			Body leftCollisionBody = collisions.getLeftBody();
+			Body rightCollisionBody = collisions.getRightBody();
+
 			sloth.setLeftHori(InputController.getInstance().getLeftHorizontal());
 			sloth.setLeftVert(InputController.getInstance().getLeftVertical());
 			sloth.setRightHori(InputController.getInstance().getRightHorizontal());
 			sloth.setRightVert(InputController.getInstance().getRightVertical());
-			sloth.setLeftGrab(InputController.getInstance().getLeftGrab());
-			sloth.setRightGrab(InputController.getInstance().getRightGrab());
+			boolean didSafe = InputController.getInstance()
+					.getRightGrab();
+			if (sloth.controlMode == 0) {
+				// TODO: Make more elegant - trevor
+				sloth.setLeftGrab(InputController.getInstance().getLeftGrab());
+				sloth.setRightGrab(InputController.getInstance().getRightGrab());
+			} else {
+				if (!didSafe) {
+					sloth.setOneGrab(InputController.getInstance()
+							.isBottomButtonPressed());
+				}
+				sloth.setSafeGrab(didSafe, leftCollisionBody,
+						rightCollisionBody, world);
+			}
 			sloth.setLeftStickPressed(InputController.getInstance().getLeftStickPressed());
 			sloth.setRightStickPressed(InputController.getInstance().getRightStickPressed());
 			currentTime += dt;
 
 			//#TODO Collision states check
 			setFailure(collisions.isFlowKill());
-
-			Body leftCollisionBody = collisions.getLeftBody();
-			Body rightCollisionBody = collisions.getRightBody();
 
 			if (collisions.isFlowWin()) {
 				System.out.println("VICTORY");
@@ -391,16 +479,22 @@ public class GameModeController extends WorldController {
 
 			// Physics tiem
 			// Gribby grab
-			if (sloth.isLeftGrab()) {
-				sloth.grab(world, leftCollisionBody, true);
-			} else {
-				sloth.releaseLeft(world);
+			if (sloth.controlMode == 0 || !didSafe) {
+				if (sloth.isLeftGrab()) {
+					sloth.grab(world, leftCollisionBody, true);
+				} else {
+					sloth.releaseLeft(world);
+				}
+
+				if (sloth.isRightGrab()) {
+					sloth.grab(world, rightCollisionBody, false);
+				} else {
+					sloth.releaseRight(world);
+				}
 			}
 
-			if (sloth.isRightGrab()) {
-				sloth.grab(world, rightCollisionBody, false);
-			} else {
-				sloth.releaseRight(world);
+			if (sloth.isGrabbedEntity()) {
+				grabSound.play();
 			}
 
 			// Normal physics
@@ -409,11 +503,37 @@ public class GameModeController extends WorldController {
 			// If we use sound, we must remember this.
 			SoundController.getInstance().update();
 
+			// Check if flow is falling
+			float slothY = sloth.getBody().getPosition().y;
+			if (slothY < fallDeathHeight + NEAR_FALL_DEATH_DISTANCE) {
+				if (slothY < fallDeathHeight) {
+					System.out.println("TODO: CLEVER YOU DIED FROM FALLING " +
+							"TEXT");
+					setFailure(true);
+				} else {
+					float normalizedDistanceFromDeath = (slothY -
+							fallDeathHeight) / NEAR_FALL_DEATH_DISTANCE;
+					coverOpacity = 2 * (1 - normalizedDistanceFromDeath);
+					if (coverOpacity > 1) coverOpacity = 1;
+					SoundController.getInstance().setVolume("fallmusic", 1 -
+							normalizedDistanceFromDeath);
+					SoundController.getInstance().setVolume("bgmusic",
+							normalizedDistanceFromDeath);
+				}
+			} else {
+				SoundController.getInstance().setVolume("fallmusic", 0);
+				SoundController.getInstance().setVolume("bgmusic",
+						1);
+				if (playerIsReady || paused) {
+					coverOpacity = 0;
+				}
+			}
+
 			if (isComplete()) {
 				float record = currentTime;
-				if (record < lm.getRecordTime()) {
-					lm.setRecordTime(record);
-					if (jsonLoaderSaver.saveLevel(lm, loadLevel))
+				if (record < levelModel.getRecordTime() && storeTimeRecords) {
+					levelModel.setRecordTime(record);
+					if (jsonLoaderSaver.saveLevel(levelModel, loadLevel))
 						System.out.println("New record time for this level!");
 				}
 				int current = GlobalConfiguration.getInstance().getCurrentLevel();
@@ -427,7 +547,6 @@ public class GameModeController extends WorldController {
 				reset();
 			}
 		}
-		prevPaused = paused;
 	}
 
 	public void draw(float delta){
@@ -436,9 +555,9 @@ public class GameModeController extends WorldController {
 		camTrans.setToTranslation(-1 * sloth.getBody().getPosition().x * worldScale.x
 				, -1 * sloth.getBody().getPosition().y * worldScale.y);
 
-    	camTrans.translate(canvas.getWidth()/2,canvas.getHeight()/2);
+		camTrans.translate(canvas.getWidth()/2,canvas.getHeight()/2);
 
-    	canvas.begin();
+		canvas.begin();
 		canvas.draw(background);
 		canvas.drawTextStandard("current time:    "+currentTime, 10f, 70f);
 		canvas.drawTextStandard("record time:     "+recordTime,10f,50f);
@@ -452,7 +571,7 @@ public class GameModeController extends WorldController {
 			obj.draw(canvas);
 		}
 
-		if (!playerIsReady && !paused)
+		if (!playerIsReady && !paused && coverOpacity <= 0)
 			printHelp();
 		canvas.end();
 		sloth.drawGrab(canvas, camTrans);
@@ -474,6 +593,21 @@ public class GameModeController extends WorldController {
 			canvas.end();
 			sloth.drawForces(canvas, camTrans);
 		}
+
+		if (coverOpacity > 0) {
+			Gdx.gl.glEnable(GL20.GL_BLEND);
+			displayFont.setColor(Color.WHITE);
+			Color coverColor = new Color(0,0,0,coverOpacity);
+			canvas.drawRectangle(coverColor,0,0,canvas.getWidth(), canvas
+					.getHeight());
+			coverOpacity -= (1/60f); // 2 second cover
+			Gdx.gl.glDisable(GL20.GL_BLEND);
+			canvas.begin();
+			if (!playerIsReady && !paused)
+				canvas.drawTextCentered(levelModel.getTitle(), displayFont, 0f);
+			canvas.end();
+		}
+
 
 		// draw pause menu stuff over everything
 		if (paused) {

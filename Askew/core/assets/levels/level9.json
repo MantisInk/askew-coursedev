@@ -3,9 +3,10 @@
   "goalTimeGold": 30,
   "goalTimeSilver": 45,
   "goalTimeBronze": 60,
-  "recordTime": 26.259584,
+  "recordTime": 9999999.0,
   "background": "texture/background/background1.png",
   "soundtrack": "TODO",
+  "title": "We forgot to name this one",
   "entities": [
     {
       "CLASSNAME": "askew.entity.vine.Vine",
@@ -84,15 +85,6 @@
         "x": 32.0,
         "y": 4.5,
         "angle": 45.0
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.tree.StiffBranch",
-      "INSTANCE": {
-        "angle": -45.0,
-        "stiffLen": 4.0,
-        "x": 32.0,
-        "y": 10.0
       }
     },
     {
@@ -262,6 +254,15 @@
         "x": 57.0,
         "y": 17.0,
         "angle": -25.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.StiffBranch",
+      "INSTANCE": {
+        "angle": -45.0,
+        "stiffLen": 4.0,
+        "x": 31.5,
+        "y": 10.0
       }
     }
   ]

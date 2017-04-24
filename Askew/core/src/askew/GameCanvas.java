@@ -31,6 +31,7 @@ import com.badlogic.gdx.physics.box2d.*;
  * that mode must be done in a separate begin/end pass.
  */
 public class GameCanvas {
+
 	/** Enumeration to track which pass we are in */
 	private enum DrawPass {
 		/** We are not drawing */
@@ -79,6 +80,8 @@ public class GameCanvas {
 	private OrthographicCamera camera;
 
 	public BitmapFont font;
+
+	private ShapeRenderer shapeRenderer;
 	
 	/** Value to cache window width (if we are currently full screen) */
 	int width;
@@ -123,6 +126,7 @@ public class GameCanvas {
 
 		font = new BitmapFont();
 		font.setColor(new Color(255,0,100,255));
+		shapeRenderer = new ShapeRenderer();
 	}
 		
     /**
@@ -1159,6 +1163,14 @@ public class GameCanvas {
     	debugRender.setColor(color);
     	debugRender.ellipse(x0-w, y0-h, 2*w, 2*h, 12);
     }
+
+	public void drawRectangle(Color color, int ox, int oy, int width, int
+			height) {
+		shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+		shapeRenderer.setColor(color);
+		shapeRenderer.rect(ox, oy, width, height);
+		shapeRenderer.end();
+	}
     
 	/**
 	 * Compute the affine transform (and store it in local) for this image.
