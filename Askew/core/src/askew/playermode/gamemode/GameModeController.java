@@ -78,7 +78,7 @@ public class GameModeController extends WorldController {
 	private float currentTime, recordTime;	// track current and record time to complete level
 	private boolean timedLevels;
 
-	private PhysicsController collisions;
+	protected PhysicsController collisions;
 
 	private JSONLoaderSaver jsonLoaderSaver;
 	private float initFlowX;
@@ -87,7 +87,7 @@ public class GameModeController extends WorldController {
 	private int PAUSE_RESTART = 1;
 	private int PAUSE_MAINMENU = 2;
 	private int pause_mode = PAUSE_RESUME;
-	private Texture background;
+	protected Texture background;
 	private Texture pauseTexture;
 	private Texture fern;
 
@@ -157,7 +157,7 @@ public class GameModeController extends WorldController {
 	// Physics objects for the game
 	/** Reference to the character avatar */
 
-	private static SlothModel sloth;
+	protected SlothModel sloth;
 	private static OwlModel owl;
 
 	/** Reference to the goalDoor (for collision detection) */
@@ -200,6 +200,7 @@ public class GameModeController extends WorldController {
 	}
 
 	public void pause(){
+		prevPaused = paused;
 		if (!paused) {
 			paused = true;
 			pause_mode = PAUSE_RESUME;
@@ -254,7 +255,7 @@ public class GameModeController extends WorldController {
 	/**
 	 * Lays out the game geography.
 	 */
-	private void populateLevel() {
+	protected void populateLevel() {
 			jsonLoaderSaver.setScale(this.worldScale);
 			try {
 				float level_num = Integer.parseInt(loadLevel.substring(5));
@@ -294,7 +295,7 @@ public class GameModeController extends WorldController {
 	}
 
 	/**For drawing force lines*/
-	public static SlothModel getSloth(){return sloth;}
+	public SlothModel getSloth(){return sloth;}
 
 	/**
 	 * Returns whether to process the update loop
@@ -328,23 +329,28 @@ public class GameModeController extends WorldController {
 		}
 
 		if (paused) {
+			if (!prevPaused) {
+				prevPaused = paused;
+				return false;
+			}
 			//InputController input = InputController.getInstance();
-			if (input.didBottomButtonPress() && pause_mode == PAUSE_RESUME) {
+			if ((input.didBottomButtonPress() || input.didEnterKeyPress()) && pause_mode == PAUSE_RESUME) {
 				paused = false;
 				playerIsReady = false;
-			} else if (input.didBottomButtonPress() && pause_mode == PAUSE_RESTART) {
+			} else if ((input.didBottomButtonPress() || input.didEnterKeyPress()) && pause_mode == PAUSE_RESTART) {
 				reset();
-			} else if (input.didBottomButtonPress() && pause_mode == PAUSE_MAINMENU) {
+			} else if ((input.didBottomButtonPress() || input.didEnterKeyPress()) && pause_mode == PAUSE_MAINMENU) {
 				System.out.println("MM");
 				listener.exitScreen(this, EXIT_GM_MM);
 			}
 
-			if (input.didTopDPadPress() && pause_mode > 0) {
+			if ((input.didTopDPadPress() || input.didUpArrowPress()) && pause_mode > 0) {
 				pause_mode--;
 			}
-			if (input.didBottomDPadPress() && pause_mode < 2) {
+			if ((input.didBottomDPadPress() || input.didDownArrowPress()) && pause_mode < 2) {
 				pause_mode++;
 			}
+
 		}
 
 		//Checks to see if player has selected the button on the starting screen
@@ -467,7 +473,6 @@ public class GameModeController extends WorldController {
 				reset();
 			}
 		}
-		prevPaused = paused;
 	}
 
 	public void draw(float delta){

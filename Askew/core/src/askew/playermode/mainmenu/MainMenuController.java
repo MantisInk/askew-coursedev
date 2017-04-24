@@ -151,19 +151,14 @@ public class MainMenuController extends WorldController {
     @Override
     public void update(float dt) {
         InputController input = InputController.getInstance();
+//        System.out.print("enter "+input.didEnterKeyPress());
+//        System.out.println("button "+input.didBottomButtonPress());
         if(mode == HOME_SCREEN) {
-            if(mode!=prevMode)
+            if(mode!=prevMode) {
                 return;
-            else if (input.didTopDPadPress() || (!prevLeftUp && leftUp)) {
-                if (home_button > 0)
-                    home_button--;
-            }
-            else if (input.didBottomDPadPress() || (!prevLeftDown && leftDown)) {
-                if (home_button < home_button_locs.length - 1)
-                    home_button++;
             }
 
-            if(input.didBottomButtonPress() && home_button == PLAY_BUTTON) {
+            if((input.didBottomButtonPress() || input.didEnterKeyPress()) && home_button == PLAY_BUTTON) {
                 selected = GlobalConfiguration.getInstance().getCurrentLevel();
                 if (selected > MAX_LEVEL) {
                     selected = 1;
@@ -173,40 +168,53 @@ public class MainMenuController extends WorldController {
                 nextCon = "GM";
                 return;
             }
-            else if(input.didBottomButtonPress() && home_button == LEVEL_SELECT_BUTTON) {
+            else if((input.didBottomButtonPress() || input.didEnterKeyPress()) && home_button == LEVEL_SELECT_BUTTON) {
                 mode = LEVEL_SELECT;
                 select_button = CHOOSE_LEVEL;
                 selected = 1;
             }
-            else if(input.didBottomButtonPress() && home_button == QUIT_BUTTON) {
+            else if((input.didBottomButtonPress() || input.didEnterKeyPress()) && home_button == QUIT_BUTTON) {
                 listener.exitScreen(this, EXIT_QUIT);
+            }
+
+            if (input.didTopDPadPress() || input.didUpArrowPress() || (!prevLeftUp && leftUp)) {
+                if (home_button > 0) {
+                    home_button--;
+                }
+            }
+            else if (input.didBottomDPadPress() || input.didDownArrowPress() || (!prevLeftDown && leftDown)) {
+                if (home_button < home_button_locs.length - 1) {
+                    home_button++;
+                }
             }
         }
         if(mode == LEVEL_SELECT) {
             if(mode!=prevMode)
                 return;
-            if((input.didLeftDPadPress() || (leftLeft && !prevLeftLeft)) && selected < maxLevel && select_button == CHOOSE_LEVEL) {
-                selected++;
-            } else if((input.didRightDPadPress() || (leftRight && !prevLeftRight)) && selected > minLevel && select_button == CHOOSE_LEVEL) {
-                selected--;
-            }
 
-            if(input.didTopDPadPress() || (leftUp && !prevLeftUp)) {
-                select_button = CHOOSE_LEVEL;
-            }
-            else if(input.didBottomDPadPress() || (leftDown && !prevLeftDown)){
-                select_button = RETURN_HOME;
-            }
-            if(input.didBottomButtonPress() && select_button == RETURN_HOME) {
+            if((input.didBottomButtonPress() || input.didEnterKeyPress()) && select_button == RETURN_HOME) {
                 System.out.println("return home");
                 mode = HOME_SCREEN;
                 home_button = PLAY_BUTTON;
             }
-            else if(input.didBottomButtonPress() && select_button == CHOOSE_LEVEL){
+            else if((input.didBottomButtonPress() || input.didEnterKeyPress()) && select_button == CHOOSE_LEVEL){
                 GlobalConfiguration.getInstance().setCurrentLevel(selected);
                 System.out.println("selected level");
                 nextCon = "GM";
                 return;
+            }
+
+            if((input.didLeftDPadPress() || (leftLeft && !prevLeftLeft) || input.didLeftArrowPress()) && selected < maxLevel && select_button == CHOOSE_LEVEL) {
+                selected++;
+            } else if((input.didRightDPadPress() || (leftRight && !prevLeftRight) || input.didRightArrowPress()) && selected > minLevel && select_button == CHOOSE_LEVEL) {
+                selected--;
+            }
+
+            if(input.didTopDPadPress() || input.didUpArrowPress() || (leftUp && !prevLeftUp)) {
+                select_button = CHOOSE_LEVEL;
+            }
+            else if(input.didBottomDPadPress() || input.didDownArrowPress() || (leftDown && !prevLeftDown)){
+                select_button = RETURN_HOME;
             }
         }
 
