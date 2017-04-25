@@ -36,6 +36,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
+import java.util.ArrayList;
 
 import java.util.Iterator;
 
@@ -204,9 +205,7 @@ public abstract class WorldController implements Screen {
 	/** Reference to the game canvas */
 	protected GameCanvas canvas;
 	/** All the objects in the world. */
-	protected PooledList<Entity> objects  = new PooledList<Entity>();
-	/** Queue for adding objects */
-	protected PooledList<Entity> addQueue = new PooledList<Entity>();
+	protected ArrayList<Entity> objects  = new ArrayList<Entity>();
 	/** Listener that will update the player mode when we are done */
 	protected ScreenListener listener;
 
@@ -397,29 +396,14 @@ public abstract class WorldController implements Screen {
 			}
 		}
 		objects.clear();
-		addQueue.clear();
 		world.dispose();
 		objects = null;
-		addQueue = null;
 		bounds = null;
 		worldScale = null;
 		world  = null;
 		canvas = null;
 	}
 
-	/**
-	 *
-	 * Adds a physics object in to the insertion queue.
-	 *
-	 * Objects on the queue are added just before collision processing.  We do this to 
-	 * control object creation.
-	 *
-	 * param obj The object to add
-	 */
-	public void addQueuedObject(Obstacle obj) {
-		assert inBounds(obj) : "Object is not in bounds";
-		addQueue.add(obj);
-	}
 
 	/**
 	 * Immediately adds the object to the physics world
@@ -548,26 +532,19 @@ public abstract class WorldController implements Screen {
 	 *  Number of seconds since last animation frame
 	 */
 	public void postUpdate(float dt) {
-		// Add any objects created by actions
-		while (!addQueue.isEmpty()) {
-			addObject(addQueue.poll());
-		}
-		
 		// Turn the physics engine crank.
 		world.step(WORLD_STEP,WORLD_VELOC,WORLD_POSIT);
 
 		// Garbage collect the deleted objects.
 		// Note how we use the linked list nodes to delete O(1) in place.
 		// This is O(n) without copying.
-		Iterator<PooledList<Entity>.Entry> iterator = objects.entryIterator();
-		while (iterator.hasNext()) {
-			PooledList<Entity>.Entry entry = iterator.next();
-			Entity ent = entry.getValue();
+		for (Entity ent :objects){
+
 			if(ent instanceof Obstacle){
 				Obstacle obj  = (Obstacle)ent;
 				if (obj.isRemoved()) {
 					obj.deactivatePhysics(world);
-					entry.remove();
+					objects.remove(ent);
 					continue;
 				}
 			}
