@@ -41,17 +41,6 @@
     {
       "CLASSNAME": "askew.entity.tree.Trunk",
       "INSTANCE": {
-        "x": 0.0,
-        "y": 14.0,
-        "stiffLen": 0.0,
-        "angle": 270.0,
-        "linksize": 1.0,
-        "numLinks": 7.0
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.tree.Trunk",
-      "INSTANCE": {
         "x": 7.0,
         "y": 14.0,
         "stiffLen": 0.0,
@@ -123,6 +112,17 @@
           6.0,
           0.0
         ]
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": -3.0,
+        "y": 14.0,
+        "stiffLen": 0.0,
+        "angle": 270.0,
+        "linksize": 1.0,
+        "numLinks": 10.0
       }
     }
   ]
