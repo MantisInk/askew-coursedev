@@ -150,6 +150,9 @@ public class TutorialModeController extends GameModeController {
 		LeftBumperTexture1 = manager.get("texture/tutorial/bumperDownLeft.png", Texture.class);
 		RightBumperTexture0 = manager.get("texture/tutorial/bumperUpRight.png", Texture.class);
 		RightBumperTexture1 = manager.get("texture/tutorial/bumperDownRight.png", Texture.class);
+
+		pauseTexture = manager.get("texture/background/pause.png", Texture.class);
+		fern = manager.get("texture/background/fern.png");
 	}
 
 	// Physics objects for the game
@@ -402,27 +405,37 @@ public class TutorialModeController extends GameModeController {
 			sloth.setLeftVert(InputController.getInstance().getLeftVertical());
 			sloth.setRightHori(InputController.getInstance().getRightHorizontal());
 			sloth.setRightVert(InputController.getInstance().getRightVertical());
-			sloth.setLeftGrab(InputController.getInstance().getLeftGrab());
-			sloth.setRightGrab(InputController.getInstance().getRightGrab());
+			if (sloth.controlMode == 0) {
+				sloth.setLeftGrab(InputController.getInstance().getLeftGrab());
+				sloth.setRightGrab(InputController.getInstance().getRightGrab());
+			} else {
+				sloth.setOneGrab(InputController.getInstance().isBottomButtonPressed());
+			}
+
 			switch (stepsDone){
 				case DID_NOTHING:
 					sloth.setRightHori(0);
 					sloth.setRightVert(0);
 				case MOVED_LEFT:
-					sloth.setLeftGrab(false);
+					if (sloth.controlMode == 0)
+						sloth.setLeftGrab(false);
 				case MOVED_RIGHT:
-					sloth.setRightGrab(false);
+					if (sloth.controlMode == 0)
+						sloth.setRightGrab(false);
 					break;
 				case GRABBED_LEFT:
-					sloth.setLeftGrab(true);
+					if (sloth.controlMode == 0)
+						sloth.setLeftGrab(true);
 					break;
 				case GRABBED_RIGHT:
-					sloth.setRightGrab(true);
+					if (sloth.controlMode == 0)
+						sloth.setRightGrab(true);
 					//Set right arm to be 0 too?
 					break;
 				case SWING_LEFT:
 					//Let go of left grab
-					sloth.setRightGrab(true);
+					if (sloth.controlMode == 0)
+						sloth.setRightGrab(true);
 					break;
 				case REGRABBED_LEFT:
 					break;
@@ -475,7 +488,10 @@ public class TutorialModeController extends GameModeController {
 				reset();
 			}
 
+//			boolean didSafe = InputController.getInstance().getRightGrab();
+
 			//Increment Steps
+			System.out.println(stepsDone);
 			if(stepsDone==DID_NOTHING){
 				//Check for left joystick movement
 				if(Math.abs(input.getLeftHorizontal())>CONTROLLER_DEADZONE || Math.abs(input.getLeftVertical())>CONTROLLER_DEADZONE){
@@ -484,19 +500,27 @@ public class TutorialModeController extends GameModeController {
 			}
 			else if(stepsDone==MOVED_LEFT){
 				//Check for right joystick movement
-				if(Math.abs(input.getRightHorizontal())>CONTROLLER_DEADZONE || Math.abs(input.getRightVertical())>CONTROLLER_DEADZONE){
+				if (currentMovement==1) stepsDone++;
+				else if(Math.abs(input.getRightHorizontal())>CONTROLLER_DEADZONE || Math.abs(input.getRightVertical())>CONTROLLER_DEADZONE){
 					stepsDone++;
 				}
 			}
 			else if(stepsDone==MOVED_RIGHT){
+				if (currentMovement==1) {
+					if (sloth.isActualRightGrab()) {
+						stepsDone++;
+					}
+				}
+
 				//Check for left grab
 				if(sloth.isActualLeftGrab()){
 					stepsDone++;
 				}
 			}
 			else if(stepsDone==GRABBED_LEFT){
+				if (currentMovement==1) stepsDone++;
 				//Check for right grab
-				if(sloth.isActualRightGrab()){
+				else if(sloth.isActualRightGrab()){
 					stepsDone++;
 				}
 			}
@@ -507,8 +531,13 @@ public class TutorialModeController extends GameModeController {
 				}
 			}
 			else if(stepsDone==SWING_LEFT){
+				if (currentMovement==1) {
+					if (sloth.isActualRightGrab()) {
+						stepsDone++;
+					}
+				}
 				//Check for left again
-				if(sloth.isActualLeftGrab()){ //TODO Check for left hand crossing right hand and grabbing
+				else if(sloth.isActualLeftGrab()){ //TODO Check for left hand crossing right hand and grabbing
 					stepsDone++;
 				}
 			}
@@ -586,9 +615,15 @@ public class TutorialModeController extends GameModeController {
 
 		for(Entity obj : objects) {
 			if(obj instanceof Trunk){
-				if(stepsDone >= MOVED_RIGHT && ((Trunk) obj).getName().equals("short branch")){
-					obj.setDrawScale(worldScale);
-					obj.draw(canvas);
+				if(stepsDone >= MOVED_LEFT && ((Trunk) obj).getName().equals("short branch")){
+					if(currentControl==1) {
+						obj.setDrawScale(worldScale);
+						obj.draw(canvas);
+					}
+					else if(stepsDone >= MOVED_RIGHT){
+						obj.setDrawScale(worldScale);
+						obj.draw(canvas);
+					}
 				}
 				if(stepsDone >= GRABBED_LEFT && ((Trunk) obj).getName().equals("long branch")){
 					obj.setDrawScale(worldScale);
