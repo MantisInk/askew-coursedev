@@ -94,6 +94,7 @@ public class GameCanvas {
 	/** Affine cache for all sprites this drawing pass */
 	private Matrix4 global;
 	private Vector2 vertex;
+	private Vector3 temp3;
 	/** Cache object to handle raw texture */
 	private TextureRegion holder;
 
@@ -123,6 +124,7 @@ public class GameCanvas {
 		local  = new Affine2();
 		global = new Matrix4();
 		vertex = new Vector2();
+		temp3 = new Vector3();
 
 		font = new BitmapFont();
 		font.setColor(new Color(255,0,100,255));
@@ -142,6 +144,7 @@ public class GameCanvas {
     	local  = null;
     	global = null;
     	vertex = null;
+    	temp3 = null;
     	holder = null;
     }
 
@@ -1170,6 +1173,26 @@ public class GameCanvas {
 		shapeRenderer.setColor(color);
 		shapeRenderer.rect(ox, oy, width, height);
 		shapeRenderer.end();
+	}
+
+	public void drawBackgroundEntity(TextureRegion region, Color tint, float ox, float oy,
+					 float x, float y, float depth, float angle, float sx, float sy) {
+		if (active != DrawPass.STANDARD) {
+			Gdx.app.error("askew.GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
+			return;
+		}
+
+		// BUG: The draw command for texture regions does not work properly.
+		// There is a workaround, but it will break if the bug is fixed.
+		// For now, it is better to set the affine transform directly.
+
+		global.getTranslation(temp3);
+		float offsetx = (x - temp3.x) / depth;
+		float offsety = (y - temp3.y) / depth;
+
+		computeTransform(ox,oy,x + offsetx,y + offsety,angle,sx,sy);
+		spriteBatch.setColor(tint);
+		spriteBatch.draw(region, region.getRegionWidth(), region.getRegionHeight(), local);
 	}
     
 	/**

@@ -33,6 +33,8 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.ObjectSet;
 import lombok.Getter;
 
+import java.util.Collections;
+
 /**
  * Gameplay specific controller for the platformer game.
  *
@@ -535,7 +537,7 @@ public class TutorialModeController extends GameModeController {
 		canvas.end();
 
 		canvas.begin(camTrans);
-
+		Collections.sort(objects);
 		for(Entity obj : objects) {
 			if(obj instanceof Trunk){
 				if(stepsDone >= MOVED_RIGHT && ((Trunk) obj).getName().equals("short branch")){

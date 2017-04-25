@@ -43,6 +43,7 @@ import lombok.Setter;
 import javax.swing.*;
 import java.awt.*;
 import java.io.FileNotFoundException;
+import java.util.Collections;
 import java.util.Iterator;
 
 import static javax.swing.JOptionPane.showInputDialog;
@@ -809,6 +810,7 @@ public class LevelEditorController extends WorldController {
 		camTrans.setToTranslation(0,0);
 		camTrans.setToTranslation(cxCamera * worldScale.x, cyCamera* worldScale.y);
 		canvas.begin(camTrans);
+		Collections.sort(objects);
 		for(Entity obj : objects) {
 			obj.setDrawScale(worldScale);
 			obj.draw(canvas);

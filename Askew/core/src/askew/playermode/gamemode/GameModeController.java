@@ -37,6 +37,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.io.FileNotFoundException;
+import java.util.Collections;
+import java.util.Comparator;
 
 /**
  * Gameplay specific controller for the platformer game.
@@ -565,6 +567,7 @@ public class GameModeController extends WorldController {
 		canvas.begin(camTrans);
 		//canvas.draw(background, Color.WHITE, .25f*background.getWidth(),.75f * background.getHeight(),initFlowX*worldScale.x,initFlowY*worldScale.y,background.getWidth(), background.getHeight());
 
+		Collections.sort(objects);
 		for(Entity obj : objects) {
 			obj.setDrawScale(worldScale);
 			obj.draw(canvas);
