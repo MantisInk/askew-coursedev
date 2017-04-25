@@ -101,6 +101,9 @@ public class GameModeController extends WorldController {
 	private String selectedTrack;
 	private String lastLevel;
 
+	private String typeMovement;
+	private String typeControl;
+
 	/** The opacity of the black text covering the screen. Game can start
 	 * when this is zero. */
 	private float coverOpacity;
@@ -198,6 +201,9 @@ public class GameModeController extends WorldController {
 		loadLevel = DEFAULT_LEVEL;
 		storeTimeRecords = GlobalConfiguration.getInstance().getAsBoolean("storeTimeRecords");
 		jsonLoaderSaver = new JSONLoaderSaver();
+
+		typeMovement = "Current movement is: "+"0";
+		typeControl = "Current control is: "+"0";
 	}
 
 	public void setLevel() {
@@ -442,6 +448,30 @@ public class GameModeController extends WorldController {
 	 * @param dt Number of seconds since last animation frame
 	 */
 	public void update(float dt) {
+		//Check for change in grabbing movement
+		if (InputController.getInstance().isOneKeyPressed()) {
+			sloth.setMovementMode(0);
+			typeMovement = "Current movement is: "+"0";
+		}
+		if (InputController.getInstance().isTwoKeyPressed()) {
+			sloth.setMovementMode(1);
+			typeMovement = "Current movement is: "+"1";
+		}
+		if (InputController.getInstance().isThreeKeyPressed()) {
+			sloth.setMovementMode(2);
+			typeMovement = "Current movement is: "+"2";
+		}
+
+		//Check for change in arm movement
+		if (InputController.getInstance().isZKeyPressed()) {
+			sloth.setControlMode(0);
+			typeControl = "Current control is: "+"0";
+		}
+		if (InputController.getInstance().isXKeyPressed()) {
+			sloth.setControlMode(1);
+			typeControl = "Current control is: "+"1";
+		}
+
 		if (!paused) {
 			// Process actions in object model
 			Body leftCollisionBody = collisions.getLeftBody();
@@ -561,6 +591,10 @@ public class GameModeController extends WorldController {
 		canvas.draw(background);
 		canvas.drawTextStandard("current time:    "+currentTime, 10f, 70f);
 		canvas.drawTextStandard("record time:     "+recordTime,10f,50f);
+
+		//Draw control schemes
+		canvas.drawTextStandard(typeMovement, 10f, 20f);
+		canvas.drawTextStandard(typeControl,10f,0f);
 		canvas.end();
 
 		canvas.begin(camTrans);

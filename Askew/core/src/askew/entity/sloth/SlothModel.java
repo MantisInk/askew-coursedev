@@ -24,6 +24,7 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
 import com.badlogic.gdx.utils.ObjectSet;
 import lombok.Getter;
+import lombok.Setter;
 
 public class SlothModel extends ComplexObstacle  {
 
@@ -37,6 +38,8 @@ public class SlothModel extends ComplexObstacle  {
     private transient float GRAVITY_SCALE;
     private transient boolean GRABBING_HAND_HAS_TORQUE;
     private transient float OMEGA_NORMALIZER;
+
+    @Setter
     public transient int controlMode;
     /** After flying this distance, flow starts to experience some serious
      * air resitance.
@@ -103,6 +106,8 @@ public class SlothModel extends ComplexObstacle  {
     private transient boolean leftStickPressed;
     private transient boolean rightStickPressed;
     private transient float flowFacingState;
+
+    @Setter
     private transient int movementMode;
     private transient boolean leftGrabbing;
     private transient boolean rightGrabbing;
