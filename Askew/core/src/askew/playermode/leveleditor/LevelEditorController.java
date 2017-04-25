@@ -1051,6 +1051,9 @@ public class LevelEditorController extends WorldController {
 	}
 
 	private void makeGuiWindow() {
+		if (editorWindow != null) {
+			editorWindow.dispose();
+		}
 		//GUI Mode Enabled
 		//Prevent multiple windows from being created
 		guiPrompt = true;
