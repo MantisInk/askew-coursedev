@@ -220,6 +220,7 @@ public class LevelEditorController extends WorldController {
 		oneScale = new Vector2(1,1);
 		pressedL = false;
 		prevPressedL = false;
+		Gdx.input.setCursorCatched(false);
 	}
 	public void setLevel(String levelName) {
 		currentLevel = levelName;

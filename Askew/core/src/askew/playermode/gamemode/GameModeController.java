@@ -199,6 +199,7 @@ public class GameModeController extends WorldController {
 		loadLevel = DEFAULT_LEVEL;
 		storeTimeRecords = GlobalConfiguration.getInstance().getAsBoolean("storeTimeRecords");
 		jsonLoaderSaver = new JSONLoaderSaver();
+		Gdx.input.setCursorCatched(true);
 	}
 
 	public void setLevel() {
