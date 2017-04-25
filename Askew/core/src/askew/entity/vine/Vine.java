@@ -42,7 +42,7 @@ public class Vine extends ComplexObstacle {
 	private static final String ANCHOR_NAME = "vine_pin";		/** The debug name for each anchor pin */
 	private static final float ANCHOR_RADIUS = 0.1f;			/** The radius of each anchor pin */
 	private transient float BASIC_DENSITY;						/** The density of each plank in the bridge */
-	private static final float lwidth = .35f;
+	private static final float lwidth = .15f;
 	private static final float lheight = 1.0f;
 
 	public static final String VINE_TEXTURE = "texture/vine/vine.png";
@@ -86,7 +86,9 @@ public class Vine extends ComplexObstacle {
 		this.pin = pinned;
 		this.angle = angle;
 		this.omega = omega;
+
 		build();
+		setCustomScale(3,1);
 	}
 
 	public void build() {

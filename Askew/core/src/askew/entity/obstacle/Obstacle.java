@@ -53,6 +53,8 @@ public abstract class Obstacle extends Entity {
 	private transient boolean toRemove;
 	/** Whether the object has changed shape and needs a new fixture */
 	private transient boolean isDirty;
+
+	protected transient Vector2 customScale;
 	
 	/// Caching objects
 	/** A cache value for when the user wants to access the body position */
@@ -848,6 +850,16 @@ public abstract class Obstacle extends Entity {
     public void setName(String value) {
      	nametag = value; 
 	}
+
+	public Vector2 getCustomScale() {
+		return customScale;
+	}
+	public void setCustomScale(Vector2 value) {
+		setCustomScale(value.x,value.y);
+	}
+	public void setCustomScale(float x, float y) {
+		customScale.set(x,y);
+	}
 	
 	/**
 	 * Create a new physics object at the origin.
@@ -887,6 +899,7 @@ public abstract class Obstacle extends Entity {
 		// Set the default drawing scale
 		drawScale = new Vector2(1,1);
 		objectScale = new Vector2(1,1);
+		customScale = new Vector2(1,1);
 	}
 
 	/// Abstract Methods
@@ -918,7 +931,6 @@ public abstract class Obstacle extends Entity {
 	 * primary purpose is to adjust changes to the fixture, which have to take place 
 	 * after collision.
 	 *
-	 * @param dt Timing values from parent loop
 	 */
 	public void update(float delta) { 
 	}

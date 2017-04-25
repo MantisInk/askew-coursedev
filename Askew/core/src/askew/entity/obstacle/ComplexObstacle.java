@@ -138,6 +138,19 @@ public abstract class ComplexObstacle extends Obstacle {
 		}
 	}
 
+	public Vector2 getCustomScale() {
+		return customScale;
+	}
+	public void setCustomScale(Vector2 value) {
+		setCustomScale(value.x,value.y);
+	}
+	public void setCustomScale(float x, float y) {
+		super.setCustomScale(x,y);
+		for(Obstacle o : bodies){
+			o.setCustomScale(x,y);
+		}
+	}
+
 	/**
 	 * Returns the x-coordinate for this physics body
 	 *
