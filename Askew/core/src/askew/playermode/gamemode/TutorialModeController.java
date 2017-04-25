@@ -80,6 +80,7 @@ public class TutorialModeController extends GameModeController {
 	private final float CONTROLLER_DEADZONE = 0.15f;
 
 	private float lAngle;
+	private float rAngle;
 	private boolean cw;
 	private boolean ccw;
 
@@ -93,6 +94,7 @@ public class TutorialModeController extends GameModeController {
 	TextureRegion joystickTexture;
 	TextureRegion bumperLTexture;
 	TextureRegion bumperRTexture;
+	Texture container;
 
 	//For playtesting control schemes
 	private String typeMovement;
@@ -131,6 +133,7 @@ public class TutorialModeController extends GameModeController {
 		super.loadContent(manager);
 		pauseTexture = manager.get("texture/background/pause.png");
 		fern = manager.get("texture/background/fern.png");
+		container = manager.get("texture/tutorial/infoContainer.png");
 	}
 
 	// Physics objects for the game
@@ -330,6 +333,41 @@ public class TutorialModeController extends GameModeController {
 		canvas.drawText("Hold RB/LB \n to start!", displayFont, initFlowX * worldScale.x, initFlowY * worldScale.y + 200f);
 	}
 
+	public void drawInstructions() {
+		joystickNeutralTexture = joystickAnimation.getKeyFrame(0);
+		joystickTexture = joystickAnimation.getKeyFrame(elapseTime, true);
+		bumperLTexture = bumperLAnimation.getKeyFrame(elapseTime,true);
+		bumperRTexture = bumperRAnimation.getKeyFrame(elapseTime, true);
+
+		canvas.draw(container, Color.WHITE, container.getWidth() / 2, 0, 425, 300, 0, worldScale.x * 5 / container.getWidth(), worldScale.y * 5 / container.getHeight());
+		if (stepsDone == DID_NOTHING) {
+			canvas.draw(joystickTexture, Color.WHITE, joystickTexture.getRegionWidth() / 2, 0, 350, 450, 0, worldScale.x / joystickTexture.getRegionWidth(), worldScale.y / joystickTexture.getRegionHeight());
+			canvas.draw(joystickNeutralTexture, Color.WHITE, joystickNeutralTexture.getRegionWidth() / 2, 0, 450, 450, 0, worldScale.x/ joystickNeutralTexture.getRegionWidth(), worldScale.y / joystickNeutralTexture.getRegionHeight());
+		} else if (stepsDone == MOVED_LEFT) {
+			canvas.draw(joystickNeutralTexture, Color.WHITE, joystickNeutralTexture.getRegionWidth() / 2, 0, 350, 450, 0, worldScale.x / joystickNeutralTexture.getRegionWidth(), worldScale.y / joystickNeutralTexture.getRegionHeight());
+			canvas.draw(joystickTexture, Color.WHITE, joystickTexture.getRegionWidth() / 2, 0, 450, 450, 0, worldScale.x / joystickTexture.getRegionWidth(), worldScale.y / joystickTexture.getRegionHeight());
+		} else if (stepsDone == MOVED_RIGHT) {
+			canvas.draw(bumperLTexture, Color.WHITE, bumperLTexture.getRegionWidth() / 2, 0, 400, 400, 0, worldScale.x * 3 / bumperLTexture.getRegionWidth(), worldScale.y * 3 / bumperLTexture.getRegionHeight());
+			canvas.draw(joystickTexture, Color.WHITE, joystickTexture.getRegionWidth() / 2, 0, 350, 450, 0, worldScale.x / joystickTexture.getRegionWidth(), worldScale.y / joystickTexture.getRegionHeight());
+			canvas.draw(joystickNeutralTexture, Color.WHITE, joystickNeutralTexture.getRegionWidth() / 2, 0, 450, 450, 0, worldScale.x/ joystickNeutralTexture.getRegionWidth(), worldScale.y / joystickNeutralTexture.getRegionHeight());
+		} else if (stepsDone == GRABBED_LEFT) {
+			canvas.draw(bumperRTexture, Color.WHITE, bumperRTexture.getRegionWidth() / 2, 0, 400, 400, 0, worldScale.x * 3 / bumperRTexture.getRegionWidth(), worldScale.y * 3 / bumperRTexture.getRegionHeight());
+			canvas.draw(joystickNeutralTexture, Color.WHITE, joystickNeutralTexture.getRegionWidth() / 2, 0, 350, 450, 0, worldScale.x / joystickNeutralTexture.getRegionWidth(), worldScale.y / joystickNeutralTexture.getRegionHeight());
+			canvas.draw(joystickTexture, Color.WHITE, joystickTexture.getRegionWidth() / 2, 0, 450, 450, 0, worldScale.x / joystickTexture.getRegionWidth(), worldScale.y / joystickTexture.getRegionHeight());
+		} else if (stepsDone >= GRABBED_RIGHT) {
+			if(sloth.isRightGrab()) {
+				canvas.draw(bumperLTexture, Color.WHITE, bumperLTexture.getRegionWidth() / 2, 0, 400, 400, 0, worldScale.x * 3 / bumperLTexture.getRegionWidth(), worldScale.y * 3 / bumperLTexture.getRegionHeight());
+				canvas.draw(joystickTexture, Color.WHITE, joystickTexture.getRegionWidth() / 2, 0, 350, 450, 0, worldScale.x / joystickTexture.getRegionWidth(), worldScale.y / joystickTexture.getRegionHeight());
+				canvas.draw(joystickNeutralTexture, Color.WHITE, joystickNeutralTexture.getRegionWidth() / 2, 0, 450, 450, 0, worldScale.x/ joystickNeutralTexture.getRegionWidth(), worldScale.y / joystickNeutralTexture.getRegionHeight());
+			}
+			else {
+				canvas.draw(bumperRTexture, Color.WHITE, bumperRTexture.getRegionWidth() / 2, 0, 400, 400, 0, worldScale.x * 3 / bumperRTexture.getRegionWidth(), worldScale.y * 3 / bumperRTexture.getRegionHeight());
+				canvas.draw(joystickNeutralTexture, Color.WHITE, joystickNeutralTexture.getRegionWidth() / 2, 0, 350, 450, 0, worldScale.x / joystickNeutralTexture.getRegionWidth(), worldScale.y / joystickNeutralTexture.getRegionHeight());
+				canvas.draw(joystickTexture, Color.WHITE, joystickTexture.getRegionWidth() / 2, 0, 450, 450, 0, worldScale.x / joystickTexture.getRegionWidth(), worldScale.y / joystickTexture.getRegionHeight());
+			}
+		}
+	}
+
 	/**
 	 * The core gameplay loop of this world.
 	 *
@@ -373,31 +411,54 @@ public class TutorialModeController extends GameModeController {
 		}
 		if (!paused) {
 			// Process actions in object model
-			sloth.setLeftHori(InputController.getInstance().getLeftHorizontal());
-			sloth.setLeftVert(InputController.getInstance().getLeftVertical());
-			sloth.setRightHori(InputController.getInstance().getRightHorizontal());
-			sloth.setRightVert(InputController.getInstance().getRightVertical());
-			sloth.setLeftGrab(InputController.getInstance().getLeftGrab());
-			sloth.setRightGrab(InputController.getInstance().getRightGrab());
+			sloth.setLeftHori(input.getLeftHorizontal());
+			sloth.setLeftVert(input.getLeftVertical());
+			sloth.setRightHori(input.getRightHorizontal());
+			sloth.setRightVert(input.getRightVertical());
+			sloth.setLeftGrab(input.getLeftGrab());
+			sloth.setRightGrab(input.getRightGrab());
+
+			lAngle = (float) ((sloth.getLeftArm().getAngle()) - 1.5*Math.PI);//+3.14)%3.14);
+			rAngle = (float) ((sloth.getRightArm().getAngle()) - 1.5*Math.PI);//+ 3.14)%3.14);
+			System.out.print(lAngle+" ");
+			System.out.println(rAngle);
+//			float angleL = 0;//(lAngle - prevLAngle);
+//			float angleR = 0;//(rAngle - prevRAngle);
+//			if (Math.abs(angleL) > CONTROLLER_DEADZONE) {
+//				dLAngle += angleL;
+//				prevLAngle = angleL;
+//			}
+//			if (Math.abs(angleR) > CONTROLLER_DEADZONE) {
+//				dRAngle += angleR;
+//				prevRAngle = angleR;
+//			}
+
+			//System.out.println("before case ("+rAngle+","+cw+","+ccw+")");
 			switch (stepsDone){
 				case DID_NOTHING:
+					//System.out.println("during case0 ("+rAngle+","+cw+","+ccw+")");
 					sloth.setRightHori(0);
 					sloth.setRightVert(0);
+					break;
 				case MOVED_LEFT:
-					sloth.setLeftGrab(false);
+					sloth.setLeftHori(0);
+					sloth.setLeftVert(0);
+					//System.out.println("during case1 ("+rAngle+","+cw+","+ccw+")");
+//					sloth.setLeftGrab(false);
+					break;
 				case MOVED_RIGHT:
 					sloth.setRightGrab(false);
 					break;
 				case GRABBED_LEFT:
-					sloth.setLeftGrab(true);
+					//sloth.setLeftGrab(true);
 					break;
 				case GRABBED_RIGHT:
-					sloth.setRightGrab(true);
+					//sloth.setRightGrab(true);
 					//Set right arm to be 0 too?
 					break;
 				case SWING_LEFT:
 					//Let go of left grab
-					sloth.setRightGrab(true);
+					//sloth.setRightGrab(true);
 					break;
 				case REGRABBED_LEFT:
 					break;
@@ -454,13 +515,7 @@ public class TutorialModeController extends GameModeController {
 			if(stepsDone==DID_NOTHING){
 				//Check for left joystick movement
 				if(Math.abs(input.getLeftHorizontal())>CONTROLLER_DEADZONE || Math.abs(input.getLeftVertical())>CONTROLLER_DEADZONE){
-					if(lAngle > 4*Math.PI || (ccw && lAngle > 0)) {
-						cw = true;
-					}
-					if(lAngle < -4*Math.PI || (cw && lAngle < 0)) {
-						ccw = true;
-					}
-					if(cw && ccw) {
+					if(Math.abs(lAngle) > 4*Math.PI) {
 						cw = false;
 						ccw = false;
 						stepsDone++;
@@ -470,7 +525,20 @@ public class TutorialModeController extends GameModeController {
 			else if(stepsDone==MOVED_LEFT){
 				//Check for right joystick movement
 				if(Math.abs(input.getRightHorizontal())>CONTROLLER_DEADZONE || Math.abs(input.getRightVertical())>CONTROLLER_DEADZONE){
-					stepsDone++;
+//					if(rAngle>(4*Math.PI) || (ccw && rAngle > 0)) {
+//						cw = true;
+//						//sloth.getRightArm().setAngle((float)(-2*Math.PI));
+//					}
+//					if(rAngle<(-4*Math.PI) || (cw && rAngle < 0)) {
+//						ccw = true;
+//						//sloth.getRightArm().setAngle((float)(-2*Math.PI));
+//					}
+//					if(cw && ccw) {
+					if (Math.abs(2*Math.PI+rAngle) > 3*Math.PI) {
+						cw = false;
+						ccw = false;
+						stepsDone++;
+					}
 				}
 			}
 			else if(stepsDone==MOVED_RIGHT){
@@ -521,6 +589,11 @@ public class TutorialModeController extends GameModeController {
 		canvas.drawTextStandard(typeControl,10f,680f);
 		canvas.end();
 
+		// draw instructional animations
+		canvas.begin();
+		drawInstructions();
+		canvas.end();
+
 		canvas.begin(camTrans);
 		Collections.sort(objects);
 		for(Entity obj : objects) {
@@ -529,7 +602,7 @@ public class TutorialModeController extends GameModeController {
 					obj.setDrawScale(worldScale);
 					obj.draw(canvas);
 				}
-				if(stepsDone >= GRABBED_RIGHT && ((Trunk) obj).getName().equals("long branch")){
+				if(stepsDone > GRABBED_RIGHT && ((Trunk) obj).getName().equals("long branch")){
 					obj.setDrawScale(worldScale);
 					obj.draw(canvas);
 				}
@@ -582,35 +655,6 @@ public class TutorialModeController extends GameModeController {
 			printHelp();
 		canvas.end();
 
-		// draw instructional animations
-		canvas.begin();
-		joystickNeutralTexture = joystickAnimation.getKeyFrame(0);
-		joystickTexture = joystickAnimation.getKeyFrame(elapseTime, true);
-		bumperLTexture = bumperLAnimation.getKeyFrame(elapseTime,true);
-		bumperRTexture = bumperRAnimation.getKeyFrame(elapseTime, true);
-
-		if (stepsDone == DID_NOTHING) {
-			canvas.draw(joystickTexture, Color.WHITE, joystickTexture.getRegionWidth() / 2, 0, 550, 650, 0, worldScale.x / joystickTexture.getRegionWidth(), worldScale.y / joystickTexture.getRegionHeight());
-			canvas.draw(joystickNeutralTexture, Color.WHITE, joystickNeutralTexture.getRegionWidth() / 2, 0, 650, 650, 0, worldScale.x/ joystickNeutralTexture.getRegionWidth(), worldScale.y / joystickNeutralTexture.getRegionHeight());
-		} else if (stepsDone == MOVED_LEFT) {
-			canvas.draw(joystickNeutralTexture, Color.WHITE, joystickNeutralTexture.getRegionWidth() / 2, 0, 550, 650, 0, worldScale.x / joystickNeutralTexture.getRegionWidth(), worldScale.y / joystickNeutralTexture.getRegionHeight());
-			canvas.draw(joystickTexture, Color.WHITE, joystickTexture.getRegionWidth() / 2, 0, 650, 650, 0, worldScale.x / joystickTexture.getRegionWidth(), worldScale.y / joystickTexture.getRegionHeight());
-		} else if (stepsDone == MOVED_RIGHT) {
-			canvas.draw(bumperLTexture, Color.WHITE, bumperLTexture.getRegionWidth() / 2, 0, 650, 550, 0, worldScale.x * 2 / bumperLTexture.getRegionWidth(), worldScale.y * 2 / bumperLTexture.getRegionHeight());
-		} else if (stepsDone == GRABBED_LEFT) {
-			canvas.draw(bumperRTexture, Color.WHITE, bumperRTexture.getRegionWidth() / 2, 0, 650, 550, 0, worldScale.x * 2 / bumperRTexture.getRegionWidth(), worldScale.y * 2 / bumperRTexture.getRegionHeight());
-		} else if (stepsDone >= GRABBED_RIGHT) {
-			if(sloth.isRightGrab()) {
-				canvas.draw(joystickTexture, Color.WHITE, joystickTexture.getRegionWidth() / 2, 0, 550, 600, 0, worldScale.x / joystickTexture.getRegionWidth(), worldScale.y / joystickTexture.getRegionHeight());
-				canvas.draw(bumperLTexture, Color.WHITE, bumperLTexture.getRegionWidth() / 2, 0, 750, 550, 0, worldScale.x * 2 / bumperLTexture.getRegionWidth(), worldScale.y * 2 / bumperLTexture.getRegionHeight());
-			}
-			else {
-				canvas.draw(joystickTexture, Color.WHITE, joystickTexture.getRegionWidth() / 2, 0, 550, 600, 0, worldScale.x / joystickTexture.getRegionWidth(), worldScale.y / joystickTexture.getRegionHeight());
-				canvas.draw(bumperRTexture, Color.WHITE, bumperRTexture.getRegionWidth() / 2, 0, 750, 550, 0, worldScale.x * 2 / bumperRTexture.getRegionWidth(), worldScale.y * 2 / bumperRTexture.getRegionHeight());
-
-			}
-		}
-		canvas.end();
 	}
 
 }
