@@ -4,18 +4,18 @@
   "goalTimeSilver": 45,
   "goalTimeBronze": 60,
   "recordTime": 9999999.0,
-  "title": "level1",
+  "title": "Go Flow Go",
   "background": "texture/background/background1.png",
   "soundtrack": "TODO",
   "entities": [
     {
       "CLASSNAME": "askew.entity.BackgroundEntity",
       "INSTANCE": {
-        "x": 14.409992,
-        "y": 10.0899935,
+        "x": 18.199993,
+        "y": 9.749994,
         "width": 20.0,
         "height": 20.0,
-        "depth": 1000.0,
+        "depth": 20.0,
         "angle": 0.0,
         "alpha": 1.0,
         "scalex": 1.0,
@@ -26,11 +26,11 @@
     {
       "CLASSNAME": "askew.entity.BackgroundEntity",
       "INSTANCE": {
-        "x": 10.009999,
-        "y": 12.369991,
+        "x": -10.0,
+        "y": 16.499992,
         "width": 15.0,
         "height": 10.0,
-        "depth": 100.0,
+        "depth": 12.0,
         "angle": 0.0,
         "alpha": 1.0,
         "scalex": 1.0,
@@ -110,6 +110,17 @@
           6.0,
           0.0
         ]
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 12.739994,
+        "y": 6.999997,
+        "stiffLen": 3.0,
+        "angle": 90.0,
+        "linksize": 1.0,
+        "numLinks": 7.0
       }
     }
   ]
