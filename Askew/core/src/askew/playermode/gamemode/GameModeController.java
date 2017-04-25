@@ -452,7 +452,7 @@ public class GameModeController extends WorldController {
 			sloth.setRightHori(InputController.getInstance().getRightHorizontal());
 			sloth.setRightVert(InputController.getInstance().getRightVertical());
 			boolean didSafe = InputController.getInstance()
-					.getRightGrab();
+					.isBottomButtonPressed();
 			if (sloth.controlMode == 0) {
 				// TODO: Make more elegant - trevor
 				sloth.setLeftGrab(InputController.getInstance().getLeftGrab());
@@ -460,7 +460,7 @@ public class GameModeController extends WorldController {
 			} else {
 				if (!didSafe) {
 					sloth.setOneGrab(InputController.getInstance()
-							.isBottomButtonPressed());
+							.getRightGrab());
 				}
 				sloth.setSafeGrab(didSafe, leftCollisionBody,
 						rightCollisionBody, world);
