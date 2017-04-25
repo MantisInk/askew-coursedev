@@ -77,10 +77,9 @@ public class TutorialModeController extends GameModeController {
 
 	private final float CONTROLLER_DEADZONE = 0.15f;
 
-	// delete later
-	Texture[] joystickTextures = new Texture[3];
-	Texture[] LeftBumperTextures = new Texture[2];
-	Texture[] RightBumperTextures = new Texture[2];
+	private float lAngle;
+	private boolean cw;
+	private boolean ccw;
 
 	private Animation joystickAnimation;
 	private Animation bumperLAnimation;
@@ -452,7 +451,19 @@ public class TutorialModeController extends GameModeController {
 			if(stepsDone==DID_NOTHING){
 				//Check for left joystick movement
 				if(Math.abs(input.getLeftHorizontal())>CONTROLLER_DEADZONE || Math.abs(input.getLeftVertical())>CONTROLLER_DEADZONE){
-					stepsDone++;
+					if(lAngle > 4*Math.PI || (ccw && lAngle > 0)) {
+						cw = true;
+						sloth. = 0;
+					}
+					if(lAngle < -4*Math.PI || (cw && lAngle < 0)) {
+						ccw = true;
+						lAngle = 0;
+					}
+					if(cw && ccw) {
+						cw = false;
+						ccw = false;
+						stepsDone++;
+					}
 				}
 			}
 			else if(stepsDone==MOVED_LEFT){
