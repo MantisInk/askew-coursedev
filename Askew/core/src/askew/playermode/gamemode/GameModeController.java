@@ -625,21 +625,15 @@ public class GameModeController extends WorldController {
 	public void draw(float delta){
 		canvas.clear();
 
+		canvas.begin();
+		canvas.draw(background);
+		canvas.end();
+
 		camTrans.setToTranslation(-1 * sloth.getBody().getPosition().x * worldScale.x
 				, -1 * sloth.getBody().getPosition().y * worldScale.y);
 
 		camTrans.translate(canvas.getWidth()/2,canvas.getHeight()/2);
-
-		canvas.begin();
-		canvas.draw(background);
-		canvas.drawTextStandard("current time:    "+currentTime, 10f, 70f);
-		canvas.drawTextStandard("record time:     "+recordTime,10f,50f);
-
-		//Draw control schemes
-		canvas.drawTextStandard(typeMovement, 10f, 700f);
-		canvas.drawTextStandard(typeControl,10f,680f);
-		canvas.end();
-
+    
 		canvas.getCampos().set( sloth.getBody().getPosition().x * worldScale.x
 				, sloth.getBody().getPosition().y * worldScale.y);
 		canvas.begin(camTrans);
@@ -657,6 +651,14 @@ public class GameModeController extends WorldController {
 		canvas.end();
 		sloth.drawGrab(canvas, camTrans);
 
+		canvas.begin();
+		canvas.drawTextStandard("current time:    "+currentTime, 10f, 70f);
+		canvas.drawTextStandard("record time:     "+recordTime,10f,50f);
+    
+		//Draw control schemes
+		canvas.drawTextStandard(typeMovement, 10f, 700f);
+		canvas.drawTextStandard(typeControl,10f,680f);
+		canvas.end();
 
 		if (debug) {
 			canvas.beginDebug(camTrans);
