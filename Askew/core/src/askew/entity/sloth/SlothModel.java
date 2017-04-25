@@ -92,6 +92,9 @@ public class SlothModel extends ComplexObstacle  {
     @Getter @Setter
     public float y;
 
+    private float lTheta;
+    private float rTheta;
+
     private transient float rightVert;      // right joystick y input
     private transient float leftHori;       // left joystick z input
     private transient float leftVert;       // left joystick y input
@@ -366,6 +369,14 @@ public class SlothModel extends ComplexObstacle  {
         this.rightVert = rightVert;
     }
 
+    public float getLeftHori() {return this.leftHori;}
+
+    public float getLeftVert() {return this.leftVert;}
+
+    public float getRightHori() {return this.rightHori;}
+
+    public float getRightVert() {return this.rightVert;}
+
     //theta is in radians between 0 and pi
     public float calculateTorque(float deltaTheta, float omega){
         //return (float) Math.max(-1.0f,Math.min(1.0f, 1.2 * Math.sin(deltaTheta)));
@@ -407,7 +418,7 @@ public class SlothModel extends ComplexObstacle  {
         //TODO REDUCE MAGIC NUMBERS ( HENRY )
         // Apply forces
         float lcTheta = (float)Math.atan2(leftVert,leftHori);
-        float lTheta = (-leftArm.getAngle()) + PI;
+        lTheta = (-leftArm.getAngle()) + PI;
         lTheta = ((lTheta%(2*PI)) + (2*PI)) % (2*PI) - PI;
         float lav = leftArm.getAngularVelocity() * 2;
         float lLength = (float)Math.sqrt((leftVert * leftVert) + (leftHori * leftHori));
@@ -428,7 +439,7 @@ public class SlothModel extends ComplexObstacle  {
         }
 
         float rcTheta = (float)Math.atan2(rightVert,rightHori);
-        float rTheta = -rightArm.getAngle() + PI;
+        rTheta = -rightArm.getAngle() + PI;
         rTheta = ((rTheta%(2*PI)) + (2*PI)) % (2*PI) - PI;
         float rav = rightArm.getAngularVelocity() * 2;
         float rLength = (float)Math.sqrt((rightVert * rightVert) + (rightHori * rightHori));
@@ -604,6 +615,10 @@ public class SlothModel extends ComplexObstacle  {
     public void setRightStickPressed(boolean rightStickPressed) {
         this.rightStickPressed = rightStickPressed;
     }
+
+    public float getLTheta() { return lTheta;}
+
+    public float getRTheta() {return rTheta;}
 
     public Obstacle getLeftArm() {
         return bodies.get(PART_LEFT_ARM);

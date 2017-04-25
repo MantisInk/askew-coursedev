@@ -75,6 +75,16 @@ public class TutorialModeController extends GameModeController {
 
 	private final float CONTROLLER_DEADZONE = 0.15f;
 
+	private float dLAngle;
+	private float dRAngle;
+	private float lAngle;
+	private float rAngle;
+	private float prevLAngle;
+	private float prevRAngle;
+	private float origLAngle;
+	private float origRAngle;
+	private boolean cw = false;
+	private boolean ccw = false;
 
 	Texture[] joystickTextures = new Texture[3];
 	Texture[] LeftBumperTextures = new Texture[2];
@@ -185,6 +195,14 @@ public class TutorialModeController extends GameModeController {
 	public void reset() {
 		super.reset();
 		paused = false;
+//		dLAngle = 0;
+//		dRAngle = 0;
+//		lAngle = 0;
+//		rAngle = 0;
+//		origLAngle = 0;
+//		origRAngle = 0;
+//		prevLAngle = 0;
+//		prevRAngle = 0;
 		stepsDone=0;
 
 		// if not set, set textures in arrays, which are loaded after constructor called
@@ -354,18 +372,41 @@ public class TutorialModeController extends GameModeController {
 		InputController input = InputController.getInstance();
 		if (!paused) {
 			// Process actions in object model
-			sloth.setLeftHori(InputController.getInstance().getLeftHorizontal());
-			sloth.setLeftVert(InputController.getInstance().getLeftVertical());
-			sloth.setRightHori(InputController.getInstance().getRightHorizontal());
-			sloth.setRightVert(InputController.getInstance().getRightVertical());
-			sloth.setLeftGrab(InputController.getInstance().getLeftGrab());
-			sloth.setRightGrab(InputController.getInstance().getRightGrab());
+			sloth.setLeftHori(input.getLeftHorizontal());
+			sloth.setLeftVert(input.getLeftVertical());
+			sloth.setRightHori(input.getRightHorizontal());
+			sloth.setRightVert(input.getRightVertical());
+			sloth.setLeftGrab(input.getLeftGrab());
+			sloth.setRightGrab(input.getRightGrab());
+
+			lAngle = (float) ((sloth.getLeftArm().getAngle()) - 1.5*Math.PI);//+3.14)%3.14);
+			rAngle = (float) ((sloth.getRightArm().getAngle()) - 1.5*Math.PI);//+ 3.14)%3.14);
+			System.out.println(lAngle);
+			System.out.println(rAngle);
+//			float angleL = 0;//(lAngle - prevLAngle);
+//			float angleR = 0;//(rAngle - prevRAngle);
+//			if (Math.abs(angleL) > CONTROLLER_DEADZONE) {
+//				dLAngle += angleL;
+//				prevLAngle = angleL;
+//			}
+//			if (Math.abs(angleR) > CONTROLLER_DEADZONE) {
+//				dRAngle += angleR;
+//				prevRAngle = angleR;
+//			}
+
+			System.out.println("before case ("+rAngle+","+cw+","+ccw+")");
 			switch (stepsDone){
 				case DID_NOTHING:
+					System.out.println("during case0 ("+rAngle+","+cw+","+ccw+")");
 					sloth.setRightHori(0);
 					sloth.setRightVert(0);
+					break;
 				case MOVED_LEFT:
-					sloth.setLeftGrab(false);
+					sloth.setLeftHori(0);
+					sloth.setLeftVert(0);
+					System.out.println("during case1 ("+rAngle+","+cw+","+ccw+")");
+//					sloth.setLeftGrab(false);
+					break;
 				case MOVED_RIGHT:
 					sloth.setRightGrab(false);
 					break;
@@ -435,13 +476,37 @@ public class TutorialModeController extends GameModeController {
 			if(stepsDone==DID_NOTHING){
 				//Check for left joystick movement
 				if(Math.abs(input.getLeftHorizontal())>CONTROLLER_DEADZONE || Math.abs(input.getLeftVertical())>CONTROLLER_DEADZONE){
-					stepsDone++;
+					if(lAngle>(3*Math.PI) || (ccw && lAngle > 0)) {
+						prevLAngle = lAngle;
+						cw = true;
+					}
+					if(lAngle<(-3*Math.PI) || (cw && lAngle < 0)) {
+						prevLAngle = lAngle;
+						ccw = true;
+					}
+					if(cw && ccw) {
+						cw = false;
+						ccw = false;
+						stepsDone++;
+					}
 				}
 			}
 			else if(stepsDone==MOVED_LEFT){
 				//Check for right joystick movement
 				if(Math.abs(input.getRightHorizontal())>CONTROLLER_DEADZONE || Math.abs(input.getRightVertical())>CONTROLLER_DEADZONE){
-					stepsDone++;
+					if(rAngle>(3*Math.PI) || (ccw && rAngle > -2*Math.PI)) {
+						prevRAngle = rAngle;
+						cw = true;
+					}
+					if(rAngle<(-3*Math.PI) || (cw && rAngle < -2*Math.PI)) {
+						prevRAngle = rAngle;
+						ccw = true;
+					}
+					if(cw && ccw) {
+						cw = false;
+						ccw = false;
+						stepsDone++;
+					}
 				}
 			}
 			else if(stepsDone==MOVED_RIGHT){
@@ -541,7 +606,7 @@ public class TutorialModeController extends GameModeController {
 					obj.setDrawScale(worldScale);
 					obj.draw(canvas);
 				}
-				if(stepsDone >= GRABBED_RIGHT && ((Trunk) obj).getName().equals("long branch")){
+				if(stepsDone > GRABBED_RIGHT && ((Trunk) obj).getName().equals("long branch")){
 					obj.setDrawScale(worldScale);
 					obj.draw(canvas);
 				}
