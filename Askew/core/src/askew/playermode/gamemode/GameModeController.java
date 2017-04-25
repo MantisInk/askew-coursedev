@@ -476,26 +476,29 @@ public class GameModeController extends WorldController {
 				setFailure(collisions.isFlowKill());
 
 			if (!isFailure() && collisions.isFlowWin()) {
-//				System.out.println("VICTORY");
+				if (!owl.isDoingVictory()) {
+					sloth.grab(world, owl.getBody(), true);
+					sloth.grab(world, owl.getBody(), false);
+				}
 				coverOpacity = owl.doVictory();
 				if (owl.didVictory()) {
 					setComplete(true);
 				}
-			}
+			} else {
+				// Physics tiem
+				// Gribby grab
+				if (sloth.controlMode == 0 || !didSafe) {
+					if (sloth.isLeftGrab()) {
+						sloth.grab(world, leftCollisionBody, true);
+					} else {
+						sloth.releaseLeft(world);
+					}
 
-			// Physics tiem
-			// Gribby grab
-			if (sloth.controlMode == 0 || !didSafe) {
-				if (sloth.isLeftGrab()) {
-					sloth.grab(world, leftCollisionBody, true);
-				} else {
-					sloth.releaseLeft(world);
-				}
-
-				if (sloth.isRightGrab()) {
-					sloth.grab(world, rightCollisionBody, false);
-				} else {
-					sloth.releaseRight(world);
+					if (sloth.isRightGrab()) {
+						sloth.grab(world, rightCollisionBody, false);
+					} else {
+						sloth.releaseRight(world);
+					}
 				}
 			}
 
