@@ -87,6 +87,16 @@ public class InputController {
 	private boolean lShiftKeyPressed;
 	@Getter
 	private boolean rShiftKeyPressed;
+	@Getter
+	private boolean oneKeyPressed;
+	@Getter
+	private boolean twoKeyPressed;
+	@Getter
+	private boolean threeKeyPressed;
+	@Getter
+	private boolean zKeyPressed;
+	@Getter
+	private boolean xKeyPressed;
 
 
 	private boolean sKeyPrevious;
@@ -526,6 +536,14 @@ public class InputController {
 		eKeyPressed = Gdx.input.isKeyPressed(Input.Keys.E) && !eKeyPrevious;
 		gKeyPressed = Gdx.input.isKeyPressed(Input.Keys.G) && !gKeyPrevious;
 		hKeyPressed = Gdx.input.isKeyPressed(Input.Keys.H) && !hKeyPrevious;
+
+		//Keypresses for toggling control schemes
+		oneKeyPressed = Gdx.input.isKeyPressed(Input.Keys.NUM_1);
+		twoKeyPressed = Gdx.input.isKeyPressed(Input.Keys.NUM_2);
+		threeKeyPressed = Gdx.input.isKeyPressed(Input.Keys.NUM_3);
+		zKeyPressed = Gdx.input.isKeyPressed(Input.Keys.Z);
+		xKeyPressed = Gdx.input.isKeyPressed(Input.Keys.X);
+
 
 		leftKeyPressed = Gdx.input.isKeyPressed(Input.Keys.LEFT) && !leftKeyPrevious;
 		rightKeyPressed = Gdx.input.isKeyPressed(Input.Keys.RIGHT) && !rightKeyPrevious;
