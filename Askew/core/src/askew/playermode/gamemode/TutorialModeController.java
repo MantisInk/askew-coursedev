@@ -187,9 +187,9 @@ public class TutorialModeController extends GameModeController {
 
 		// reset animation frames
 		if(joystickAnimation == null) {
-			joystickAnimation = new Animation(0.25f, manager.getTextureAtlas().findRegions("joy"), Animation.PlayMode.LOOP);
-			bumperLAnimation = new Animation(0.25f, manager.getTextureAtlas().findRegions("bumperL"), Animation.PlayMode.LOOP);
-			bumperRAnimation = new Animation(0.25f, manager.getTextureAtlas().findRegions("bumperR"), Animation.PlayMode.LOOP);
+			joystickAnimation = new Animation(0.15f, manager.getTextureAtlas().findRegions("joy"), Animation.PlayMode.LOOP);
+			bumperLAnimation = new Animation(0.20f, manager.getTextureAtlas().findRegions("bumperL"), Animation.PlayMode.LOOP);
+			bumperRAnimation = new Animation(0.20f, manager.getTextureAtlas().findRegions("bumperR"), Animation.PlayMode.LOOP);
 		}
 
 		joystickTexture = joystickAnimation.getKeyFrame(0);
