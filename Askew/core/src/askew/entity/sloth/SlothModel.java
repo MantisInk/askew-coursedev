@@ -508,8 +508,6 @@ public class SlothModel extends ComplexObstacle  {
             gimpScale = (float) Math.exp(-( (maxVelocity-CUTOFF) / 4.5f));
         }
 
-        System.out.println(gimpScale);
-
         lTorque *= gimpScale;
         rTorque *= gimpScale;
 

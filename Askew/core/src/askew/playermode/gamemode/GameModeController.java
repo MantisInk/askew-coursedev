@@ -472,11 +472,15 @@ public class GameModeController extends WorldController {
 			currentTime += dt;
 
 			//#TODO Collision states check
-			setFailure(collisions.isFlowKill());
+			if (!collisions.isFlowWin())
+				setFailure(collisions.isFlowKill());
 
 			if (!isFailure() && collisions.isFlowWin()) {
-				System.out.println("VICTORY");
-				setComplete(true);
+//				System.out.println("VICTORY");
+				coverOpacity = owl.doVictory();
+				if (owl.didVictory()) {
+					setComplete(true);
+				}
 			}
 
 			// Physics tiem
@@ -524,7 +528,7 @@ public class GameModeController extends WorldController {
 				SoundController.getInstance().setVolume("fallmusic", 0);
 				SoundController.getInstance().setVolume("bgmusic",
 						1);
-				if (playerIsReady || paused) {
+				if ((playerIsReady || paused) && (collisions.isFlowKill() || !collisions.isFlowWin())) {
 					coverOpacity = 0;
 				}
 			}

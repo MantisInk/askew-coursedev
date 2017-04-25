@@ -5,9 +5,7 @@ import askew.MantisAssetManager;
 import askew.entity.FilterGroup;
 import askew.entity.obstacle.BoxObstacle;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -24,6 +22,9 @@ public class OwlModel extends BoxObstacle  {
 
     public static final String OWL_TEXTURE = "texture/owl/owl.png";
     public static final float OWL_WIDTH = 2.2f;
+    private static final float VICTORY_SPEED = 0.10f;
+    private static final float VICTORY_DISTANCE = 7f;
+
     // determined at runtime to preserve aspect ratio from designers
     private transient float owlHeight;
 
@@ -31,6 +32,8 @@ public class OwlModel extends BoxObstacle  {
     private transient Animation idleAnimation;
     private transient Animation flyAnimation;
     private transient float elapseTime;
+    private transient boolean doingVictory;
+    private transient float victoryDistance;
 
     //JSON
     @Getter @Setter
@@ -96,18 +99,40 @@ public class OwlModel extends BoxObstacle  {
 
         if (elapseTime == 0) return;
 
-        TextureRegion drawFrame = idleAnimation.getKeyFrame(elapseTime, true);
-
-        if (drawFrame != null) {
-            canvas.draw(drawFrame,Color.WHITE,origin.x,origin.y,getPosition().x*drawScale.x,getPosition().y*drawScale.y,getAngle(),
-                    (1.0f/drawFrame.getRegionWidth()) *   getWidth() * getDrawScale().x * objectScale.x,
-                    (1.0f/drawFrame.getRegionHeight()  * getHeight()* getDrawScale().y * objectScale.y));
+        TextureRegion drawFrame;
+        if (doingVictory) {
+            drawFrame = flyAnimation.getKeyFrame(elapseTime, true);
+            if (!drawFrame.isFlipX())
+                drawFrame.flip(true,false);
+        } else {
+            drawFrame = idleAnimation.getKeyFrame(elapseTime, true);
         }
+
+        setTexture(drawFrame);
+        this.owlHeight = getWidth() * ( drawFrame.getRegionHeight() / drawFrame.getRegionWidth());
+
+        canvas.draw(drawFrame,Color.WHITE,origin.x,origin.y,getPosition().x*drawScale.x,getPosition().y*drawScale.y,getAngle(),
+               (1.0f/drawFrame.getRegionWidth()) *   getWidth() * getDrawScale().x * objectScale.x,
+               (1.0f/drawFrame.getRegionHeight()  * getHeight()* getDrawScale().y * objectScale.y));
     }
 
     public void fillJSON() {
         this.x = getPosition().x;
         this.y = getPosition().y;
+    }
+
+    public float doVictory() {
+        if (!doingVictory) {
+            doingVictory = true;
+        }
+
+        this.setPosition(this.getPosition().x + VICTORY_SPEED, this.getPosition().y);
+        this.victoryDistance += VICTORY_SPEED;
+        return this.victoryDistance / VICTORY_DISTANCE;
+    }
+
+    public boolean didVictory() {
+        return victoryDistance > VICTORY_DISTANCE;
     }
 }
 
