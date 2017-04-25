@@ -67,11 +67,25 @@ public class EntityTree {
         //System.out.println("Background Entities:");
         for (String s : allPaths){
             if(s.contains("/background/")){
-                String[] parts = s.split("/");
-                String file =parts[parts.length-1];
-                String name = file.substring(0,file.indexOf("."));
-                System.out.println("BG: " + name);
-                ETNode bg = new ETNode(root.children.get(0), name, s, true);
+                String[] removebg = s.split("/background/");
+                String[] parts = removebg[1].split("/");
+                ETNode node = root.children.get(0);
+                for(int i = 0; i < parts.length; i++){
+                    String str = parts[i];
+                    if(i== parts.length-1){
+                        str = str.substring(0,str.indexOf("."));
+                        ETNode bg = new ETNode(node, str, s, true);
+                    }
+                    else{
+                        ETNode temp = node.find(parts[i]);
+                        if(temp != null){
+                            node = temp;
+                        }
+                        else{
+                            node = new ETNode(node, str,"texture/leveleditor/folder.png" , false);
+                        }
+                    }
+                }
             }
         }
         setTextures(manager,root);
@@ -116,6 +130,15 @@ public class EntityTree {
 
         public void add(ETNode e){
             children.add(e);
+        }
+
+        public ETNode find( String s){
+            for(ETNode child : children){
+                if(child.name.equals(s)){
+                    return child;
+                }
+            }
+            return null;
         }
 
         public String toString(){

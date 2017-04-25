@@ -3,16 +3,39 @@
   "goalTimeGold": 30,
   "goalTimeSilver": 45,
   "goalTimeBronze": 60,
-  "recordTime": 8.226148,
-  "title": "Flow Just Wants the Baby",
-  "background": "texture/background/background1.png",
+  "recordTime": 9999999.0,
+  "title": "Leap of Faith",
+  "background": "texture/background/background.png",
   "soundtrack": "TODO",
   "entities": [
     {
-      "CLASSNAME": "askew.entity.owl.OwlModel",
+      "CLASSNAME": "askew.entity.BackgroundEntity",
       "INSTANCE": {
-        "x": 17.0,
-        "y": 8.0
+        "x": -2.5700006,
+        "y": 15.029991,
+        "width": 10.0,
+        "height": 10.0,
+        "depth": 10.5,
+        "angle": 0.0,
+        "alpha": 1.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/sil2.png"
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 19.959991,
+        "y": 15.049991,
+        "width": 10.0,
+        "height": 10.0,
+        "depth": 5.5,
+        "angle": 0.0,
+        "alpha": 1.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/sil3.png"
       }
     },
     {
@@ -74,25 +97,27 @@
       "CLASSNAME": "askew.entity.sloth.SlothModel",
       "INSTANCE": {
         "x": -3.0,
-        "y": 19.0
+        "y": 19.0,
+        "setLastGrabX": false,
+        "lastGrabX": 0.0
       }
     },
     {
-      "CLASSNAME": "askew.entity.wall.WallModel",
+      "CLASSNAME": "askew.entity.tree.Trunk",
       "INSTANCE": {
-        "x": -14.0,
-        "y": 5.0,
-        "thorn": true,
-        "points": [
-          0.0,
-          0.0,
-          0.0,
-          1.0,
-          38.0,
-          1.0,
-          38.0,
-          0.0
-        ]
+        "x": 18.649998,
+        "y": 7.0999975,
+        "stiffLen": 3.0,
+        "angle": 90.0,
+        "linksize": 1.0,
+        "numLinks": 7.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.owl.OwlModel",
+      "INSTANCE": {
+        "x": 17.0,
+        "y": 8.0
       }
     }
   ]

@@ -35,32 +35,36 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.FileNotFoundException;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.Map;
 
 import static javax.swing.JOptionPane.showInputDialog;
 
-
-/**
- * Gameplay specific controller for the platformer game.
- *
- * You will notice that asset loading is not done with static methods this time.
- * Instance asset loading makes it easier to process our game modes in a loop, which
- * is much more scalable. However, we still want the assets themselves to be static.
- * This is the purpose of our AssetState variable; it ensures that multiple instances
- * place nicely with the static assets.
- */
 public class LevelEditorController extends WorldController {
 
 	/** Track asset loading from all instances and subclasses */
 	private AssetState levelEditorAssetState = AssetState.EMPTY;
+
+	public static final int BUFFER = 5;
+	public static final int TEXT_HEIGHT = 20;
+	public static final int FIELD_TEXT_WIDTH = 150;
+	public static final int FIELD_BOX_WIDTH = 150;
+	public static final int BUTTON_WIDTH = 75;
+	public static final int BUTTON_HEIGHT = 30;
+	public static final int TEXT_LENGTH = 175;
+	public static final int TEXT_HEIGHT1 = 20;
 
 	private JSONLoaderSaver jsonLoaderSaver;
 	@Getter @Setter
@@ -76,6 +80,9 @@ public class LevelEditorController extends WorldController {
 	private Texture folder;
 	private Texture placeholder;
 	private Texture yellowbox;
+	JFrame editorWindow;
+	private boolean guiPrompt;
+
 
 	Affine2 camTrans;
 	float cxCamera;
@@ -231,7 +238,8 @@ public class LevelEditorController extends WorldController {
 	 * This method disposes of the world and creates a new one.
 	 */
 	public void reset() {
-		Vector2 gravity = new Vector2(world.getGravity() );
+		Gdx.input.setCursorCatched(false);
+		Vector2 gravity = new Vector2(world.getGravity());
 
 		for(Entity obj : objects) {
 			if( (obj instanceof Obstacle))
@@ -239,7 +247,6 @@ public class LevelEditorController extends WorldController {
 		}
 
 		objects.clear();
-		addQueue.clear();
 		world.dispose();
 
 		world = new World(gravity,false);
@@ -370,30 +377,137 @@ public class LevelEditorController extends WorldController {
 	}
 
 	private void promptTemplate(Entity template) {
+			changeEntityParam(template);
+	}
+
+
+	private void changeEntityParam(Entity template) {
 		if (!prompting) {
-			prompting = true;
-			template.fillJSON();
-			String jsonOfTemplate = jsonLoaderSaver.gsonToJson(template);
-			// flipping swing
-			JDialog mainFrame = new JDialog();
-			mainFrame.setSize(600,600);
-			mainFrame.setLocationRelativeTo(null);
-			JPanel panel = new JPanel();
-			panel.setLayout(new FlowLayout());
-			final JTextArea commentTextArea =
-					new JTextArea(jsonOfTemplate,20,30);
-			panel.add(commentTextArea);
-			mainFrame.add(panel);
-			JButton okButton = new JButton("ok");
-			okButton.addActionListener(e -> {
-				promptTemplateCallback(commentTextArea.getText());
-				mainFrame.setVisible(false);
-				mainFrame.dispose();
-			});
-			panel.add(okButton);
-			mainFrame.setVisible(true);
+			prompting = true; //Use different constant? Can just use the same one?
+
+			JDialog entityDisplay = new JDialog();
+			entityDisplay.setUndecorated(true);
+			entityDisplay.setSize(600,600);
+//			entityDisplay.setLocationRelativeTo(null);
+			entityDisplay.toFront();
+			JPanel panel = makeEntityWindow(template,entityDisplay);
+
+			entityDisplay.add(panel);
+			entityDisplay.setVisible(true);
 		}
 	}
+
+	private JPanel makeEntityWindow(Entity template, JDialog parentWindow){
+		JsonObject entityObject = jsonLoaderSaver.gsonToJsonObject(template);
+
+		JsonObject entityProp = entityObject.get("INSTANCE").getAsJsonObject();
+		String entityName = entityObject.get("CLASSNAME").getAsString();
+		entityName = entityName.substring(entityName.lastIndexOf("."));
+
+		JPanel panel = new JPanel();
+		panel.setLayout(null);
+
+		int rowNum = 0;
+
+		JLabel header = new JLabel(entityName+" Properties (Please hit OK instead of X to closeout window)");
+		JButton okButton = new JButton("OK");
+		JButton deleteButton = new JButton("Delete Entity");
+
+		//Define top elements
+		header.setBounds(BUFFER, BUFFER, 500, TEXT_HEIGHT);
+		rowNum++;
+		deleteButton.setBounds(BUFFER, (rowNum*TEXT_HEIGHT)+((rowNum+1)* BUFFER), 150, TEXT_HEIGHT);
+		rowNum++;
+
+		// Add properties
+		rowNum = generateSwingPropertiesForEntity(entityProp,panel,rowNum);
+
+		//Add okay button
+		okButton.addActionListener(e -> {
+			grabUpdatedObjectValuesFromGUI(entityProp,panel);
+			entityObject.add("INSTANCE", entityProp);
+			objects.remove(template);
+
+			//Get the string form of the entityObject
+			String stringJson = jsonLoaderSaver.stringFromJson(entityObject);
+			promptTemplateCallback(stringJson);
+
+			parentWindow.setVisible(false);
+			parentWindow.dispose();
+			prompting = false;
+		});
+
+		okButton.setBounds(125, ((rowNum+1)*TEXT_HEIGHT)+((rowNum+1)* BUFFER), 100, TEXT_HEIGHT);
+
+		deleteButton.addActionListener(e -> {
+			deleteEntity(template);
+			parentWindow.setVisible(false);
+			parentWindow.dispose();
+			prompting = false;
+		});
+
+		panel.add(header);
+		panel.add(okButton);
+		panel.add(deleteButton);
+
+		return panel;
+	}
+
+	private int generateSwingPropertiesForEntity(JsonObject e, JPanel jPanel, int rowNum) {
+		for(Map.Entry<String,JsonElement> entry : e.entrySet()) {
+			// Add key
+			String key = entry.getKey();
+			JLabel paramText = new JLabel(key + ":");
+
+			JComponent valueComponent;
+			// Add value based on type
+			JsonElement value = entry.getValue();
+			if (value.isJsonArray()) {
+				// TODO (hard), recurse
+				System.err.println("TODO: JSON Array. Use Henry's click and drag!");
+				continue;
+			} else if (value.isJsonPrimitive()) {
+				JsonPrimitive primitive = value.getAsJsonPrimitive();
+				if (primitive.isBoolean()) {
+					valueComponent = new JCheckBox("",primitive.getAsBoolean());
+				} else if (primitive.isNumber()) {
+					valueComponent = new JTextField(primitive.getAsNumber().toString());
+				} else if (primitive.isString()) {
+					valueComponent = new JTextField(primitive.getAsString());
+				} else {
+					System.err.println("Unknown primitive type: " + entry);
+					continue;
+				}
+			} else if (value.isJsonObject()) {
+				System.err.println("Unknown object type: " + entry);
+				continue;
+			} else {
+				System.err.println("Unknown type: " + entry);
+				continue;
+			}
+
+			paramText.setBounds((2 * BUFFER), (rowNum * TEXT_HEIGHT) + ((rowNum + 1) * BUFFER), FIELD_TEXT_WIDTH, TEXT_HEIGHT);
+			valueComponent.setBounds((3 * BUFFER) + FIELD_TEXT_WIDTH, (rowNum * TEXT_HEIGHT) + ((rowNum + 1) * BUFFER), FIELD_BOX_WIDTH, TEXT_HEIGHT);
+
+			// Update panel with key, value
+			jPanel.add(paramText);
+			jPanel.add(valueComponent);
+			rowNum++;
+		}
+
+		return rowNum;
+	}
+
+	private void deleteEntity(){
+		Entity select = entityQuery();
+		if (select != null) objects.remove(select);
+		inputRateLimiter = UI_WAIT_SHORT;
+	}
+
+	private void deleteEntity(Entity target){
+		objects.remove(target);
+	}
+
 
 	private void promptTemplateCallback(String json) {
 		Entity toAdd = jsonLoaderSaver.entityFromJson(json);
@@ -416,7 +530,7 @@ public class LevelEditorController extends WorldController {
 					new JTextArea(jsonOfConfig,20,30);
 			panel.add(commentTextArea);
 			mainFrame.add(panel);
-			JButton okButton = new JButton("ok");
+			JButton okButton = new JButton("OK");
 			okButton.addActionListener(e -> {
 				JSONLoaderSaver.saveArbitrary("data/config.json",commentTextArea
 						.getText());
@@ -527,6 +641,12 @@ public class LevelEditorController extends WorldController {
 				if(selected == null){
 					//createXY(creationOptions[entityIndex], adjustedMouseX,adjustedMouseY);
 				}
+				/*
+				if(selected instanceof BackgroundEntity){
+					adjustedCxCamera = -adjustedMouseX;
+					adjustedCyCamera = -adjustedMouseY;
+					camUpdate();
+				}*/
 
 			}
 
@@ -543,11 +663,35 @@ public class LevelEditorController extends WorldController {
 				dragging = true;
 
 				if(selected != null) {
+					/*
+					if(false && selected instanceof BackgroundEntity){
+						if (mouseX < -adjustedCxCamera + 3 ) {
+							// Pan left
+							adjustedCxCamera += CAMERA_PAN_SPEED/worldScale.x;
+						}
+						if (mouseY < -adjustedCyCamera + 3 ) {
+							// down
+							adjustedCyCamera += CAMERA_PAN_SPEED/worldScale.y;
+						}
+						if (mouseX > -adjustedCxCamera - 3) {
+							adjustedCxCamera -= CAMERA_PAN_SPEED/worldScale.x;
+						}
+						if (mouseY > -adjustedCyCamera - 3) {
+							adjustedCyCamera -= CAMERA_PAN_SPEED/worldScale.y;
+						}
+						camUpdate();
 
-					selected.setPosition(adjustedMouseX, adjustedMouseY);
-					if(selected instanceof ComplexObstacle) {
-						((ComplexObstacle) selected).rebuild(adjustedMouseX,adjustedMouseY);
-						selected.setTextures(getMantisAssetManager());
+						selected.setPosition(adjustedCxCamera, adjustedCyCamera);
+
+
+
+					}
+					else {*/
+						selected.setPosition(adjustedMouseX, adjustedMouseY);
+						if (selected instanceof ComplexObstacle) {
+							((ComplexObstacle) selected).rebuild(adjustedMouseX, adjustedMouseY);
+							selected.setTextures(getMantisAssetManager());
+						//}
 					}
 
 
@@ -569,14 +713,18 @@ public class LevelEditorController extends WorldController {
 				if(dragging) {
 					dragging = false;
 					if (selected != null) {
-						selected.setPosition(adjustedMouseX, adjustedMouseY);
-						if (selected instanceof ComplexObstacle) {
-
-							System.out.println("move complex");
-							((ComplexObstacle) selected).rebuild(adjustedMouseX, adjustedMouseY);
-							selected.setTextures(getMantisAssetManager());
+						if(selected instanceof BackgroundEntity){
+							selected.setPosition(adjustedMouseX, adjustedMouseY);
 						}
+						else {
+							selected.setPosition(adjustedMouseX, adjustedMouseY);
+							if (selected instanceof ComplexObstacle) {
 
+								System.out.println("move complex");
+								((ComplexObstacle) selected).rebuild(adjustedMouseX, adjustedMouseY);
+								selected.setTextures(getMantisAssetManager());
+							}
+						}
 					}
 					if (creating) {
 						promptTemplate(selected);
@@ -592,6 +740,10 @@ public class LevelEditorController extends WorldController {
 
 		}
 
+
+		if (InputController.getInstance().didRightArrowPress()) {
+			makeGuiWindow();
+		}
 		// Delete
 		if (InputController.getInstance().isRightClickPressed()) {
 			Entity select = entityQuery();
@@ -716,6 +868,16 @@ public class LevelEditorController extends WorldController {
 		if(ent!= null)
 			canvas.drawPhysics(circleShape, new Color(0xcfcf000f),ent.getPosition().x , ent.getPosition().y ,worldScale.x,worldScale.y );
 
+		circleShape.setRadius(.05f);
+		for(Entity e : objects){
+			canvas.drawPhysics(circleShape, new Color(0xcfcf000f),e.getPosition().x , e.getPosition().y ,worldScale.x,worldScale.y );
+			if(e instanceof BackgroundEntity){
+				float offsetx = ((e.getPosition().x + adjustedCxCamera) * worldScale.x) / ((BackgroundEntity) e).getDepth();
+				float offsety = ((e.getPosition().y + adjustedCyCamera) * worldScale.y) / ((BackgroundEntity) e).getDepth();
+				canvas.drawLine(e.getPosition().x *worldScale.x, e.getPosition().y *worldScale.y , -adjustedCxCamera*worldScale.x  + offsetx, -adjustedCyCamera*worldScale.y + offsety, Color.YELLOW, Color.CHARTREUSE);
+			}
+		}
+
 		canvas.endDebug();
 
 	}
@@ -809,7 +971,11 @@ public class LevelEditorController extends WorldController {
 		// Translate camera to cx, cy
 		camTrans.setToTranslation(0,0);
 		camTrans.setToTranslation(cxCamera * worldScale.x, cyCamera* worldScale.y);
+
+		Vector2 pos = canvas.getCampos();
+		pos.set(-adjustedCxCamera * worldScale.x ,-adjustedCyCamera * worldScale.y);
 		canvas.begin(camTrans);
+		Collections.sort(objects);
 		for(Entity obj : objects) {
 			obj.setDrawScale(worldScale);
 			obj.draw(canvas);
@@ -852,28 +1018,21 @@ public class LevelEditorController extends WorldController {
 
 	@Override
 	public void postUpdate(float dt) {
-		// Add any objects created by actions
-		while (!addQueue.isEmpty()) {
-			addObject(addQueue.poll());
-		}
 
 		// Turn the physics engine crank.
 		//world.step(WORLD_STEP,WORLD_VELOC,WORLD_POSIT);
 
-		// Garbage collect the deleted objects.
-		// Note how we use the linked list nodes to delete O(1) in place.
-		// This is O(n) without copying.
-		Iterator<PooledList<Entity>.Entry> iterator = objects.entryIterator();
-		while (iterator.hasNext()) {
-			PooledList<Entity>.Entry entry = iterator.next();
-			Entity ent = entry.getValue();
-			if (ent instanceof Obstacle) {
-				Obstacle obj = (Obstacle) ent;
+		for (Entity ent :objects){
+
+			if(ent instanceof Obstacle){
+				Obstacle obj  = (Obstacle)ent;
 				if (obj.isRemoved()) {
 					obj.deactivatePhysics(world);
-					entry.remove();
+					objects.remove(ent);
+					continue;
 				}
 			}
+			ent.update(dt); // called last!
 		}
 	}
 
@@ -890,4 +1049,191 @@ public class LevelEditorController extends WorldController {
 		this.worldScale.y = 1.0f * canvas.getHeight()/bounds.getHeight();
 		jsonLoaderSaver.setScale(this.worldScale);
 	}
+
+	private void makeGuiWindow() {
+		if (editorWindow != null) {
+			editorWindow.dispose();
+		}
+		//GUI Mode Enabled
+		//Prevent multiple windows from being created
+		guiPrompt = true;
+		//Window Settings
+		editorWindow = new JFrame();
+		GridLayout gridLayout = new GridLayout(12,2);
+		gridLayout.setVgap(2);
+		gridLayout.setHgap(10);
+
+		editorWindow.setLayout(gridLayout);
+
+		JsonObject levelJson = jsonLoaderSaver.gsonToJsonObject(levelModel);
+
+		//Load/Save/LevelName
+		JButton loadButton = new JButton("Load");
+		JButton saveButton = new JButton("Save");
+		JLabel fileLabel = new JLabel("File Name");
+		JTextField fileName = new JTextField(currentLevel);
+
+		loadButton.setSize(BUTTON_WIDTH,BUTTON_HEIGHT);
+		saveButton.setSize(BUTTON_WIDTH,BUTTON_HEIGHT);
+
+		loadButton.addActionListener(e -> {
+			loadLevel(fileName.getText());
+		});
+
+		saveButton.addActionListener(e -> {
+			currentLevel = fileName.getText();
+			saveLevel();
+		});
+
+		editorWindow.add(fileLabel);
+		editorWindow.add(fileName);
+		editorWindow.add(loadButton);
+		editorWindow.add(saveButton);
+
+		generateSwingPropertiesForEntity(levelJson,editorWindow,0);
+
+		editorWindow.setSize(canvas.getWidth() * 3 / 5, canvas.getHeight() * 2 / 3);
+
+		//TODO Add ability to edit entity parameters (on click/selecting only?)
+
+		JLabel editEntityHeader = new JLabel("Click a Stage Entity to Edit It");
+
+		editEntityHeader.setSize(250, TEXT_HEIGHT1);
+
+		editorWindow.add(editEntityHeader);
+
+		//Display Everything
+		editorWindow.setVisible(true);
+	}
+
+
+	private int generateSwingPropertiesForEntity(JsonObject e, JFrame jPanel, int rowNum) {
+		for(Map.Entry<String,JsonElement> entry : e.entrySet()) {
+			// Add key
+			String key = entry.getKey();
+			JLabel paramText = new JLabel(key + ":");
+
+			JComponent valueComponent;
+			// Add value based on type
+			JsonElement value = entry.getValue();
+			if (value.isJsonArray()) {
+				// TODO (hard), recurse
+				System.err.println("TODO: JSON Array. Use Henry's click and drag!");
+				continue;
+			} else if (value.isJsonPrimitive()) {
+				JsonPrimitive primitive = value.getAsJsonPrimitive();
+				if (primitive.isBoolean()) {
+					valueComponent = new JCheckBox("",primitive.getAsBoolean());
+				} else if (primitive.isNumber()) {
+					valueComponent = new JTextField(primitive.getAsNumber().toString());
+				} else if (primitive.isString()) {
+					valueComponent = new JTextField(primitive.getAsString());
+				} else {
+					System.err.println("Unknown primitive type: " + entry);
+					continue;
+				}
+			} else if (value.isJsonObject()) {
+				System.err.println("Unknown object type: " + entry);
+				continue;
+			} else {
+				System.err.println("Unknown type: " + entry);
+				continue;
+			}
+
+			paramText.setSize(FIELD_TEXT_WIDTH, TEXT_HEIGHT);
+			valueComponent.setSize(FIELD_BOX_WIDTH, TEXT_HEIGHT);
+
+			// Update panel with key, value
+			jPanel.add(paramText);
+			jPanel.add(valueComponent);
+			rowNum++;
+		}
+
+		return rowNum;
+	}
+
+	private void loadLevel(){
+		if (!loadingLevelPrompt) {
+			loadingLevelPrompt = true;
+			loadLevel(showInputDialog("What level do you want to load?"));
+			loadingLevelPrompt = false;
+		}
+		inputRateLimiter = UI_WAIT_LONG;
+	}
+
+
+	private void loadLevel(String toLoad){
+		currentLevel = toLoad;
+		try {
+			Thread.sleep(1000);
+			reset();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void saveLevel(){
+		System.out.println("Saving...");
+		LevelModel timeToSave = new LevelModel();
+//		if (!vimMode) {
+			// Grab params from gui
+			JsonObject levelJson = jsonLoaderSaver.gsonToJsonObject(levelModel);
+			grabUpdatedObjectValuesFromGUI(levelJson,editorWindow.getRootPane().getContentPane());
+			timeToSave = jsonLoaderSaver.levelFromJson(levelJson);
+			timeToSave.entities.clear();
+//		}
+		for (Entity o : objects) {
+			timeToSave.addEntity(o);
+		}
+		if (jsonLoaderSaver.saveLevel(timeToSave, currentLevel)) {
+			System.out.println("Saved!");
+		} else {
+			System.err.println("ERROR IN SAVE");
+		}
+		inputRateLimiter = UI_WAIT_LONG;
+	}
+
+	private void grabUpdatedObjectValuesFromGUI(JsonObject entityProp, Container p) {
+		for(Map.Entry<String,JsonElement> entry : entityProp.entrySet()) {
+			// Add key
+			String key = entry.getKey();
+
+			JsonElement value = entry.getValue();
+			if (value.isJsonArray()) {
+				// TODO (hard), recurse
+				System.err.println("TODO: JSON Array");
+			} else if (value.isJsonPrimitive()) {
+				entityProp.add(key,findInPanel(key,p));
+			} else if (value.isJsonObject()) {
+				System.err.println("Unknown object type: " + entry);
+			} else {
+				System.err.println("Unknown type: " + entry);
+			}
+		}
+	}
+
+
+	private JsonElement findInPanel(String key, Container panel) {
+		boolean grabNext = false;
+		for (Component c : panel.getComponents()) {
+			if (grabNext) {
+				if (c instanceof JCheckBox) {
+					return new JsonPrimitive(((JCheckBox)c).isSelected());
+				} else if (c instanceof JTextField) {
+					return new JsonPrimitive((((JTextField)c).getText()));
+				} else {
+					System.err.println("UNKNOWN FOR " + key);
+					return null;
+				}
+			}
+			if (c instanceof JLabel) {
+				if (((JLabel) c).getText().equals(key+":")) {
+					grabNext = true;
+				}
+			}
+		}
+		System.err.println("CANT FIND " + key);
+		return null;
+	}
+
 }
