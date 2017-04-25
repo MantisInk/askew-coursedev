@@ -1164,7 +1164,12 @@ public class LevelEditorController extends WorldController {
 
 	private void loadLevel(String toLoad){
 		currentLevel = toLoad;
-		reset();
+		try {
+			Thread.sleep(1000);
+			reset();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private void saveLevel(){
