@@ -4,8 +4,8 @@
   "goalTimeSilver": 45,
   "goalTimeBronze": 60,
   "recordTime": 9999999.0,
-  "title": "level2",
-  "background": "texture/background/background1.png",
+  "title": "Good game",
+  "background": "texture/background/background.png",
   "soundtrack": "TODO",
   "entities": [
     {
