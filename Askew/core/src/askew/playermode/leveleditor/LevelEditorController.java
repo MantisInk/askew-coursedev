@@ -35,6 +35,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
 import com.google.gson.JsonObject;
 import lombok.Getter;
@@ -43,6 +44,7 @@ import lombok.Setter;
 import javax.swing.*;
 import java.awt.*;
 import java.io.FileNotFoundException;
+import java.util.Collections;
 import java.util.Iterator;
 
 import static javax.swing.JOptionPane.showInputDialog;
@@ -230,7 +232,6 @@ public class LevelEditorController extends WorldController {
 		}
 
 		objects.clear();
-		addQueue.clear();
 		world.dispose();
 
 		world = new World(gravity,false);
@@ -518,6 +519,12 @@ public class LevelEditorController extends WorldController {
 				if(selected == null){
 					//createXY(creationOptions[entityIndex], adjustedMouseX,adjustedMouseY);
 				}
+				/*
+				if(selected instanceof BackgroundEntity){
+					adjustedCxCamera = -adjustedMouseX;
+					adjustedCyCamera = -adjustedMouseY;
+					camUpdate();
+				}*/
 
 			}
 
@@ -534,11 +541,35 @@ public class LevelEditorController extends WorldController {
 				dragging = true;
 
 				if(selected != null) {
+					/*
+					if(false && selected instanceof BackgroundEntity){
+						if (mouseX < -adjustedCxCamera + 3 ) {
+							// Pan left
+							adjustedCxCamera += CAMERA_PAN_SPEED/worldScale.x;
+						}
+						if (mouseY < -adjustedCyCamera + 3 ) {
+							// down
+							adjustedCyCamera += CAMERA_PAN_SPEED/worldScale.y;
+						}
+						if (mouseX > -adjustedCxCamera - 3) {
+							adjustedCxCamera -= CAMERA_PAN_SPEED/worldScale.x;
+						}
+						if (mouseY > -adjustedCyCamera - 3) {
+							adjustedCyCamera -= CAMERA_PAN_SPEED/worldScale.y;
+						}
+						camUpdate();
 
-					selected.setPosition(adjustedMouseX, adjustedMouseY);
-					if(selected instanceof ComplexObstacle) {
-						((ComplexObstacle) selected).rebuild(adjustedMouseX,adjustedMouseY);
-						selected.setTextures(getMantisAssetManager());
+						selected.setPosition(adjustedCxCamera, adjustedCyCamera);
+
+
+
+					}
+					else {*/
+						selected.setPosition(adjustedMouseX, adjustedMouseY);
+						if (selected instanceof ComplexObstacle) {
+							((ComplexObstacle) selected).rebuild(adjustedMouseX, adjustedMouseY);
+							selected.setTextures(getMantisAssetManager());
+						//}
 					}
 
 
@@ -560,14 +591,18 @@ public class LevelEditorController extends WorldController {
 				if(dragging) {
 					dragging = false;
 					if (selected != null) {
-						selected.setPosition(adjustedMouseX, adjustedMouseY);
-						if (selected instanceof ComplexObstacle) {
-
-							System.out.println("move complex");
-							((ComplexObstacle) selected).rebuild(adjustedMouseX, adjustedMouseY);
-							selected.setTextures(getMantisAssetManager());
+						if(selected instanceof BackgroundEntity){
+							selected.setPosition(adjustedMouseX, adjustedMouseY);
 						}
+						else {
+							selected.setPosition(adjustedMouseX, adjustedMouseY);
+							if (selected instanceof ComplexObstacle) {
 
+								System.out.println("move complex");
+								((ComplexObstacle) selected).rebuild(adjustedMouseX, adjustedMouseY);
+								selected.setTextures(getMantisAssetManager());
+							}
+						}
 					}
 					if (creating) {
 						promptTemplate(selected);
@@ -707,6 +742,16 @@ public class LevelEditorController extends WorldController {
 		if(ent!= null)
 			canvas.drawPhysics(circleShape, new Color(0xcfcf000f),ent.getPosition().x , ent.getPosition().y ,worldScale.x,worldScale.y );
 
+		circleShape.setRadius(.05f);
+		for(Entity e : objects){
+			canvas.drawPhysics(circleShape, new Color(0xcfcf000f),e.getPosition().x , e.getPosition().y ,worldScale.x,worldScale.y );
+			if(e instanceof BackgroundEntity){
+				float offsetx = ((e.getPosition().x + adjustedCxCamera) * worldScale.x) / ((BackgroundEntity) e).getDepth();
+				float offsety = ((e.getPosition().y + adjustedCyCamera) * worldScale.y) / ((BackgroundEntity) e).getDepth();
+				canvas.drawLine(e.getPosition().x *worldScale.x, e.getPosition().y *worldScale.y , -adjustedCxCamera*worldScale.x  + offsetx, -adjustedCyCamera*worldScale.y + offsety, Color.YELLOW, Color.CHARTREUSE);
+			}
+		}
+
 		canvas.endDebug();
 
 	}
@@ -800,7 +845,11 @@ public class LevelEditorController extends WorldController {
 		// Translate camera to cx, cy
 		camTrans.setToTranslation(0,0);
 		camTrans.setToTranslation(cxCamera * worldScale.x, cyCamera* worldScale.y);
+
+		Vector2 pos = canvas.getCampos();
+		pos.set(-adjustedCxCamera * worldScale.x ,-adjustedCyCamera * worldScale.y);
 		canvas.begin(camTrans);
+		Collections.sort(objects);
 		for(Entity obj : objects) {
 			obj.setDrawScale(worldScale);
 			obj.draw(canvas);
@@ -843,28 +892,21 @@ public class LevelEditorController extends WorldController {
 
 	@Override
 	public void postUpdate(float dt) {
-		// Add any objects created by actions
-		while (!addQueue.isEmpty()) {
-			addObject(addQueue.poll());
-		}
 
 		// Turn the physics engine crank.
 		//world.step(WORLD_STEP,WORLD_VELOC,WORLD_POSIT);
 
-		// Garbage collect the deleted objects.
-		// Note how we use the linked list nodes to delete O(1) in place.
-		// This is O(n) without copying.
-		Iterator<PooledList<Entity>.Entry> iterator = objects.entryIterator();
-		while (iterator.hasNext()) {
-			PooledList<Entity>.Entry entry = iterator.next();
-			Entity ent = entry.getValue();
-			if (ent instanceof Obstacle) {
-				Obstacle obj = (Obstacle) ent;
+		for (Entity ent :objects){
+
+			if(ent instanceof Obstacle){
+				Obstacle obj  = (Obstacle)ent;
 				if (obj.isRemoved()) {
 					obj.deactivatePhysics(world);
-					entry.remove();
+					objects.remove(ent);
+					continue;
 				}
 			}
+			ent.update(dt); // called last!
 		}
 	}
 

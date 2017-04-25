@@ -3,11 +3,41 @@
   "goalTimeGold": 30,
   "goalTimeSilver": 45,
   "goalTimeBronze": 60,
-  "recordTime": 8.226148,
-  "title": "Flow Just Wants the Baby",
+  "recordTime": 9999999.0,
+  "title": "level2",
   "background": "texture/background/background1.png",
   "soundtrack": "TODO",
   "entities": [
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": -2.5700006,
+        "y": 15.029991,
+        "width": 10.0,
+        "height": 10.0,
+        "depth": 10.5,
+        "angle": 0.0,
+        "alpha": 1.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/sil2.png"
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 19.959991,
+        "y": 15.049991,
+        "width": 10.0,
+        "height": 10.0,
+        "depth": 5.5,
+        "angle": 0.0,
+        "alpha": 1.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/sil3.png"
+      }
+    },
     {
       "CLASSNAME": "askew.entity.owl.OwlModel",
       "INSTANCE": {
@@ -74,7 +104,9 @@
       "CLASSNAME": "askew.entity.sloth.SlothModel",
       "INSTANCE": {
         "x": -3.0,
-        "y": 19.0
+        "y": 19.0,
+        "setLastGrabX": false,
+        "lastGrabX": 0.0
       }
     },
     {
