@@ -196,7 +196,7 @@ public class InputController {
 	 * @return the amount of vertical movement.
 	 */
 	public float getLeftVertical() {
-		return leftVertical;
+			return leftVertical;
 	}
 
 	/**
@@ -232,7 +232,7 @@ public class InputController {
 	 * @return how much the left trigger button was pressed.
 	 */
 	public boolean getLeftGrab() {
-		return leftGrabPressed;
+		return leftGrabPressed || rightClickPressed; // backwards but intentional for mouse
 	}
 
 	/**
@@ -246,7 +246,7 @@ public class InputController {
 	 * @return how much the right trigger button was pressed.
 	 */
 	public boolean getRightGrab() {
-		return rightGrabPressed;
+		return rightGrabPressed || leftClickPressed; // backwards but intentional for mouse
 	}
 
 	public boolean getLeftStickPressed() {return leftStickPressed;}
@@ -408,7 +408,7 @@ public class InputController {
 			readGamepad(bounds, scale);
 			readKeyboard(bounds, scale, true); // Read as a back-up
 		} else {
-			System.err.println("no 360 controller connected");
+//			System.err.println("no 360 controller connected");
 			readKeyboard(bounds, scale, false);
 		}
 	}
@@ -506,10 +506,10 @@ public class InputController {
 
 		leftVertical = (secondary ? leftVertical : 0.0f);
 		if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
-			leftVertical += 1.0f;
+			leftVertical -= 1.0f;
 		}
 		if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-			leftVertical -= 1.0f;
+			leftVertical += 1.0f;
 		}
 
 
@@ -543,6 +543,7 @@ public class InputController {
 		rShiftKeyPressed = Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT) && !rShiftKeyPressed;
 		upKeyPressed = Gdx.input.isKeyPressed(Input.Keys.UP) && !upKeyPrevious;
 		downKeyPressed = Gdx.input.isKeyPressed(Input.Keys.DOWN) && !downKeyPrevious;
+		bottomButtonPressed |= rightClickPressed;
 
 		crosshair.set(Gdx.input.getX(), Gdx.input.getY());
 		crosshair.scl(1/scale.x,-1/scale.y);

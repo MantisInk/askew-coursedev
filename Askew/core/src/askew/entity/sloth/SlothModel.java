@@ -115,6 +115,7 @@ public class SlothModel extends ComplexObstacle  {
     private transient boolean didSafeGrab;
     private boolean setLastGrabX;
     private float lastGrabX;
+    private transient boolean dismembered;
 
     /**
      * Returns the texture index for the given body part
@@ -216,6 +217,7 @@ public class SlothModel extends ComplexObstacle  {
         part = makePart(PART_BODY, PART_NONE, x, y,BODY_WIDTH,BODY_HEIGHT, BODY_DENSITY,true);
         part.setFixedRotation(BODY_FIXED_ROTATION);
         part.setGravityScale(GRAVITY_SCALE);
+        part.setLinearDamping(0.03f); // small amount to balance linear gimp
 
         // ARMS
         // Right arm
@@ -310,6 +312,10 @@ public class SlothModel extends ComplexObstacle  {
         body.setName("slothpart");
 
         bodies.add(body);
+
+        // Prevent any missed collisions
+        body.setBullet(true);
+
         return body;
     }
 
@@ -409,7 +415,7 @@ public class SlothModel extends ComplexObstacle  {
         float lcTheta = (float)Math.atan2(leftVert,leftHori);
         float lTheta = (-leftArm.getAngle()) + PI;
         lTheta = ((lTheta%(2*PI)) + (2*PI)) % (2*PI) - PI;
-        float lav = leftArm.getAngularVelocity() * 2;
+        float leftAngularVelocity = leftArm.getAngularVelocity() * 2;
         float lLength = (float)Math.sqrt((leftVert * leftVert) + (leftHori * leftHori));
         float dLTheta = angleDiff(lcTheta,lTheta);
 
@@ -430,7 +436,7 @@ public class SlothModel extends ComplexObstacle  {
         float rcTheta = (float)Math.atan2(rightVert,rightHori);
         float rTheta = -rightArm.getAngle() + PI;
         rTheta = ((rTheta%(2*PI)) + (2*PI)) % (2*PI) - PI;
-        float rav = rightArm.getAngularVelocity() * 2;
+        float rightAngularVelocity = rightArm.getAngularVelocity() * 2;
         float rLength = (float)Math.sqrt((rightVert * rightVert) + (rightHori * rightHori));
         float dRTheta = angleDiff(rcTheta,rTheta);
 
@@ -468,20 +474,20 @@ public class SlothModel extends ComplexObstacle  {
         float cimpulseR = 0;
         float cimpulseL = 0;
         if (isActualLeftGrab()  &&  rLength > .4f) {
-            counterfL = counterfactor * calculateTorque(dRcLTheta, lav / OMEGA_NORMALIZER);
+            counterfL = counterfactor * calculateTorque(dRcLTheta, leftAngularVelocity / OMEGA_NORMALIZER);
             if(dRcLTheta * cwtrL < 0 ){
                 cimpulseL = ((leftHand.getMass() * ARM_XOFFSET * ARM_XOFFSET) + leftArm.getInertia()) * leftArm.getAngularVelocity() * -1 * 60 * 3 * (1-lLength) ;
             }
         }
         if (isActualRightGrab()  && lLength > .4f) {
-            counterfR = counterfactor * calculateTorque(dLcRTheta, rav / OMEGA_NORMALIZER);
+            counterfR = counterfactor * calculateTorque(dLcRTheta, rightAngularVelocity / OMEGA_NORMALIZER);
             if(dLcRTheta * cwtrR < 0){
                 cimpulseR = ((rightHand.getMass() * ARM_XOFFSET * ARM_XOFFSET) + rightArm.getInertia()) * rightArm.getAngularVelocity() * -1 * 60 * 3 * (1-rLength) ;
             }
         }
 
-        float forceLeft =  calculateTorque(dLTheta,lav/OMEGA_NORMALIZER); //#MAGIC 20f default, omega normalizer
-        float forceRight = calculateTorque(dRTheta,rav/OMEGA_NORMALIZER);
+        float forceLeft =  calculateTorque(dLTheta,leftAngularVelocity/OMEGA_NORMALIZER); //#MAGIC 20f default, omega normalizer
+        float forceRight = calculateTorque(dRTheta,rightAngularVelocity/OMEGA_NORMALIZER);
 
         if(impulseL > 0)
             forceLeft = 0;
@@ -494,6 +500,17 @@ public class SlothModel extends ComplexObstacle  {
         forceL.set((float) (lTorque * Math.sin(lTheta)),(float) (lTorque * Math.cos(lTheta)));
         forceR.set((float) (rTorque * Math.sin(rTheta)),(float) (rTorque * Math.cos(rTheta)));
 
+        // ANTI GIMP - Trevor. Filled with magic ###s
+        float maxVelocity = Math.max(Math.abs(rightAngularVelocity),Math.abs(leftAngularVelocity));
+        float gimpScale = 1.0f;
+        float CUTOFF = 8;
+        if (maxVelocity > CUTOFF) {
+            gimpScale = (float) Math.exp(-( (maxVelocity-CUTOFF) / 4.5f));
+        }
+
+        lTorque *= gimpScale;
+        rTorque *= gimpScale;
+
         if ((GRABBING_HAND_HAS_TORQUE || !isActualLeftGrab()) )
             leftArm
                     .getBody()
@@ -504,12 +521,6 @@ public class SlothModel extends ComplexObstacle  {
                     .applyTorque(rTorque, true);
 
         flowFacingState = (int)bodies.get(PART_BODY).getBody().getLinearVelocity().x;
-
-        // Anti GIMP - slow flow based on x velocity
-        float flowVelocity = Math.abs(this.bodies.get(PART_BODY).getVX());
-        float damping = (float) Math.exp(flowVelocity /
-                FLOW_RESISTANCE_DAMPING_LAMBDA) - 1;
-        bodies.get(PART_BODY).setLinearDamping(damping);
     }
 
 
@@ -536,9 +547,6 @@ public class SlothModel extends ComplexObstacle  {
         canvas.drawLine(left.getX()*drawScale.x,left.getY() * drawScale.y, left.getX()*drawScale.x+(forceL.x*2),left.getY() * drawScale.y+(forceL.y*2),Color.BLUE, Color.BLUE);
         canvas.drawLine(right.getX()*drawScale.x,right.getY() * drawScale.y, right.getX()*drawScale.x+(forceR.x*2),right.getY() * drawScale.y+(forceR.y*2),Color.RED, Color.RED);
         canvas.endDebug();
-
-
-
     }
 
     public void drawGrab(GameCanvas canvas, Affine2 camTrans){
@@ -675,14 +683,16 @@ public class SlothModel extends ComplexObstacle  {
         sensorDef.shape = sensorShape;
 
         Filter f = new Filter();
-        f.maskBits = FilterGroup.VINE;
+        f.maskBits = FilterGroup.VINE | FilterGroup.WALL;
         f.categoryBits = FilterGroup.HAND;
         sensorFixture1 = bodies.get(PART_LEFT_HAND).getBody().createFixture(sensorDef);
-        sensorFixture1.setUserData("sloth left hand");
+        sensorFixture1.setUserData("slothpart sloth left hand");
         sensorFixture2 = bodies.get(PART_RIGHT_HAND).getBody().createFixture(sensorDef);
-        sensorFixture2.setUserData("sloth right hand");
+        sensorFixture2.setUserData("slothpart sloth right hand");
         sensorFixture1.setFilterData(f);
         sensorFixture2.setFilterData(f);
+        sensorFixture1.getBody().setBullet(true);
+        sensorFixture2.getBody().setBullet(true);
         BodyDef bd = new BodyDef();
         bd.type = BodyDef.BodyType.StaticBody;
         bd.position.set(0.0f, -10.0f);
@@ -787,6 +797,7 @@ public class SlothModel extends ComplexObstacle  {
 
                 //If the body parts are from the right limb
                 if (body_ind == 3 || body_ind == 4) continue;
+//                Color LARA_COLOR = new Color(0,255,255,1);
                 if (body_ind == 1 || body_ind == 4) {
                     // right limb
                     if (controlMode == CONTROLS_ONE_ARM) {
@@ -870,6 +881,26 @@ public class SlothModel extends ComplexObstacle  {
         } else {
             didSafeGrab = false;
         }
+    }
+
+    public boolean dismember(World world) {
+        if (!dismembered) {
+            Joint jointA = joints.get(0);
+            Joint jointB = joints.get(1);
+            joints.removeValue(jointA,true);
+            joints.removeValue(jointB,true);
+            world.destroyJoint(jointA);
+            world.destroyJoint(jointB);
+            jointA = null;
+            jointB = null;
+            for (Obstacle b : bodies) {
+                b.getFilterData().categoryBits = 0;
+                b.getBody().applyForceToCenter((float)Math.random()*110 - 55,(float)Math.random()*110 - 55,true);
+            }
+            dismembered = true;
+            return true;
+        }
+        return false;
     }
 }
 

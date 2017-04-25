@@ -5,6 +5,7 @@ import askew.InputController;
 import askew.MantisAssetManager;
 import askew.playermode.WorldController;
 import askew.util.SoundController;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
@@ -142,6 +143,7 @@ public class MainMenuController extends WorldController {
 
     @Override
     public void reset() {
+        Gdx.input.setCursorCatched(false);
         nextCon = "";
         SoundController instance = SoundController.getInstance();
         if (instance.isActive("bgmusic")) instance.stop("bgmusic");
