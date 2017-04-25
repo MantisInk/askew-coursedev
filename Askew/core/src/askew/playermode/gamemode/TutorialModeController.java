@@ -14,9 +14,7 @@ import askew.GlobalConfiguration;
 import askew.InputController;
 import askew.MantisAssetManager;
 import askew.entity.Entity;
-import askew.entity.obstacle.BoxObstacle;
 import askew.entity.obstacle.Obstacle;
-import askew.entity.obstacle.SimpleObstacle;
 import askew.entity.owl.OwlModel;
 import askew.entity.sloth.SlothModel;
 import askew.entity.tree.Trunk;
@@ -24,12 +22,10 @@ import askew.entity.wall.WallModel;
 import askew.util.json.JSONLoaderSaver;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Fixture;
-import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.ObjectSet;
 import lombok.Getter;
 
@@ -137,6 +133,8 @@ public class TutorialModeController extends GameModeController {
 	 */
 	public void loadContent(MantisAssetManager manager) {
 		super.loadContent(manager);
+		pauseTexture = manager.get("texture/background/pause.png");
+		fern = manager.get("texture/background/fern.png");
 		joystickTexture0 = manager.get("texture/tutorial/joystick0.png", Texture.class);
 		joystickTexture1 = manager.get("texture/tutorial/joystick1.png", Texture.class);
 		joystickTexture2 = manager.get("texture/tutorial/joystick2.png", Texture.class);
@@ -186,6 +184,7 @@ public class TutorialModeController extends GameModeController {
 	 */
 	public void reset() {
 		super.reset();
+		paused = false;
 		stepsDone=0;
 
 		// if not set, set textures in arrays, which are loaded after constructor called
@@ -542,7 +541,7 @@ public class TutorialModeController extends GameModeController {
 					obj.setDrawScale(worldScale);
 					obj.draw(canvas);
 				}
-				if(stepsDone >= GRABBED_LEFT && ((Trunk) obj).getName().equals("long branch")){
+				if(stepsDone >= GRABBED_RIGHT && ((Trunk) obj).getName().equals("long branch")){
 					obj.setDrawScale(worldScale);
 					obj.draw(canvas);
 				}
@@ -611,10 +610,15 @@ public class TutorialModeController extends GameModeController {
 			canvas.draw(LeftBumperTexture, Color.WHITE, LeftBumperTexture.getWidth() / 2, 0, 650, 650, 0, worldScale.x * 2 / LeftBumperTexture.getWidth(), worldScale.y * 2 / LeftBumperTexture.getHeight());
 		} else if (stepsDone == GRABBED_LEFT) {
 			canvas.draw(RightBumperTexture, Color.WHITE, RightBumperTexture.getWidth() / 2, 0, 650, 650, 0, worldScale.x * 2 / RightBumperTexture.getWidth(), worldScale.y * 2 / RightBumperTexture.getHeight());
-		} else if (stepsDone >= GRABBED_RIGHT) {
-			canvas.draw(joystickTexture, Color.WHITE, joystickTexture.getWidth() / 2, 0, 550, 650, 0, worldScale.x * 2 / joystickTexture.getWidth(), worldScale.y * 2 / joystickTexture.getHeight());
-			canvas.draw(LeftBumperTexture, Color.WHITE, LeftBumperTexture.getWidth() / 2, 0, 750, 725, 0, worldScale.x * 2 / LeftBumperTexture.getWidth(), worldScale.y * 2 / LeftBumperTexture.getHeight());
-			canvas.draw(RightBumperTexture, Color.WHITE, RightBumperTexture.getWidth()/2, 0,750,575, 0, worldScale.x*2/RightBumperTexture.getWidth(), worldScale.y*2/RightBumperTexture.getHeight());
+		} else if (stepsDone >= GRABBED_LEFT) {
+			if  (sloth.isRightGrab()) {
+				canvas.draw(joystickTexture, Color.WHITE, joystickTexture.getWidth() / 2, 0, 550, 650, 0, worldScale.x * 2 / joystickTexture.getWidth(), worldScale.y * 2 / joystickTexture.getHeight());
+				canvas.draw(LeftBumperTexture, Color.WHITE, LeftBumperTexture.getWidth() / 2, 0, 750, 650, 0, worldScale.x * 2 / LeftBumperTexture.getWidth(), worldScale.y * 2 / LeftBumperTexture.getHeight());
+			}
+			else {
+				canvas.draw(joystickTexture, Color.WHITE, joystickTexture.getWidth() / 2, 0, 550, 650, 0, worldScale.x * 2 / joystickTexture.getWidth(), worldScale.y * 2 / joystickTexture.getHeight());
+				canvas.draw(RightBumperTexture, Color.WHITE, RightBumperTexture.getWidth() / 2, 0, 750, 650, 0, worldScale.x * 2 / RightBumperTexture.getWidth(), worldScale.y * 2 / RightBumperTexture.getHeight());
+			}
 		}
 		canvas.end();
 	}

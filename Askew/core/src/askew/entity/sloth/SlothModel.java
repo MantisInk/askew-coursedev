@@ -605,6 +605,14 @@ public class SlothModel extends ComplexObstacle  {
         this.rightStickPressed = rightStickPressed;
     }
 
+    public Obstacle getLeftArm() {
+        return bodies.get(PART_LEFT_ARM);
+    }
+
+    public Obstacle getRightArm(){
+        return bodies.get(PART_RIGHT_ARM);
+    }
+
     public void grab(World world, Body target, boolean leftHand) {
         Joint grabJoint;
         RevoluteJointDef grabJointDef;
@@ -653,7 +661,6 @@ public class SlothModel extends ComplexObstacle  {
         }
         leftGrabJoint = null;
     }
-
 
     public void releaseRight(World world) {
         if (rightGrabJoint != null) {
