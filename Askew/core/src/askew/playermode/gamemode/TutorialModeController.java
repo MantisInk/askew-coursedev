@@ -447,7 +447,8 @@ public class TutorialModeController extends GameModeController {
 //					sloth.setLeftGrab(false);
 					break;
 				case MOVED_RIGHT:
-					sloth.setRightGrab(false);
+					if (sloth.controlMode == 0)
+						sloth.setRightGrab(false);
 					break;
 				case GRABBED_LEFT:
 					//sloth.setLeftGrab(true);
@@ -511,7 +512,10 @@ public class TutorialModeController extends GameModeController {
 				reset();
 			}
 
+//			boolean didSafe = InputController.getInstance().getRightGrab();
+
 			//Increment Steps
+			System.out.println(stepsDone);
 			if(stepsDone==DID_NOTHING){
 				//Check for left joystick movement
 				if(Math.abs(input.getLeftHorizontal())>CONTROLLER_DEADZONE || Math.abs(input.getLeftVertical())>CONTROLLER_DEADZONE){
@@ -542,14 +546,21 @@ public class TutorialModeController extends GameModeController {
 				}
 			}
 			else if(stepsDone==MOVED_RIGHT){
+				if (currentMovement==1) {
+					if (sloth.isActualRightGrab()) {
+						stepsDone++;
+					}
+				}
+
 				//Check for left grab
 				if(sloth.isActualLeftGrab()){
 					stepsDone++;
 				}
 			}
 			else if(stepsDone==GRABBED_LEFT){
+				if (currentMovement==1) stepsDone++;
 				//Check for right grab
-				if(sloth.isActualRightGrab()){
+				else if(sloth.isActualRightGrab()){
 					stepsDone++;
 				}
 			}
@@ -560,8 +571,13 @@ public class TutorialModeController extends GameModeController {
 				}
 			}
 			else if(stepsDone==SWING_LEFT){
+				if (currentMovement==1) {
+					if (sloth.isActualRightGrab()) {
+						stepsDone++;
+					}
+				}
 				//Check for left again
-				if(sloth.isActualLeftGrab()){ //TODO Check for left hand crossing right hand and grabbing
+				else if(sloth.isActualLeftGrab()){ //TODO Check for left hand crossing right hand and grabbing
 					stepsDone++;
 				}
 			}
@@ -598,9 +614,15 @@ public class TutorialModeController extends GameModeController {
 		Collections.sort(objects);
 		for(Entity obj : objects) {
 			if(obj instanceof Trunk){
-				if(stepsDone >= MOVED_RIGHT && ((Trunk) obj).getName().equals("short branch")){
-					obj.setDrawScale(worldScale);
-					obj.draw(canvas);
+				if(stepsDone >= MOVED_LEFT && ((Trunk) obj).getName().equals("short branch")){
+					if(currentControl==1) {
+						obj.setDrawScale(worldScale);
+						obj.draw(canvas);
+					}
+					else if(stepsDone >= MOVED_RIGHT){
+						obj.setDrawScale(worldScale);
+						obj.draw(canvas);
+					}
 				}
 				if(stepsDone > GRABBED_RIGHT && ((Trunk) obj).getName().equals("long branch")){
 					obj.setDrawScale(worldScale);
