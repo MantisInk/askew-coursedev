@@ -47,16 +47,6 @@ import java.util.Iterator;
 
 import static javax.swing.JOptionPane.showInputDialog;
 
-
-/**
- * Gameplay specific controller for the platformer game.
- *
- * You will notice that asset loading is not done with static methods this time.
- * Instance asset loading makes it easier to process our game modes in a loop, which
- * is much more scalable. However, we still want the assets themselves to be static.
- * This is the purpose of our AssetState variable; it ensures that multiple instances
- * place nicely with the static assets.
- */
 public class LevelEditorController extends WorldController {
 
 	/** Track asset loading from all instances and subclasses */
@@ -220,7 +210,6 @@ public class LevelEditorController extends WorldController {
 		oneScale = new Vector2(1,1);
 		pressedL = false;
 		prevPressedL = false;
-		Gdx.input.setCursorCatched(false);
 	}
 	public void setLevel(String levelName) {
 		currentLevel = levelName;
@@ -232,7 +221,8 @@ public class LevelEditorController extends WorldController {
 	 * This method disposes of the world and creates a new one.
 	 */
 	public void reset() {
-		Vector2 gravity = new Vector2(world.getGravity() );
+		Gdx.input.setCursorCatched(true);
+		Vector2 gravity = new Vector2(world.getGravity());
 
 		for(Entity obj : objects) {
 			if( (obj instanceof Obstacle))

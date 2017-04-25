@@ -199,7 +199,6 @@ public class GameModeController extends WorldController {
 		loadLevel = DEFAULT_LEVEL;
 		storeTimeRecords = GlobalConfiguration.getInstance().getAsBoolean("storeTimeRecords");
 		jsonLoaderSaver = new JSONLoaderSaver();
-		Gdx.input.setCursorCatched(true);
 	}
 
 	public void setLevel() {
@@ -233,6 +232,7 @@ public class GameModeController extends WorldController {
 	 * This method disposes of the world and creates a new one.
 	 */
 	public void reset() {
+		Gdx.input.setCursorCatched(true);
 		coverOpacity = 2f; // start at 2 for 1 second of full black
 		playerIsReady = false;
 		paused = false;

@@ -92,7 +92,6 @@ public class OwlModel extends BoxObstacle  {
     @Override
     public void draw(GameCanvas canvas) {
         elapseTime += Gdx.graphics.getDeltaTime();
-        elapseTime += Gdx.graphics.getDeltaTime();
 
         if (elapseTime == 0) return;
 

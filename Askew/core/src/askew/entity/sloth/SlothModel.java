@@ -310,6 +310,10 @@ public class SlothModel extends ComplexObstacle  {
         body.setName("slothpart");
 
         bodies.add(body);
+
+        // Prevent any missed collisions
+        body.setBullet(true);
+
         return body;
     }
 
@@ -683,6 +687,8 @@ public class SlothModel extends ComplexObstacle  {
         sensorFixture2.setUserData("sloth right hand");
         sensorFixture1.setFilterData(f);
         sensorFixture2.setFilterData(f);
+        sensorFixture1.getBody().setBullet(true);
+        sensorFixture2.getBody().setBullet(true);
         BodyDef bd = new BodyDef();
         bd.type = BodyDef.BodyType.StaticBody;
         bd.position.set(0.0f, -10.0f);
