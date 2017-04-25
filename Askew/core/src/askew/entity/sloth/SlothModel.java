@@ -797,7 +797,7 @@ public class SlothModel extends ComplexObstacle  {
 
                 //If the body parts are from the right limb
                 if (body_ind == 3 || body_ind == 4) continue;
-                Color LARA_COLOR = new Color(0,255,255,1);
+//                Color LARA_COLOR = new Color(0,255,255,1);
                 if (body_ind == 1 || body_ind == 4) {
                     // right limb
                     if (controlMode == CONTROLS_ONE_ARM) {
@@ -806,7 +806,7 @@ public class SlothModel extends ComplexObstacle  {
                                 !isActualRightGrab()))
                             part.draw(canvas, Color
                                 .WHITE);
-                        else part.draw(canvas, LARA_COLOR);
+                        else part.draw(canvas, Color.BLACK);
                     } else {
                         part.draw(canvas, Color.WHITE);
                     }
@@ -819,7 +819,7 @@ public class SlothModel extends ComplexObstacle  {
                                 || (!leftCanGrabOrIsGrabbing && isActualRightGrab()))
                             part.draw(canvas,
                                 Color.WHITE);
-                        else part.draw(canvas, LARA_COLOR);
+                        else part.draw(canvas, Color.BLACK);
                     } else {
                         part.draw(canvas, Color.WHITE);
                     }
