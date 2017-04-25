@@ -855,20 +855,17 @@ public class LevelEditorController extends WorldController {
 		// Turn the physics engine crank.
 		//world.step(WORLD_STEP,WORLD_VELOC,WORLD_POSIT);
 
-		// Garbage collect the deleted objects.
-		// Note how we use the linked list nodes to delete O(1) in place.
-		// This is O(n) without copying.
-		Iterator<PooledList<Entity>.Entry> iterator = objects.entryIterator();
-		while (iterator.hasNext()) {
-			PooledList<Entity>.Entry entry = iterator.next();
-			Entity ent = entry.getValue();
-			if (ent instanceof Obstacle) {
-				Obstacle obj = (Obstacle) ent;
+		for (Entity ent :objects){
+
+			if(ent instanceof Obstacle){
+				Obstacle obj  = (Obstacle)ent;
 				if (obj.isRemoved()) {
 					obj.deactivatePhysics(world);
-					entry.remove();
+					objects.remove(ent);
+					continue;
 				}
 			}
+			ent.update(dt); // called last!
 		}
 	}
 

@@ -36,6 +36,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
+import java.util.ArrayList;
 
 import java.util.Iterator;
 
@@ -204,7 +205,7 @@ public abstract class WorldController implements Screen {
 	/** Reference to the game canvas */
 	protected GameCanvas canvas;
 	/** All the objects in the world. */
-	protected PooledList<Entity> objects  = new PooledList<Entity>();
+	protected ArrayList<Entity> objects  = new ArrayList<Entity>();
 	/** Listener that will update the player mode when we are done */
 	protected ScreenListener listener;
 
@@ -537,15 +538,13 @@ public abstract class WorldController implements Screen {
 		// Garbage collect the deleted objects.
 		// Note how we use the linked list nodes to delete O(1) in place.
 		// This is O(n) without copying.
-		Iterator<PooledList<Entity>.Entry> iterator = objects.entryIterator();
-		while (iterator.hasNext()) {
-			PooledList<Entity>.Entry entry = iterator.next();
-			Entity ent = entry.getValue();
+		for (Entity ent :objects){
+
 			if(ent instanceof Obstacle){
 				Obstacle obj  = (Obstacle)ent;
 				if (obj.isRemoved()) {
 					obj.deactivatePhysics(world);
-					entry.remove();
+					objects.remove(ent);
 					continue;
 				}
 			}
