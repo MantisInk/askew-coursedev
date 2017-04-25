@@ -22,6 +22,8 @@ import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.graphics.glutils.*;
 import com.badlogic.gdx.physics.box2d.*;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Primary view class for the game, abstracting the basic graphics calls.
@@ -94,7 +96,8 @@ public class GameCanvas {
 	/** Affine cache for all sprites this drawing pass */
 	private Matrix4 global;
 	private Vector2 vertex;
-	private Vector3 temp3;
+	@Getter @Setter
+	private Vector2 campos;
 	/** Cache object to handle raw texture */
 	private TextureRegion holder;
 
@@ -124,8 +127,7 @@ public class GameCanvas {
 		local  = new Affine2();
 		global = new Matrix4();
 		vertex = new Vector2();
-		temp3 = new Vector3();
-
+		campos = new Vector2();
 		font = new BitmapFont();
 		font.setColor(new Color(255,0,100,255));
 		shapeRenderer = new ShapeRenderer();
@@ -144,7 +146,7 @@ public class GameCanvas {
     	local  = null;
     	global = null;
     	vertex = null;
-    	temp3 = null;
+		campos = null;
     	holder = null;
     }
 
@@ -1186,9 +1188,9 @@ public class GameCanvas {
 		// There is a workaround, but it will break if the bug is fixed.
 		// For now, it is better to set the affine transform directly.
 
-		global.getTranslation(temp3);
-		float offsetx = (x - temp3.x) / depth;
-		float offsety = (y - temp3.y) / depth;
+		float offsetx = (x - campos.x) / depth;
+		float offsety = (y - campos.y) / depth;
+		System.out.println("" + x + "," + y + ":" +  campos.x + "," + campos.y);
 
 		computeTransform(ox,oy,x + offsetx,y + offsety,angle,sx,sy);
 		spriteBatch.setColor(tint);

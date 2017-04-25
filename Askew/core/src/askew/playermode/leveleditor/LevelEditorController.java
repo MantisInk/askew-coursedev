@@ -35,6 +35,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
 import com.google.gson.JsonObject;
 import lombok.Getter;
@@ -527,6 +528,12 @@ public class LevelEditorController extends WorldController {
 				if(selected == null){
 					//createXY(creationOptions[entityIndex], adjustedMouseX,adjustedMouseY);
 				}
+				/*
+				if(selected instanceof BackgroundEntity){
+					adjustedCxCamera = -adjustedMouseX;
+					adjustedCyCamera = -adjustedMouseY;
+					camUpdate();
+				}*/
 
 			}
 
@@ -543,11 +550,35 @@ public class LevelEditorController extends WorldController {
 				dragging = true;
 
 				if(selected != null) {
+					/*
+					if(false && selected instanceof BackgroundEntity){
+						if (mouseX < -adjustedCxCamera + 3 ) {
+							// Pan left
+							adjustedCxCamera += CAMERA_PAN_SPEED/worldScale.x;
+						}
+						if (mouseY < -adjustedCyCamera + 3 ) {
+							// down
+							adjustedCyCamera += CAMERA_PAN_SPEED/worldScale.y;
+						}
+						if (mouseX > -adjustedCxCamera - 3) {
+							adjustedCxCamera -= CAMERA_PAN_SPEED/worldScale.x;
+						}
+						if (mouseY > -adjustedCyCamera - 3) {
+							adjustedCyCamera -= CAMERA_PAN_SPEED/worldScale.y;
+						}
+						camUpdate();
 
-					selected.setPosition(adjustedMouseX, adjustedMouseY);
-					if(selected instanceof ComplexObstacle) {
-						((ComplexObstacle) selected).rebuild(adjustedMouseX,adjustedMouseY);
-						selected.setTextures(getMantisAssetManager());
+						selected.setPosition(adjustedCxCamera, adjustedCyCamera);
+
+
+
+					}
+					else {*/
+						selected.setPosition(adjustedMouseX, adjustedMouseY);
+						if (selected instanceof ComplexObstacle) {
+							((ComplexObstacle) selected).rebuild(adjustedMouseX, adjustedMouseY);
+							selected.setTextures(getMantisAssetManager());
+						//}
 					}
 
 
@@ -569,14 +600,18 @@ public class LevelEditorController extends WorldController {
 				if(dragging) {
 					dragging = false;
 					if (selected != null) {
-						selected.setPosition(adjustedMouseX, adjustedMouseY);
-						if (selected instanceof ComplexObstacle) {
-
-							System.out.println("move complex");
-							((ComplexObstacle) selected).rebuild(adjustedMouseX, adjustedMouseY);
-							selected.setTextures(getMantisAssetManager());
+						if(selected instanceof BackgroundEntity){
+							selected.setPosition(adjustedMouseX, adjustedMouseY);
 						}
+						else {
+							selected.setPosition(adjustedMouseX, adjustedMouseY);
+							if (selected instanceof ComplexObstacle) {
 
+								System.out.println("move complex");
+								((ComplexObstacle) selected).rebuild(adjustedMouseX, adjustedMouseY);
+								selected.setTextures(getMantisAssetManager());
+							}
+						}
 					}
 					if (creating) {
 						promptTemplate(selected);
@@ -716,6 +751,16 @@ public class LevelEditorController extends WorldController {
 		if(ent!= null)
 			canvas.drawPhysics(circleShape, new Color(0xcfcf000f),ent.getPosition().x , ent.getPosition().y ,worldScale.x,worldScale.y );
 
+		circleShape.setRadius(.05f);
+		for(Entity e : objects){
+			canvas.drawPhysics(circleShape, new Color(0xcfcf000f),e.getPosition().x , e.getPosition().y ,worldScale.x,worldScale.y );
+			if(e instanceof BackgroundEntity){
+				float offsetx = ((e.getPosition().x + adjustedCxCamera) * worldScale.x) / ((BackgroundEntity) e).getDepth();
+				float offsety = ((e.getPosition().y + adjustedCyCamera) * worldScale.y) / ((BackgroundEntity) e).getDepth();
+				canvas.drawLine(e.getPosition().x *worldScale.x, e.getPosition().y *worldScale.y , e.getPosition().x*worldScale.x  + offsetx, e.getPosition().y*worldScale.y + offsety, Color.YELLOW, Color.CHARTREUSE);
+			}
+		}
+
 		canvas.endDebug();
 
 	}
@@ -809,6 +854,9 @@ public class LevelEditorController extends WorldController {
 		// Translate camera to cx, cy
 		camTrans.setToTranslation(0,0);
 		camTrans.setToTranslation(cxCamera * worldScale.x, cyCamera* worldScale.y);
+
+		Vector2 pos = canvas.getCampos();
+		pos.set(-adjustedCxCamera * worldScale.x ,-adjustedCyCamera * worldScale.y);
 		canvas.begin(camTrans);
 		Collections.sort(objects);
 		for(Entity obj : objects) {

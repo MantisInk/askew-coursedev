@@ -564,8 +564,11 @@ public class GameModeController extends WorldController {
 		canvas.drawTextStandard("record time:     "+recordTime,10f,50f);
 		canvas.end();
 
+		canvas.getCampos().set( sloth.getBody().getPosition().x * worldScale.x
+				, sloth.getBody().getPosition().y * worldScale.y);
 		canvas.begin(camTrans);
 		//canvas.draw(background, Color.WHITE, .25f*background.getWidth(),.75f * background.getHeight(),initFlowX*worldScale.x,initFlowY*worldScale.y,background.getWidth(), background.getHeight());
+
 
 		Collections.sort(objects);
 		for(Entity obj : objects) {

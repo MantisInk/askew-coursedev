@@ -33,11 +33,11 @@ public class BackgroundEntity extends Entity{
     }
 
     public BackgroundEntity(float x, float y){
-        this(x,y,1,1,-1,0,1,1,1,"texture/background/fern.png");
+        this(x,y,1,1,1.5f,0,1,1,1,"texture/background/fern.png");
     }
 
     public BackgroundEntity(float x, float y, String path){
-        this(x,y,1,1,-1,0,1,1,1,path);
+        this(x,y,1,1,1.5f,0,1,1,1,path);
     }
 
 
@@ -181,7 +181,7 @@ public class BackgroundEntity extends Entity{
 
     public void draw(GameCanvas canvas, Color tint) {
         if (texture != null) {
-            canvas.drawBackgroundEntity(texture,tint,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(), getDepth(),
+            canvas.drawBackgroundEntity(texture,tint,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y, getDepth(), getAngle(),
                     (1.0f/texture.getRegionWidth()) *   getWidth() * getDrawScale().x * objectScale.x,
                     (1.0f/texture.getRegionHeight()  * getHeight()* getDrawScale().y * objectScale.y));
         }
