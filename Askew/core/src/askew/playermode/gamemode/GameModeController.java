@@ -37,6 +37,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.io.FileNotFoundException;
+import java.util.Collections;
+import java.util.Comparator;
 
 /**
  * Gameplay specific controller for the platformer game.
@@ -95,8 +97,9 @@ public class GameModeController extends WorldController {
 	protected Texture background;
 	private Texture pauseTexture;
 	private Texture fern;
-	private static final float NEAR_FALL_DEATH_DISTANCE = 38;
-	private static final float LOWEST_ENTITY_FALL_DEATH_THRESHOLD = 40;
+	private static final float NEAR_FALL_DEATH_DISTANCE = 9;
+	private static final float LOWEST_ENTITY_FALL_DEATH_THRESHOLD = 12;
+	private static final float CYCLES_OF_INTRO = 50f;
 	private float fallDeathHeight;
 	private String selectedTrack;
 	private String lastLevel;
@@ -231,6 +234,7 @@ public class GameModeController extends WorldController {
 	 * This method disposes of the world and creates a new one.
 	 */
 	public void reset() {
+		Gdx.input.setCursorCatched(true);
 		coverOpacity = 2f; // start at 2 for 1 second of full black
 		playerIsReady = false;
 		paused = false;
@@ -250,7 +254,6 @@ public class GameModeController extends WorldController {
 		}
 
 		objects.clear();
-		addQueue.clear();
 		world.dispose();
 		world = new World(gravity,false);
 		if(collisions == null){
@@ -452,7 +455,7 @@ public class GameModeController extends WorldController {
 			sloth.setRightHori(InputController.getInstance().getRightHorizontal());
 			sloth.setRightVert(InputController.getInstance().getRightVertical());
 			boolean didSafe = InputController.getInstance()
-					.getRightGrab();
+					.isBottomButtonPressed();
 			if (sloth.controlMode == 0) {
 				// TODO: Make more elegant - trevor
 				sloth.setLeftGrab(InputController.getInstance().getLeftGrab());
@@ -460,7 +463,7 @@ public class GameModeController extends WorldController {
 			} else {
 				if (!didSafe) {
 					sloth.setOneGrab(InputController.getInstance()
-							.isBottomButtonPressed());
+							.getRightGrab());
 				}
 				sloth.setSafeGrab(didSafe, leftCollisionBody,
 						rightCollisionBody, world);
@@ -470,26 +473,41 @@ public class GameModeController extends WorldController {
 			currentTime += dt;
 
 			//#TODO Collision states check
-			setFailure(collisions.isFlowKill());
+			if (!collisions.isFlowWin())
+				setFailure(collisions.isFlowKill());
 
-			if (collisions.isFlowWin()) {
-				System.out.println("VICTORY");
-				setComplete(true);
-			}
-
-			// Physics tiem
-			// Gribby grab
-			if (sloth.controlMode == 0 || !didSafe) {
-				if (sloth.isLeftGrab()) {
-					sloth.grab(world, leftCollisionBody, true);
-				} else {
+			if (!isFailure() && collisions.isFlowWin()) {
+				if (!owl.isDoingVictory()) {
 					sloth.releaseLeft(world);
-				}
-
-				if (sloth.isRightGrab()) {
-					sloth.grab(world, rightCollisionBody, false);
-				} else {
 					sloth.releaseRight(world);
+					if (collisions.getLeftBody() != null && collisions.getLeftBody().equals(owl.getBody()))
+						sloth.grab(world, owl.getBody(), true);
+					else if (collisions.getRightBody() != null && collisions.getRightBody().equals(owl.getBody()))
+						sloth.grab(world, owl.getBody(), false);
+					else {
+						sloth.grab(world, owl.getBody(), true);
+						sloth.grab(world, owl.getBody(), false);
+					}
+				}
+				coverOpacity = owl.doVictory();
+				if (owl.didVictory()) {
+					setComplete(true);
+				}
+			} else {
+				// Physics tiem
+				// Gribby grab
+				if (sloth.controlMode == 0 || !didSafe) {
+					if (sloth.isLeftGrab()) {
+						sloth.grab(world, leftCollisionBody, true);
+					} else {
+						sloth.releaseLeft(world);
+					}
+
+					if (sloth.isRightGrab()) {
+						sloth.grab(world, rightCollisionBody, false);
+					} else {
+						sloth.releaseRight(world);
+					}
 				}
 			}
 
@@ -507,9 +525,7 @@ public class GameModeController extends WorldController {
 			float slothY = sloth.getBody().getPosition().y;
 			if (slothY < fallDeathHeight + NEAR_FALL_DEATH_DISTANCE) {
 				if (slothY < fallDeathHeight) {
-					System.out.println("TODO: CLEVER YOU DIED FROM FALLING " +
-							"TEXT");
-					setFailure(true);
+					reset();
 				} else {
 					float normalizedDistanceFromDeath = (slothY -
 							fallDeathHeight) / NEAR_FALL_DEATH_DISTANCE;
@@ -524,7 +540,7 @@ public class GameModeController extends WorldController {
 				SoundController.getInstance().setVolume("fallmusic", 0);
 				SoundController.getInstance().setVolume("bgmusic",
 						1);
-				if (playerIsReady || paused) {
+				if ((playerIsReady || paused) && (collisions.isFlowKill() || !collisions.isFlowWin())) {
 					coverOpacity = 0;
 				}
 			}
@@ -543,8 +559,11 @@ public class GameModeController extends WorldController {
 			}
 
 			if (isFailure()) {
-				System.out.println("Fail");
-				reset();
+				if (sloth != null) {
+					if (sloth.dismember(world))
+						grabSound.play();
+				}
+//				reset();
 			}
 		}
 	}
@@ -563,9 +582,13 @@ public class GameModeController extends WorldController {
 		canvas.drawTextStandard("record time:     "+recordTime,10f,50f);
 		canvas.end();
 
+		canvas.getCampos().set( sloth.getBody().getPosition().x * worldScale.x
+				, sloth.getBody().getPosition().y * worldScale.y);
 		canvas.begin(camTrans);
 		//canvas.draw(background, Color.WHITE, .25f*background.getWidth(),.75f * background.getHeight(),initFlowX*worldScale.x,initFlowY*worldScale.y,background.getWidth(), background.getHeight());
 
+
+		Collections.sort(objects);
 		for(Entity obj : objects) {
 			obj.setDrawScale(worldScale);
 			obj.draw(canvas);
@@ -600,7 +623,7 @@ public class GameModeController extends WorldController {
 			Color coverColor = new Color(0,0,0,coverOpacity);
 			canvas.drawRectangle(coverColor,0,0,canvas.getWidth(), canvas
 					.getHeight());
-			coverOpacity -= (1/60f); // 2 second cover
+			coverOpacity -= (1/CYCLES_OF_INTRO);
 			Gdx.gl.glDisable(GL20.GL_BLEND);
 			canvas.begin();
 			if (!playerIsReady && !paused)

@@ -22,6 +22,8 @@ import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.graphics.glutils.*;
 import com.badlogic.gdx.physics.box2d.*;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Primary view class for the game, abstracting the basic graphics calls.
@@ -94,6 +96,8 @@ public class GameCanvas {
 	/** Affine cache for all sprites this drawing pass */
 	private Matrix4 global;
 	private Vector2 vertex;
+	@Getter @Setter
+	private Vector2 campos;
 	/** Cache object to handle raw texture */
 	private TextureRegion holder;
 
@@ -123,7 +127,7 @@ public class GameCanvas {
 		local  = new Affine2();
 		global = new Matrix4();
 		vertex = new Vector2();
-
+		campos = new Vector2();
 		font = new BitmapFont();
 		font.setColor(new Color(255,0,100,255));
 		shapeRenderer = new ShapeRenderer();
@@ -142,6 +146,7 @@ public class GameCanvas {
     	local  = null;
     	global = null;
     	vertex = null;
+		campos = null;
     	holder = null;
     }
 
@@ -1170,6 +1175,26 @@ public class GameCanvas {
 		shapeRenderer.setColor(color);
 		shapeRenderer.rect(ox, oy, width, height);
 		shapeRenderer.end();
+	}
+
+	public void drawBackgroundEntity(TextureRegion region, Color tint, float ox, float oy,
+					 float x, float y, float depth, float angle, float sx, float sy, int parallaxy) {
+		if (active != DrawPass.STANDARD) {
+			Gdx.app.error("askew.GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
+			return;
+		}
+
+		// BUG: The draw command for texture regions does not work properly.
+		// There is a workaround, but it will break if the bug is fixed.
+		// For now, it is better to set the affine transform directly.
+
+		float offsetx = (x - campos.x) / depth;
+		float offsety = parallaxy * (y - campos.y) / depth;
+		//System.out.println("" + x + "," + y + ":" +  campos.x + "," + campos.y);
+
+		computeTransform(ox,oy,campos.x + offsetx,campos.y + offsety,angle,sx,sy);
+		spriteBatch.setColor(tint);
+		spriteBatch.draw(region, region.getRegionWidth(), region.getRegionHeight(), local);
 	}
     
 	/**
