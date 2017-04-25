@@ -18,7 +18,7 @@ import com.badlogic.gdx.physics.box2d.Filter;
  */
 public class WallModel extends PolygonObstacle {
 
-    public static final float WALL_FRICTION = 0.4f;
+    public static final float WALL_FRICTION = 1.0f;
     public static final float WALL_RESTITUTION = 0.1f;
 
     // Instance variables
@@ -51,7 +51,7 @@ public class WallModel extends PolygonObstacle {
             this.setSensor(true);
             this.setName("thorns");
             Filter f = new Filter();
-            f.maskBits = FilterGroup.SLOTH;
+            f.maskBits = FilterGroup.SLOTH | FilterGroup.HAND;
             f.categoryBits = FilterGroup.WALL;
             this.setFilterData(f);
         } else {

@@ -69,29 +69,34 @@ public class PhysicsController implements ContactListener {
             Obstacle bd1 = (Obstacle)body1.getUserData();
             Obstacle bd2 = (Obstacle)body2.getUserData();
 
-            if (fd1 != null && bd2 != null && fd1.equals("sloth left hand") &&
+            if (fd1 != null && bd2 != null && ((String)fd1).contains("sloth left hand") &&
                     (!sloth.badBodies().contains(bd2)) && (!(bd2 instanceof PolygonObstacle))) {
                 leftBody = body2;
             }
-            if (fd1 != null && fd1.equals("sloth right hand") && bd2 != sloth && (!sloth.badBodies().contains(bd2))&& (!(bd2 instanceof PolygonObstacle))) {
+            if (fd1 != null && ((String)fd1).contains("sloth right hand") && bd2 != sloth && (!sloth.badBodies().contains(bd2))&& (!(bd2 instanceof PolygonObstacle))) {
                 rightBody = body2;
             }
 
-            if (fd2 != null && fd2.equals("sloth left hand")  && bd1 != sloth && (!sloth.badBodies().contains(bd1))&& (!(bd1 instanceof PolygonObstacle))) {
+            if (fd2 != null && ((String)fd2).contains("sloth left hand")  && bd1 != sloth && (!sloth.badBodies().contains(bd1))&& (!(bd1 instanceof PolygonObstacle))) {
                 leftBody = body1;
             }
-            if (fd2 != null && fd2.equals("sloth right hand")  && bd1 != sloth && (!sloth.badBodies().contains(bd1))&& (!(bd1 instanceof PolygonObstacle))) {
+            if (fd2 != null && ((String)fd2).contains("sloth right hand")  && bd1 != sloth && (!sloth.badBodies().contains(bd1))&& (!(bd1 instanceof PolygonObstacle))) {
                 rightBody = body1;
             }
 
             // Check for thorns
-            if (bd1 != null && bd2 != null && ((bd1.getName() != null && bd1.getName().equals("slothpart")) ||( bd2.getName() != null && bd2.getName().equals("slothpart")))) {
+            if (
+                    (fd1 != null && ((String)fd1).contains("hand") ||   fd2!= null && ((String)fd2).contains("hand")) ||
+                    (bd1 != null && bd2 != null && ((bd1.getName() != null && bd1.getName().contains("slothpart")) ||( bd2.getName() != null && bd2.getName().contains("slothpart"))))
+                    ) {
                 Obstacle slothy;
                 Obstacle other;
-                if (bd1.getName() != null && bd1.getName().equals("slothpart")) {
+                if ( (fd1 != null && ((String)fd1).contains("hand")) || (bd1.getName() != null && bd1.getName().equals("slothpart"))) {
+                    if (fd2 !=null && ((String)fd2).contains("slothpart")) return;
                     slothy = bd1;
                     other = bd2;
                 } else {
+                    if (fd1 !=null && ((String)fd1).contains("slothpart")) return;
                     slothy = bd2;
                     other = bd1;
                 }
@@ -133,17 +138,17 @@ public class PhysicsController implements ContactListener {
         Object bd1 = body1.getUserData();
         Object bd2 = body2.getUserData();
 
-        if (fd1 != null && fd1.equals("sloth left hand") && body2 == leftBody) {
+        if (fd1 != null && ((String)fd1).contains("sloth left hand") && body2 == leftBody) {
             leftBody = null;
 
         }
-        if (fd2 != null && fd2.equals("sloth left hand") && body1 == leftBody) {
+        if (fd2 != null && ((String)fd2).contains("sloth left hand") && body1 == leftBody) {
             leftBody = null;
         }
-        if (fd1 != null && fd1.equals("sloth right hand") && body2 == rightBody) {
+        if (fd1 != null && ((String)fd1).contains("sloth right hand") && body2 == rightBody) {
             rightBody = null;
         }
-        if (fd2 != null && fd2.equals("sloth right hand") && body1 == rightBody) {
+        if (fd2 != null && ((String)fd2).contains("sloth right hand") && body1 == rightBody) {
             rightBody = null;
         }
     }
