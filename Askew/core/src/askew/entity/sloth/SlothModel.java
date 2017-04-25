@@ -115,6 +115,7 @@ public class SlothModel extends ComplexObstacle  {
     private transient boolean didSafeGrab;
     private boolean setLastGrabX;
     private float lastGrabX;
+    private transient boolean dismembered;
 
     /**
      * Returns the texture index for the given body part
@@ -540,9 +541,6 @@ public class SlothModel extends ComplexObstacle  {
         canvas.drawLine(left.getX()*drawScale.x,left.getY() * drawScale.y, left.getX()*drawScale.x+(forceL.x*2),left.getY() * drawScale.y+(forceL.y*2),Color.BLUE, Color.BLUE);
         canvas.drawLine(right.getX()*drawScale.x,right.getY() * drawScale.y, right.getX()*drawScale.x+(forceR.x*2),right.getY() * drawScale.y+(forceR.y*2),Color.RED, Color.RED);
         canvas.endDebug();
-
-
-
     }
 
     public void drawGrab(GameCanvas canvas, Affine2 camTrans){
@@ -793,6 +791,7 @@ public class SlothModel extends ComplexObstacle  {
 
                 //If the body parts are from the right limb
                 if (body_ind == 3 || body_ind == 4) continue;
+                Color LARA_COLOR = new Color(0,255,255,1);
                 if (body_ind == 1 || body_ind == 4) {
                     // right limb
                     if (controlMode == CONTROLS_ONE_ARM) {
@@ -801,7 +800,7 @@ public class SlothModel extends ComplexObstacle  {
                                 !isActualRightGrab()))
                             part.draw(canvas, Color
                                 .WHITE);
-                        else part.draw(canvas, Color.BLACK);
+                        else part.draw(canvas, LARA_COLOR);
                     } else {
                         part.draw(canvas, Color.WHITE);
                     }
@@ -814,7 +813,7 @@ public class SlothModel extends ComplexObstacle  {
                                 || (!leftCanGrabOrIsGrabbing && isActualRightGrab()))
                             part.draw(canvas,
                                 Color.WHITE);
-                        else part.draw(canvas, Color.BLACK);
+                        else part.draw(canvas, LARA_COLOR);
                     } else {
                         part.draw(canvas, Color.WHITE);
                     }
@@ -875,6 +874,24 @@ public class SlothModel extends ComplexObstacle  {
             }
         } else {
             didSafeGrab = false;
+        }
+    }
+
+    public void dismember(World world) {
+        if (!dismembered) {
+            Joint jointA = joints.get(0);
+            Joint jointB = joints.get(1);
+            joints.removeValue(jointA,true);
+            joints.removeValue(jointB,true);
+            world.destroyJoint(jointA);
+            world.destroyJoint(jointB);
+            jointA = null;
+            jointB = null;
+            for (Obstacle b : bodies) {
+                b.getFilterData().categoryBits = 0;
+                b.getBody().applyForceToCenter((float)Math.random()*110 - 55,(float)Math.random()*110 - 55,true);
+            }
+            dismembered = true;
         }
     }
 }

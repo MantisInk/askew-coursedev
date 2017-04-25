@@ -474,7 +474,7 @@ public class GameModeController extends WorldController {
 			//#TODO Collision states check
 			setFailure(collisions.isFlowKill());
 
-			if (collisions.isFlowWin()) {
+			if (!isFailure() && collisions.isFlowWin()) {
 				System.out.println("VICTORY");
 				setComplete(true);
 			}
@@ -509,7 +509,7 @@ public class GameModeController extends WorldController {
 			float slothY = sloth.getBody().getPosition().y;
 			if (slothY < fallDeathHeight + NEAR_FALL_DEATH_DISTANCE) {
 				if (slothY < fallDeathHeight) {
-					setFailure(true);
+					reset();
 				} else {
 					float normalizedDistanceFromDeath = (slothY -
 							fallDeathHeight) / NEAR_FALL_DEATH_DISTANCE;
@@ -543,8 +543,9 @@ public class GameModeController extends WorldController {
 			}
 
 			if (isFailure()) {
-				System.out.println("Fail");
-				reset();
+				if (sloth != null)
+					sloth.dismember(world);
+//				reset();
 			}
 		}
 	}
