@@ -883,7 +883,7 @@ public class SlothModel extends ComplexObstacle  {
         }
     }
 
-    public void dismember(World world) {
+    public boolean dismember(World world) {
         if (!dismembered) {
             Joint jointA = joints.get(0);
             Joint jointB = joints.get(1);
@@ -898,7 +898,9 @@ public class SlothModel extends ComplexObstacle  {
                 b.getBody().applyForceToCenter((float)Math.random()*110 - 55,(float)Math.random()*110 - 55,true);
             }
             dismembered = true;
+            return true;
         }
+        return false;
     }
 }
 

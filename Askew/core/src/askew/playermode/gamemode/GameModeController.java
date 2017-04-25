@@ -477,8 +477,16 @@ public class GameModeController extends WorldController {
 
 			if (!isFailure() && collisions.isFlowWin()) {
 				if (!owl.isDoingVictory()) {
-					sloth.grab(world, owl.getBody(), true);
-					sloth.grab(world, owl.getBody(), false);
+					sloth.releaseLeft(world);
+					sloth.releaseRight(world);
+					if (collisions.getLeftBody() != null && collisions.getLeftBody().equals(owl.getBody()))
+						sloth.grab(world, owl.getBody(), true);
+					else if (collisions.getRightBody() != null && collisions.getRightBody().equals(owl.getBody()))
+						sloth.grab(world, owl.getBody(), false);
+					else {
+						sloth.grab(world, owl.getBody(), true);
+						sloth.grab(world, owl.getBody(), false);
+					}
 				}
 				coverOpacity = owl.doVictory();
 				if (owl.didVictory()) {
@@ -550,8 +558,10 @@ public class GameModeController extends WorldController {
 			}
 
 			if (isFailure()) {
-				if (sloth != null)
-					sloth.dismember(world);
+				if (sloth != null) {
+					if (sloth.dismember(world))
+						grabSound.play();
+				}
 //				reset();
 			}
 		}
