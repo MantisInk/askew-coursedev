@@ -104,6 +104,15 @@ public class GameModeController extends WorldController {
 	private String selectedTrack;
 	private String lastLevel;
 
+	//For playtesting control schemes
+	private String typeMovement;
+	private int currentMovement;
+	private String typeControl;
+	private int currentControl;
+
+	private int control_three_wait;
+	private int UI_WAIT = 5;
+
 	/** The opacity of the black text covering the screen. Game can start
 	 * when this is zero. */
 	private float coverOpacity;
@@ -201,6 +210,13 @@ public class GameModeController extends WorldController {
 		loadLevel = DEFAULT_LEVEL;
 		storeTimeRecords = GlobalConfiguration.getInstance().getAsBoolean("storeTimeRecords");
 		jsonLoaderSaver = new JSONLoaderSaver();
+
+		typeMovement = "Current movement is: "+"0";
+		currentMovement = 0;
+		typeControl = "Current control is: "+"0";
+		currentControl = 0;
+
+		control_three_wait = 0;
 	}
 
 	public void setLevel() {
@@ -319,6 +335,9 @@ public class GameModeController extends WorldController {
 					collisions.setSloth(sloth);
 					initFlowX = sloth.getX();
 					initFlowY = sloth.getY();
+
+					sloth.setControlMode(currentControl);
+					sloth.setMovementMode(currentMovement);
 				}
 				if (o instanceof OwlModel) {
 					owl = (OwlModel) o;
@@ -357,11 +376,11 @@ public class GameModeController extends WorldController {
 			System.out.println("LE");
 			listener.exitScreen(this, EXIT_GM_LE);
 			return false;
-		} else if (input.didTopButtonPress()) {
-			System.out.println("MM");
-			listener.exitScreen(this, EXIT_GM_MM);
-			return false;
-		} else if (input.didRightButtonPress() && !paused) {
+//		} else if (input.didTopButtonPress()) {
+//			System.out.println("MM");
+//			listener.exitScreen(this, EXIT_GM_MM);
+//			return false;
+		} else if (input.didTopButtonPress() && !paused) {
 			System.out.println("reset");
 			reset();
 		}
@@ -445,6 +464,41 @@ public class GameModeController extends WorldController {
 	 * @param dt Number of seconds since last animation frame
 	 */
 	public void update(float dt) {
+		//Increment UI check
+		if(currentControl==2){
+			control_three_wait = (control_three_wait+1) % UI_WAIT;
+		}
+
+		//Check for change in grabbing movement
+		if (InputController.getInstance().isOneKeyPressed()) {
+			sloth.setMovementMode(0);
+			currentMovement = 0;
+			typeMovement = "Current movement is: "+"0";
+		}
+		if (InputController.getInstance().isTwoKeyPressed()) {
+			sloth.setMovementMode(1);
+			currentMovement = 1;
+			typeMovement = "Current movement is: "+"1";
+		}
+		if (InputController.getInstance().isThreeKeyPressed()) {
+			sloth.setMovementMode(2);
+			currentMovement = 2;
+			typeMovement = "Current movement is: "+"2";
+			control_three_wait = 0;
+		}
+
+		//Check for change in arm movement
+		if (InputController.getInstance().isZKeyPressed()) {
+			sloth.setControlMode(0);
+			currentControl = 0;
+			typeControl = "Current control is: "+"0";
+		}
+		if (InputController.getInstance().isXKeyPressed()) {
+			sloth.setControlMode(1);
+			currentControl = 1;
+			typeControl = "Current control is: "+"1";
+		}
+
 		if (!paused) {
 			// Process actions in object model
 			Body leftCollisionBody = collisions.getLeftBody();
@@ -580,6 +634,10 @@ public class GameModeController extends WorldController {
 		canvas.draw(background);
 		canvas.drawTextStandard("current time:    "+currentTime, 10f, 70f);
 		canvas.drawTextStandard("record time:     "+recordTime,10f,50f);
+
+		//Draw control schemes
+		canvas.drawTextStandard(typeMovement, 10f, 700f);
+		canvas.drawTextStandard(typeControl,10f,680f);
 		canvas.end();
 
 		canvas.getCampos().set( sloth.getBody().getPosition().x * worldScale.x
