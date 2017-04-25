@@ -394,32 +394,32 @@ public class TutorialModeController extends GameModeController {
 //				prevRAngle = angleR;
 //			}
 
-			System.out.println("before case ("+rAngle+","+cw+","+ccw+")");
+			//System.out.println("before case ("+rAngle+","+cw+","+ccw+")");
 			switch (stepsDone){
 				case DID_NOTHING:
-					System.out.println("during case0 ("+rAngle+","+cw+","+ccw+")");
+					//System.out.println("during case0 ("+rAngle+","+cw+","+ccw+")");
 					sloth.setRightHori(0);
 					sloth.setRightVert(0);
 					break;
 				case MOVED_LEFT:
 					sloth.setLeftHori(0);
 					sloth.setLeftVert(0);
-					System.out.println("during case1 ("+rAngle+","+cw+","+ccw+")");
+					//System.out.println("during case1 ("+rAngle+","+cw+","+ccw+")");
 //					sloth.setLeftGrab(false);
 					break;
 				case MOVED_RIGHT:
 					sloth.setRightGrab(false);
 					break;
 				case GRABBED_LEFT:
-					sloth.setLeftGrab(true);
+					//sloth.setLeftGrab(true);
 					break;
 				case GRABBED_RIGHT:
-					sloth.setRightGrab(true);
+					//sloth.setRightGrab(true);
 					//Set right arm to be 0 too?
 					break;
 				case SWING_LEFT:
 					//Let go of left grab
-					sloth.setRightGrab(true);
+					//sloth.setRightGrab(true);
 					break;
 				case REGRABBED_LEFT:
 					break;
