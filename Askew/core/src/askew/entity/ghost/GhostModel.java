@@ -149,8 +149,7 @@ public class GhostModel extends BoxObstacle  {
         faceRight = moveX > 0;
 
         // Move toward destination
-        this.setX(this.getX() + (float) moveX * actualMoveDistance);
-        this.setY(this.getY() + (float) moveY * actualMoveDistance);
+        this.setPosition(this.getPosition().x + (float) moveX * actualMoveDistance, this.getPosition().y + (float) moveY * actualMoveDistance);
     }
 
     public void fillJSON() {
