@@ -95,8 +95,9 @@ public class GameModeController extends WorldController {
 	protected Texture background;
 	private Texture pauseTexture;
 	private Texture fern;
-	private static final float NEAR_FALL_DEATH_DISTANCE = 38;
-	private static final float LOWEST_ENTITY_FALL_DEATH_THRESHOLD = 40;
+	private static final float NEAR_FALL_DEATH_DISTANCE = 9;
+	private static final float LOWEST_ENTITY_FALL_DEATH_THRESHOLD = 12;
+	private static final float CYCLES_OF_INTRO = 50f;
 	private float fallDeathHeight;
 	private String selectedTrack;
 	private String lastLevel;
@@ -507,8 +508,6 @@ public class GameModeController extends WorldController {
 			float slothY = sloth.getBody().getPosition().y;
 			if (slothY < fallDeathHeight + NEAR_FALL_DEATH_DISTANCE) {
 				if (slothY < fallDeathHeight) {
-					System.out.println("TODO: CLEVER YOU DIED FROM FALLING " +
-							"TEXT");
 					setFailure(true);
 				} else {
 					float normalizedDistanceFromDeath = (slothY -
@@ -600,7 +599,7 @@ public class GameModeController extends WorldController {
 			Color coverColor = new Color(0,0,0,coverOpacity);
 			canvas.drawRectangle(coverColor,0,0,canvas.getWidth(), canvas
 					.getHeight());
-			coverOpacity -= (1/60f); // 2 second cover
+			coverOpacity -= (1/CYCLES_OF_INTRO);
 			Gdx.gl.glDisable(GL20.GL_BLEND);
 			canvas.begin();
 			if (!playerIsReady && !paused)
