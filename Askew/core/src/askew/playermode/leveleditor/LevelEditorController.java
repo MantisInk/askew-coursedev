@@ -453,7 +453,7 @@ public class LevelEditorController extends WorldController {
 	public void camUpdate(){
 		cxCamera = adjustedCxCamera + (((bounds.getWidth()-(GUI_LEFT_BAR_WIDTH/worldScale.x) )/2f)+(GUI_LEFT_BAR_WIDTH / worldScale.x) );
 		cyCamera = adjustedCyCamera + (((bounds.getHeight()-(GUI_LOWER_BAR_HEIGHT/worldScale.y))/2f) + (GUI_LOWER_BAR_HEIGHT / worldScale.y));
-		System.out.println(cxCamera + " : " +cyCamera);
+		
 	}
 
 	public void update(float dt) {
