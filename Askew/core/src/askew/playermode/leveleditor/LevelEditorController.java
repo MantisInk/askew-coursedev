@@ -881,6 +881,23 @@ public class LevelEditorController extends WorldController {
 		canvas.endDebug();
 
 	}
+
+	public Vector2 getModifiedPosition(Entity e){
+		Vector2 pos = e.getPosition();
+		if(e instanceof BackgroundEntity){
+			pos.scl(1f/((BackgroundEntity) e).getDepth());
+		}
+		return pos;
+	}
+
+	public void setModifiedPosition(Entity e, float x, float y){
+		if(e instanceof BackgroundEntity){
+			e.setPosition(x * ((BackgroundEntity) e).getDepth(), y * ((BackgroundEntity) e).getDepth());
+		} else{
+			e.setPosition(x,y);
+		}
+	}
+	
 	//ox and oy are bottom left corner
 	public boolean inBounds(float x ,float y, float ox ,float oy, float width, float height){
 		return  x >= ox && x <= ox + width && y >= oy && y <= oy + height;
