@@ -205,8 +205,6 @@ public abstract class WorldController implements Screen {
 	protected GameCanvas canvas;
 	/** All the objects in the world. */
 	protected PooledList<Entity> objects  = new PooledList<Entity>();
-	/** Queue for adding objects */
-	protected PooledList<Entity> addQueue = new PooledList<Entity>();
 	/** Listener that will update the player mode when we are done */
 	protected ScreenListener listener;
 
@@ -397,29 +395,14 @@ public abstract class WorldController implements Screen {
 			}
 		}
 		objects.clear();
-		addQueue.clear();
 		world.dispose();
 		objects = null;
-		addQueue = null;
 		bounds = null;
 		worldScale = null;
 		world  = null;
 		canvas = null;
 	}
 
-	/**
-	 *
-	 * Adds a physics object in to the insertion queue.
-	 *
-	 * Objects on the queue are added just before collision processing.  We do this to 
-	 * control object creation.
-	 *
-	 * param obj The object to add
-	 */
-	public void addQueuedObject(Obstacle obj) {
-		assert inBounds(obj) : "Object is not in bounds";
-		addQueue.add(obj);
-	}
 
 	/**
 	 * Immediately adds the object to the physics world
@@ -548,11 +531,6 @@ public abstract class WorldController implements Screen {
 	 *  Number of seconds since last animation frame
 	 */
 	public void postUpdate(float dt) {
-		// Add any objects created by actions
-		while (!addQueue.isEmpty()) {
-			addObject(addQueue.poll());
-		}
-		
 		// Turn the physics engine crank.
 		world.step(WORLD_STEP,WORLD_VELOC,WORLD_POSIT);
 

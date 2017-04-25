@@ -239,7 +239,6 @@ public class LevelEditorController extends WorldController {
 		}
 
 		objects.clear();
-		addQueue.clear();
 		world.dispose();
 
 		world = new World(gravity,false);
@@ -852,10 +851,6 @@ public class LevelEditorController extends WorldController {
 
 	@Override
 	public void postUpdate(float dt) {
-		// Add any objects created by actions
-		while (!addQueue.isEmpty()) {
-			addObject(addQueue.poll());
-		}
 
 		// Turn the physics engine crank.
 		//world.step(WORLD_STEP,WORLD_VELOC,WORLD_POSIT);
