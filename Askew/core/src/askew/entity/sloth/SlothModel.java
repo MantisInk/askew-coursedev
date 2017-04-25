@@ -217,7 +217,7 @@ public class SlothModel extends ComplexObstacle  {
         part = makePart(PART_BODY, PART_NONE, x, y,BODY_WIDTH,BODY_HEIGHT, BODY_DENSITY,true);
         part.setFixedRotation(BODY_FIXED_ROTATION);
         part.setGravityScale(GRAVITY_SCALE);
-        part.setLinearDamping(0.09f); // small amount to balance linear gimp
+        part.setLinearDamping(0.03f); // small amount to balance linear gimp
 
         // ARMS
         // Right arm
@@ -503,9 +503,9 @@ public class SlothModel extends ComplexObstacle  {
         // ANTI GIMP - Trevor. Filled with magic ###s
         float maxVelocity = Math.max(Math.abs(rightAngularVelocity),Math.abs(leftAngularVelocity));
         float gimpScale = 1.0f;
-        float CUTOFF = 7;
+        float CUTOFF = 8;
         if (maxVelocity > CUTOFF) {
-            gimpScale = (float) Math.exp(-( (maxVelocity-CUTOFF) / 3.5f));
+            gimpScale = (float) Math.exp(-( (maxVelocity-CUTOFF) / 4.5f));
         }
 
         System.out.println(gimpScale);
