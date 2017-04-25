@@ -679,12 +679,12 @@ public class SlothModel extends ComplexObstacle  {
         sensorDef.shape = sensorShape;
 
         Filter f = new Filter();
-        f.maskBits = FilterGroup.VINE;
+        f.maskBits = FilterGroup.VINE | FilterGroup.WALL;
         f.categoryBits = FilterGroup.HAND;
         sensorFixture1 = bodies.get(PART_LEFT_HAND).getBody().createFixture(sensorDef);
-        sensorFixture1.setUserData("sloth left hand");
+        sensorFixture1.setUserData("slothpart sloth left hand");
         sensorFixture2 = bodies.get(PART_RIGHT_HAND).getBody().createFixture(sensorDef);
-        sensorFixture2.setUserData("sloth right hand");
+        sensorFixture2.setUserData("slothpart sloth right hand");
         sensorFixture1.setFilterData(f);
         sensorFixture2.setFilterData(f);
         sensorFixture1.getBody().setBullet(true);
