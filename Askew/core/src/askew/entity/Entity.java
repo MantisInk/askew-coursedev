@@ -50,5 +50,7 @@ public abstract class Entity {
     public abstract void update(float delta);
     public abstract void draw(GameCanvas canvas);
 
+    public void fillJSON(){};
+
 
 }

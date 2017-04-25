@@ -29,7 +29,7 @@ public class JsonEntityFactory {
         float omega = instance.get("omega").getAsFloat();
         Texture managedTexture = manager.get(Vine.VINE_TEXTURE, Texture.class);
         //TextureRegion vineTexture = new TextureRegion(managedTexture);
-		vine = new Vine(x, y, numlinks, scale, angle, omega);
+		vine = new Vine(x, y, numlinks, angle, omega);
 		vine.setDrawScale(scale.x, scale.y);
 		vine.setTextures(manager);
         return vine;
@@ -93,17 +93,6 @@ public class JsonEntityFactory {
         branch.setTextures(manager);
         return branch;
         }
-
-    public static Tree createTree(MantisAssetManager manager, JsonObject instance, Vector2 scale) {
-        Tree treeeeeee;
-        JsonObject twunk = instance.getAsJsonObject("treeTrunk");
-        JsonObject bwanch = instance.getAsJsonObject("treeBranch");
-        Trunk tr = createTrunk(manager, twunk, scale);
-        StiffBranch br = createBranchforTree(manager, bwanch, scale, tr);
-        treeeeeee = new Tree(tr, br);
-        return treeeeeee;
-    }
-
 
     public static OwlModel createOwl(MantisAssetManager manager, JsonObject instance, Vector2 scale) {
         OwlModel owl;

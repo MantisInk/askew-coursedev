@@ -45,7 +45,7 @@ public class PoleVault extends ComplexObstacle {
 
 	/** The spacing between each link */
 	protected transient Vector2 dimension;						/** The size of the entire bridge */
-	private float x,y,angle; 									/** starting coords of bottom anchor and length for branch */
+									/** starting coords of bottom anchor and length for branch */
 	protected float linksize;									/** The length of each link */
 
 	public transient Vector2 final_norm = null;					/** coords for starting branch off this trunk */
@@ -56,6 +56,8 @@ public class PoleVault extends ComplexObstacle {
 	private transient float spacing = 0.0f;						/** The spacing between each link */
 
 	protected float numLinks;									// param for json constructor
+
+	private float x,y,angle;
 
 	/**
 	 * Creates a new tree trunk at the given position.
@@ -150,6 +152,13 @@ public class PoleVault extends ComplexObstacle {
 		}
 		final_norm = new Vector2(pos);
 		final_norm.add(0,linksize/2);
+	}
+	public void build(){}
+	public void rebuild(){}
+	public void rebuild(float x , float y){
+		this.x = x;
+		this.y = y;
+		rebuild();
 	}
 
 	/**

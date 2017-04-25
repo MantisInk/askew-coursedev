@@ -88,15 +88,17 @@ public class SlothModel extends ComplexObstacle  {
 
 
 
-    /** For drawing the force lines*/
-    //private Affine2 camTrans = new Affine2();
-
+    //JSON
+    @Getter @Setter
     public float x;
+    @Getter @Setter
     public float y;
+
     private transient float rightVert;      // right joystick y input
     private transient float leftHori;       // left joystick z input
     private transient float leftVert;       // left joystick y input
     private transient float rightHori;      // right joystick x input
+
     @Getter
     private transient boolean leftGrab;
     @Getter
@@ -183,6 +185,7 @@ public class SlothModel extends ComplexObstacle  {
         super(x,y);
         this.x = x;
         this.y = y;
+
         this.setObjectScale(1.0f/1.5f,1.0f/1.5f);
         this.TORQUE = GlobalConfiguration.getInstance().getAsFloat("flowTorque");
         this.GRAVITY_SCALE = GlobalConfiguration.getInstance().getAsFloat("flowGravityScale");
@@ -194,6 +197,19 @@ public class SlothModel extends ComplexObstacle  {
                 ("flowControlMode");
         this.rightGrabbing = false;
         this.leftGrabbing =  true;
+    }
+
+    public void build(){
+        init();
+    }
+ 	public void rebuild(){
+        bodies.clear();
+        build();
+    }
+ 	public void rebuild(float x , float y){
+ 	    this.x = x;
+ 	    this.y = y;
+ 	    rebuild();
     }
 
     private void init() {
@@ -246,9 +262,7 @@ public class SlothModel extends ComplexObstacle  {
     public void setDrawScale(float x, float y) {
         super.setDrawScale(x,y);
 
-        if (partTextures != null && bodies.size == 0) {
-            init();
-        }
+
     }
 
     /**

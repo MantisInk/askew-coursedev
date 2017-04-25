@@ -36,6 +36,11 @@ public class BackgroundEntity extends Entity{
         this(x,y,1,1,-1,0,1,1,1,"texture/background/fern.png");
     }
 
+    public BackgroundEntity(float x, float y, String path){
+        this(x,y,1,1,-1,0,1,1,1,path);
+    }
+
+
     public BackgroundEntity(float x, float y, float width, float height, float depth,
                             float angle, float alpha, float scalex, float scaley, String path){
         this.x = x;
@@ -182,4 +187,8 @@ public class BackgroundEntity extends Entity{
         }
     }
 
+    public void fillJSON() {
+        this.x = getPosition().x;
+        this.y = getPosition().y;
+    }
 }

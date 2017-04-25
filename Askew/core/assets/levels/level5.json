@@ -36,34 +36,34 @@
     {
       "CLASSNAME": "askew.entity.vine.Vine",
       "INSTANCE": {
-        "pin": false,
         "numLinks": 5.0,
         "x": -2.0,
         "y": 16.0,
         "angle": 5.0,
-        "omega": -400.0
+        "omega": -400.0,
+        "pin": false
       }
     },
     {
       "CLASSNAME": "askew.entity.vine.Vine",
       "INSTANCE": {
-        "pin": false,
         "numLinks": 6.0,
         "x": 4.0,
         "y": 21.0,
         "angle": 5.0,
-        "omega": -100.0
+        "omega": -100.0,
+        "pin": false
       }
     },
     {
       "CLASSNAME": "askew.entity.vine.Vine",
       "INSTANCE": {
-        "pin": false,
         "numLinks": 15.0,
         "x": 13.0,
         "y": 28.0,
         "angle": 5.0,
-        "omega": -400.0
+        "omega": -400.0,
+        "pin": false
       }
     },
     {

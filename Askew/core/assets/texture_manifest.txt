@@ -2,6 +2,11 @@ texture/background/fern.png
 texture/background/background1.png
 texture/background/menu1.png
 texture/background/menu2.png
+texture/leveleditor/grey.png
+texture/leveleditor/placeholder.png
+texture/leveleditor/up.png
+texture/leveleditor/folder.png
+texture/leveleditor/yellowbox.png
 texture/background/pause.png
 texture/tutorial/joystick0.png
 texture/tutorial/joystick1.png
