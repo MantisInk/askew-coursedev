@@ -108,6 +108,12 @@ public class TutorialModeController extends GameModeController {
 	Texture RightBumperTexture0;
 	Texture RightBumperTexture1;
 
+	//For playtesting control schemes
+	private String typeMovement;
+	private int currentMovement;
+	private String typeControl;
+	private int currentControl;
+
 
 	/**
 	 * Preloads the assets for this controller.
@@ -166,6 +172,11 @@ public class TutorialModeController extends GameModeController {
 		world.setContactListener(collisions);
 		sensorFixtures = new ObjectSet<Fixture>();
 		jsonLoaderSaver = new JSONLoaderSaver();
+
+		typeMovement = "Current movement is: "+"0";
+		currentMovement = 0;
+		typeControl = "Current control is: "+"0";
+		currentControl = 0;
 	}
 
 	public void pause(){
@@ -226,6 +237,9 @@ public class TutorialModeController extends GameModeController {
 		collisions.setSloth(sloth);
 		initFlowX = sloth.getX();
 		initFlowY = sloth.getY();
+
+		sloth.setControlMode(currentControl);
+		sloth.setMovementMode(currentMovement);
 
 		///Create wall
 		float[] points = {-4.0f,0.0f, -4.0f,1.0f, 16.0f,1.0f, 16.0f,0.0f};
@@ -353,6 +367,35 @@ public class TutorialModeController extends GameModeController {
 	 */
 	public void update(float dt) {
 		InputController input = InputController.getInstance();
+
+		//Check for change in grabbing movement
+		if (input.isOneKeyPressed()) {
+			sloth.setMovementMode(0);
+			currentMovement = 0;
+			typeMovement = "Current movement is: "+"0";
+		}
+		if (input.isTwoKeyPressed()) {
+			sloth.setMovementMode(1);
+			currentMovement = 1;
+			typeMovement = "Current movement is: "+"1";
+		}
+		if (input.isThreeKeyPressed()) {
+			sloth.setMovementMode(2);
+			currentMovement = 2;
+			typeMovement = "Current movement is: "+"2";
+		}
+
+		//Check for change in arm movement
+		if (input.isZKeyPressed()) {
+			sloth.setControlMode(0);
+			currentControl = 0;
+			typeControl = "Current control is: "+"0";
+		}
+		if (input.isXKeyPressed()) {
+			sloth.setControlMode(1);
+			currentControl = 1;
+			typeControl = "Current control is: "+"1";
+		}
 		if (!paused) {
 			// Process actions in object model
 			sloth.setLeftHori(InputController.getInstance().getLeftHorizontal());
@@ -532,6 +575,11 @@ public class TutorialModeController extends GameModeController {
 
 		canvas.begin();
 		canvas.draw(background);
+
+		//Draw control schemes
+		canvas.drawTextStandard(typeMovement, 10f, 700f);
+		canvas.drawTextStandard(typeControl,10f,680f);
+
 		canvas.end();
 
 		canvas.begin(camTrans);
