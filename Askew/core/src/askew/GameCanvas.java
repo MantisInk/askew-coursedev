@@ -1178,7 +1178,7 @@ public class GameCanvas {
 	}
 
 	public void drawBackgroundEntity(TextureRegion region, Color tint, float ox, float oy,
-					 float x, float y, float depth, float angle, float sx, float sy) {
+					 float x, float y, float depth, float angle, float sx, float sy, int parallaxy) {
 		if (active != DrawPass.STANDARD) {
 			Gdx.app.error("askew.GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
 			return;
@@ -1189,10 +1189,10 @@ public class GameCanvas {
 		// For now, it is better to set the affine transform directly.
 
 		float offsetx = (x - campos.x) / depth;
-		float offsety = (y - campos.y) / depth;
-		System.out.println("" + x + "," + y + ":" +  campos.x + "," + campos.y);
+		float offsety = parallaxy * (y - campos.y) / depth;
+		//System.out.println("" + x + "," + y + ":" +  campos.x + "," + campos.y);
 
-		computeTransform(ox,oy,x + offsetx,y + offsety,angle,sx,sy);
+		computeTransform(ox,oy,campos.x + offsetx,campos.y + offsety,angle,sx,sy);
 		spriteBatch.setColor(tint);
 		spriteBatch.draw(region, region.getRegionWidth(), region.getRegionHeight(), local);
 	}

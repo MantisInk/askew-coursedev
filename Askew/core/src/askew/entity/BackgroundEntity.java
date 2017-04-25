@@ -106,6 +106,7 @@ public class BackgroundEntity extends Entity{
 
     public void setDepth(float d){
         depth = d;
+        setPosition(x,y);
     }
 
     public float getAngle(){
@@ -183,7 +184,7 @@ public class BackgroundEntity extends Entity{
         if (texture != null) {
             canvas.drawBackgroundEntity(texture,tint,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y, getDepth(), getAngle(),
                     (1.0f/texture.getRegionWidth()) *   getWidth() * getDrawScale().x * objectScale.x,
-                    (1.0f/texture.getRegionHeight()  * getHeight()* getDrawScale().y * objectScale.y));
+                    (1.0f/texture.getRegionHeight()  * getHeight()* getDrawScale().y * objectScale.y), 1);
         }
     }
 

@@ -757,7 +757,7 @@ public class LevelEditorController extends WorldController {
 			if(e instanceof BackgroundEntity){
 				float offsetx = ((e.getPosition().x + adjustedCxCamera) * worldScale.x) / ((BackgroundEntity) e).getDepth();
 				float offsety = ((e.getPosition().y + adjustedCyCamera) * worldScale.y) / ((BackgroundEntity) e).getDepth();
-				canvas.drawLine(e.getPosition().x *worldScale.x, e.getPosition().y *worldScale.y , e.getPosition().x*worldScale.x  + offsetx, e.getPosition().y*worldScale.y + offsety, Color.YELLOW, Color.CHARTREUSE);
+				canvas.drawLine(e.getPosition().x *worldScale.x, e.getPosition().y *worldScale.y , -adjustedCxCamera*worldScale.x  + offsetx, -adjustedCyCamera*worldScale.y + offsety, Color.YELLOW, Color.CHARTREUSE);
 			}
 		}
 
