@@ -4,7 +4,7 @@
   "goalTimeSilver": 45,
   "goalTimeBronze": 60,
   "recordTime": 9999999.0,
-  "title": "Go Flow Go",
+  "title": "level1",
   "background": "texture/background/background1.png",
   "soundtrack": "TODO",
   "entities": [
@@ -72,15 +72,28 @@
       "INSTANCE": {
         "x": -1.0299997,
         "y": 13.88999,
+        "lTheta": 0.0,
+        "rTheta": 0.0,
         "setLastGrabX": false,
         "lastGrabX": 0.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 12.739994,
+        "y": 6.999997,
+        "stiffLen": 3.0,
+        "angle": 90.0,
+        "linksize": 1.0,
+        "numLinks": 7.0
       }
     },
     {
       "CLASSNAME": "askew.entity.wall.WallModel",
       "INSTANCE": {
         "x": -4.0,
-        "y": 11.5,
+        "y": 10.9,
         "thorn": false,
         "points": [
           0.0,
@@ -98,7 +111,7 @@
       "CLASSNAME": "askew.entity.wall.WallModel",
       "INSTANCE": {
         "x": -3.0,
-        "y": 11.5,
+        "y": 10.9,
         "thorn": false,
         "points": [
           0.0,
@@ -110,17 +123,6 @@
           6.0,
           0.0
         ]
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.tree.Trunk",
-      "INSTANCE": {
-        "x": 12.739994,
-        "y": 6.999997,
-        "stiffLen": 3.0,
-        "angle": 90.0,
-        "linksize": 1.0,
-        "numLinks": 7.0
       }
     }
   ]
