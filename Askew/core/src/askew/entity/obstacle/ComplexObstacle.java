@@ -138,6 +138,19 @@ public abstract class ComplexObstacle extends Obstacle {
 		}
 	}
 
+	public Vector2 getCustomScale() {
+		return customScale;
+	}
+	public void setCustomScale(Vector2 value) {
+		setCustomScale(value.x,value.y);
+	}
+	public void setCustomScale(float x, float y) {
+		super.setCustomScale(x,y);
+		for(Obstacle o : bodies){
+			o.setCustomScale(x,y);
+		}
+	}
+
 	/**
 	 * Returns the x-coordinate for this physics body
 	 *
@@ -1019,7 +1032,7 @@ public abstract class ComplexObstacle extends Obstacle {
 	 * primary purpose is to adjust changes to the fixture, which have to take place 
 	 * after collision.
 	 *
-	 * @param dt Timing values from parent loop
+	 * @param
 	 */
 	public void update(float delta) {
 		// Delegate to components
@@ -1073,5 +1086,9 @@ public abstract class ComplexObstacle extends Obstacle {
 			obj.drawDebug(canvas);
 		}
 	}
+
+	public abstract void build();
+	public abstract void rebuild();
+	public abstract void rebuild(float x, float y);
 
 }

@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import lombok.Getter;
+import lombok.Setter;
 
 import javax.xml.soap.Text;
 import java.util.HashMap;
@@ -21,6 +22,9 @@ public class MantisAssetManager extends AssetManager {
     public static final String THORN_TEXTURE = "texture/wall/thorn.png";
     private boolean loaded;
     private boolean preloaded;
+
+    @Getter @Setter
+    private String[] texturePaths;
 
     @Getter
     private Map<String,TextureRegion> processedTextureMap;

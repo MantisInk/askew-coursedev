@@ -48,8 +48,10 @@ public class InputController {
 
 	@Getter
 	private boolean rightClickPressed;
+	private boolean rightClickPrevious;
 	@Getter
 	private boolean leftClickPressed;
+	private boolean leftClickPrevious;
 
 	// Keyboard keys for the level editor
 	@Getter
@@ -74,6 +76,11 @@ public class InputController {
 	private boolean hKeyPressed;
 	@Getter
 	private boolean bKeyPressed;
+	@Getter
+	private boolean shiftKeyPressed;
+	@Getter
+	private boolean spaceKeyPressed;
+
 	@Getter
 	private boolean vKeyPressed;
 	@Getter
@@ -307,6 +314,18 @@ public class InputController {
 
 	public boolean didBottomDPadPress() { return bottomDPadPressed && !bottomDPadPrevious; }
 
+	public boolean didLeftClick(){ return leftClickPressed && !leftClickPrevious; }
+
+	public boolean didLeftDrag(){ return leftClickPressed && leftClickPrevious; }
+
+	public boolean didLeftRelease(){ return !leftClickPressed && leftClickPrevious; }
+
+	public boolean didRightClick(){ return rightClickPressed && !leftClickPrevious; }
+
+	public boolean didRightDrag(){ return rightClickPressed && rightClickPrevious; }
+
+	public boolean didRightRelease(){ return !rightClickPressed && rightClickPrevious; }
+
 	public boolean didUpArrowPress() {return upKeyPressed && !upKeyPrevious;}
 
 	public boolean didRightArrowPress() {
@@ -322,6 +341,7 @@ public class InputController {
 	public boolean didDownArrowPress() {return downKeyPressed && !downKeyPrevious;}
 
 	public boolean didEnterKeyPress() {return enterKeyPressed && !enterKeyPrevious;}
+
 
 
 
@@ -362,6 +382,9 @@ public class InputController {
 		rightDPadPrevious = rightDPadPressed;
 		leftDPadPrevious = leftDPadPressed;
 		bottomDPadPrevious = bottomDPadPressed;
+
+		leftClickPrevious = leftClickPressed;
+		rightClickPrevious = rightClickPressed;
 
 		sKeyPrevious = isSKeyPressed();
 		nKeyPrevious = isNKeyPressed();
@@ -489,12 +512,14 @@ public class InputController {
 			leftVertical -= 1.0f;
 		}
 
+
 		// Mouse results
 		leftClickPressed = Gdx.input.isButtonPressed(Input.Buttons.LEFT);
 		rightClickPressed = Gdx.input.isButtonPressed(Input.Buttons.RIGHT);
 
 
 		// Keypresses for level editor hotkeys
+
 		sKeyPressed = Gdx.input.isKeyPressed(Input.Keys.S) && !sKeyPrevious;
 		nKeyPressed = Gdx.input.isKeyPressed(Input.Keys.N) && !nKeyPrevious;
 		lKeyPressed = Gdx.input.isKeyPressed(Input.Keys.L) && !lKeyPrevious;
@@ -508,10 +533,17 @@ public class InputController {
 		tKeyPressed = Gdx.input.isKeyPressed(Input.Keys.T) && !tKeyPrevious;
 		bKeyPressed = Gdx.input.isKeyPressed(Input.Keys.B) && !bKeyPrevious;
 		vKeyPressed = Gdx.input.isKeyPressed(Input.Keys.V) && !vKeyPrevious;
+
+		lShiftKeyPressed = Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT);
+		rShiftKeyPressed = Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT);
+		shiftKeyPressed = Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT);
+		spaceKeyPressed = Gdx.input.isKeyPressed(Input.Keys.SPACE);
+
 		lShiftKeyPressed = Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) && !lShiftKeyPressed;
 		rShiftKeyPressed = Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT) && !rShiftKeyPressed;
 		upKeyPressed = Gdx.input.isKeyPressed(Input.Keys.UP) && !upKeyPrevious;
 		downKeyPressed = Gdx.input.isKeyPressed(Input.Keys.DOWN) && !downKeyPrevious;
+
 		crosshair.set(Gdx.input.getX(), Gdx.input.getY());
 		crosshair.scl(1/scale.x,-1/scale.y);
 		crosshair.y += bounds.height;

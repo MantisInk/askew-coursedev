@@ -12,6 +12,8 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Filter;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * The owl which must be reached at the end of every level.
@@ -30,7 +32,10 @@ public class OwlModel extends BoxObstacle  {
     private transient Animation flyAnimation;
     private transient float elapseTime;
 
+    //JSON
+    @Getter @Setter
     public float x;
+    @Getter @Setter
     public float y;
 
 
@@ -94,10 +99,15 @@ public class OwlModel extends BoxObstacle  {
         TextureRegion drawFrame = idleAnimation.getKeyFrame(elapseTime, true);
 
         if (drawFrame != null) {
-            canvas.draw(drawFrame,Color.WHITE,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),
+            canvas.draw(drawFrame,Color.WHITE,origin.x,origin.y,getPosition().x*drawScale.x,getPosition().y*drawScale.y,getAngle(),
                     (1.0f/drawFrame.getRegionWidth()) *   getWidth() * getDrawScale().x * objectScale.x,
                     (1.0f/drawFrame.getRegionHeight()  * getHeight()* getDrawScale().y * objectScale.y));
         }
+    }
+
+    public void fillJSON() {
+        this.x = getPosition().x;
+        this.y = getPosition().y;
     }
 }
 

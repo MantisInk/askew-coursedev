@@ -34,13 +34,12 @@ public class AssetTraversalController {
         return fileName;
     }
 
-    public boolean preLoadEverything(AssetManager manager) {
+    public boolean preLoadEverything(MantisAssetManager manager) {
         if (preloaded) return true;
         // Textures
         FileHandle textureManifestHandle = Gdx.files.internal(TEXTURE_MANIFEST);
         String[] allPaths = textureManifestHandle.readString().split("\\R");
-        System.out.println(allPaths);
-
+        manager.setTexturePaths(allPaths);
         for (String handleString : allPaths) {
             System.err.println("[debug] " + handleString);
             manager.load(handleString, Texture.class);

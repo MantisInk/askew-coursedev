@@ -1,7 +1,7 @@
 /*
  * PlatformController.java
  *
- * This is one of the files that you are expected to modify. Please limit changes to 
+ * This is one of the files that you are expected to modify. Please limit changes to
  * the regions that say INSERT CODE HERE.
  *
  * Author: Walker M. White
@@ -17,6 +17,7 @@ import askew.MantisAssetManager;
 import askew.entity.BackgroundEntity;
 import askew.entity.Entity;
 import askew.entity.ghost.GhostModel;
+import askew.entity.obstacle.ComplexObstacle;
 import askew.entity.obstacle.Obstacle;
 import askew.entity.owl.OwlModel;
 import askew.entity.sloth.SlothModel;
@@ -34,10 +35,8 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.World;
-import com.google.gson.JsonElement;
+import com.badlogic.gdx.physics.box2d.*;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -45,30 +44,21 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.FileNotFoundException;
 import java.util.Iterator;
-import java.util.Map;
 
 import static javax.swing.JOptionPane.showInputDialog;
 
 
 /**
- * Gameplay specific controller for the platformer game.  
+ * Gameplay specific controller for the platformer game.
  *
- * You will notice that asset loading is not done with static methods this time.  
- * Instance asset loading makes it easier to process our game modes in a loop, which 
+ * You will notice that asset loading is not done with static methods this time.
+ * Instance asset loading makes it easier to process our game modes in a loop, which
  * is much more scalable. However, we still want the assets themselves to be static.
  * This is the purpose of our AssetState variable; it ensures that multiple instances
  * place nicely with the static assets.
  */
 public class LevelEditorController extends WorldController {
 
-	public static final int BUFFER = 5;
-	public static final int TEXT_HEIGHT = 20;
-	public static final int FIELD_TEXT_WIDTH = 150;
-	public static final int FIELD_BOX_WIDTH = 150;
-	public static final int BUTTON_WIDTH = 75;
-	public static final int BUTTON_HEIGHT = 30;
-	public static final int TEXT_LENGTH = 175;
-	public static final int TEXT_HEIGHT1 = 20;
 	/** Track asset loading from all instances and subclasses */
 	private AssetState levelEditorAssetState = AssetState.EMPTY;
 
@@ -81,23 +71,34 @@ public class LevelEditorController extends WorldController {
 	private static ShapeRenderer gridLineRenderer = new ShapeRenderer();
 
 	private Texture background;
+	private Texture grey;
+	private Texture upFolder;
+	private Texture folder;
+	private Texture placeholder;
+	private Texture yellowbox;
 
 	Affine2 camTrans;
 	float cxCamera;
 	float cyCamera;
+	float adjustedCxCamera;
+	float adjustedCyCamera;
+	float mouseX;
+	float mouseY;
 	float adjustedMouseX;
 	float adjustedMouseY;
 
+
+
 	protected Vector2 oneScale;
+	private transient CircleShape circleShape = new CircleShape();
 
 	private boolean pressedL, prevPressedL;
+
 
 	@Getter
 	private String currentLevel;
 
 	private String createClass;
-
-	JFrame editorWindow;
 
 	/** A decrementing int that helps prevent accidental repeats of actions through an arbitrary countdown */
 	private int inputRateLimiter = 0;
@@ -109,6 +110,19 @@ public class LevelEditorController extends WorldController {
 	public static final int UI_WAIT_LONG = 15;
 	public static final int UI_WAIT_ETERNAL = 120;
 
+	//In Pixels, divide by world scale for box2d.
+	public static final float GUI_LOWER_BAR_HEIGHT = 200.f;
+	public static final float GUI_LEFT_BAR_WIDTH = 400.f;
+
+	public float MAX_SNAP_DISTANCE = 1f;
+	public float CAMERA_PAN_SPEED = 20f;
+
+	private EntityTree entityTree;
+	private Entity selected;
+	private boolean dragging = false;
+	private boolean creating = false;
+
+
 
 	public static final String[] creationOptions = {
 			".SlothModel",
@@ -118,14 +132,12 @@ public class LevelEditorController extends WorldController {
 			".StiffBranch",
 			".OwlModel",
 			".WallModel",
-			//".Tree",
 			".OwlModel",
 			".GhostModel",
 			".BackgroundEntity"
 	};
 
 	private boolean prompting;
-	private boolean guiPrompt;
 	private boolean showHelp;
 	private static final String HELP_TEXT = "Welcome to the help screen. You \n" +
 			"can hit H at any time to toggle this screen. Remember to save \n" +
@@ -145,21 +157,8 @@ public class LevelEditorController extends WorldController {
 			"T: Draw grid lines\n" +
 			"X: (xbox controller) switch to playing the level\n" +
 			"H: Toggle this help text";
-
 	private boolean loadingLevelPrompt;
 	private boolean shouldDrawGrid;
-
-	@Getter
-	@Setter
-	private boolean vimMode;
-
-	@Getter
-	@Setter
-	private boolean selectedEntity;
-
-	@Getter
-	@Setter
-	private boolean scrollEnabled;
 
 	/**
 	 * Preloads the assets for this controller.
@@ -190,6 +189,12 @@ public class LevelEditorController extends WorldController {
 	public void loadContent(MantisAssetManager manager) {
 		super.loadContent(manager);
 		background = manager.get("texture/background/background1.png");
+		grey = manager.get("texture/leveleditor/grey.png");
+		upFolder = manager.get("texture/leveleditor/up.png");
+		folder = manager.get("texture/leveleditor/folder.png");
+		placeholder = manager.get("texture/leveleditor/placeholder.png");
+		yellowbox = manager.get("texture/leveleditor/yellowbox.png");
+		entityTree.setTextures(manager);
 		levelEditorAssetState = AssetState.COMPLETE;
 	}
 
@@ -206,18 +211,16 @@ public class LevelEditorController extends WorldController {
 		setComplete(false);
 		setFailure(false);
 		jsonLoaderSaver = new JSONLoaderSaver();
+		entityTree = new EntityTree();
 		currentLevel = "test_save_obstacle";
 		createClass = ".SlothModel";
 		showHelp = true;
 		shouldDrawGrid = true;
 		camTrans = new Affine2();
-		vimMode = false;
-		selectedEntity = false;
 		oneScale = new Vector2(1,1);
 		pressedL = false;
 		prevPressedL = false;
 	}
-
 	public void setLevel(String levelName) {
 		currentLevel = levelName;
 	}
@@ -242,15 +245,11 @@ public class LevelEditorController extends WorldController {
 		world = new World(gravity,false);
 		setComplete(false);
 		setFailure(false);
-
 		populateLevel();
-		if (editorWindow != null) {
-			editorWindow.dispose();
-		}
-		guiPrompt = false;
 
-		cxCamera = -canvas.getWidth() / 2;
-		cyCamera = -canvas.getHeight() / 2;
+		adjustedCxCamera = 0;
+		adjustedCyCamera = 0;
+		camUpdate();
 	}
 
 	/**
@@ -268,7 +267,11 @@ public class LevelEditorController extends WorldController {
 		}
 
 		for (Entity o : levelModel.getEntities()) {
+
 			addObject( o);
+
+			//System.err.println("UNSUPPORTED: Adding non obstacle entity");
+
 		}
 	}
 
@@ -292,9 +295,6 @@ public class LevelEditorController extends WorldController {
 		prevPressedL = pressedL;
 		pressedL = input.isLKeyPressed();
 		if (input.didLeftButtonPress()) {
-			// next line for example grabs int 9 from string currentLevel="level9"
-			int lvlNum = Integer.parseInt(currentLevel.substring(5));
-			GlobalConfiguration.getInstance().setCurrentLevel(lvlNum);
 			System.out.println("GM");
 			listener.exitScreen(this, EXIT_LE_GM);
 			return false;
@@ -312,327 +312,67 @@ public class LevelEditorController extends WorldController {
 	 * @param x
 	 * @param y
 	 */
-	private void createXY(float x, float y) {
+	private Entity createXY(EntityTree.ETNode node, float x, float y) {
 		float xorig = x;
 		float yorig = y;
 		x = Math.round(x);
 		y = Math.round(y);
-		switch (creationOptions[entityIndex]) {
-			case ".SlothModel":
-				SlothModel sTemplate = new SlothModel(x,y);
-				promptTemplate(sTemplate);
+
+		Entity entity = null;
+		String name = node.name;
+
+
+		//creationOptions[entityIndex]
+		switch (name) {
+			case "SlothModel":
+				entity = new SlothModel(x,y);
 				break;
-			case ".Vine":
-				Vine vTemplate = new Vine(x,y,5.0f,oneScale, 5f,
-						-400f);
-				promptTemplate(vTemplate);
+			case "Vine":
+				entity = new Vine(x,y,5.0f, 5f, -400f);
 				break;
-			case ".Trunk":
-				Trunk tTemplate = new Trunk(x,y, 5.0f, 0.25f, 1.0f, 3.0f,oneScale, 0);
-				promptTemplate(tTemplate);
+			case "Trunk":
+				entity = new Trunk(x,y, 5.0f, 0.25f, 1.0f, 3.0f,oneScale, 0);
 				break;
-			case ".PoleVault":
-				PoleVault pvTemplate = new PoleVault(x,y, 5.0f, 0.25f, 1.0f, oneScale, 0);
-				promptTemplate(pvTemplate);
+			case "PoleVault":
+				entity = new PoleVault(x,y, 5.0f, 0.25f, 1.0f, oneScale, 0);
 				break;
-			case ".StiffBranch":
-				StiffBranch sb = new StiffBranch(x,y, 3.0f, 0.25f, 1.0f,oneScale, 0f);
-				promptTemplate(sb);
+			case "StiffBranch":
+				entity = new StiffBranch(x,y, 3.0f, 0.25f, 1.0f,oneScale);
 				break;
-//			case ".Tree":
-//				Tree tr = new Tree(x,y,5f, 3f, 0.25f, 1.0f, oneScale);
-//				promptTemplate(tr);
-//				break;
-			case ".OwlModel":
-				OwlModel owl = new OwlModel(x,y);
-				promptTemplate(owl);
+			case "OwlModel":
+				entity = new OwlModel(x,y);
 				break;
-			case ".WallModel":
-				WallModel wall = new WallModel(x,y,new float[] {0,0,0f,1f,1f,1f,1f,0f}, false);
-				promptTemplate(wall);
+			case "WallModel":
+				entity = new WallModel(x,y,new float[] {0,0,0f,1f,1f,1f,1f,0f}, false);
 				break;
-			case ".GhostModel":
-				GhostModel ghost = new GhostModel(x,y,x+2,y+2);
-				promptTemplate(ghost);
+			case "GhostModel":
+				entity = new GhostModel(x,y,x+2,y+2);
 				break;
-			case ".BackgroundEntity":
-				BackgroundEntity bge = new BackgroundEntity(xorig,yorig);
-				promptTemplate(bge);
+			case "BackgroundEntity":
+				entity = new BackgroundEntity(xorig,yorig);
 				break;
 
 			default:
-				System.err.println("UNKNOWN ENT");
+				//System.err.println("UNKNOWN ENT");
 				break;
 		}
+
+
 		inputRateLimiter = UI_WAIT_SHORT;
-	}
-
-	private int generateSwingPropertiesForEntity(JsonObject e, JFrame jPanel, int rowNum) {
-		for(Map.Entry<String,JsonElement> entry : e.entrySet()) {
-			// Add key
-			String key = entry.getKey();
-			JLabel paramText = new JLabel(key + ":");
-
-			JComponent valueComponent;
-			// Add value based on type
-			JsonElement value = entry.getValue();
-			if (value.isJsonArray()) {
-				// TODO (hard), recurse
-				System.err.println("TODO: JSON Array. Use Henry's click and drag!");
-				continue;
-			} else if (value.isJsonPrimitive()) {
-				JsonPrimitive primitive = value.getAsJsonPrimitive();
-				if (primitive.isBoolean()) {
-					valueComponent = new JCheckBox("",primitive.getAsBoolean());
-				} else if (primitive.isNumber()) {
-					valueComponent = new JTextField(primitive.getAsNumber().toString());
-				} else if (primitive.isString()) {
-					valueComponent = new JTextField(primitive.getAsString());
-				} else {
-					System.err.println("Unknown primitive type: " + entry);
-					continue;
-				}
-			} else if (value.isJsonObject()) {
-				System.err.println("Unknown object type: " + entry);
-				continue;
-			} else {
-				System.err.println("Unknown type: " + entry);
-				continue;
-			}
-
-			paramText.setSize(FIELD_TEXT_WIDTH, TEXT_HEIGHT);
-			valueComponent.setSize(FIELD_BOX_WIDTH, TEXT_HEIGHT);
-
-			// Update panel with key, value
-			jPanel.add(paramText);
-			jPanel.add(valueComponent);
-			rowNum++;
+		if(entityTree.isBackground){
+			entity = new BackgroundEntity(x,y,node.texturePath);
 		}
-
-		return rowNum;
-	}
-
-	private int generateSwingPropertiesForEntity(JsonObject e, JPanel jPanel, int rowNum) {
-		for(Map.Entry<String,JsonElement> entry : e.entrySet()) {
-			// Add key
-			String key = entry.getKey();
-			JLabel paramText = new JLabel(key + ":");
-
-			JComponent valueComponent;
-			// Add value based on type
-			JsonElement value = entry.getValue();
-			if (value.isJsonArray()) {
-				// TODO (hard), recurse
-				System.err.println("TODO: JSON Array. Use Henry's click and drag!");
-				continue;
-			} else if (value.isJsonPrimitive()) {
-				JsonPrimitive primitive = value.getAsJsonPrimitive();
-				if (primitive.isBoolean()) {
-					valueComponent = new JCheckBox("",primitive.getAsBoolean());
-				} else if (primitive.isNumber()) {
-					valueComponent = new JTextField(primitive.getAsNumber().toString());
-				} else if (primitive.isString()) {
-					valueComponent = new JTextField(primitive.getAsString());
-				} else {
-					System.err.println("Unknown primitive type: " + entry);
-					continue;
-				}
-			} else if (value.isJsonObject()) {
-				System.err.println("Unknown object type: " + entry);
-				continue;
-			} else {
-				System.err.println("Unknown type: " + entry);
-				continue;
-			}
-
-			paramText.setBounds((2 * BUFFER), (rowNum * TEXT_HEIGHT) + ((rowNum + 1) * BUFFER), FIELD_TEXT_WIDTH, TEXT_HEIGHT);
-			valueComponent.setBounds((3 * BUFFER) + FIELD_TEXT_WIDTH, (rowNum * TEXT_HEIGHT) + ((rowNum + 1) * BUFFER), FIELD_BOX_WIDTH, TEXT_HEIGHT);
-
-			// Update panel with key, value
-			jPanel.add(paramText);
-			jPanel.add(valueComponent);
-			rowNum++;
+		if(entity == null){
+			System.err.println("UNKNOWN ENT");
 		}
+		return entity;
 
-		return rowNum;
-	}
-
-	private void grabUpdatedObjectValuesFromGUI(JsonObject entityProp, Container p) {
-		for(Map.Entry<String,JsonElement> entry : entityProp.entrySet()) {
-			// Add key
-			String key = entry.getKey();
-
-			JsonElement value = entry.getValue();
-			if (value.isJsonArray()) {
-				// TODO (hard), recurse
-				System.err.println("TODO: JSON Array");
-			} else if (value.isJsonPrimitive()) {
-				entityProp.add(key,findInPanel(key,p));
-			} else if (value.isJsonObject()) {
-				System.err.println("Unknown object type: " + entry);
-			} else {
-				System.err.println("Unknown type: " + entry);
-			}
-		}
-	}
-
-	private JsonElement findInPanel(String key, Container panel) {
-		boolean grabNext = false;
-		for (Component c : panel.getComponents()) {
-			if (grabNext) {
-				if (c instanceof JCheckBox) {
-					return new JsonPrimitive(((JCheckBox)c).isSelected());
-				} else if (c instanceof JTextField) {
-					return new JsonPrimitive((((JTextField)c).getText()));
-				} else {
-					System.err.println("UNKNOWN FOR " + key);
-					return null;
-				}
-			}
-			if (c instanceof JLabel) {
-				if (((JLabel) c).getText().equals(key+":")) {
-					grabNext = true;
-				}
-			}
-		}
-		System.err.println("CANT FIND " + key);
-		return null;
-	}
-
-	/** Returns the pop-out window for editing parameters of individual entities as a JPanel
-	 *
-	 * @param template The entity to be edited
-	 * @param parentWindow The parent window for the window being created (used for button events)
-	 * @returns A JPanel specifically for the level editor GUI
-	 * */
-	private JPanel makeEntityWindow(Entity template, JDialog parentWindow){
-		JsonObject entityObject = jsonLoaderSaver.gsonToJsonObject(template);
-
-		JsonObject entityProp = entityObject.get("INSTANCE").getAsJsonObject();
-		String entityName = entityObject.get("CLASSNAME").getAsString();
-		entityName = entityName.substring(entityName.lastIndexOf("."));
-
-		JPanel panel = new JPanel();
-		panel.setLayout(null);
-
-		int rowNum = 0;
-
-		JLabel header = new JLabel(entityName+" Properties (Please hit OK instead of X to closeout window)");
-		JButton okButton = new JButton("OK");
-		JButton deleteButton = new JButton("Delete Entity");
-
-		//Define top elements
-		header.setBounds(BUFFER, BUFFER, 500, TEXT_HEIGHT);
-		rowNum++;
-		deleteButton.setBounds(BUFFER, (rowNum*TEXT_HEIGHT)+((rowNum+1)* BUFFER), 150, TEXT_HEIGHT);
-		rowNum++;
-
-		// Add properties
-		rowNum = generateSwingPropertiesForEntity(entityProp,panel,rowNum);
-
-		//Add okay button
-		okButton.addActionListener(e -> {
-			grabUpdatedObjectValuesFromGUI(entityProp,panel);
-			entityObject.add("INSTANCE", entityProp);
-			objects.remove(template);
-
-			//Get the string form of the entityObject
-			String stringJson = jsonLoaderSaver.stringFromJson(entityObject);
-			promptTemplateCallback(stringJson);
-
-			parentWindow.setVisible(false);
-			parentWindow.dispose();
-			prompting = false;
-		});
-
-		okButton.setBounds(125, ((rowNum+1)*TEXT_HEIGHT)+((rowNum+1)* BUFFER), 100, TEXT_HEIGHT);
-
-		deleteButton.addActionListener(e -> {
-			deleteEntity(template);
-			parentWindow.setVisible(false);
-			parentWindow.dispose();
-			prompting = false;
-		});
-
-		panel.add(header);
-		panel.add(okButton);
-		panel.add(deleteButton);
-
-		return panel;
-	}
-
-	private void deleteEntity(){
-		Entity select = entityQuery();
-		if (select != null) objects.remove(select);
-		inputRateLimiter = UI_WAIT_SHORT;
-	}
-
-	private void deleteEntity(Entity target){
-		objects.remove(target);
-	}
-
-	private void editEntity(){
-		Entity select = entityQuery();
-		if (select != null) {
-			if(isVimMode()) promptTemplate(select);
-			else changeEntityParam(select);
-		}
-		inputRateLimiter = UI_WAIT_SHORT;
-	}
-
-	private void saveLevel(){
-		System.out.println("Saving...");
-		LevelModel timeToSave = new LevelModel();
-		if (!vimMode) {
-			// Grab params from gui
-			JsonObject levelJson = jsonLoaderSaver.gsonToJsonObject(levelModel);
-			grabUpdatedObjectValuesFromGUI(levelJson,editorWindow.getRootPane().getContentPane());
-			timeToSave = jsonLoaderSaver.levelFromJson(levelJson);
-			timeToSave.entities.clear();
-		}
-		for (Entity o : objects) {
-			timeToSave.addEntity(o);
-		}
-		if (jsonLoaderSaver.saveLevel(timeToSave, currentLevel)) {
-			System.out.println("Saved!");
-		} else {
-			System.err.println("ERROR IN SAVE");
-		}
-		inputRateLimiter = UI_WAIT_LONG;
-	}
-
-	private void loadLevel(){
-		if (!loadingLevelPrompt) {
-			loadingLevelPrompt = true;
-			loadLevel(showInputDialog("What level do you want to load?"));
-			loadingLevelPrompt = false;
-		}
-		inputRateLimiter = UI_WAIT_LONG;
-	}
-
-
-	private void loadLevel(String toLoad){
-		currentLevel = toLoad;
-		reset();
-	}
-
-	private void setLevelName(){
-		String prevLevel = currentLevel;
-		currentLevel = showInputDialog("What should we call this level?");
-
-		//If action cancelled or entry is empty
-		if(currentLevel.isEmpty()) currentLevel = prevLevel; // TODO Check if currentLevel == null
-
-		inputRateLimiter = UI_WAIT_LONG;
 	}
 
 	private void promptTemplate(Entity template) {
-		if (!vimMode) {
-			changeEntityParam(template);
-			return;
-		}
 		if (!prompting) {
 			prompting = true;
+			template.fillJSON();
 			String jsonOfTemplate = jsonLoaderSaver.gsonToJson(template);
 			// flipping swing
 			JDialog mainFrame = new JDialog();
@@ -644,31 +384,14 @@ public class LevelEditorController extends WorldController {
 					new JTextArea(jsonOfTemplate,20,30);
 			panel.add(commentTextArea);
 			mainFrame.add(panel);
-			JButton okButton = new JButton("OK");
+			JButton okButton = new JButton("ok");
 			okButton.addActionListener(e -> {
-				objects.remove(template);
 				promptTemplateCallback(commentTextArea.getText());
 				mainFrame.setVisible(false);
 				mainFrame.dispose();
 			});
 			panel.add(okButton);
 			mainFrame.setVisible(true);
-		}
-	}
-
-	private void changeEntityParam(Entity template) {
-		if (!prompting) {
-			prompting = true; //Use different constant? Can just use the same one?
-
-			JDialog entityDisplay = new JDialog();
-			entityDisplay.setUndecorated(true);
-			entityDisplay.setSize(600,600);
-//			entityDisplay.setLocationRelativeTo(null);
-			entityDisplay.toFront();
-			JPanel panel = makeEntityWindow(template,entityDisplay);
-
-			entityDisplay.add(panel);
-			entityDisplay.setVisible(true);
 		}
 	}
 
@@ -693,7 +416,7 @@ public class LevelEditorController extends WorldController {
 					new JTextArea(jsonOfConfig,20,30);
 			panel.add(commentTextArea);
 			mainFrame.add(panel);
-			JButton okButton = new JButton("OK");
+			JButton okButton = new JButton("ok");
 			okButton.addActionListener(e -> {
 				JSONLoaderSaver.saveArbitrary("data/config.json",commentTextArea
 						.getText());
@@ -708,7 +431,7 @@ public class LevelEditorController extends WorldController {
 	}
 
 	public Entity entityQuery() {
-		float MAX_DISTANCE = 2f;
+
 		Entity found = null;
 		Vector2 mouse = new Vector2(adjustedMouseX, adjustedMouseY);
 		float minDistance = Float.MAX_VALUE;
@@ -720,10 +443,16 @@ public class LevelEditorController extends WorldController {
 			}
 		}
 
-		if (minDistance < MAX_DISTANCE) {
+		if (minDistance < MAX_SNAP_DISTANCE) {
 			return found;
 		}
 		return null;
+	}
+
+	public void camUpdate(){
+		cxCamera = adjustedCxCamera + (((bounds.getWidth()-(GUI_LEFT_BAR_WIDTH/worldScale.x) )/2f)+(GUI_LEFT_BAR_WIDTH / worldScale.x) );
+		cyCamera = adjustedCyCamera + (((bounds.getHeight()-(GUI_LOWER_BAR_HEIGHT/worldScale.y))/2f) + (GUI_LOWER_BAR_HEIGHT / worldScale.y));
+		System.out.println(cxCamera + " : " +cyCamera);
 	}
 
 	public void update(float dt) {
@@ -735,201 +464,225 @@ public class LevelEditorController extends WorldController {
 		}
 
 		// Allow access to mouse coordinates for multiple inputs
-		float mouseX = InputController.getInstance().getCrossHair().x;
-		float mouseY = InputController.getInstance().getCrossHair().y;
+		mouseX = InputController.getInstance().getCrossHair().x;
+		mouseY = InputController.getInstance().getCrossHair().y;
 
-		adjustedMouseX = mouseX - (cxCamera + canvas.getWidth() / 2) / worldScale.x;
-		adjustedMouseY = mouseY - (cyCamera + canvas.getHeight() / 2) / worldScale.y;
+		adjustedMouseX = mouseX - cxCamera ;
+		adjustedMouseY = mouseY - cyCamera ;
 
-		//Toggle scrolling flag
-		setScrollEnabled(InputController.getInstance().isRShiftKeyPressed() ||
-				InputController.getInstance().isLShiftKeyPressed());
+		if(InputController.getInstance().isShiftKeyPressed()) {
+			// Check for pan
+			if (mouseX < GUI_LEFT_BAR_WIDTH / worldScale.x ) {
+				// Pan left
+				adjustedCxCamera += CAMERA_PAN_SPEED/worldScale.x;
+			}
+			if (mouseY < GUI_LOWER_BAR_HEIGHT / worldScale.y ) {
+				// down
+				adjustedCyCamera += CAMERA_PAN_SPEED/worldScale.y;
+			}
+			if (mouseX > (16f ) - 1) {
+				adjustedCxCamera -= CAMERA_PAN_SPEED/worldScale.x;
+			}
+			if (mouseY > (9f ) - 1) {
+				adjustedCyCamera -= CAMERA_PAN_SPEED/worldScale.y;
+			}
+			if(InputController.getInstance().isSpaceKeyPressed()){
+				adjustedCxCamera = 0;
+				adjustedCyCamera = 0;
+			}
+			camUpdate();
+		}
 
-		//Toggle "VIM" mode
-		if (InputController.getInstance().isVKeyPressed()) {
-			setVimMode(!isVimMode());
+
+		// Left Click
+		if (InputController.getInstance().didLeftClick()) {
+			if(mouseX* worldScale.x <= GUI_LEFT_BAR_WIDTH ){
+
+			}else if(mouseY * worldScale.y <= GUI_LOWER_BAR_HEIGHT){
+
+				int button = getEntityMenuButton(mouseX * worldScale.x, mouseY * worldScale.y);
+				if(button == -2){
+					//do nothing
+				} else if(button == -1){
+					if(entityTree.current.parent != null){
+						entityTree.upFolder();
+					}
+				} else{
+					if(!entityTree.current.children.get(button).isLeaf){
+						entityTree.setCurrent(entityTree.current.children.get(button));
+					}else{
+						selected = createXY(entityTree.current.children.get(button),adjustedMouseX, adjustedMouseY);
+						if(selected != null) {
+							selected.setTextures(getMantisAssetManager());
+							creating = true;
+						}
+					}
+				}
+
+
+			}else{
+				creating = false;
+				dragging = false;
+				selected = entityQuery();
+				if(selected == null){
+					//createXY(creationOptions[entityIndex], adjustedMouseX,adjustedMouseY);
+				}
+
+			}
+
+
+
+		}
+
+		if(InputController.getInstance().didLeftDrag()){
+			if(mouseX* worldScale.x <= GUI_LEFT_BAR_WIDTH ){
+
+			}else if(mouseY * worldScale.y <= GUI_LOWER_BAR_HEIGHT){
+
+			}else{
+				dragging = true;
+
+				if(selected != null) {
+
+					selected.setPosition(adjustedMouseX, adjustedMouseY);
+					if(selected instanceof ComplexObstacle) {
+						((ComplexObstacle) selected).rebuild(adjustedMouseX,adjustedMouseY);
+						selected.setTextures(getMantisAssetManager());
+					}
+
+
+				}
+				//get offset
+				//display stuff related to it
+
+			}
+
+		}
+
+		if(InputController.getInstance().didLeftRelease()){
+			if(mouseX* worldScale.x <= GUI_LEFT_BAR_WIDTH ){
+
+			}else if(mouseY * worldScale.y <= GUI_LOWER_BAR_HEIGHT){
+
+			}else{
+
+				if(dragging) {
+					dragging = false;
+					if (selected != null) {
+						selected.setPosition(adjustedMouseX, adjustedMouseY);
+						if (selected instanceof ComplexObstacle) {
+
+							System.out.println("move complex");
+							((ComplexObstacle) selected).rebuild(adjustedMouseX, adjustedMouseY);
+							selected.setTextures(getMantisAssetManager());
+						}
+
+					}
+					if (creating) {
+						promptTemplate(selected);
+					}
+					selected = null;
+				}
+				else{
+
+
+				}
+
+			}
+
+		}
+
+		// Delete
+		if (InputController.getInstance().isRightClickPressed()) {
+			Entity select = entityQuery();
+			if (select != null) objects.remove(select);
 			inputRateLimiter = UI_WAIT_LONG;
 		}
 
-		//Allows user to move the camera/view of the level
-		if (isScrollEnabled()) {
-			if (mouseX < 1) {
-				// Pan left
-				cxCamera += 10;
+		// Edit
+		if (InputController.getInstance().isEKeyPressed()) {
+			Entity select = entityQuery();
+			if (select != null) {
+				promptTemplate(select);
+				objects.remove(select);
 			}
-			if (mouseY < 1) {
-				// down
-				cyCamera += 10;
-			}
-			if (mouseX > (canvas.getWidth() / worldScale.x) - 1) {
-				cxCamera -= 10;
-			}
-			if (mouseY > (canvas.getHeight() / worldScale.y) - 1) {
-				cyCamera -= 10;
-			}
+			inputRateLimiter = UI_WAIT_SHORT;
 		}
 
-
-		//If "VIM" mode is enabled
-		if (isVimMode()) {
-			//Dispose of GUI because VIM
-			//editor_window.setVisible(false);
-			//editor_window.dispose();
-			//guiPrompt = false;
-
-			guiPrompt = false;
-
-			// Create
-			if (InputController.getInstance().isLeftClickPressed()) {
-				createXY(adjustedMouseX, adjustedMouseY);
-			}
-
-			// Delete
-			if (InputController.getInstance().isRightClickPressed()) {
-				deleteEntity();
-			}
-
-			// Edit
-			if (InputController.getInstance().isEKeyPressed()) {
-				editEntity();
-			}
-
-			// Save
-			if (InputController.getInstance().isSKeyPressed()) {
-				saveLevel();
-			}
-
-			// Name level
-			if (InputController.getInstance().isNKeyPressed()) {
-				setLevelName();
-			}
-
-			// Load level
-			if (InputController.getInstance().isLKeyPressed()) {
-				loadLevel();
-			}
-
-			// Scroll backward ent
-			if (InputController.getInstance().isLeftKeyPressed()) {
-				tentativeEntityIndex = (tentativeEntityIndex + 1 + creationOptions.length) % creationOptions.length;
-				inputRateLimiter = UI_WAIT_LONG;
-			}
-
-			// Scroll forward ent
-			if (InputController.getInstance().isRightKeyPressed()) {
-				tentativeEntityIndex = (tentativeEntityIndex - 1 + creationOptions.length) % creationOptions.length;
-				inputRateLimiter = UI_WAIT_LONG;
-			}
-
-			// Select ent
-			if (InputController.getInstance().isEnterKeyPressed()) {
-				entityIndex = tentativeEntityIndex;
-				inputRateLimiter = UI_WAIT_LONG;
-			}
-
-			// Help
-			if (InputController.getInstance().isHKeyPressed()) {
-				showHelp = !showHelp;
-				inputRateLimiter = UI_WAIT_LONG;
-			}
-
-			// Grid
-			if (InputController.getInstance().isTKeyPressed()) {
-				shouldDrawGrid = !shouldDrawGrid;
-				inputRateLimiter = UI_WAIT_LONG;
-			}
-
-			// Global Config
-			if (InputController.getInstance().isGKeyPressed()) {
-				promptGlobalConfig();
-			}
-
-			// Background
-			if (InputController.getInstance().isBKeyPressed()) {
-				levelModel.setBackground(showInputDialog("What texture should the background be set to?"));
-				// TODO: Update the drawn background (after henry implements the engine)
-				background = getMantisAssetManager().get(levelModel.getBackground());
-			}
-		} else {
-			if (!guiPrompt) {
-				makeGuiWindow();
-			}
-
-			if (InputController.getInstance().isLeftClickPressed()) {
-				try {
-					editEntity();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
+		// Name level
+		if (InputController.getInstance().isNKeyPressed()) {
+			currentLevel = showInputDialog("What should we call this level?");
+			inputRateLimiter = UI_WAIT_LONG;
 		}
-	}
 
-	private void makeGuiWindow() {
-		//GUI Mode Enabled
-			//Prevent multiple windows from being created
-			guiPrompt = true;
-			//Window Settings
-			editorWindow = new JFrame();
-			GridLayout gridLayout = new GridLayout(12,2);
-			gridLayout.setVgap(2);
-			gridLayout.setHgap(10);
+		// Load level
+		if (pressedL && !prevPressedL) {
+			if (!loadingLevelPrompt) {
+				loadingLevelPrompt = true;
+				currentLevel = showInputDialog("What level do you want to load?");
+				loadingLevelPrompt = false;
+				reset();
+			}
+			inputRateLimiter = UI_WAIT_ETERNAL;
+		}
 
-			editorWindow.setLayout(gridLayout);
+		// Save
+		if (InputController.getInstance().isSKeyPressed()) {
+			System.out.println("Saving...");
+			LevelModel timeToSave = new LevelModel();
+			timeToSave.setTitle(currentLevel);
+			for (Entity o : objects) {
+				timeToSave.addEntity(o);
+			}
+			if (jsonLoaderSaver.saveLevel(timeToSave, currentLevel)) {
+				System.out.println("Saved!");
+			} else {
+				System.err.println("ERROR IN SAVE");
+			}
+			inputRateLimiter = UI_WAIT_LONG;
+		}
 
-			JsonObject levelJson = jsonLoaderSaver.gsonToJsonObject(levelModel);
+		// Scroll backward ent
+		if (InputController.getInstance().isLeftKeyPressed()) {
+			tentativeEntityIndex = (tentativeEntityIndex + 1 + creationOptions.length) % creationOptions.length;
+			inputRateLimiter = UI_WAIT_LONG;
+		}
 
-			//Load/Save/LevelName
-			JButton loadButton = new JButton("Load");
-			JButton saveButton = new JButton("Save");
-			JLabel fileLabel = new JLabel("File Name");
-			JTextField fileName = new JTextField(currentLevel);
+		// Scroll forward ent
+		if (InputController.getInstance().isRightKeyPressed()) {
+			tentativeEntityIndex = (tentativeEntityIndex - 1 + creationOptions.length) % creationOptions.length;
+			inputRateLimiter = UI_WAIT_LONG;
+		}
 
-			loadButton.setSize(BUTTON_WIDTH,BUTTON_HEIGHT);
-			saveButton.setSize(BUTTON_WIDTH,BUTTON_HEIGHT);
+		// Select ent
+		if (InputController.getInstance().isEnterKeyPressed()) {
+			entityIndex = tentativeEntityIndex;
+			inputRateLimiter = UI_WAIT_LONG;
+		}
 
-			loadButton.addActionListener(e -> {
-				loadLevel(fileName.getText());
-			});
+		// Help
+		if (InputController.getInstance().isHKeyPressed()) {
+			showHelp = !showHelp;
+			inputRateLimiter = UI_WAIT_LONG;
+		}
 
-			saveButton.addActionListener(e -> {
-				currentLevel = fileName.getText();
-				saveLevel();
-			});
+		// Grid
+		if (InputController.getInstance().isTKeyPressed()) {
+			shouldDrawGrid = !shouldDrawGrid;
+			inputRateLimiter = UI_WAIT_LONG;
+		}
 
-			editorWindow.add(fileLabel);
-			editorWindow.add(fileName);
-			editorWindow.add(loadButton);
-			editorWindow.add(saveButton);
+		// Background
+		if (InputController.getInstance().isBKeyPressed()) {
+			levelModel.setBackground(showInputDialog("What texture should the background be set to?"));
+			// TODO: Update the drawn background (after henry implements the engine)
+			background = getMantisAssetManager().get("texture/background/background1.png");
 
-			generateSwingPropertiesForEntity(levelJson,editorWindow,0);
+		}
 
-			editorWindow.setSize(canvas.getWidth() * 3 / 5, canvas.getHeight() * 2 / 3);
-
-			//Adding Entities
-			JLabel addEntityHeader = new JLabel("Choose Entity to Add");
-			JComboBox entityTypes = new JComboBox(creationOptions);
-			JButton entityButton = new JButton("Add Entity");
-
-			entityButton.addActionListener(e -> {
-				entityIndex = entityTypes.getSelectedIndex();
-				createXY(-cxCamera / worldScale.x, -cyCamera / worldScale.y);
-			});
-
-			editorWindow.add(addEntityHeader);
-			editorWindow.add(entityTypes);
-			editorWindow.add(entityButton);
-
-			//TODO Add ability to edit entity parameters (on click/selecting only?)
-
-			JLabel editEntityHeader = new JLabel("Click a Stage Entity to Edit It");
-
-			editEntityHeader.setSize(250, TEXT_HEIGHT1);
-
-			editorWindow.add(editEntityHeader);
-
-			//Display Everything
-			editorWindow.setVisible(true);
+		if (InputController.getInstance().isGKeyPressed()) {
+			promptGlobalConfig();
+		}
 	}
 
 	private void drawGridLines() {
@@ -939,7 +692,7 @@ public class LevelEditorController extends WorldController {
 		float dpsW = ((canvas.getWidth()) / bounds.width);
 		float dpsH = ((canvas.getHeight()) / bounds.height);
 
-		for (float i = ((int)cxCamera % dpsW - dpsW); i < canvas.getWidth(); i += dpsW) {
+		for (float i = ((int)(cxCamera * worldScale.x) % dpsW - dpsW); i < canvas.getWidth(); i += dpsW) {
 			gridLineRenderer.begin(ShapeRenderer.ShapeType.Line);
 			gridLineRenderer.setColor(Color.FOREST);
 			gridLineRenderer.line(i, 0,i,canvas.getHeight());
@@ -947,12 +700,101 @@ public class LevelEditorController extends WorldController {
 		}
 
 		// horizontal
-		for (float i = ((int)cyCamera % dpsH - dpsH); i < canvas.getHeight(); i += dpsH) {
+		for (float i = ((int)(cyCamera * worldScale.x) % dpsH - dpsH); i < canvas.getHeight(); i += dpsH) {
 			gridLineRenderer.begin(ShapeRenderer.ShapeType.Line);
 			gridLineRenderer.setColor(Color.FOREST);
 			gridLineRenderer.line(0, i,canvas.getWidth(),i);
 			gridLineRenderer.end();
 		}
+	}
+
+	private void drawEntitySelector(){
+		circleShape.setRadius(MAX_SNAP_DISTANCE);
+		Gdx.gl.glLineWidth(5);
+		canvas.beginDebug(camTrans);
+		Entity ent = entityQuery();
+		if(ent!= null)
+			canvas.drawPhysics(circleShape, new Color(0xcfcf000f),ent.getPosition().x , ent.getPosition().y ,worldScale.x,worldScale.y );
+
+		canvas.endDebug();
+
+	}
+	//ox and oy are bottom left corner
+	public boolean inBounds(float x ,float y, float ox ,float oy, float width, float height){
+		return  x >= ox && x <= ox + width && y >= oy && y <= oy + height;
+	}
+
+	private int getEntityMenuButton(float mousex, float mousey){
+		float margin = 18f;
+		float startx = GUI_LEFT_BAR_WIDTH + margin;
+		float starty = GUI_LOWER_BAR_HEIGHT - margin;
+		float sizex = 64f;
+		float sizey = 64f;
+
+		if(inBounds(mousex,mousey,startx,starty-sizey,sizex,sizey)) {
+			return -1;
+		}
+
+		for(int i = 0; i < entityTree.current.children.size(); i++) {
+			float x = startx + ((i + 1) * (sizex + margin));
+			float y = starty - sizey;
+			if (inBounds(mousex, mousey, x, y, sizex, sizey)) {
+				return i;
+			}
+
+		}
+
+		return  -2;
+
+	}
+	private void drawEntityMenu(){
+		float margin = 18f;
+		float startx = GUI_LEFT_BAR_WIDTH + margin;
+		float starty = GUI_LOWER_BAR_HEIGHT - margin;
+		float sizex = 64f;
+		float sizey = 64f;
+
+		float mousex = mouseX * worldScale.x;
+		float mousey = mouseY * worldScale.y;
+
+		Texture tex = upFolder;
+
+		if(entityTree.current.parent == null){
+			tex = placeholder;
+		}
+		if(inBounds(mousex,mousey,startx,starty-sizey,sizex,sizey)){
+			canvas.draw(yellowbox ,Color.WHITE,0,0,startx - 3f ,starty - sizey -3f ,0,(sizex+6f) /yellowbox.getWidth(), (sizey + 6f)/yellowbox.getHeight());
+		}
+		canvas.draw(tex ,Color.WHITE,0,tex.getHeight(),startx ,starty,0,sizex /tex.getWidth(), sizey/tex.getHeight());
+
+		for(int i = 0; i < entityTree.current.children.size(); i++){
+
+			tex = entityTree.current.children.get(i).texture;
+			if (!entityTree.current.children.get(i).isLeaf){
+				tex = folder;
+			}
+			float x = startx + ((i + 1) * (sizex + margin));
+			float y = starty - sizey;
+			if(inBounds(mousex,mousey,x,y,sizex,sizey)){
+				canvas.draw(yellowbox ,Color.WHITE,0,0,x - 3f ,y-3f ,0,(sizex+6f) /yellowbox.getWidth(), (sizey + 6f)/yellowbox.getHeight());
+			}
+			canvas.draw(tex ,Color.WHITE,0,0,x ,y,0,sizex /tex.getWidth(), sizey/tex.getHeight());
+			canvas.drawTextStandard(entityTree.current.children.get(i).name, x, y - 10f);
+
+
+		}
+
+
+	}
+
+	private void drawGUI(){
+		canvas.begin();
+		canvas.draw(grey,Color.WHITE,0,0,0,0,0,GUI_LEFT_BAR_WIDTH /grey.getWidth(), ((float)canvas.getHeight())/grey.getHeight());
+		canvas.draw(grey,Color.WHITE,0,0,GUI_LEFT_BAR_WIDTH,0,0,((float)canvas.getWidth() - GUI_LEFT_BAR_WIDTH) /grey.getWidth(), GUI_LOWER_BAR_HEIGHT/grey.getHeight());
+		//canvas.draw(grey,Color.WHITE,0,0,0,0,0,2.0f * worldScale.x /grey.getWidth(), 9.0f * worldScale.y/grey.getHeight());
+
+		drawEntityMenu();
+		canvas.end();
 	}
 
 	@Override
@@ -965,10 +807,11 @@ public class LevelEditorController extends WorldController {
 		canvas.end();
 
 		// Translate camera to cx, cy
-		camTrans.setToTranslation(cxCamera, cyCamera);
-		camTrans.translate(canvas.getWidth()/2, canvas.getHeight()/2);
+		camTrans.setToTranslation(0,0);
+		camTrans.setToTranslation(cxCamera * worldScale.x, cyCamera* worldScale.y);
 		canvas.begin(camTrans);
 		for(Entity obj : objects) {
+			obj.setDrawScale(worldScale);
 			obj.draw(canvas);
 		}
 		canvas.end();
@@ -978,43 +821,33 @@ public class LevelEditorController extends WorldController {
 			drawGridLines();
 		}
 		canvas.end();
-
+		drawGUI();
 
 		// Text- independent of where you scroll
 		canvas.begin(); // DO NOT SCALE
-		float xPos = canvas.getWidth()-425;
-		float yPos = canvas.getHeight() - 15;
-
-		//TODO Figure out why this causes NullPointer Exception
-		//displayFont.setColor(Color.GREEN);
-
-		canvas.drawTextStandard("HOLD SHIFT + MOVE CURSOR TO ADJUST THE CAMERA", xPos, yPos);
-
-		if (isVimMode()) {
-			//float xPos = (canvas.getWidth()/2)-100;
-			canvas.drawTextStandard("VIM MODE ENABLED (Press V to toggle)", 5, canvas.getHeight() - 15);
-
-			if (showHelp) {
-				String[] splitHelp = HELP_TEXT.split("\\R");
-				float beginY = 500.0f;
-				for (int i = 0; i < splitHelp.length; i++) {
-					canvas.drawTextStandard(splitHelp[i], 90.0f, beginY);
-					beginY -= 20;
-				}
+		if (showHelp) {
+			String[] splitHelp = HELP_TEXT.split("\\R");
+			float beginY = 7f * worldScale.y;
+			for (int i = 0; i < splitHelp.length; i++) {
+				canvas.drawTextStandard(splitHelp[i], GUI_LEFT_BAR_WIDTH + 10, beginY);
+				beginY -= .2 * worldScale.y;
 			}
-
-
-			canvas.drawTextStandard("Creating: " + creationOptions[tentativeEntityIndex], 10.0f, 80.0f);
-			if (tentativeEntityIndex != entityIndex) {
-				canvas.drawTextStandard("Hit Enter to Select New Object Type.", 10.0f, 60.0f);
-			}
-
 		}
-		canvas.drawTextStandard("MOUSE: " + adjustedMouseX + " , " + adjustedMouseY, 10.0f, 140.0f);
-		canvas.drawTextStandard("Camera: " + (-cxCamera / worldScale.x) + "," + (-cyCamera / worldScale.y), 10.0f, 120.0f);
-		canvas.drawTextStandard("Level: " + currentLevel, 10.0f, 100.0f);
 
+
+		canvas.drawTextStandard("MOUSE: " + adjustedMouseX + " , " + adjustedMouseY, GUI_LEFT_BAR_WIDTH + 10, 2.8f * worldScale.y);
+		canvas.drawTextStandard(-adjustedCxCamera + "," + -adjustedCyCamera , GUI_LEFT_BAR_WIDTH + 10, 2.6f * worldScale.y);
+		canvas.drawTextStandard("Level: " + currentLevel, GUI_LEFT_BAR_WIDTH + 10, 2.4f * worldScale.y);
+		canvas.drawTextStandard("Creating: " + creationOptions[tentativeEntityIndex], GUI_LEFT_BAR_WIDTH + 10, 2.2f * worldScale.y);
+		if (tentativeEntityIndex != entityIndex) {
+			canvas.drawTextStandard("Hit Enter to Select New Object Type.", GUI_LEFT_BAR_WIDTH + 10, 2f * worldScale.y);
+		}
 		canvas.end();
+
+		drawEntitySelector();
+
+
+
 	}
 
 	@Override
@@ -1044,12 +877,17 @@ public class LevelEditorController extends WorldController {
 		}
 	}
 
+	/** Unused ContactListener method */
+	public void postSolve(Contact contact, ContactImpulse impulse) {}
+	/** Unused ContactListener method */
+	public void preSolve(Contact contact, Manifold oldManifold) {}
+
 	@Override
 	public void setCanvas(GameCanvas canvas) {
 		// unscale
 		this.canvas = canvas;
-		this.worldScale.x = 1.0f * (float)canvas.getWidth()/(float)bounds.getWidth();
-		this.worldScale.y = 1.0f * (float)canvas.getHeight()/(float)bounds.getHeight();
+		this.worldScale.x = 1.0f * canvas.getWidth()/bounds.getWidth();
+		this.worldScale.y = 1.0f * canvas.getHeight()/bounds.getHeight();
 		jsonLoaderSaver.setScale(this.worldScale);
 	}
 }
