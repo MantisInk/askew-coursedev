@@ -2,15 +2,12 @@
 CS 3152 Game Development Repo
 
 # Askew: A vine-swinging puzzle-platformer!
-
----
 [![forthebadge](http://forthebadge.com/images/badges/made-with-crayons.svg)](http://forthebadge.com)
 [![forthebadge](http://forthebadge.com/images/badges/contains-technical-debt.svg)](http://forthebadge.com)
 [![forthebadge](http://forthebadge.com/images/badges/does-not-contain-treenuts.svg)](http://forthebadge.com)
 
----
 
-# **Alpha Prototype Manual**
+# **Beta Prototype Manual**
 
 ## Objective
 Playing as Flow, you must swing from vine to vine to reach the owl, the goal! Reaching the goal requires colliding with the owl, which will immediataely bring you to the next stage!
@@ -34,6 +31,7 @@ _Used to take hold of vines and other parts of the stage!_
 - _**Right bumper (LB)**_: grab (_holding the bumper_) or release (_letting go of the bumper_) an object with **right** hand
 
 _**NEW: Whenever you press RB or LB, a small yellow circle will appear over the respective hand. This circle will turn blue once that hand is grabbing an object.**_
+_**NEW: Whenever you give joystick input, the corresonding arm with have a faint glow (light arm - blue, dark arm - white)**_
 
 #### Rules for Grabbing
 
