@@ -36,6 +36,7 @@ _Used to take hold of vines and other parts of the stage!_
 - _**Right bumper (LB)**_: grab (_holding the bumper_) or release (_letting go of the bumper_) an object with **right** hand
 
 _**NEW: Whenever you press RB or LB, a small yellow circle will appear over the respective hand. This circle will turn blue once that hand is grabbing an object.**_
+
 _**NEW: Whenever you give joystick input, the corresonding arm with have a faint glow (light arm - blue, dark arm - white)**_
 
 #### Rules for Grabbing
@@ -81,7 +82,7 @@ _**Note:** 360 degrees of motion is possible here_
 ## Known Issue(s)
 
 - We have a fullscreen mode for the game that scales very well, but unfortunately this doesn't work well with the GUI. The final submission of the game won't have this problem though as the level editor will not be there.
-
+~~- You can only scroll on the main menu using the directional pad and not the joystick.~~
 
 ## Maximizing Fun
 
