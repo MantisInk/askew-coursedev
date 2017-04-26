@@ -4,13 +4,16 @@ CS 3152 Game Development Repo
 # Askew: A vine-swinging puzzle-platformer!
 
 ---
+
+![Askew](https://github.com/TrevorEdwards/mantis-ink/blob/develop/art/askewLoading.png)
+---
 [![forthebadge](http://forthebadge.com/images/badges/made-with-crayons.svg)](http://forthebadge.com)
 [![forthebadge](http://forthebadge.com/images/badges/contains-technical-debt.svg)](http://forthebadge.com)
 [![forthebadge](http://forthebadge.com/images/badges/does-not-contain-treenuts.svg)](http://forthebadge.com)
 
 ---
 
-# **Alpha Prototype Manual**
+# **Beta Prototype Manual**
 
 ## Objective
 Playing as Flow, you must swing from vine to vine to reach the owl, the goal! Reaching the goal requires colliding with the owl, which will immediataely bring you to the next stage!
