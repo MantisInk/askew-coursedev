@@ -39,6 +39,7 @@ _**NEW: Whenever you press RB or LB, a small yellow circle will appear over the 
 
 _**NEW: Whenever you give joystick input, the corresonding arm with have a faint glow (light arm - blue, dark arm - white)**_
 
+
 #### Rules for Grabbing
 
 You are only able to grab branches and vines.
@@ -82,7 +83,7 @@ _**Note:** 360 degrees of motion is possible here_
 ## Known Issue(s)
 
 - We have a fullscreen mode for the game that scales very well, but unfortunately this doesn't work well with the GUI. The final submission of the game won't have this problem though as the level editor will not be there.
-~~- You can only scroll on the main menu using the directional pad and not the joystick.~~
+- ~~You can only scroll on the main menu using the directional pad and not the joystick.~~
 
 ## Maximizing Fun
 
