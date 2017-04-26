@@ -2,8 +2,13 @@
 CS 3152 Game Development Repo
 
 # Askew: A vine-swinging puzzle-platformer!
+
+---
 [![forthebadge](http://forthebadge.com/images/badges/made-with-crayons.svg)](http://forthebadge.com)
 [![forthebadge](http://forthebadge.com/images/badges/contains-technical-debt.svg)](http://forthebadge.com)
+[![forthebadge](http://forthebadge.com/images/badges/does-not-contain-treenuts.svg)](http://forthebadge.com)
+
+---
 
 # **Alpha Prototype Manual**
 
