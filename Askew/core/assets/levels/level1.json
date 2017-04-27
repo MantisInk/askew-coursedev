@@ -154,21 +154,6 @@
         "scaley": 1.0,
         "texturePath": "texture/background/fern.png"
       }
-    },
-    {
-      "CLASSNAME": "askew.entity.BackgroundEntity",
-      "INSTANCE": {
-        "x": 4.9999995,
-        "y": 13.959993,
-        "width": 5.0,
-        "height": 20.0,
-        "depth": 0.8,
-        "angle": 0.0,
-        "alpha": 1.0,
-        "scalex": 1.0,
-        "scaley": 1.0,
-        "texturePath": "texture/background/sil2.png"
-      }
     }
   ]
 }
