@@ -20,6 +20,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
 import com.badlogic.gdx.utils.ObjectSet;
@@ -31,7 +32,7 @@ public class SlothModel extends ComplexObstacle  {
     /** Constants for tuning sloth behaviour */
     private static final float HAND_DENSITY = 10.0f;
     private transient float ARM_DENSITY;
-    private static final float BODY_DENSITY = 1.25f;
+    private static final float BODY_DENSITY = .8f;
     private transient float TORQUE;
     private static final boolean BODY_FIXED_ROTATION = true;
     private static final boolean HANDS_FIXED_ROTATION = true;
@@ -52,6 +53,8 @@ public class SlothModel extends ComplexObstacle  {
 
     public static final int CONTROLS_ORIGINAL = 0;
     public static final int CONTROLS_ONE_ARM = 1;
+
+    public static final int CAN_DOUBLE_GRAB = 1;
 
     /** Indices for the body parts in the bodies array */
     private static final int PART_NONE = -1;
@@ -224,7 +227,7 @@ public class SlothModel extends ComplexObstacle  {
         part = makePart(PART_BODY, PART_NONE, x, y,BODY_WIDTH,BODY_HEIGHT, BODY_DENSITY,true);
         part.setFixedRotation(BODY_FIXED_ROTATION);
         part.setGravityScale(GRAVITY_SCALE);
-        part.setLinearDamping(0.03f); // small amount to balance linear gimp
+        part.setLinearDamping(0.08f); // small amount to balance linear gimp
 
         // ARMS
         // Right arm
@@ -405,6 +408,12 @@ public class SlothModel extends ComplexObstacle  {
     }
 
 
+    private transient float previousAngleLeft;
+    private transient float previousAngleRight;
+    private transient float cummulativeAngleLeft = 0;
+    private transient float cummulativeAngleRight = 0;
+
+
     public void doThePhysics() {
         Obstacle rightHand = bodies.get(PART_RIGHT_HAND);
         Obstacle leftHand = bodies.get(PART_LEFT_HAND);
@@ -434,20 +443,6 @@ public class SlothModel extends ComplexObstacle  {
         float lLength = (float)Math.sqrt((leftVert * leftVert) + (leftHori * leftHori));
         float dLTheta = angleDiff(lcTheta,lTheta);
 
-        //antiwobble
-        float nextLTheta = -leftArm.getAngle()+PI - leftArm.getAngularVelocity()/20f;
-        nextLTheta = ((nextLTheta%(2*PI)) + (2*PI)) % (2*PI) - PI;
-        float totalRotL = angleDiff(lcTheta,nextLTheta);
-
-        float impulseL = 0;
-        if(totalRotL * dLTheta < 0 && lLength > .4f){
-            impulseL = ((leftHand.getMass() * ARM_XOFFSET * ARM_XOFFSET) + leftArm.getInertia()) * leftArm.getAngularVelocity() * -1 * 60/2;
-        }
-
-        if(isActualLeftGrab()){
-            impulseL = impulseL * 6;
-        }
-
         float rcTheta = (float)Math.atan2(rightVert,rightHori);
         rTheta = -rightArm.getAngle() + PI;
         rTheta = ((rTheta%(2*PI)) + (2*PI)) % (2*PI) - PI;
@@ -456,17 +451,67 @@ public class SlothModel extends ComplexObstacle  {
         float dRTheta = angleDiff(rcTheta,rTheta);
 
         //antiwobble
-        float nextRTheta = -rightArm.getAngle()+PI - rightArm.getAngularVelocity()/20f;
-        nextRTheta = ((nextRTheta%(2*PI)) + (2*PI)) % (2*PI) - PI; //ltheta is correct
-        float totalRotR = angleDiff(rcTheta, nextRTheta);
 
-        float impulseR = 0;
-        if(totalRotR * dRTheta < 0 && rLength > .4f){
-            impulseR = ((rightHand.getMass() * ARM_XOFFSET * ARM_XOFFSET) + rightArm.getInertia()) * rightArm.getAngularVelocity() * -1 * 60/2;
+        float currentAngleLeft = lcTheta;
+        float currentAngleRight = rcTheta;
+
+        float angleChangeLeft = angleDiff(currentAngleLeft, previousAngleLeft);
+        float angleChangeRight = angleDiff(currentAngleRight,previousAngleRight);
+        if(Math.abs(angleChangeRight) > .03f){
+            cummulativeAngleRight += angleChangeRight;
+        }
+        else{
+
+            if(Math.abs(cummulativeAngleRight) > 15) {
+                //System.out.print("Right angle reset");
+            }
+            cummulativeAngleRight = 0;
+        }
+        if(Math.abs(angleChangeLeft) > .03f){
+            cummulativeAngleLeft += angleChangeLeft;
+        }
+        else{
+
+            if(Math.abs(cummulativeAngleLeft) > 15){
+                //System.out.print("Left angle reset");
+            }
+            cummulativeAngleLeft = 0;
         }
 
-        if(isActualRightGrab()){
-            impulseR = impulseR * 6;
+        //System.out.println("Left delta: " + angleChangeLeft +"    : Right delta: "+ angleChangeRight);
+        //if(Math.abs(cummulativeAngleLeft) > 15 || Math.abs(cummulativeAngleRight) > 15) {
+            //System.out.println("Left delta: " + cummulativeAngleLeft + "    : Right delta: " + cummulativeAngleRight);
+        //}
+        previousAngleRight = currentAngleRight;
+        previousAngleLeft = currentAngleLeft;
+
+        float impulseL = 0;
+        float nextLTheta = -leftArm.getAngle() + PI - leftArm.getAngularVelocity() / 20f;
+        nextLTheta = ((nextLTheta % (2 * PI)) + (2 * PI)) % (2 * PI) - PI;
+        float totalRotL = angleDiff(lcTheta, nextLTheta);
+        if(Math.abs(angleChangeLeft) < .05f) {
+            if (totalRotL * dLTheta < 0 && lLength > .4f) {
+                impulseL = ((leftHand.getMass() * ARM_XOFFSET * ARM_XOFFSET) + leftArm.getInertia()) * leftArm.getAngularVelocity() * -1 * 60 / 2;
+            }
+
+            if (isActualLeftGrab()) {
+                impulseL = impulseL * 6;
+            }
+        }
+
+
+        float impulseR = 0;
+        float nextRTheta = -rightArm.getAngle() + PI - rightArm.getAngularVelocity() / 20f;
+        nextRTheta = ((nextRTheta % (2 * PI)) + (2 * PI)) % (2 * PI) - PI; //ltheta is correct
+        float totalRotR = angleDiff(rcTheta, nextRTheta);
+        if(Math.abs(angleChangeRight) < .05f) {
+            if (totalRotR * dRTheta < 0 && rLength > .4f) {
+                impulseR = ((rightHand.getMass() * ARM_XOFFSET * ARM_XOFFSET) + rightArm.getInertia()) * rightArm.getAngularVelocity() * -1 * 60 / 2;
+            }
+
+            if (isActualRightGrab()) {
+                impulseR = impulseR * 6;
+            }
         }
 
         //countertorque left stick on right arm
@@ -488,15 +533,15 @@ public class SlothModel extends ComplexObstacle  {
         float counterfL = 0;
         float cimpulseR = 0;
         float cimpulseL = 0;
-        if (isActualLeftGrab()  &&  rLength > .4f) {
+        if (isActualLeftGrab()  &&  rLength > .4f ) {
             counterfL = counterfactor * calculateTorque(dRcLTheta, leftAngularVelocity / OMEGA_NORMALIZER);
-            if(dRcLTheta * cwtrL < 0 ){
+            if(dRcLTheta * cwtrL < 0  && Math.abs(angleChangeRight) < .05f){
                 cimpulseL = ((leftHand.getMass() * ARM_XOFFSET * ARM_XOFFSET) + leftArm.getInertia()) * leftArm.getAngularVelocity() * -1 * 60 * 3 * (1-lLength) ;
             }
         }
-        if (isActualRightGrab()  && lLength > .4f) {
+        if (isActualRightGrab()  && lLength > .4f ) {
             counterfR = counterfactor * calculateTorque(dLcRTheta, rightAngularVelocity / OMEGA_NORMALIZER);
-            if(dLcRTheta * cwtrR < 0){
+            if(dLcRTheta * cwtrR < 0 && Math.abs(angleChangeLeft) < .05f){
                 cimpulseR = ((rightHand.getMass() * ARM_XOFFSET * ARM_XOFFSET) + rightArm.getInertia()) * rightArm.getAngularVelocity() * -1 * 60 * 3 * (1-rLength) ;
             }
         }
@@ -505,10 +550,10 @@ public class SlothModel extends ComplexObstacle  {
         float forceRight = calculateTorque(dRTheta,rightAngularVelocity/OMEGA_NORMALIZER);
 
         if(impulseL > 0)
-            forceLeft = 0;
+            forceLeft *= .3f;
 
         if(impulseR > 0)
-            forceRight = 0;
+            forceRight *= .3f;
 
         float lTorque = TORQUE * ((forceLeft  * lLength) + TORQUE * (counterfL * rLength  )) + impulseL + cimpulseL;
         float rTorque = TORQUE * ((forceRight * rLength) + TORQUE * ( counterfR * lLength )) + impulseR + cimpulseR;
@@ -516,6 +561,7 @@ public class SlothModel extends ComplexObstacle  {
         forceR.set((float) (rTorque * Math.sin(rTheta)),(float) (rTorque * Math.cos(rTheta)));
 
         // ANTI GIMP - Trevor. Filled with magic ###s
+        /*
         float maxVelocity = Math.max(Math.abs(rightAngularVelocity),Math.abs(leftAngularVelocity));
         float gimpScale = 1.0f;
         float CUTOFF = 17;
@@ -526,6 +572,8 @@ public class SlothModel extends ComplexObstacle  {
 
         lTorque *= gimpScale;
         rTorque *= gimpScale;
+        */
+
 
         if ((GRABBING_HAND_HAS_TORQUE || !isActualLeftGrab()) )
             leftArm
@@ -643,22 +691,36 @@ public class SlothModel extends ComplexObstacle  {
 
     public void grab(World world, Body target, boolean leftHand) {
         Joint grabJoint;
+        Joint otherGrabJoint;
         RevoluteJointDef grabJointDef;
         Obstacle hand;
+        Obstacle otherHand;
         grabbedEntity = false;
 
         if (leftHand) {
             grabJoint = leftGrabJoint;
+            otherGrabJoint = rightGrabJoint;
             hand =  bodies.get(PART_LEFT_HAND);
-
+            otherHand = bodies.get(PART_RIGHT_HAND);
         } else {
             grabJoint = rightGrabJoint;
+            otherGrabJoint = leftGrabJoint;
             hand =  bodies.get(PART_RIGHT_HAND);
+            otherHand = bodies.get(PART_LEFT_HAND);
         }
 
         if (grabJoint != null || target == null) return;
+
+        Vector2 pos = hand.getPosition();
+        if(CAN_DOUBLE_GRAB == 1){
+            if(otherGrabJoint != null){
+                if((otherHand.getPosition().dst(hand.getPosition()) ) < .3f){
+                    pos = otherHand.getPosition();
+                }
+            }
+        }
         Vector2 anchorHand = new com.badlogic.gdx.math.Vector2(0, 0);
-        Vector2 anchorTarget = target.getLocalPoint(hand.getPosition());
+        Vector2 anchorTarget = target.getLocalPoint(pos);
 
         //RevoluteJointDef jointDef = new RevoluteJointDef();
         grabJointDef = new RevoluteJointDef();

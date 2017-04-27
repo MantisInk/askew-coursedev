@@ -119,7 +119,7 @@ public class LevelEditorController extends WorldController {
 
 	//In Pixels, divide by world scale for box2d.
 	public static final float GUI_LOWER_BAR_HEIGHT = 200.f;
-	public static final float GUI_LEFT_BAR_WIDTH = 400.f;
+	public static final float GUI_LEFT_BAR_WIDTH = 200.f;
 
 	public float MAX_SNAP_DISTANCE = 1f;
 	public float CAMERA_PAN_SPEED = 20f;
@@ -566,7 +566,7 @@ public class LevelEditorController extends WorldController {
 	public void camUpdate(){
 		cxCamera = adjustedCxCamera + (((bounds.getWidth()-(GUI_LEFT_BAR_WIDTH/worldScale.x) )/2f)+(GUI_LEFT_BAR_WIDTH / worldScale.x) );
 		cyCamera = adjustedCyCamera + (((bounds.getHeight()-(GUI_LOWER_BAR_HEIGHT/worldScale.y))/2f) + (GUI_LOWER_BAR_HEIGHT / worldScale.y));
-		System.out.println(cxCamera + " : " +cyCamera);
+		
 	}
 
 	public void update(float dt) {
@@ -594,10 +594,10 @@ public class LevelEditorController extends WorldController {
 				// down
 				adjustedCyCamera += CAMERA_PAN_SPEED/worldScale.y;
 			}
-			if (mouseX > (16f ) - 1) {
+			if (mouseX > (bounds.getWidth() ) - 1) {
 				adjustedCxCamera -= CAMERA_PAN_SPEED/worldScale.x;
 			}
-			if (mouseY > (9f ) - 1) {
+			if (mouseY > (bounds.getHeight() ) - 1) {
 				adjustedCyCamera -= CAMERA_PAN_SPEED/worldScale.y;
 			}
 			if(InputController.getInstance().isSpaceKeyPressed()){
@@ -881,6 +881,23 @@ public class LevelEditorController extends WorldController {
 		canvas.endDebug();
 
 	}
+
+	public Vector2 getModifiedPosition(Entity e){
+		Vector2 pos = e.getPosition();
+		if(e instanceof BackgroundEntity){
+			pos.scl(1f/((BackgroundEntity) e).getDepth());
+		}
+		return pos;
+	}
+
+	public void setModifiedPosition(Entity e, float x, float y){
+		if(e instanceof BackgroundEntity){
+			e.setPosition(x * ((BackgroundEntity) e).getDepth(), y * ((BackgroundEntity) e).getDepth());
+		} else{
+			e.setPosition(x,y);
+		}
+	}
+	
 	//ox and oy are bottom left corner
 	public boolean inBounds(float x ,float y, float ox ,float oy, float width, float height){
 		return  x >= ox && x <= ox + width && y >= oy && y <= oy + height;
@@ -993,20 +1010,20 @@ public class LevelEditorController extends WorldController {
 		canvas.begin(); // DO NOT SCALE
 		if (showHelp) {
 			String[] splitHelp = HELP_TEXT.split("\\R");
-			float beginY = 7f * worldScale.y;
+			float beginY = GUI_LOWER_BAR_HEIGHT + (9f * worldScale.y);
 			for (int i = 0; i < splitHelp.length; i++) {
 				canvas.drawTextStandard(splitHelp[i], GUI_LEFT_BAR_WIDTH + 10, beginY);
-				beginY -= .2 * worldScale.y;
+				beginY -= .3 * worldScale.y;
 			}
 		}
 
 
-		canvas.drawTextStandard("MOUSE: " + adjustedMouseX + " , " + adjustedMouseY, GUI_LEFT_BAR_WIDTH + 10, 2.8f * worldScale.y);
-		canvas.drawTextStandard(-adjustedCxCamera + "," + -adjustedCyCamera , GUI_LEFT_BAR_WIDTH + 10, 2.6f * worldScale.y);
-		canvas.drawTextStandard("Level: " + currentLevel, GUI_LEFT_BAR_WIDTH + 10, 2.4f * worldScale.y);
-		canvas.drawTextStandard("Creating: " + creationOptions[tentativeEntityIndex], GUI_LEFT_BAR_WIDTH + 10, 2.2f * worldScale.y);
+		canvas.drawTextStandard("MOUSE: " + adjustedMouseX + " , " + adjustedMouseY, GUI_LEFT_BAR_WIDTH + 10, GUI_LOWER_BAR_HEIGHT + (1.4f * worldScale.y));
+		canvas.drawTextStandard(-adjustedCxCamera + "," + -adjustedCyCamera , GUI_LEFT_BAR_WIDTH + 10, GUI_LOWER_BAR_HEIGHT + (1.1f * worldScale.y));
+		canvas.drawTextStandard("Level: " + currentLevel, GUI_LEFT_BAR_WIDTH + 10, GUI_LOWER_BAR_HEIGHT + (.8f * worldScale.y));
+		canvas.drawTextStandard("Creating: " + creationOptions[tentativeEntityIndex], GUI_LEFT_BAR_WIDTH + 10, GUI_LOWER_BAR_HEIGHT + (.5f * worldScale.y));
 		if (tentativeEntityIndex != entityIndex) {
-			canvas.drawTextStandard("Hit Enter to Select New Object Type.", GUI_LEFT_BAR_WIDTH + 10, 2f * worldScale.y);
+			canvas.drawTextStandard("Hit Enter to Select New Object Type.", GUI_LEFT_BAR_WIDTH + 10, GUI_LOWER_BAR_HEIGHT + (.2f * worldScale.y));
 		}
 		canvas.end();
 
