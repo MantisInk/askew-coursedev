@@ -1068,6 +1068,9 @@ public class LevelEditorController extends WorldController {
 	}
 
 	private void makeGuiWindow() {
+		if (editorWindow != null) {
+			editorWindow.dispose();
+		}
 		//GUI Mode Enabled
 		//Prevent multiple windows from being created
 		guiPrompt = true;
@@ -1178,7 +1181,12 @@ public class LevelEditorController extends WorldController {
 
 	private void loadLevel(String toLoad){
 		currentLevel = toLoad;
-		reset();
+		try {
+			Thread.sleep(1000);
+			reset();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private void saveLevel(){

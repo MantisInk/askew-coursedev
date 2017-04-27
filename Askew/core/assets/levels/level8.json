@@ -4,7 +4,7 @@
   "goalTimeSilver": 45,
   "goalTimeBronze": 60,
   "recordTime": 19.080685,
-  "title": "level8",
+  "title": "The One With The Tree",
   "background": "texture/background/background1.png",
   "soundtrack": "TODO",
   "entities": [
@@ -79,7 +79,7 @@
     {
       "CLASSNAME": "askew.entity.ghost.GhostModel",
       "INSTANCE": {
-        "x": -6.0804954,
+        "x": 13.0804954,
         "y": 18.0,
         "patroldx": 3.0,
         "patroldy": 18.0
@@ -150,7 +150,7 @@
     {
       "CLASSNAME": "askew.entity.ghost.GhostModel",
       "INSTANCE": {
-        "x": -2.0804982,
+        "x": 17,
         "y": 5.0,
         "patroldx": 12.0,
         "patroldy": 5.0
@@ -183,21 +183,6 @@
           60.0,
           0.0
         ]
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.BackgroundEntity",
-      "INSTANCE": {
-        "x": 3.3199997,
-        "y": 6.0799985,
-        "width": 1.0,
-        "height": 1.0,
-        "depth": -1.0,
-        "angle": 0.0,
-        "alpha": 1.0,
-        "scalex": 1.0,
-        "scaley": 1.0,
-        "texturePath": "texture/background/fern.png"
       }
     }
   ]

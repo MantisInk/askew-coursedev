@@ -1,16 +1,33 @@
-# mantis-ink
-CS 3152 Game Development Repo
+![Askew](https://github.com/TrevorEdwards/mantis-ink/blob/develop/art/askewLoading.png)
+
+---
 
 # Askew: A vine-swinging puzzle-platformer!
-[![forthebadge](http://forthebadge.com/images/badges/made-with-crayons.svg)](http://forthebadge.com)
 
-# **Alpha Prototype Manual**
+---
+
+[![forthebadge](http://forthebadge.com/images/badges/made-with-crayons.svg)](http://forthebadge.com)
+[![forthebadge](http://forthebadge.com/images/badges/contains-technical-debt.svg)](http://forthebadge.com)
+[![forthebadge](http://forthebadge.com/images/badges/does-not-contain-treenuts.svg)](http://forthebadge.com)
+
+---
+
+# **Beta Prototype Manual**
 
 ## Objective
 Playing as Flow, you must swing from vine to vine to reach the owl, the goal! Reaching the goal requires colliding with the owl, which will immediataely bring you to the next stage!
 
+## PC Controls
 
-## Controls (_Requires Xbox Controller_)
+We now have keyboard support! The PC controls use a one-arm variant control scheme. The controls are:
+
+- *Arrow Keys*: Swing active arm
+- *Left click*: Grab
+- *Right click*: Safe transfer (if the free hand is over a grabbable object, grabs it and releases opposite hand)
+
+To navigate the menus, use the arrow keys to hover over options and enter to select. Tap d to enter the level editor.
+
+## Xbox Controls
 
 ### Grabbing
 _Used to take hold of vines and other parts of the stage!_
@@ -19,6 +36,9 @@ _Used to take hold of vines and other parts of the stage!_
 - _**Right bumper (LB)**_: grab (_holding the bumper_) or release (_letting go of the bumper_) an object with **right** hand
 
 _**NEW: Whenever you press RB or LB, a small yellow circle will appear over the respective hand. This circle will turn blue once that hand is grabbing an object.**_
+
+_**NEW: Whenever you give joystick input, the corresonding arm with have a faint glow (light arm - blue, dark arm - white)**_
+
 
 #### Rules for Grabbing
 
@@ -62,20 +82,12 @@ _**Note:** 360 degrees of motion is possible here_
 
 ## Known Issue(s)
 
-- There is little telling the player how to use the controls and what their goal is. We plan to add UI elements for the next prototype. Our goal for this prototype was to finalize our movement and implement new entities in order to get feedback from playtesters before moving forward implementing the remaining entities. 
 - We have a fullscreen mode for the game that scales very well, but unfortunately this doesn't work well with the GUI. The final submission of the game won't have this problem though as the level editor will not be there.
-- You can only scroll on the main menu using the directional pad and not the joystick.
-
+- ~~You can only scroll on the main menu using the directional pad and not the joystick.~~
 
 ## Maximizing Fun
 
 ~~If you reach the goal, you can actually grab its center point and swing around on it! Since we don't have a sequence for completing the stage, you can swing around it as much as you want! Yay! Congrats for reaching the victory spot!~~ You can helicopter on rigid objects, but unfortunately no longer on the victory spot.
-
-
-## Hard Mode
-
-- If you go to the level select, there's a secret stage listed as "level 0." It's our hardest level to date, and the majority of the team have only barely completed it. See if you can beat it!
-- If you can beat level 0, see if you can beat Henry's completion time of 30 seconds!
 
 ## Level Editor
 
