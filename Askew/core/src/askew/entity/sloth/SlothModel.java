@@ -32,7 +32,7 @@ public class SlothModel extends ComplexObstacle  {
     /** Constants for tuning sloth behaviour */
     private static final float HAND_DENSITY = 10.0f;
     private transient float ARM_DENSITY;
-    private static final float BODY_DENSITY = .8f;
+    private static final float BODY_DENSITY = 1.0f;
     private transient float TORQUE;
     private static final boolean BODY_FIXED_ROTATION = true;
     private static final boolean HANDS_FIXED_ROTATION = true;
