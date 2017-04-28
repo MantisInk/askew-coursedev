@@ -15,8 +15,8 @@
         "y": -8.0,
         "stiffLen": 0.0,
         "angle": 270.0,
-        "linksize": 3.0,
-        "numLinks": 1.0
+        "linksize": 1.0,
+        "numLinks": 3.0
       }
     },
     {
@@ -128,8 +128,8 @@
         "y": -2.0,
         "stiffLen": 0.0,
         "angle": 270.0,
-        "linksize": 3.0,
-        "numLinks": 1.0
+        "linksize": 1.0,
+        "numLinks": 3.0
       }
     },
     {

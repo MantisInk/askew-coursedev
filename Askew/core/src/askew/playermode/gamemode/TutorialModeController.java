@@ -227,12 +227,12 @@ public class TutorialModeController extends GameModeController {
 		platform.setTextures(manager);
 		addObject(platform);
 
-		Trunk branch = new Trunk(sloth_x-1f,sloth_y+1.5f,11,0.25f,1,0,worldScale,-90.0f);
+		Trunk branch = new Trunk(sloth_x-1f,sloth_y+1.5f,11,-90.0f);
 		branch.setTextures(manager);
 		branch.setName("long branch");
 		addObject(branch);
 
-		Trunk branch1 = new Trunk(sloth_x-1f,sloth_y+1.5f,3,0.25f,1,0,worldScale,-90.0f);
+		Trunk branch1 = new Trunk(sloth_x-1f,sloth_y+1.5f,3,-90.0f);
 		branch1.setTextures(manager);
 		branch1.setName("short branch");
 		addObject(branch1);

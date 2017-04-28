@@ -41,9 +41,7 @@ public class JsonEntityFactory {
         float y = instance.get("y").getAsFloat();
         float angle = instance.get("angle").getAsFloat();
         float numlinks = instance.get("numLinks").getAsFloat();
-        float linksize = instance.get("linksize").getAsFloat();
-        float stiff = instance.get("stiffLen").getAsFloat();
-        trunk = new Trunk(x, y, numlinks, 0.25f, linksize, stiff,scale, angle);
+        trunk = new Trunk(x, y, numlinks, angle);
         trunk.setDrawScale(scale.x, scale.y);
         trunk.setTextures(manager);
         return trunk;

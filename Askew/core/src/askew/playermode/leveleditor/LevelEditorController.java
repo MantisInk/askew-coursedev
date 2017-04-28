@@ -338,7 +338,7 @@ public class LevelEditorController extends WorldController {
 				entity = new Vine(x,y,5.0f, 5f, -400f);
 				break;
 			case "Trunk":
-				entity = new Trunk(x,y, 5.0f, 0.25f, 1.0f, 3.0f,oneScale, 0);
+				entity = new Trunk(x,y, 5.0f, 0);
 				break;
 			case "PoleVault":
 				entity = new PoleVault(x,y, 5.0f, 0.25f, 1.0f, oneScale, 0);
@@ -564,8 +564,8 @@ public class LevelEditorController extends WorldController {
 	}
 
 	public void camUpdate(){
-		cxCamera = adjustedCxCamera + (((bounds.getWidth()-(GUI_LEFT_BAR_WIDTH/worldScale.x) )/2f)+(GUI_LEFT_BAR_WIDTH / worldScale.x) );
-		cyCamera = adjustedCyCamera + (((bounds.getHeight()-(GUI_LOWER_BAR_HEIGHT/worldScale.y))/2f) + (GUI_LOWER_BAR_HEIGHT / worldScale.y));
+		cxCamera = adjustedCxCamera - (((bounds.getWidth()-(GUI_LEFT_BAR_WIDTH/worldScale.x) )/2f)+(GUI_LEFT_BAR_WIDTH / worldScale.x) );
+		cyCamera = adjustedCyCamera - (((bounds.getHeight()-(GUI_LOWER_BAR_HEIGHT/worldScale.y))/2f) + (GUI_LOWER_BAR_HEIGHT / worldScale.y));
 		
 	}
 
@@ -581,24 +581,24 @@ public class LevelEditorController extends WorldController {
 		mouseX = InputController.getInstance().getCrossHair().x;
 		mouseY = InputController.getInstance().getCrossHair().y;
 
-		adjustedMouseX = mouseX - cxCamera ;
-		adjustedMouseY = mouseY - cyCamera ;
+		adjustedMouseX = mouseX + cxCamera ;
+		adjustedMouseY = mouseY + cyCamera ;
 
 		if(InputController.getInstance().isShiftKeyPressed()) {
 			// Check for pan
 			if (mouseX < GUI_LEFT_BAR_WIDTH / worldScale.x ) {
 				// Pan left
-				adjustedCxCamera += CAMERA_PAN_SPEED/worldScale.x;
+				adjustedCxCamera -= CAMERA_PAN_SPEED/worldScale.x;
 			}
 			if (mouseY < GUI_LOWER_BAR_HEIGHT / worldScale.y ) {
 				// down
-				adjustedCyCamera += CAMERA_PAN_SPEED/worldScale.y;
+				adjustedCyCamera -= CAMERA_PAN_SPEED/worldScale.y;
 			}
 			if (mouseX > (bounds.getWidth() ) - 1) {
-				adjustedCxCamera -= CAMERA_PAN_SPEED/worldScale.x;
+				adjustedCxCamera += CAMERA_PAN_SPEED/worldScale.x;
 			}
 			if (mouseY > (bounds.getHeight() ) - 1) {
-				adjustedCyCamera -= CAMERA_PAN_SPEED/worldScale.y;
+				adjustedCyCamera += CAMERA_PAN_SPEED/worldScale.y;
 			}
 			if(InputController.getInstance().isSpaceKeyPressed()){
 				adjustedCxCamera = 0;
@@ -687,12 +687,9 @@ public class LevelEditorController extends WorldController {
 
 					}
 					else {*/
-						selected.setPosition(adjustedMouseX, adjustedMouseY);
-						if (selected instanceof ComplexObstacle) {
-							((ComplexObstacle) selected).rebuild(adjustedMouseX, adjustedMouseY);
-							selected.setTextures(getMantisAssetManager());
-						//}
-					}
+					selected.setPosition(adjustedMouseX, adjustedMouseY);
+					selected.setTextures(getMantisAssetManager());
+
 
 
 				}
@@ -718,12 +715,7 @@ public class LevelEditorController extends WorldController {
 						}
 						else {
 							selected.setPosition(adjustedMouseX, adjustedMouseY);
-							if (selected instanceof ComplexObstacle) {
-
-								System.out.println("move complex");
-								((ComplexObstacle) selected).rebuild(adjustedMouseX, adjustedMouseY);
-								selected.setTextures(getMantisAssetManager());
-							}
+							selected.setTextures(getMantisAssetManager());
 						}
 					}
 					if (creating) {
@@ -844,20 +836,22 @@ public class LevelEditorController extends WorldController {
 		float dpsW = ((canvas.getWidth()) / bounds.width);
 		float dpsH = ((canvas.getHeight()) / bounds.height);
 
-		for (float i = ((int)(cxCamera * worldScale.x) % dpsW - dpsW); i < canvas.getWidth(); i += dpsW) {
-			gridLineRenderer.begin(ShapeRenderer.ShapeType.Line);
+		gridLineRenderer.begin(ShapeRenderer.ShapeType.Line);
+		for (float i = ((int)(-cxCamera * worldScale.x) % dpsW - dpsW); i < canvas.getWidth(); i += dpsW) {
+
 			gridLineRenderer.setColor(Color.FOREST);
 			gridLineRenderer.line(i, 0,i,canvas.getHeight());
-			gridLineRenderer.end();
+
 		}
 
 		// horizontal
-		for (float i = ((int)(cyCamera * worldScale.x) % dpsH - dpsH); i < canvas.getHeight(); i += dpsH) {
-			gridLineRenderer.begin(ShapeRenderer.ShapeType.Line);
+		for (float i = ((int)(-cyCamera * worldScale.x) % dpsH - dpsH); i < canvas.getHeight(); i += dpsH) {
+
 			gridLineRenderer.setColor(Color.FOREST);
 			gridLineRenderer.line(0, i,canvas.getWidth(),i);
-			gridLineRenderer.end();
+
 		}
+		gridLineRenderer.end();
 	}
 
 	private void drawEntitySelector(){
@@ -870,11 +864,12 @@ public class LevelEditorController extends WorldController {
 
 		circleShape.setRadius(.05f);
 		for(Entity e : objects){
+			// #TODO if(e.getPosition().x * worldScale.x  > GUI_LEFT_BAR_WIDTH && )
 			canvas.drawPhysics(circleShape, new Color(0xcfcf000f),e.getPosition().x , e.getPosition().y ,worldScale.x,worldScale.y );
 			if(e instanceof BackgroundEntity){
-				float offsetx = ((e.getPosition().x + adjustedCxCamera) * worldScale.x) / ((BackgroundEntity) e).getDepth();
-				float offsety = ((e.getPosition().y + adjustedCyCamera) * worldScale.y) / ((BackgroundEntity) e).getDepth();
-				canvas.drawLine(e.getPosition().x *worldScale.x, e.getPosition().y *worldScale.y , -adjustedCxCamera*worldScale.x  + offsetx, -adjustedCyCamera*worldScale.y + offsety, Color.YELLOW, Color.CHARTREUSE);
+				float offsetx = ((e.getPosition().x - adjustedCxCamera) * worldScale.x) / ((BackgroundEntity) e).getDepth();
+				float offsety = ((e.getPosition().y - adjustedCyCamera) * worldScale.y) / ((BackgroundEntity) e).getDepth();
+				canvas.drawLine(e.getPosition().x *worldScale.x, e.getPosition().y *worldScale.y , adjustedCxCamera*worldScale.x  + offsetx, adjustedCyCamera*worldScale.y + offsety, Color.YELLOW, Color.CHARTREUSE);
 			}
 		}
 
@@ -987,10 +982,10 @@ public class LevelEditorController extends WorldController {
 
 		// Translate camera to cx, cy
 		camTrans.setToTranslation(0,0);
-		camTrans.setToTranslation(cxCamera * worldScale.x, cyCamera* worldScale.y);
+		camTrans.setToTranslation(-cxCamera * worldScale.x, -cyCamera* worldScale.y);
 
 		Vector2 pos = canvas.getCampos();
-		pos.set(-adjustedCxCamera * worldScale.x ,-adjustedCyCamera * worldScale.y);
+		pos.set(adjustedCxCamera * worldScale.x ,adjustedCyCamera * worldScale.y);
 		canvas.begin(camTrans);
 		Collections.sort(objects);
 		for(Entity obj : objects) {
@@ -1019,7 +1014,7 @@ public class LevelEditorController extends WorldController {
 
 
 		canvas.drawTextStandard("MOUSE: " + adjustedMouseX + " , " + adjustedMouseY, GUI_LEFT_BAR_WIDTH + 10, GUI_LOWER_BAR_HEIGHT + (1.4f * worldScale.y));
-		canvas.drawTextStandard(-adjustedCxCamera + "," + -adjustedCyCamera , GUI_LEFT_BAR_WIDTH + 10, GUI_LOWER_BAR_HEIGHT + (1.1f * worldScale.y));
+		canvas.drawTextStandard(cxCamera + "," + cyCamera , GUI_LEFT_BAR_WIDTH + 10, GUI_LOWER_BAR_HEIGHT + (1.1f * worldScale.y));
 		canvas.drawTextStandard("Level: " + currentLevel, GUI_LEFT_BAR_WIDTH + 10, GUI_LOWER_BAR_HEIGHT + (.8f * worldScale.y));
 		canvas.drawTextStandard("Creating: " + creationOptions[tentativeEntityIndex], GUI_LEFT_BAR_WIDTH + 10, GUI_LOWER_BAR_HEIGHT + (.5f * worldScale.y));
 		if (tentativeEntityIndex != entityIndex) {
