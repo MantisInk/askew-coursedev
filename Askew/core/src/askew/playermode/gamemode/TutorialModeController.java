@@ -202,6 +202,8 @@ public class TutorialModeController extends GameModeController {
 	 */
 	@Override
 	protected void populateLevel() {
+		setLoadLevel("level0");
+		super.populateLevel();
 		System.out.println("populating");
 		float sloth_x = 0;
 		float sloth_y = 0;
@@ -515,7 +517,7 @@ public class TutorialModeController extends GameModeController {
 //			boolean didSafe = InputController.getInstance().getRightGrab();
 
 			//Increment Steps
-			System.out.println(stepsDone);
+			//System.out.println(stepsDone);
 			if(stepsDone==DID_NOTHING){
 				//Check for left joystick movement
 				if(Math.abs(input.getLeftHorizontal())>CONTROLLER_DEADZONE || Math.abs(input.getLeftVertical())>CONTROLLER_DEADZONE){

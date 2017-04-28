@@ -40,9 +40,12 @@ public class Trunk extends ComplexObstacle {
 	private static final float TRUNK_PIN_RADIUS = 0.1f;			/** The radius of each anchor pin */
 	private static final float BASIC_DENSITY = 13f;				/** The density of each plank in the bridge */
 
+	private static final float default_lwidth = .25f;
+	private static final float default_lheight = 1.0f;
+
 	/** The spacing between each link */
 	protected transient Vector2 dimension;						/** The size of the entire bridge */
-	private float x,y,stiffLen, angle; 							/** starting coords of bottom anchor and length for branch */
+	private float x,y,stiffLen, angle, lwidth,lheight; 							/** starting coords of bottom anchor and length for branch */
 	protected float linksize;									/** The length of each link */
 
 	public transient Vector2 final_norm = null;					/** coords for starting branch off this trunk */
@@ -83,7 +86,10 @@ public class Trunk extends ComplexObstacle {
 		this.x = x;
 		this.y = y;
 		this.linksize = lheight;
+		this.lwidth = lwidth;
+		this.lheight = lheight;
 		this.setObjectScale(scale);
+		build();
 	}
 
 	/**
@@ -100,13 +106,19 @@ public class Trunk extends ComplexObstacle {
 		super(x0,y0);
 		this.angle = angle;
 		this.x = x0;	this.y = y0;	this.stiffLen = stiffLen;		this.linksize = lheight;
+		this.lwidth = lwidth;
+		this.lheight = lheight;
 		setName(TRUNK_NAME);
+		build();
 
+
+	}
+	public void build(){
 		planksize = new Vector2(lwidth,lheight);
 		linksize = planksize.y;
 
 		// Compute the bridge length
-		dimension = new Vector2(x1-x0,y1-y0);
+		dimension = new Vector2(0,numLinks);
 		float length = dimension.len();
 		Vector2 norm = new Vector2(dimension);
 		norm.nor();
@@ -130,7 +142,7 @@ public class Trunk extends ComplexObstacle {
 			float t = ii*(linksize+spacing) + linksize/2.0f;
 			pos.set(norm);
 			pos.scl(t);
-			pos.add(x0,y0);
+			pos.add(x,y);
 			BoxObstacle plank = new BoxObstacle(pos.x, pos.y, planksize.x, planksize.y);
 			plank.setName(PLANK_NAME+ii);
 			plank.setDensity(BASIC_DENSITY);
@@ -145,9 +157,13 @@ public class Trunk extends ComplexObstacle {
 		}
 		final_norm = new Vector2(pos);
 		final_norm.add(0,linksize/2);
+
+
 	}
-	public void build(){}
-	public void rebuild(){}
+	public void rebuild(){
+		bodies.clear();
+		build();
+	}
 	public void rebuild(float x , float y){
 		this.x = x;
 		this.y = y;

@@ -314,9 +314,11 @@ public class GameModeController extends WorldController {
 		try {
 			float level_num = Integer.parseInt(loadLevel.substring(5));
 			if (level_num==0){
-				System.out.println("Tutorial");
-				listener.exitScreen(this,EXIT_GM_TL);
-				return;
+				if(!(this instanceof TutorialModeController)) {
+					System.out.println("Tutorial");
+					listener.exitScreen(this, EXIT_GM_TL);
+					return;
+				}
 			}
 
 			levelModel = jsonLoaderSaver.loadLevel(loadLevel);
