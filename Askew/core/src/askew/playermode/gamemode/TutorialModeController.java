@@ -202,8 +202,9 @@ public class TutorialModeController extends GameModeController {
 	 */
 	@Override
 	protected void populateLevel() {
-		setLoadLevel("level0");
-		super.populateLevel();
+		//setLoadLevel("level0");
+		//super.populateLevel();
+		//#TODO extend level import to tutorial for le usage
 		System.out.println("populating");
 		float sloth_x = 0;
 		float sloth_y = 0;
