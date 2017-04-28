@@ -213,7 +213,8 @@ public class SlothModel extends ComplexObstacle  {
         bodies.clear();
         build();
     }
- 	public void rebuild(float x , float y){
+ 	public void setPosition(float x , float y){
+ 	    super.setPosition(x,y);
  	    this.x = x;
  	    this.y = y;
  	    rebuild();

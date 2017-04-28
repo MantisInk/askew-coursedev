@@ -831,6 +831,9 @@ public class LevelEditorController extends WorldController {
 
 	private void drawGridLines() {
 		// debug lines
+		if (!shouldDrawGrid)
+			return;
+		canvas.begin(camTrans);
 		Gdx.gl.glLineWidth(1);
 		// vertical
 		float dpsW = ((canvas.getWidth()) / bounds.width);
@@ -838,20 +841,17 @@ public class LevelEditorController extends WorldController {
 
 		gridLineRenderer.begin(ShapeRenderer.ShapeType.Line);
 		for (float i = ((int)(-cxCamera * worldScale.x) % dpsW - dpsW); i < canvas.getWidth(); i += dpsW) {
-
 			gridLineRenderer.setColor(Color.FOREST);
 			gridLineRenderer.line(i, 0,i,canvas.getHeight());
-
 		}
 
 		// horizontal
 		for (float i = ((int)(-cyCamera * worldScale.x) % dpsH - dpsH); i < canvas.getHeight(); i += dpsH) {
-
 			gridLineRenderer.setColor(Color.FOREST);
 			gridLineRenderer.line(0, i,canvas.getWidth(),i);
-
 		}
 		gridLineRenderer.end();
+		canvas.end();
 	}
 
 	private void drawEntitySelector(){
@@ -864,7 +864,7 @@ public class LevelEditorController extends WorldController {
 
 		circleShape.setRadius(.05f);
 		for(Entity e : objects){
-			// #TODO if(e.getPosition().x * worldScale.x  > GUI_LEFT_BAR_WIDTH && )
+			//if(e.getPosition().x * worldScale.x  > GUI_LEFT_BAR_WIDTH && )
 			canvas.drawPhysics(circleShape, new Color(0xcfcf000f),e.getPosition().x , e.getPosition().y ,worldScale.x,worldScale.y );
 			if(e instanceof BackgroundEntity){
 				float offsetx = ((e.getPosition().x - adjustedCxCamera) * worldScale.x) / ((BackgroundEntity) e).getDepth();
@@ -971,6 +971,29 @@ public class LevelEditorController extends WorldController {
 		canvas.end();
 	}
 
+	private void drawHelp(){
+		// Text- independent of where you scroll
+		canvas.begin(); // DO NOT SCALE
+		if (showHelp) {
+			String[] splitHelp = HELP_TEXT.split("\\R");
+			float beginY = GUI_LOWER_BAR_HEIGHT + (9f * worldScale.y);
+			for (int i = 0; i < splitHelp.length; i++) {
+				canvas.drawTextStandard(splitHelp[i], GUI_LEFT_BAR_WIDTH + 10, beginY);
+				beginY -= .3 * worldScale.y;
+			}
+		}
+
+
+		canvas.drawTextStandard("MOUSE: " + adjustedMouseX + " , " + adjustedMouseY, GUI_LEFT_BAR_WIDTH + 10, GUI_LOWER_BAR_HEIGHT + (1.4f * worldScale.y));
+		canvas.drawTextStandard(cxCamera + "," + cyCamera , GUI_LEFT_BAR_WIDTH + 10, GUI_LOWER_BAR_HEIGHT + (1.1f * worldScale.y));
+		canvas.drawTextStandard("Level: " + currentLevel, GUI_LEFT_BAR_WIDTH + 10, GUI_LOWER_BAR_HEIGHT + (.8f * worldScale.y));
+		canvas.drawTextStandard("Creating: " + creationOptions[tentativeEntityIndex], GUI_LEFT_BAR_WIDTH + 10, GUI_LOWER_BAR_HEIGHT + (.5f * worldScale.y));
+		if (tentativeEntityIndex != entityIndex) {
+			canvas.drawTextStandard("Hit Enter to Select New Object Type.", GUI_LEFT_BAR_WIDTH + 10, GUI_LOWER_BAR_HEIGHT + (.2f * worldScale.y));
+		}
+		canvas.end();
+	}
+
 	@Override
 	public void draw(float delta) {
 		canvas.clear();
@@ -994,37 +1017,11 @@ public class LevelEditorController extends WorldController {
 		}
 		canvas.end();
 
-		canvas.begin(camTrans);
-		if (shouldDrawGrid) {
-			drawGridLines();
-		}
-		canvas.end();
-		drawGUI();
 
-		// Text- independent of where you scroll
-		canvas.begin(); // DO NOT SCALE
-		if (showHelp) {
-			String[] splitHelp = HELP_TEXT.split("\\R");
-			float beginY = GUI_LOWER_BAR_HEIGHT + (9f * worldScale.y);
-			for (int i = 0; i < splitHelp.length; i++) {
-				canvas.drawTextStandard(splitHelp[i], GUI_LEFT_BAR_WIDTH + 10, beginY);
-				beginY -= .3 * worldScale.y;
-			}
-		}
-
-
-		canvas.drawTextStandard("MOUSE: " + adjustedMouseX + " , " + adjustedMouseY, GUI_LEFT_BAR_WIDTH + 10, GUI_LOWER_BAR_HEIGHT + (1.4f * worldScale.y));
-		canvas.drawTextStandard(cxCamera + "," + cyCamera , GUI_LEFT_BAR_WIDTH + 10, GUI_LOWER_BAR_HEIGHT + (1.1f * worldScale.y));
-		canvas.drawTextStandard("Level: " + currentLevel, GUI_LEFT_BAR_WIDTH + 10, GUI_LOWER_BAR_HEIGHT + (.8f * worldScale.y));
-		canvas.drawTextStandard("Creating: " + creationOptions[tentativeEntityIndex], GUI_LEFT_BAR_WIDTH + 10, GUI_LOWER_BAR_HEIGHT + (.5f * worldScale.y));
-		if (tentativeEntityIndex != entityIndex) {
-			canvas.drawTextStandard("Hit Enter to Select New Object Type.", GUI_LEFT_BAR_WIDTH + 10, GUI_LOWER_BAR_HEIGHT + (.2f * worldScale.y));
-		}
-		canvas.end();
-
+		drawGridLines();
 		drawEntitySelector();
-
-
+		drawGUI();
+		drawHelp();
 
 	}
 
