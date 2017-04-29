@@ -90,14 +90,16 @@ public class MainMenuController extends WorldController {
 
         InputController input = InputController.getInstance();
 
-        if (input.didLeftButtonPress() || nextCon.equals("GM")) {
+        if (input.didRightDPadPress() || nextCon.equals("GM")) {
             System.out.println("GM");
             listener.exitScreen(this, EXIT_MM_GM);
             return false;
-        } else if (input.didTopButtonPress()) {
+        } else if (input.didLeftDPadPress()) {
             System.out.println("LE");
             listener.exitScreen(this, EXIT_MM_LE);
             return false;
+        } else if (input.didBottomDPadPress()) {
+            reset();
         }
 
         prevLeftUp = leftUp;

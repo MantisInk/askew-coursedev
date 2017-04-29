@@ -38,7 +38,6 @@ import lombok.Setter;
 
 import java.io.FileNotFoundException;
 import java.util.Collections;
-import java.util.Comparator;
 
 /**
  * Gameplay specific controller for the platformer game.
@@ -372,15 +371,15 @@ public class GameModeController extends WorldController {
 
 		InputController input = InputController.getInstance();
 
-		if (input.didLeftButtonPress() || input.isLKeyPressed()) {
+		if (input.didLeftDPadPress() || input.isLKeyPressed()) {
 			System.out.println("LE");
 			listener.exitScreen(this, EXIT_GM_LE);
 			return false;
-//		} else if (input.didTopButtonPress()) {
-//			System.out.println("MM");
-//			listener.exitScreen(this, EXIT_GM_MM);
-//			return false;
-		} else if (input.didTopButtonPress() && !paused) {
+		} else if (input.didTopDPadPress()) {
+			System.out.println("MM");
+			listener.exitScreen(this, EXIT_GM_MM);
+			return false;
+		} else if (input.didBottomDPadPress() && !paused) {
 			System.out.println("reset");
 			reset();
 		}
