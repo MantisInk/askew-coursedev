@@ -242,7 +242,7 @@ public class InputController {
 	 * @return how much the left trigger button was pressed.
 	 */
 	public boolean getLeftGrab() {
-		return leftGrabPressed || rightClickPressed; // backwards but intentional for mouse
+		return leftGrabPressed;
 	}
 
 	/**
@@ -256,7 +256,7 @@ public class InputController {
 	 * @return how much the right trigger button was pressed.
 	 */
 	public boolean getRightGrab() {
-		return rightGrabPressed || leftClickPressed; // backwards but intentional for mouse
+		return rightGrabPressed;
 	}
 
 	public boolean getLeftStickPressed() {return leftStickPressed;}
@@ -493,11 +493,12 @@ public class InputController {
 	private void readKeyboard(Rectangle bounds, Vector2 scale, boolean secondary) {
 		// Give priority to gamepad results
 		startButtonPressed = (secondary && startButtonPressed) || (Gdx.input.isKeyPressed(Input.Keys.R));
-		topButtonPressed = (secondary && topButtonPressed) || (Gdx.input.isKeyPressed(Input.Keys.D));
-		bottomButtonPressed = (secondary && bottomButtonPressed);// || (Gdx.input.isKeyPressed(Input.Keys.UP));
+		topButtonPressed = (secondary && topButtonPressed) || (Gdx.input.isKeyPressed(Input.Keys.UP));
+		bottomButtonPressed = (secondary && bottomButtonPressed) || Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) || Gdx.input.isKeyPressed(Input.Keys.K);;
 		rightButtonPressed = (secondary && rightButtonPressed) || (Gdx.input.isKeyPressed(Input.Keys.P));
 		leftButtonPressed = (secondary && leftButtonPressed) ;//(Gdx.input.isKeyPressed(Input.Keys.N));
 		backButtonPressed = (secondary && backButtonPressed) || (Gdx.input.isKeyPressed(Input.Keys.ESCAPE));
+		rightGrabPressed = (secondary && rightGrabPressed) || ((Gdx.input.isKeyPressed(Input.Keys.SPACE))) || Gdx.input.isKeyPressed(Input.Keys.J);
 
 		// for some reason left/right arrows are switched
 //		upArrowPressed = (secondary && upArrowPressed) || (Gdx.input.isKeyPressed(Input.Keys.UP));
@@ -507,18 +508,18 @@ public class InputController {
 
 		// Directional controls
 		leftHorizontal = (secondary ? leftHorizontal : 0.0f);
-		if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+		if (Gdx.input.isKeyPressed(Input.Keys.D)) {
 			leftHorizontal += 1.0f;
 		}
-		if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+		if (Gdx.input.isKeyPressed(Input.Keys.A)) {
 			leftHorizontal -= 1.0f;
 		}
 
 		leftVertical = (secondary ? leftVertical : 0.0f);
-		if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
+		if (Gdx.input.isKeyPressed(Input.Keys.W)) {
 			leftVertical -= 1.0f;
 		}
-		if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
+		if (Gdx.input.isKeyPressed(Input.Keys.S)) {
 			leftVertical += 1.0f;
 		}
 
@@ -561,7 +562,6 @@ public class InputController {
 		rShiftKeyPressed = Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT) && !rShiftKeyPressed;
 		upKeyPressed = Gdx.input.isKeyPressed(Input.Keys.UP) && !upKeyPrevious;
 		downKeyPressed = Gdx.input.isKeyPressed(Input.Keys.DOWN) && !downKeyPrevious;
-		bottomButtonPressed |= rightClickPressed;
 
 		crosshair.set(Gdx.input.getX(), Gdx.input.getY());
 		crosshair.scl(1/scale.x,-1/scale.y);
