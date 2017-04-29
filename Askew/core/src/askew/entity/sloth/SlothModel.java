@@ -1002,6 +1002,8 @@ public class SlothModel extends ComplexObstacle  {
             world.destroyJoint(jointB);
             jointA = null;
             jointB = null;
+            bodies.get(0).setFixedRotation(false);
+            bodies.get(0).getBody().applyAngularImpulse(0.5f,true);
             for (Obstacle b : bodies) {
                 b.getFilterData().categoryBits = 0;
                 b.getBody().applyForceToCenter((float)Math.random()*110 - 55,(float)Math.random()*110 - 55,true);

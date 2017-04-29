@@ -493,7 +493,7 @@ public class InputController {
 	private void readKeyboard(Rectangle bounds, Vector2 scale, boolean secondary) {
 		// Give priority to gamepad results
 		startButtonPressed = (secondary && startButtonPressed) || (Gdx.input.isKeyPressed(Input.Keys.R));
-		topButtonPressed = (secondary && topButtonPressed) || (Gdx.input.isKeyPressed(Input.Keys.UP));
+		topButtonPressed = (secondary && topButtonPressed) || Gdx.input.isKeyPressed(Input.Keys.U);
 		bottomButtonPressed = (secondary && bottomButtonPressed) || Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) || Gdx.input.isKeyPressed(Input.Keys.K);;
 		rightButtonPressed = (secondary && rightButtonPressed) || (Gdx.input.isKeyPressed(Input.Keys.P));
 		leftButtonPressed = (secondary && leftButtonPressed) ;//(Gdx.input.isKeyPressed(Input.Keys.N));
