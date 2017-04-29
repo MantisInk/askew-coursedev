@@ -3,9 +3,7 @@ package askew.entity;
 
 import askew.GameCanvas;
 import askew.MantisAssetManager;
-import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.math.Vector2;
-import com.google.gson.JsonObject;
 
 public abstract class Entity implements Comparable{
     protected transient Vector2 drawScale;
@@ -15,7 +13,6 @@ public abstract class Entity implements Comparable{
     protected transient Vector2 objectScaleCache = new Vector2();
 
     protected transient int drawNumber = 0;
-
 
     public abstract Vector2 getPosition();
     public abstract void setPosition(Vector2 value);

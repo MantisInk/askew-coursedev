@@ -59,7 +59,7 @@ public class GameModeController extends WorldController {
 	/** Track asset loading from all instances and subclasses */
 	@Getter
 	private static boolean playerIsReady = false;
-	private boolean paused = false;
+	protected boolean paused = false;
 	private boolean prevPaused = false;
 	// fern selection indicator locations for pause menu options
 	private Vector2[] pause_locs = {new Vector2(11f,4.8f), new Vector2(9f,3.9f), new Vector2(11f,3f)};
@@ -77,7 +77,7 @@ public class GameModeController extends WorldController {
 	Sound grabSound;
 
 	@Setter
-	private String loadLevel, DEFAULT_LEVEL;
+	protected String loadLevel, DEFAULT_LEVEL;
 	private LevelModel levelModel; 				// LevelModel for the level the player is currently on
 	private int numLevel, MAX_LEVEL; 	// track int val of lvl #
 
@@ -210,6 +210,7 @@ public class GameModeController extends WorldController {
 		storeTimeRecords = GlobalConfiguration.getInstance().getAsBoolean("storeTimeRecords");
 		jsonLoaderSaver = new JSONLoaderSaver();
 
+		// TODO: kill later
 		typeMovement = "Current movement is: "+"0";
 		currentMovement = 0;
 		typeControl = "Current control is: "+"0";
@@ -312,6 +313,7 @@ public class GameModeController extends WorldController {
 		lastLevel = loadLevel;
 		try {
 			float level_num = Integer.parseInt(loadLevel.substring(5));
+			// TODO: move to preupdate
 			if (level_num==0){
 				System.out.println("Tutorial");
 				listener.exitScreen(this,EXIT_GM_TL);
@@ -503,6 +505,7 @@ public class GameModeController extends WorldController {
 			Body leftCollisionBody = collisions.getLeftBody();
 			Body rightCollisionBody = collisions.getRightBody();
 
+			// TODO: move to slothmodel
 			sloth.setLeftHori(InputController.getInstance().getLeftHorizontal());
 			sloth.setLeftVert(InputController.getInstance().getLeftVertical());
 			sloth.setRightHori(InputController.getInstance().getRightHorizontal());
