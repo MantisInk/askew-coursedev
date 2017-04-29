@@ -62,8 +62,6 @@ public abstract class Entity implements Comparable{
     public abstract void update(float delta);
     public abstract void draw(GameCanvas canvas);
 
-    public void fillJSON(){};
-
     @Override
     public int compareTo(Object o) {
 

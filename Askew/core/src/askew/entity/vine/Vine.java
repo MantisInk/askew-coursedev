@@ -266,12 +266,4 @@ public class Vine extends ComplexObstacle {
 		}
 	}
 
-	public void fillJSON() {
-		this.x = getPosition().x;
-		this.y = getPosition().y;
-		this.numLinks = numLinks;
-		this.pin = pin;
-		this.angle = angle;
-		this.omega = omega;
-	}
 }

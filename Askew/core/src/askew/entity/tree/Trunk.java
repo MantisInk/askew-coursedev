@@ -34,14 +34,9 @@ import lombok.Setter;
  */
 public class Trunk extends ComplexObstacle {
 
-	private transient int nLinks;
-	private transient float width,height;
 	private static final String TRUNK_NAME = "trunk";			/** The debug name for the entire obstacle */
 	private static final String PLANK_NAME = "driftwood";		/** The debug name for each plank */
-	private static final String TRUNK_PIN_NAME = "pin";			/** The debug name for each anchor pin */
-	private static final float TRUNK_PIN_RADIUS = 0.1f;			/** The radius of each anchor pin */
 	private static final float BASIC_DENSITY = 13f;				/** The density of each plank in the bridge */
-
 	private static final float lwidth = .25f;
 	private static final float lheight = 1.0f;
 
