@@ -508,20 +508,10 @@ public class GameModeController extends WorldController {
 			sloth.setLeftVert(InputController.getInstance().getLeftVertical());
 			sloth.setRightHori(InputController.getInstance().getRightHorizontal());
 			sloth.setRightVert(InputController.getInstance().getRightVertical());
-			boolean didSafe = InputController.getInstance()
-					.isBottomButtonPressed();
-			if (sloth.controlMode == 0) {
-				// TODO: Make more elegant - trevor
-				sloth.setLeftGrab(InputController.getInstance().getLeftGrab());
-				sloth.setRightGrab(InputController.getInstance().getRightGrab());
-			} else {
-				if (!didSafe) {
-					sloth.setOneGrab(InputController.getInstance()
-							.getRightGrab());
-				}
-				sloth.setSafeGrab(didSafe, leftCollisionBody,
-						rightCollisionBody, world);
-			}
+			sloth.setSafeGrab(InputController.getInstance().isBottomButtonPressed(), leftCollisionBody,
+					rightCollisionBody, world);
+			sloth.setLeftGrab(InputController.getInstance().getLeftGrab());
+			sloth.setRightGrab(InputController.getInstance().getRightGrab());
 			sloth.setLeftStickPressed(InputController.getInstance().getLeftStickPressed());
 			sloth.setRightStickPressed(InputController.getInstance().getRightStickPressed());
 			currentTime += dt;
@@ -550,18 +540,16 @@ public class GameModeController extends WorldController {
 			} else {
 				// Physics tiem
 				// Gribby grab
-				if (sloth.controlMode == 0 || !didSafe) {
-					if (sloth.isLeftGrab()) {
-						sloth.grab(world, leftCollisionBody, true);
-					} else {
-						sloth.releaseLeft(world);
-					}
+				if (sloth.isLeftGrab()) {
+					sloth.grab(world, leftCollisionBody, true);
+				} else {
+					sloth.releaseLeft(world);
+				}
 
-					if (sloth.isRightGrab()) {
-						sloth.grab(world, rightCollisionBody, false);
-					} else {
-						sloth.releaseRight(world);
-					}
+				if (sloth.isRightGrab()) {
+					sloth.grab(world, rightCollisionBody, false);
+				} else {
+					sloth.releaseRight(world);
 				}
 			}
 
