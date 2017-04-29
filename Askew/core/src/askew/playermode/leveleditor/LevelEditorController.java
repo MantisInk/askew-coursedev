@@ -27,7 +27,6 @@ import askew.entity.tree.Trunk;
 import askew.entity.vine.Vine;
 import askew.entity.wall.WallModel;
 import askew.playermode.WorldController;
-import askew.util.PooledList;
 import askew.util.json.JSONLoaderSaver;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -35,7 +34,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -47,7 +45,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.FileNotFoundException;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.Map;
 
 import static javax.swing.JOptionPane.showInputDialog;
@@ -301,14 +298,16 @@ public class LevelEditorController extends WorldController {
 		InputController input = InputController.getInstance();
 		prevPressedL = pressedL;
 		pressedL = input.isLKeyPressed();
-		if (input.didLeftButtonPress()) {
+		if (input.didRightDPadPress()) {
 			System.out.println("GM");
 			listener.exitScreen(this, EXIT_LE_GM);
 			return false;
-		} else if (input.didTopButtonPress()) {
+		} else if (input.didTopDPadPress()) {
 			System.out.println("MM");
 			listener.exitScreen(this, EXIT_LE_MM);
 			return false;
+		}else if (input.didBottomDPadPress()) {
+			reset();
 		}
 
 		return true;
