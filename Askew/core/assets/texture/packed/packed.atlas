@@ -6,60 +6,60 @@ filter: Nearest,Nearest
 repeat: none
 bumperL
   rotate: false
-  xy: 2, 452
+  xy: 2, 484
   size: 1942, 1562
   orig: 1942, 1562
   offset: 0, 0
   index: 1
 owlfly
   rotate: false
-  xy: 2, 7
-  size: 364, 443
-  orig: 364, 443
-  offset: 0, 0
-  index: 8
-owlfly
-  rotate: false
-  xy: 368, 78
-  size: 313, 372
-  orig: 313, 372
+  xy: 2, 43
+  size: 363, 439
+  orig: 363, 439
   offset: 0, 0
   index: 1
 owlfly
   rotate: false
-  xy: 683, 129
-  size: 333, 321
-  orig: 333, 321
+  xy: 367, 114
+  size: 309, 368
+  orig: 309, 368
   offset: 0, 0
   index: 2
 owlfly
   rotate: false
-  xy: 1018, 170
-  size: 342, 280
-  orig: 342, 280
+  xy: 678, 159
+  size: 331, 323
+  orig: 331, 323
   offset: 0, 0
-  index: 4
+  index: 3
 owlfly
   rotate: false
-  xy: 1362, 192
-  size: 362, 258
-  orig: 362, 258
+  xy: 1011, 204
+  size: 340, 278
+  orig: 340, 278
   offset: 0, 0
   index: 5
 owlfly
   rotate: false
-  xy: 1726, 224
-  size: 313, 226
-  orig: 313, 226
+  xy: 1353, 229
+  size: 346, 253
+  orig: 346, 253
   offset: 0, 0
   index: 6
 owlfly
   rotate: false
-  xy: 1018, 2
-  size: 356, 166
-  orig: 356, 166
+  xy: 1353, 2
+  size: 336, 225
+  orig: 336, 225
   offset: 0, 0
-  index: 3
+  index: 7
+owlfly
+  rotate: false
+  xy: 1691, 66
+  size: 350, 161
+  orig: 350, 161
+  offset: 0, 0
+  index: 4
 
 packed2.png
 size: 2048,2048
@@ -68,7 +68,7 @@ filter: Nearest,Nearest
 repeat: none
 bumperL
   rotate: false
-  xy: 2, 242
+  xy: 2, 236
   size: 1942, 1562
   orig: 1942, 1562
   offset: 0, 0
@@ -76,10 +76,10 @@ bumperL
 owlfly
   rotate: false
   xy: 2, 2
-  size: 358, 238
-  orig: 358, 238
+  size: 353, 232
+  orig: 353, 232
   offset: 0, 0
-  index: 7
+  index: 8
 
 packed3.png
 size: 2048,2048
