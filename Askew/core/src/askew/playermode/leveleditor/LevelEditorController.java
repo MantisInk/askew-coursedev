@@ -27,6 +27,7 @@ import askew.entity.tree.Trunk;
 import askew.entity.vine.Vine;
 import askew.entity.wall.WallModel;
 import askew.playermode.WorldController;
+import askew.playermode.leveleditor.button.ButtonList;
 import askew.util.PooledList;
 import askew.util.json.JSONLoaderSaver;
 import com.badlogic.gdx.Gdx;
@@ -80,18 +81,19 @@ public class LevelEditorController extends WorldController {
 	private Texture folder;
 	private Texture placeholder;
 	private Texture yellowbox;
+
+
 	JFrame editorWindow;
-	private boolean guiPrompt;
 
-
+	//Camera Variables
 	Affine2 camTrans;
-	float cxCamera;
+	float cxCamera;				//lower left corner position
 	float cyCamera;
-	float adjustedCxCamera;
+	float adjustedCxCamera;		//center of le window position
 	float adjustedCyCamera;
-	float mouseX;
+	float mouseX;				//mouse position in window
 	float mouseY;
-	float adjustedMouseX;
+	float adjustedMouseX;		//mouse position adjusted to camera
 	float adjustedMouseY;
 
 
@@ -105,13 +107,8 @@ public class LevelEditorController extends WorldController {
 	@Getter
 	private String currentLevel;
 
-	private String createClass;
-
 	/** A decrementing int that helps prevent accidental repeats of actions through an arbitrary countdown */
 	private int inputRateLimiter = 0;
-
-	private int tentativeEntityIndex = 0;
-	private int entityIndex = 0;
 
 	public static final int UI_WAIT_SHORT = 2;
 	public static final int UI_WAIT_LONG = 15;
@@ -129,20 +126,9 @@ public class LevelEditorController extends WorldController {
 	private boolean dragging = false;
 	private boolean creating = false;
 
+	private ButtonList buttons;
 
 
-	public static final String[] creationOptions = {
-			".SlothModel",
-			".Vine",
-			".PoleVault",
-			".Trunk",
-			".StiffBranch",
-			".OwlModel",
-			".WallModel",
-			".OwlModel",
-			".GhostModel",
-			".BackgroundEntity"
-	};
 
 	private boolean prompting;
 	private boolean showHelp;
@@ -217,10 +203,10 @@ public class LevelEditorController extends WorldController {
 		setDebug(false);
 		setComplete(false);
 		setFailure(false);
+		buttons = new ButtonList(mantisAssetManager);
 		jsonLoaderSaver = new JSONLoaderSaver();
 		entityTree = new EntityTree();
 		currentLevel = "test_save_obstacle";
-		createClass = ".SlothModel";
 		showHelp = true;
 		shouldDrawGrid = true;
 		camTrans = new Affine2();
@@ -329,7 +315,6 @@ public class LevelEditorController extends WorldController {
 		String name = node.name;
 
 
-		//creationOptions[entityIndex]
 		switch (name) {
 			case "SlothModel":
 				entity = new SlothModel(x,y);
@@ -729,6 +714,7 @@ public class LevelEditorController extends WorldController {
 				}
 
 			}
+			creating = false;
 
 		}
 
@@ -788,20 +774,17 @@ public class LevelEditorController extends WorldController {
 
 		// Scroll backward ent
 		if (InputController.getInstance().isLeftKeyPressed()) {
-			tentativeEntityIndex = (tentativeEntityIndex + 1 + creationOptions.length) % creationOptions.length;
-			inputRateLimiter = UI_WAIT_LONG;
+
 		}
 
 		// Scroll forward ent
 		if (InputController.getInstance().isRightKeyPressed()) {
-			tentativeEntityIndex = (tentativeEntityIndex - 1 + creationOptions.length) % creationOptions.length;
-			inputRateLimiter = UI_WAIT_LONG;
+
 		}
 
 		// Select ent
 		if (InputController.getInstance().isEnterKeyPressed()) {
-			entityIndex = tentativeEntityIndex;
-			inputRateLimiter = UI_WAIT_LONG;
+
 		}
 
 		// Help
@@ -987,10 +970,7 @@ public class LevelEditorController extends WorldController {
 		canvas.drawTextStandard("MOUSE: " + adjustedMouseX + " , " + adjustedMouseY, GUI_LEFT_BAR_WIDTH + 10, GUI_LOWER_BAR_HEIGHT + (1.4f * worldScale.y));
 		canvas.drawTextStandard(cxCamera + "," + cyCamera , GUI_LEFT_BAR_WIDTH + 10, GUI_LOWER_BAR_HEIGHT + (1.1f * worldScale.y));
 		canvas.drawTextStandard("Level: " + currentLevel, GUI_LEFT_BAR_WIDTH + 10, GUI_LOWER_BAR_HEIGHT + (.8f * worldScale.y));
-		canvas.drawTextStandard("Creating: " + creationOptions[tentativeEntityIndex], GUI_LEFT_BAR_WIDTH + 10, GUI_LOWER_BAR_HEIGHT + (.5f * worldScale.y));
-		if (tentativeEntityIndex != entityIndex) {
-			canvas.drawTextStandard("Hit Enter to Select New Object Type.", GUI_LEFT_BAR_WIDTH + 10, GUI_LOWER_BAR_HEIGHT + (.2f * worldScale.y));
-		}
+
 		canvas.end();
 	}
 
@@ -1065,7 +1045,6 @@ public class LevelEditorController extends WorldController {
 		}
 		//GUI Mode Enabled
 		//Prevent multiple windows from being created
-		guiPrompt = true;
 		//Window Settings
 		editorWindow = new JFrame();
 		GridLayout gridLayout = new GridLayout(12,2);

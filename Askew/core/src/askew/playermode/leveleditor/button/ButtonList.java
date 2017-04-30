@@ -42,6 +42,7 @@ public class ButtonList {
 
     public void add(Button b){
         buttons.add(b);
+        b.setTextures(manager);
     }
 
 
