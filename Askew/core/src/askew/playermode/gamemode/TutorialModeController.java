@@ -177,6 +177,7 @@ public class TutorialModeController extends GameModeController {
 				return false;
 			} else {
 				System.out.println("tutorial completed");
+				GlobalConfiguration.getInstance().setCurrentLevel(1);
 				listener.exitScreen(this, EXIT_TL_GM);
 				return false;
 			}
