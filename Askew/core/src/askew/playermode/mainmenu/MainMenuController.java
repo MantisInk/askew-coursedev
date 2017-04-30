@@ -39,7 +39,8 @@ public class MainMenuController extends WorldController {
     private final int QUIT_BUTTON = 3;
     private int home_button = PLAY_BUTTON;
     private String[] home_text = {"Play", "Tutorial", "Level Select", "Quit"};
-    private Vector2[] home_text_locs = {new Vector2(8.4f, 4.8f), new Vector2(7.25f, 4.2f), new Vector2(6.05f, 3.6f), new Vector2(8.5f,3.0f)};
+//    private Vector2[] home_text_locs = {new Vector2(8.4f, 4.8f), new Vector2(7.25f, 4.2f), new Vector2(6.05f, 3.6f), new Vector2(8.5f,3.0f)};
+    private Vector2[] home_text_locs = {new Vector2(10f, 4.8f), new Vector2(10f, 4.2f), new Vector2(10f, 3.6f), new Vector2(10f,3.0f)};
     private Vector2[] home_button_locs = {new Vector2(10.5f,4.7f), new Vector2(10.5f,4.1f), new Vector2(10.5f,3.5f), new Vector2(10.5f, 2.9f)};
 
     // level select mode options
@@ -143,7 +144,7 @@ public class MainMenuController extends WorldController {
         canvas.draw(menu);
         if(mode == HOME_SCREEN) {
             for(int i = 0; i < home_text_locs.length; i++) {
-                canvas.drawText(home_text[i], regina, home_text_locs[i].x * worldScale.x, home_text_locs[i].y * worldScale.y);
+                canvas.drawTextAlignedRight(home_text[i], regina, home_text_locs[i].x * worldScale.x, home_text_locs[i].y * worldScale.y, Color.GREEN);
             }
             canvas.draw(fern, Color.WHITE,fern.getWidth()/2, fern.getHeight()/2,
                     home_button_locs[home_button].x * worldScale.x, home_button_locs[home_button].y* worldScale.y,

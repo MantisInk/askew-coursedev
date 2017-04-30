@@ -130,7 +130,6 @@ public class TutorialModeController extends GameModeController {
 		float sloth_x = sloth.getX();
 		float sloth_y = sloth.getY();
 		WheelObstacle pin = new WheelObstacle(sloth_x,sloth_y,1);
-
 	}
 
 	/**

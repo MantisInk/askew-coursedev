@@ -194,12 +194,12 @@ public abstract class WorldController implements Screen {
 	public static final int WORLD_POSIT = 2;
 	
 	/** Width of the game world in Box2d units */
-	protected static final float DEFAULT_WIDTH  = 16.0f;
+	protected static final float DEFAULT_WIDTH  = 32.0f;
 	/** Height of the game world in Box2d units */
-	protected static final float DEFAULT_HEIGHT = 9.0f;
+	protected static final float DEFAULT_HEIGHT = 18.0f;
 	/** The default value of gravity (going down) */
 	protected static final float DEFAULT_GRAVITY = -4.9f;
-	
+
 	/** Reference to the game canvas */
 	protected GameCanvas canvas;
 	/** All the objects in the world. */
@@ -213,7 +213,7 @@ public abstract class WorldController implements Screen {
 	protected Rectangle bounds;
 	/** The world scale */
 	protected Vector2 worldScale;
-	
+
 	/** Whether or not this is an active controller */
 	private boolean active;
 	/** Whether we have completed this level */
@@ -296,7 +296,7 @@ public abstract class WorldController implements Screen {
 		}
 		failed = value;
 	}
-	
+
 	/**
 	 * Returns true if this is the active screen
 	 *
@@ -316,7 +316,7 @@ public abstract class WorldController implements Screen {
 	public GameCanvas getCanvas() {
 		return canvas;
 	}
-	
+
 	/**
 	 * Sets the canvas associated with this controller
 	 *
@@ -327,8 +327,8 @@ public abstract class WorldController implements Screen {
 	 */
 	public void setCanvas(GameCanvas canvas) {
 		this.canvas = canvas;
-		this.worldScale.x = 1.0f * (float)canvas.getWidth()/(float)bounds.getWidth();
-		this.worldScale.y = 1.0f * (float)canvas.getHeight()/(float)bounds.getHeight();
+		this.worldScale.x = 2.0f * (float)canvas.getWidth()/(float)bounds.getWidth();
+		this.worldScale.y = 2.0f * (float)canvas.getHeight()/(float)bounds.getHeight();
 		//System.out.println("SETCANVAS SET SCALE");
 	}
 	
