@@ -18,9 +18,6 @@ public class EntityWrapper implements JsonSerializer<Entity>, JsonDeserializer<E
     private static final String INSTANCE  = "INSTANCE";
 
     @Setter
-    private Vector2 scale;
-
-    @Setter
     private MantisAssetManager manager;
 
     public EntityWrapper() {
@@ -49,23 +46,23 @@ public class EntityWrapper implements JsonSerializer<Entity>, JsonDeserializer<E
         JsonObject instance = jsonObject.get("INSTANCE").getAsJsonObject();
         switch(obstacleClass) {
             case ".SlothModel":
-                return JsonEntityFactory.createSloth(manager, instance, scale);
+                return JsonEntityFactory.createSloth(manager, instance);
             case ".Vine":
-                return JsonEntityFactory.createVine(manager, instance, scale);
+                return JsonEntityFactory.createVine(manager, instance);
             case ".Trunk":
-                return JsonEntityFactory.createTrunk(manager, instance, scale);
+                return JsonEntityFactory.createTrunk(manager, instance);
             case ".PoleVault":
-                return JsonEntityFactory.createPoleVault(manager, instance, scale);
+                return JsonEntityFactory.createPoleVault(manager, instance);
             case ".StiffBranch":
-                return JsonEntityFactory.createStiffBranch(manager, instance, scale);
+                return JsonEntityFactory.createStiffBranch(manager, instance);
             case ".OwlModel":
-                return JsonEntityFactory.createOwl(manager, instance, scale);
+                return JsonEntityFactory.createOwl(manager, instance);
             case ".WallModel":
-                return JsonEntityFactory.createWall(manager, instance, scale);
+                return JsonEntityFactory.createWall(manager, instance);
             case ".GhostModel":
-                return JsonEntityFactory.createGhost(manager, instance, scale);
+                return JsonEntityFactory.createGhost(manager, instance);
             case ".BackgroundEntity":
-                return JsonEntityFactory.createBGEntity(manager,instance,scale);
+                return JsonEntityFactory.createBGEntity(manager,instance);
             default:
                 System.err.println("Unrecognized in wrapper: " + obstacleClass);
                 Class<?> klass = null;

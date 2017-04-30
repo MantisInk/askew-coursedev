@@ -27,7 +27,8 @@ import askew.entity.tree.Trunk;
 import askew.entity.vine.Vine;
 import askew.entity.wall.WallModel;
 import askew.playermode.WorldController;
-import askew.playermode.leveleditor.button.ButtonList;
+import askew.playermode.leveleditor.button.*;
+import askew.playermode.leveleditor.button.Button;
 import askew.util.PooledList;
 import askew.util.json.JSONLoaderSaver;
 import com.badlogic.gdx.Gdx;
@@ -117,14 +118,17 @@ public class LevelEditorController extends WorldController {
 	//In Pixels, divide by world scale for box2d.
 	public static final float GUI_LOWER_BAR_HEIGHT = 200.f;
 	public static final float GUI_LEFT_BAR_WIDTH = 200.f;
+	public static final float GUI_LEFT_BAR_MARGIN = 16f;
 
 	public float MAX_SNAP_DISTANCE = 1f;
 	public float CAMERA_PAN_SPEED = 20f;
 
 	private EntityTree entityTree;
 	private Entity selected;
+	private Button manip;
 	private boolean dragging = false;
 	private boolean creating = false;
+	private boolean snapping = false;
 
 	private ButtonList buttons;
 
@@ -188,6 +192,8 @@ public class LevelEditorController extends WorldController {
 		placeholder = manager.get("texture/leveleditor/placeholder.png");
 		yellowbox = manager.get("texture/leveleditor/yellowbox.png");
 		entityTree.setTextures(manager);
+		buttons.setManager(manager);
+		buttons.setTextures(manager);
 		levelEditorAssetState = AssetState.COMPLETE;
 	}
 
@@ -200,12 +206,9 @@ public class LevelEditorController extends WorldController {
 	public LevelEditorController() {
 //		super(36,18,0); I want this scale but for the sake of alpha:
 		super(DEFAULT_WIDTH,DEFAULT_HEIGHT,0);
-		setDebug(false);
-		setComplete(false);
-		setFailure(false);
-		buttons = new ButtonList(mantisAssetManager);
 		jsonLoaderSaver = new JSONLoaderSaver();
 		entityTree = new EntityTree();
+		buttons = new ButtonList();
 		currentLevel = "test_save_obstacle";
 		showHelp = true;
 		shouldDrawGrid = true;
@@ -214,6 +217,7 @@ public class LevelEditorController extends WorldController {
 		pressedL = false;
 		prevPressedL = false;
 	}
+
 	public void setLevel(String levelName) {
 		currentLevel = levelName;
 	}
@@ -233,16 +237,22 @@ public class LevelEditorController extends WorldController {
 		}
 
 		objects.clear();
+		buttons.clear();
 		world.dispose();
 
 		world = new World(gravity,false);
 		setComplete(false);
 		setFailure(false);
 		populateLevel();
+		populateButtons();
 
 		adjustedCxCamera = 0;
 		adjustedCyCamera = 0;
 		camUpdate();
+
+		pressedL = false;
+		prevPressedL = false;
+
 	}
 
 	/**
@@ -260,46 +270,41 @@ public class LevelEditorController extends WorldController {
 		}
 
 		for (Entity o : levelModel.getEntities()) {
-
-			addObject( o);
-
-			//System.err.println("UNSUPPORTED: Adding non obstacle entity");
-
+			objects.add(o);
 		}
 	}
 
-	/**
-	 * Returns whether to process the update loop
-	 *
-	 * At the start of the update loop, we check if it is time
-	 * to switch to a new game mode.  If not, the update proceeds
-	 * normally.
-	 *
-	 * @param dt Number of seconds since last animation frame
-	 *
-	 * @return whether to process the update loop
-	 */
-	public boolean preUpdate(float dt) {
-		if (!super.preUpdate(dt)) {
-			return false;
-		}
+	private void populateButtons(){
+		buttons.add(new Button(GUI_LEFT_BAR_MARGIN, GUI_LEFT_BAR_MARGIN,
+				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
+				"JSON", 0, "levelgui"));
 
-		InputController input = InputController.getInstance();
-		prevPressedL = pressedL;
-		pressedL = input.isLKeyPressed();
-		if (input.didLeftButtonPress()) {
-			System.out.println("GM");
-			listener.exitScreen(this, EXIT_LE_GM);
-			return false;
-		} else if (input.didTopButtonPress()) {
-			System.out.println("MM");
-			listener.exitScreen(this, EXIT_LE_MM);
-			return false;
-		}
+		buttons.add(new Button(GUI_LEFT_BAR_MARGIN, 3 * GUI_LEFT_BAR_MARGIN,
+				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
+				"JSON", 1, "globalconfig"));
+		buttons.add(new ToggleButton(GUI_LEFT_BAR_MARGIN, 5 * GUI_LEFT_BAR_MARGIN,
+				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
+				"LEOptions", 0, "snapping"));
 
-		return true;
+		buttons.add(new Button(GUI_LEFT_BAR_MARGIN, 9 * GUI_LEFT_BAR_MARGIN,
+				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
+				"Entity", 0, "edit"));
+
+		buttons.add(new Button(GUI_LEFT_BAR_MARGIN, 11 * GUI_LEFT_BAR_MARGIN,
+				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
+				"Entity", 1, "delete"));
+
+		buttons.add(new Button(GUI_LEFT_BAR_MARGIN, 13 * GUI_LEFT_BAR_MARGIN,
+				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
+				"Entity", 2, "copy"));
+
+		buttons.add(new Button(GUI_LEFT_BAR_MARGIN, 15 * GUI_LEFT_BAR_MARGIN,
+				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
+				"Entity", 3, "deselect"));
+
 	}
 
+	//region Utility Helpers
 	/**
 	 * Type safety is overrated [trevor]
 	 * @param x
@@ -361,12 +366,705 @@ public class LevelEditorController extends WorldController {
 
 	}
 
-	private void promptTemplate(Entity template) {
-			changeEntityParam(template);
+	private void deleteEntity(Entity target){
+		objects.remove(target);
+	}
+
+	public Entity entityQuery() {
+
+		Entity found = null;
+		Vector2 mouse = new Vector2(adjustedMouseX, adjustedMouseY);
+		float minDistance = Float.MAX_VALUE;
+		for (Entity e : objects) {
+			float curDist = e.getPosition().dst(mouse);
+			if (curDist < minDistance) {
+				found = e;
+				minDistance = curDist;
+			}
+		}
+
+		if (minDistance < MAX_SNAP_DISTANCE) {
+			return found;
+		}
+		return null;
+	}
+
+	public void camUpdate(){
+		cxCamera = adjustedCxCamera - (((bounds.getWidth()-(GUI_LEFT_BAR_WIDTH/worldScale.x) )/2f)+(GUI_LEFT_BAR_WIDTH / worldScale.x) );
+		cyCamera = adjustedCyCamera - (((bounds.getHeight()-(GUI_LOWER_BAR_HEIGHT/worldScale.y))/2f) + (GUI_LOWER_BAR_HEIGHT / worldScale.y));
+
+	}
+
+	private boolean processButtons(Button b){
+		if(b != null){
+			switch (b.getGroup()){
+				case("JSON"):
+					switch (b.getName()){
+						case("levelgui"):
+							makeGuiWindow();
+							break;
+						case("globalconfig"):
+							promptGlobalConfig();
+							break;
+						default:
+							break;
+					}
+					break;
+				case("LEOptions"):
+					switch (b.getName()){
+						case("snapping"):
+							ToggleButton t = ((ToggleButton)b);
+							t.setOn(!t.isOn());
+							snapping = t.isOn();
+							break;
+						default:
+							break;
+					}
+					break;
+				case("Entity"):
+					switch(b.getName()){
+						case("edit"):
+							if (selected != null) {
+								promptTemplate(selected);
+								objects.remove(selected);
+								selected = null;
+							}
+							dragging = false;
+							creating = false;
+							break;
+						case("delete"):
+							if (selected != null) {
+								objects.remove(selected);
+								selected = null;
+							}
+							dragging = false;
+							creating = false;
+							break;
+						case("copy"):
+
+							break;
+						case("deselect"):
+							selected = null;
+							dragging = false;
+							creating = false;
+							break;
+						default:
+							break;
+					}
+				default:
+					break;
+			}
+			return true;
+		}
+		else{
+			return false;
+		}
+	}
+	//endregion
+
+	/**
+	 * Returns whether to process the update loop
+	 *
+	 * At the start of the update loop, we check if it is time
+	 * to switch to a new game mode.  If not, the update proceeds
+	 * normally.
+	 *
+	 * @param dt Number of seconds since last animation frame
+	 *
+	 * @return whether to process the update loop
+	 */
+	public boolean preUpdate(float dt) {
+		if (!super.preUpdate(dt)) {
+			return false;
+		}
+
+		InputController input = InputController.getInstance();
+		prevPressedL = pressedL;
+		pressedL = input.isLKeyPressed();
+		if (input.didLeftButtonPress()) {
+			System.out.println("GM");
+			listener.exitScreen(this, EXIT_LE_GM);
+			return false;
+		} else if (input.didTopButtonPress()) {
+			System.out.println("MM");
+			listener.exitScreen(this, EXIT_LE_MM);
+			return false;
+		}
+
+		return true;
+	}
+
+	public void update(float dt) {
+
+		// Decrement rate limiter to allow new input
+		if (inputRateLimiter > 0) {
+			inputRateLimiter--;
+			return;
+		}
+
+		// Allow access to mouse coordinates for multiple inputs
+		mouseX = InputController.getInstance().getCrossHair().x;
+		mouseY = InputController.getInstance().getCrossHair().y;
+
+
+
+		if(InputController.getInstance().isShiftKeyPressed()) {
+			// Check for pan
+			if (mouseX < GUI_LEFT_BAR_WIDTH / worldScale.x ) {
+				// Pan left
+				adjustedCxCamera -= CAMERA_PAN_SPEED/worldScale.x;
+			}
+			if (mouseY < GUI_LOWER_BAR_HEIGHT / worldScale.y ) {
+				// down
+				adjustedCyCamera -= CAMERA_PAN_SPEED/worldScale.y;
+			}
+			if (mouseX > (bounds.getWidth() ) - 1) {
+				adjustedCxCamera += CAMERA_PAN_SPEED/worldScale.x;
+			}
+			if (mouseY > (bounds.getHeight() ) - 1) {
+				adjustedCyCamera += CAMERA_PAN_SPEED/worldScale.y;
+			}
+			if(InputController.getInstance().isSpaceKeyPressed()){
+				adjustedCxCamera = 0;
+				adjustedCyCamera = 0;
+			}
+			camUpdate();
+		}
+
+		adjustedMouseX = mouseX + cxCamera ;
+		adjustedMouseY = mouseY + cyCamera ;
+		if(snapping){
+			adjustedMouseX = Math.round(adjustedMouseX);
+			adjustedMouseY = Math.round(adjustedMouseY);
+
+		}
+
+
+		// Left Click
+		if (InputController.getInstance().didLeftClick()) {
+			if(!processButtons(buttons.findButton(mouseX * worldScale.x, mouseY * worldScale.y))) {
+
+				if (mouseX * worldScale.x <= GUI_LEFT_BAR_WIDTH) {
+
+				} else if (mouseY * worldScale.y <= GUI_LOWER_BAR_HEIGHT) {
+
+					int button = getEntityMenuButton(mouseX * worldScale.x, mouseY * worldScale.y);
+					if (button == -2) {
+						//do nothing
+					} else if (button == -1) {
+						if (entityTree.current.parent != null) {
+							entityTree.upFolder();
+							creating = false;
+							selected = null;
+						}
+					} else {
+						if (!entityTree.current.children.get(button).isLeaf) {
+							entityTree.setCurrent(entityTree.current.children.get(button));
+							creating = false;
+							selected = null;
+						} else {
+							selected = createXY(entityTree.current.children.get(button), adjustedMouseX, adjustedMouseY);
+							if (selected != null) {
+								selected.setTextures(getMantisAssetManager());
+								creating = true;
+							}
+						}
+					}
+				} else {
+					creating = false;
+					dragging = false;
+					selected = entityQuery();
+					if (selected != null) {
+						//createXY(creationOptions[entityIndex], adjustedMouseX,adjustedMouseY);
+					}
+				}
+
+			}
+		}
+
+		if(InputController.getInstance().didLeftDrag()){
+			if(mouseX* worldScale.x <= GUI_LEFT_BAR_WIDTH ){
+
+			}else if(mouseY * worldScale.y <= GUI_LOWER_BAR_HEIGHT){
+
+			}else{
+
+				dragging = true;
+				if(selected != null){
+
+					selected.setPosition(adjustedMouseX, adjustedMouseY);
+					selected.setTextures(getMantisAssetManager());
+				}else{
+
+				}
+			}
+		}
+		if(InputController.getInstance().didLeftRelease()){
+			if(mouseX* worldScale.x <= GUI_LEFT_BAR_WIDTH ){
+
+			}else if(mouseY * worldScale.y <= GUI_LOWER_BAR_HEIGHT){
+
+			}else{
+				if(selected != null){
+					if(dragging) {
+						dragging = false;
+						if (selected != null) {
+							selected.setPosition(adjustedMouseX, adjustedMouseY);
+							selected.setTextures(getMantisAssetManager());
+						}
+						if (creating) {
+							promptTemplate(selected);
+						}
+					}
+				}else {
+
+				}
+			}
+			creating = false;
+		}
+
+		// Help
+		if (InputController.getInstance().isHKeyPressed()) {
+			showHelp = !showHelp;
+			inputRateLimiter = UI_WAIT_LONG;
+		}
+
+		// Grid
+		if (InputController.getInstance().isTKeyPressed()) {
+			shouldDrawGrid = !shouldDrawGrid;
+			inputRateLimiter = UI_WAIT_LONG;
+		}
+
+		// Background
+		if (InputController.getInstance().isBKeyPressed()) {
+			levelModel.setBackground(showInputDialog("What texture should the background be set to?"));
+			// TODO: Update the drawn background (after henry implements the engine)
+			background = getMantisAssetManager().get("texture/background/background1.png");
+
+		}
+	}
+
+	@Override
+	public void postUpdate(float dt) {
+
+		// Turn the physics engine crank.
+		//world.step(WORLD_STEP,WORLD_VELOC,WORLD_POSIT);
+
+		for (Entity ent :objects){
+
+			if(ent instanceof Obstacle){
+				Obstacle obj  = (Obstacle)ent;
+				if (obj.isRemoved()) {
+					obj.deactivatePhysics(world);
+					objects.remove(ent);
+					continue;
+				}
+			}
+			ent.update(dt); // called last!
+		}
 	}
 
 
-	private void changeEntityParam(Entity template) {
+	//region Draw and Helpers
+	private void drawGridLines() {
+		// debug lines
+		if (!shouldDrawGrid)
+			return;
+		canvas.begin(camTrans);
+		Gdx.gl.glLineWidth(1);
+		// vertical
+		float dpsW = ((canvas.getWidth()) / bounds.width);
+		float dpsH = ((canvas.getHeight()) / bounds.height);
+
+		gridLineRenderer.begin(ShapeRenderer.ShapeType.Line);
+		for (float i = ((int)(-cxCamera * worldScale.x) % dpsW - dpsW); i < canvas.getWidth(); i += dpsW) {
+			gridLineRenderer.setColor(Color.FOREST);
+			gridLineRenderer.line(i, 0,i,canvas.getHeight());
+		}
+
+		// horizontal
+		for (float i = ((int)(-cyCamera * worldScale.x) % dpsH - dpsH); i < canvas.getHeight(); i += dpsH) {
+			gridLineRenderer.setColor(Color.FOREST);
+			gridLineRenderer.line(0, i,canvas.getWidth(),i);
+		}
+		gridLineRenderer.end();
+		canvas.end();
+	}
+
+	private void drawEntitySelector(){
+		circleShape.setRadius(MAX_SNAP_DISTANCE);
+		Gdx.gl.glLineWidth(5);
+		canvas.beginDebug(camTrans);
+		Entity ent = entityQuery();
+		if(ent!= null)
+			canvas.drawPhysics(circleShape, new Color(0xcfcf000f),ent.getPosition().x , ent.getPosition().y ,worldScale.x,worldScale.y );
+
+		circleShape.setRadius(.05f);
+		for(Entity e : objects){
+			//if(e.getPosition().x * worldScale.x  > GUI_LEFT_BAR_WIDTH && )
+			canvas.drawPhysics(circleShape, new Color(0xcfcf000f),e.getPosition().x , e.getPosition().y ,worldScale.x,worldScale.y );
+			if(e instanceof BackgroundEntity){
+				float offsetx = ((e.getPosition().x - adjustedCxCamera) * worldScale.x) / ((BackgroundEntity) e).getDepth();
+				float offsety = ((e.getPosition().y - adjustedCyCamera) * worldScale.y) / ((BackgroundEntity) e).getDepth();
+				canvas.drawLine(e.getPosition().x *worldScale.x, e.getPosition().y *worldScale.y , adjustedCxCamera*worldScale.x  + offsetx, adjustedCyCamera*worldScale.y + offsety, Color.YELLOW, Color.CHARTREUSE);
+			}
+		}
+
+		canvas.endDebug();
+
+	}
+
+	public Vector2 getModifiedPosition(Entity e){
+		Vector2 pos = e.getPosition();
+		if(e instanceof BackgroundEntity){
+			pos.scl(1f/((BackgroundEntity) e).getDepth());
+		}
+		return pos;
+	}
+
+	public void setModifiedPosition(Entity e, float x, float y){
+		if(e instanceof BackgroundEntity){
+			e.setPosition(x * ((BackgroundEntity) e).getDepth(), y * ((BackgroundEntity) e).getDepth());
+		} else{
+			e.setPosition(x,y);
+		}
+	}
+
+	//ox and oy are bottom left corner
+	public boolean inBounds(float x ,float y, float ox ,float oy, float width, float height){
+		return  x >= ox && x <= ox + width && y >= oy && y <= oy + height;
+	}
+
+	private int getEntityMenuButton(float mousex, float mousey){
+		float margin = 18f;
+		float startx = GUI_LEFT_BAR_WIDTH + margin;
+		float starty = GUI_LOWER_BAR_HEIGHT - margin;
+		float sizex = 64f;
+		float sizey = 64f;
+
+		if(inBounds(mousex,mousey,startx,starty-sizey,sizex,sizey)) {
+			return -1;
+		}
+
+		for(int i = 0; i < entityTree.current.children.size(); i++) {
+			float x = startx + ((i + 1) * (sizex + margin));
+			float y = starty - sizey;
+			if (inBounds(mousex, mousey, x, y, sizex, sizey)) {
+				return i;
+			}
+
+		}
+
+		return  -2;
+
+	}
+
+	private void drawEntityMenu(){
+		float margin = 18f;
+		float startx = GUI_LEFT_BAR_WIDTH + margin;
+		float starty = GUI_LOWER_BAR_HEIGHT - margin;
+		float sizex = 64f;
+		float sizey = 64f;
+
+		float mousex = mouseX * worldScale.x;
+		float mousey = mouseY * worldScale.y;
+
+		Texture tex = upFolder;
+
+		if(entityTree.current.parent == null){
+			tex = placeholder;
+		}
+		if(inBounds(mousex,mousey,startx,starty-sizey,sizex,sizey)){
+			canvas.draw(yellowbox ,Color.WHITE,0,0,startx - 3f ,starty - sizey -3f ,0,(sizex+6f) /yellowbox.getWidth(), (sizey + 6f)/yellowbox.getHeight());
+		}
+		canvas.draw(tex ,Color.WHITE,0,tex.getHeight(),startx ,starty,0,sizex /tex.getWidth(), sizey/tex.getHeight());
+
+		for(int i = 0; i < entityTree.current.children.size(); i++){
+
+			tex = entityTree.current.children.get(i).texture;
+			if (!entityTree.current.children.get(i).isLeaf){
+				tex = folder;
+			}
+			float x = startx + ((i + 1) * (sizex + margin));
+			float y = starty - sizey;
+			if(inBounds(mousex,mousey,x,y,sizex,sizey)){
+				canvas.draw(yellowbox ,Color.WHITE,0,0,x - 3f ,y-3f ,0,(sizex+6f) /yellowbox.getWidth(), (sizey + 6f)/yellowbox.getHeight());
+			}
+			canvas.draw(tex ,Color.WHITE,0,0,x ,y,0,sizex /tex.getWidth(), sizey/tex.getHeight());
+			canvas.drawTextStandard(entityTree.current.children.get(i).name, x, y - 10f);
+
+
+		}
+
+
+	}
+
+	private void drawSelected(){
+
+		circleShape.setRadius(MAX_SNAP_DISTANCE);
+		Gdx.gl.glLineWidth(5);
+		canvas.beginDebug(camTrans);
+		Entity ent = selected;
+		if(ent!= null)
+			canvas.drawPhysics(circleShape, new Color(Color.FIREBRICK),ent.getPosition().x , ent.getPosition().y ,worldScale.x,worldScale.y );
+		canvas.endDebug();
+	}
+
+	private void drawButtons(){
+		buttons.setTextures(mantisAssetManager);
+		buttons.draw(canvas, mouseX * worldScale.x, mouseY * worldScale.y );
+	}
+
+	private void drawGUI(){
+		canvas.begin();
+		canvas.draw(grey,Color.WHITE,0,0,0,0,0,GUI_LEFT_BAR_WIDTH /grey.getWidth(), ((float)canvas.getHeight())/grey.getHeight());
+		canvas.draw(grey,Color.WHITE,0,0,GUI_LEFT_BAR_WIDTH,0,0,((float)canvas.getWidth() - GUI_LEFT_BAR_WIDTH) /grey.getWidth(), GUI_LOWER_BAR_HEIGHT/grey.getHeight());
+		//canvas.draw(grey,Color.WHITE,0,0,0,0,0,2.0f * worldScale.x /grey.getWidth(), 9.0f * worldScale.y/grey.getHeight());
+
+		drawEntityMenu();
+		drawButtons();
+		canvas.end();
+	}
+
+	private void drawHelp(){
+		// Text- independent of where you scroll
+		canvas.begin(); // DO NOT SCALE
+		if (showHelp) {
+			String[] splitHelp = HELP_TEXT.split("\\R");
+			float beginY = GUI_LOWER_BAR_HEIGHT + (9f * worldScale.y);
+			for (int i = 0; i < splitHelp.length; i++) {
+				canvas.drawTextStandard(splitHelp[i], GUI_LEFT_BAR_WIDTH + 10, beginY);
+				beginY -= .3 * worldScale.y;
+			}
+		}
+
+
+		canvas.drawTextStandard("MOUSE: " + adjustedMouseX + " , " + adjustedMouseY, GUI_LEFT_BAR_WIDTH + 10, GUI_LOWER_BAR_HEIGHT + (1.4f * worldScale.y));
+		canvas.drawTextStandard(cxCamera + "," + cyCamera , GUI_LEFT_BAR_WIDTH + 10, GUI_LOWER_BAR_HEIGHT + (1.1f * worldScale.y));
+		canvas.drawTextStandard("Level: " + currentLevel, GUI_LEFT_BAR_WIDTH + 10, GUI_LOWER_BAR_HEIGHT + (.8f * worldScale.y));
+
+		canvas.end();
+	}
+
+	@Override
+	public void draw(float delta) {
+
+		canvas.clear();
+
+		//draw background
+		canvas.begin();
+		canvas.draw(background);
+		canvas.end();
+
+		// Translate camera to cx, cy
+		camTrans.setToTranslation(0,0);
+		camTrans.setToTranslation(-cxCamera * worldScale.x, -cyCamera* worldScale.y);
+
+		Vector2 pos = canvas.getCampos();
+		pos.set(adjustedCxCamera * worldScale.x ,adjustedCyCamera * worldScale.y);
+		canvas.begin(camTrans);
+		Collections.sort(objects);
+		for(Entity obj : objects) {
+			obj.setDrawScale(worldScale);
+			obj.draw(canvas);
+		}
+		canvas.end();
+
+
+		canvas.font.setColor(Color.GOLDENROD);
+		drawGridLines();
+		drawEntitySelector();
+		drawGUI();
+		drawSelected();
+		drawHelp();
+
+	}
+	//endregion
+
+	//region JSON Stuff
+	private void makeGuiWindow() {
+		if (editorWindow != null) {
+			editorWindow.dispose();
+		}
+		//GUI Mode Enabled
+		//Prevent multiple windows from being created
+		//Window Settings
+		editorWindow = new JFrame();
+		GridLayout gridLayout = new GridLayout(12,2);
+		gridLayout.setVgap(2);
+		gridLayout.setHgap(10);
+
+		editorWindow.setLayout(gridLayout);
+
+		JsonObject levelJson = jsonLoaderSaver.gsonToJsonObject(levelModel);
+
+		//Load/Save/LevelName
+		JButton loadButton = new JButton("Load");
+		JButton saveButton = new JButton("Save");
+		JLabel fileLabel = new JLabel("File Name");
+		JTextField fileName = new JTextField(currentLevel);
+
+		loadButton.setSize(BUTTON_WIDTH,BUTTON_HEIGHT);
+		saveButton.setSize(BUTTON_WIDTH,BUTTON_HEIGHT);
+
+		loadButton.addActionListener(e -> {
+			loadLevel(fileName.getText());
+		});
+
+		saveButton.addActionListener(e -> {
+			currentLevel = fileName.getText();
+			saveLevel();
+		});
+
+		editorWindow.add(fileLabel);
+		editorWindow.add(fileName);
+		editorWindow.add(loadButton);
+		editorWindow.add(saveButton);
+
+		generateSwingPropertiesForEntity(levelJson,editorWindow,0);
+
+		editorWindow.setSize(canvas.getWidth() * 3 / 5, canvas.getHeight() * 2 / 3);
+
+		//TODO Add ability to edit entity parameters (on click/selecting only?)
+
+		JLabel editEntityHeader = new JLabel("Click a Stage Entity to Edit It");
+
+		editEntityHeader.setSize(250, TEXT_HEIGHT1);
+
+		editorWindow.add(editEntityHeader);
+
+		//Display Everything
+		editorWindow.setVisible(true);
+	}
+
+	private int generateSwingPropertiesForEntity(JsonObject e, JFrame jPanel, int rowNum) {
+		for(Map.Entry<String,JsonElement> entry : e.entrySet()) {
+			// Add key
+			String key = entry.getKey();
+			JLabel paramText = new JLabel(key + ":");
+
+			JComponent valueComponent;
+			// Add value based on type
+			JsonElement value = entry.getValue();
+			if (value.isJsonArray()) {
+				// TODO (hard), recurse
+				System.err.println("TODO: JSON Array. Use Henry's click and drag!");
+				continue;
+			} else if (value.isJsonPrimitive()) {
+				JsonPrimitive primitive = value.getAsJsonPrimitive();
+				if (primitive.isBoolean()) {
+					valueComponent = new JCheckBox("",primitive.getAsBoolean());
+				} else if (primitive.isNumber()) {
+					valueComponent = new JTextField(primitive.getAsNumber().toString());
+				} else if (primitive.isString()) {
+					valueComponent = new JTextField(primitive.getAsString());
+				} else {
+					System.err.println("Unknown primitive type: " + entry);
+					continue;
+				}
+			} else if (value.isJsonObject()) {
+				System.err.println("Unknown object type: " + entry);
+				continue;
+			} else {
+				System.err.println("Unknown type: " + entry);
+				continue;
+			}
+
+			paramText.setSize(FIELD_TEXT_WIDTH, TEXT_HEIGHT);
+			valueComponent.setSize(FIELD_BOX_WIDTH, TEXT_HEIGHT);
+
+			// Update panel with key, value
+			jPanel.add(paramText);
+			jPanel.add(valueComponent);
+			rowNum++;
+		}
+
+		return rowNum;
+	}
+
+	private void loadLevel(){
+		if (!loadingLevelPrompt) {
+			loadingLevelPrompt = true;
+			loadLevel(showInputDialog("What level do you want to load?"));
+			loadingLevelPrompt = false;
+		}
+		inputRateLimiter = UI_WAIT_LONG;
+	}
+
+	private void loadLevel(String toLoad){
+		currentLevel = toLoad;
+		try {
+			Thread.sleep(250);
+			reset();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void saveLevel(){
+		System.out.println("Saving...");
+		LevelModel timeToSave = new LevelModel();
+//		if (!vimMode) {
+			// Grab params from gui
+			JsonObject levelJson = jsonLoaderSaver.gsonToJsonObject(levelModel);
+			grabUpdatedObjectValuesFromGUI(levelJson,editorWindow.getRootPane().getContentPane());
+			timeToSave = jsonLoaderSaver.levelFromJson(levelJson);
+			timeToSave.entities.clear();
+//		}
+		for (Entity o : objects) {
+			timeToSave.addEntity(o);
+		}
+		if (jsonLoaderSaver.saveLevel(timeToSave, currentLevel)) {
+			System.out.println("Saved!");
+		} else {
+			System.err.println("ERROR IN SAVE");
+		}
+		inputRateLimiter = UI_WAIT_LONG;
+	}
+
+	private void grabUpdatedObjectValuesFromGUI(JsonObject entityProp, Container p) {
+		for(Map.Entry<String,JsonElement> entry : entityProp.entrySet()) {
+			// Add key
+			String key = entry.getKey();
+
+			JsonElement value = entry.getValue();
+			if (value.isJsonArray()) {
+				// TODO (hard), recurse
+				System.err.println("TODO: JSON Array");
+			} else if (value.isJsonPrimitive()) {
+				entityProp.add(key,findInPanel(key,p));
+			} else if (value.isJsonObject()) {
+				System.err.println("Unknown object type: " + entry);
+			} else {
+				System.err.println("Unknown type: " + entry);
+			}
+		}
+	}
+
+	private JsonElement findInPanel(String key, Container panel) {
+		boolean grabNext = false;
+		for (Component c : panel.getComponents()) {
+			if (grabNext) {
+				if (c instanceof JCheckBox) {
+					return new JsonPrimitive(((JCheckBox)c).isSelected());
+				} else if (c instanceof JTextField) {
+					return new JsonPrimitive((((JTextField)c).getText()));
+				} else {
+					System.err.println("UNKNOWN FOR " + key);
+					return null;
+				}
+			}
+			if (c instanceof JLabel) {
+				if (((JLabel) c).getText().equals(key+":")) {
+					grabNext = true;
+				}
+			}
+		}
+		System.err.println("CANT FIND " + key);
+		return null;
+	}
+
+	private void promptTemplate(Entity template) {
 		if (!prompting) {
 			prompting = true; //Use different constant? Can just use the same one?
 
@@ -483,17 +1181,6 @@ public class LevelEditorController extends WorldController {
 		return rowNum;
 	}
 
-	private void deleteEntity(){
-		Entity select = entityQuery();
-		if (select != null) objects.remove(select);
-		inputRateLimiter = UI_WAIT_SHORT;
-	}
-
-	private void deleteEntity(Entity target){
-		objects.remove(target);
-	}
-
-
 	private void promptTemplateCallback(String json) {
 		Entity toAdd = jsonLoaderSaver.entityFromJson(json);
 		addObject( toAdd);
@@ -528,700 +1215,6 @@ public class LevelEditorController extends WorldController {
 			mainFrame.setVisible(true);
 		}
 	}
-
-	public Entity entityQuery() {
-
-		Entity found = null;
-		Vector2 mouse = new Vector2(adjustedMouseX, adjustedMouseY);
-		float minDistance = Float.MAX_VALUE;
-		for (Entity e : objects) {
-			float curDist = e.getPosition().dst(mouse);
-			if (curDist < minDistance) {
-				found = e;
-				minDistance = curDist;
-			}
-		}
-
-		if (minDistance < MAX_SNAP_DISTANCE) {
-			return found;
-		}
-		return null;
-	}
-
-	public void camUpdate(){
-		cxCamera = adjustedCxCamera - (((bounds.getWidth()-(GUI_LEFT_BAR_WIDTH/worldScale.x) )/2f)+(GUI_LEFT_BAR_WIDTH / worldScale.x) );
-		cyCamera = adjustedCyCamera - (((bounds.getHeight()-(GUI_LOWER_BAR_HEIGHT/worldScale.y))/2f) + (GUI_LOWER_BAR_HEIGHT / worldScale.y));
-		
-	}
-
-	public void update(float dt) {
-
-		// Decrement rate limiter to allow new input
-		if (inputRateLimiter > 0) {
-			inputRateLimiter--;
-			return;
-		}
-
-		// Allow access to mouse coordinates for multiple inputs
-		mouseX = InputController.getInstance().getCrossHair().x;
-		mouseY = InputController.getInstance().getCrossHair().y;
-
-		adjustedMouseX = mouseX + cxCamera ;
-		adjustedMouseY = mouseY + cyCamera ;
-
-		if(InputController.getInstance().isShiftKeyPressed()) {
-			// Check for pan
-			if (mouseX < GUI_LEFT_BAR_WIDTH / worldScale.x ) {
-				// Pan left
-				adjustedCxCamera -= CAMERA_PAN_SPEED/worldScale.x;
-			}
-			if (mouseY < GUI_LOWER_BAR_HEIGHT / worldScale.y ) {
-				// down
-				adjustedCyCamera -= CAMERA_PAN_SPEED/worldScale.y;
-			}
-			if (mouseX > (bounds.getWidth() ) - 1) {
-				adjustedCxCamera += CAMERA_PAN_SPEED/worldScale.x;
-			}
-			if (mouseY > (bounds.getHeight() ) - 1) {
-				adjustedCyCamera += CAMERA_PAN_SPEED/worldScale.y;
-			}
-			if(InputController.getInstance().isSpaceKeyPressed()){
-				adjustedCxCamera = 0;
-				adjustedCyCamera = 0;
-			}
-			camUpdate();
-		}
-
-
-		// Left Click
-		if (InputController.getInstance().didLeftClick()) {
-			if(mouseX* worldScale.x <= GUI_LEFT_BAR_WIDTH ){
-
-			}else if(mouseY * worldScale.y <= GUI_LOWER_BAR_HEIGHT){
-
-				int button = getEntityMenuButton(mouseX * worldScale.x, mouseY * worldScale.y);
-				if(button == -2){
-					//do nothing
-				} else if(button == -1){
-					if(entityTree.current.parent != null){
-						entityTree.upFolder();
-					}
-				} else{
-					if(!entityTree.current.children.get(button).isLeaf){
-						entityTree.setCurrent(entityTree.current.children.get(button));
-					}else{
-						selected = createXY(entityTree.current.children.get(button),adjustedMouseX, adjustedMouseY);
-						if(selected != null) {
-							selected.setTextures(getMantisAssetManager());
-							creating = true;
-						}
-					}
-				}
-
-
-			}else{
-				creating = false;
-				dragging = false;
-				selected = entityQuery();
-				if(selected == null){
-					//createXY(creationOptions[entityIndex], adjustedMouseX,adjustedMouseY);
-				}
-				/*
-				if(selected instanceof BackgroundEntity){
-					adjustedCxCamera = -adjustedMouseX;
-					adjustedCyCamera = -adjustedMouseY;
-					camUpdate();
-				}*/
-
-			}
-
-
-
-		}
-
-		if(InputController.getInstance().didLeftDrag()){
-			if(mouseX* worldScale.x <= GUI_LEFT_BAR_WIDTH ){
-
-			}else if(mouseY * worldScale.y <= GUI_LOWER_BAR_HEIGHT){
-
-			}else{
-				dragging = true;
-
-				if(selected != null) {
-					/*
-					if(false && selected instanceof BackgroundEntity){
-						if (mouseX < -adjustedCxCamera + 3 ) {
-							// Pan left
-							adjustedCxCamera += CAMERA_PAN_SPEED/worldScale.x;
-						}
-						if (mouseY < -adjustedCyCamera + 3 ) {
-							// down
-							adjustedCyCamera += CAMERA_PAN_SPEED/worldScale.y;
-						}
-						if (mouseX > -adjustedCxCamera - 3) {
-							adjustedCxCamera -= CAMERA_PAN_SPEED/worldScale.x;
-						}
-						if (mouseY > -adjustedCyCamera - 3) {
-							adjustedCyCamera -= CAMERA_PAN_SPEED/worldScale.y;
-						}
-						camUpdate();
-
-						selected.setPosition(adjustedCxCamera, adjustedCyCamera);
-
-
-
-					}
-					else {*/
-					selected.setPosition(adjustedMouseX, adjustedMouseY);
-					selected.setTextures(getMantisAssetManager());
-
-
-
-				}
-				//get offset
-				//display stuff related to it
-
-			}
-
-		}
-
-		if(InputController.getInstance().didLeftRelease()){
-			if(mouseX* worldScale.x <= GUI_LEFT_BAR_WIDTH ){
-
-			}else if(mouseY * worldScale.y <= GUI_LOWER_BAR_HEIGHT){
-
-			}else{
-
-				if(dragging) {
-					dragging = false;
-					if (selected != null) {
-						if(selected instanceof BackgroundEntity){
-							selected.setPosition(adjustedMouseX, adjustedMouseY);
-						}
-						else {
-							selected.setPosition(adjustedMouseX, adjustedMouseY);
-							selected.setTextures(getMantisAssetManager());
-						}
-					}
-					if (creating) {
-						promptTemplate(selected);
-					}
-					selected = null;
-				}
-				else{
-
-
-				}
-
-			}
-			creating = false;
-
-		}
-
-
-		if (InputController.getInstance().didRightArrowPress()) {
-			makeGuiWindow();
-		}
-		// Delete
-		if (InputController.getInstance().isRightClickPressed()) {
-			Entity select = entityQuery();
-			if (select != null) objects.remove(select);
-			inputRateLimiter = UI_WAIT_LONG;
-		}
-
-		// Edit
-		if (InputController.getInstance().isEKeyPressed()) {
-			Entity select = entityQuery();
-			if (select != null) {
-				promptTemplate(select);
-				objects.remove(select);
-			}
-			inputRateLimiter = UI_WAIT_SHORT;
-		}
-
-		// Name level
-		if (InputController.getInstance().isNKeyPressed()) {
-			currentLevel = showInputDialog("What should we call this level?");
-			inputRateLimiter = UI_WAIT_LONG;
-		}
-
-		// Load level
-		if (pressedL && !prevPressedL) {
-			if (!loadingLevelPrompt) {
-				loadingLevelPrompt = true;
-				currentLevel = showInputDialog("What level do you want to load?");
-				loadingLevelPrompt = false;
-				reset();
-			}
-			inputRateLimiter = UI_WAIT_ETERNAL;
-		}
-
-		// Save
-		if (InputController.getInstance().isSKeyPressed()) {
-			System.out.println("Saving...");
-			LevelModel timeToSave = new LevelModel();
-			timeToSave.setTitle(currentLevel);
-			for (Entity o : objects) {
-				timeToSave.addEntity(o);
-			}
-			if (jsonLoaderSaver.saveLevel(timeToSave, currentLevel)) {
-				System.out.println("Saved!");
-			} else {
-				System.err.println("ERROR IN SAVE");
-			}
-			inputRateLimiter = UI_WAIT_LONG;
-		}
-
-		// Scroll backward ent
-		if (InputController.getInstance().isLeftKeyPressed()) {
-
-		}
-
-		// Scroll forward ent
-		if (InputController.getInstance().isRightKeyPressed()) {
-
-		}
-
-		// Select ent
-		if (InputController.getInstance().isEnterKeyPressed()) {
-
-		}
-
-		// Help
-		if (InputController.getInstance().isHKeyPressed()) {
-			showHelp = !showHelp;
-			inputRateLimiter = UI_WAIT_LONG;
-		}
-
-		// Grid
-		if (InputController.getInstance().isTKeyPressed()) {
-			shouldDrawGrid = !shouldDrawGrid;
-			inputRateLimiter = UI_WAIT_LONG;
-		}
-
-		// Background
-		if (InputController.getInstance().isBKeyPressed()) {
-			levelModel.setBackground(showInputDialog("What texture should the background be set to?"));
-			// TODO: Update the drawn background (after henry implements the engine)
-			background = getMantisAssetManager().get("texture/background/background1.png");
-
-		}
-
-		if (InputController.getInstance().isGKeyPressed()) {
-			promptGlobalConfig();
-		}
-	}
-
-	private void drawGridLines() {
-		// debug lines
-		if (!shouldDrawGrid)
-			return;
-		canvas.begin(camTrans);
-		Gdx.gl.glLineWidth(1);
-		// vertical
-		float dpsW = ((canvas.getWidth()) / bounds.width);
-		float dpsH = ((canvas.getHeight()) / bounds.height);
-
-		gridLineRenderer.begin(ShapeRenderer.ShapeType.Line);
-		for (float i = ((int)(-cxCamera * worldScale.x) % dpsW - dpsW); i < canvas.getWidth(); i += dpsW) {
-			gridLineRenderer.setColor(Color.FOREST);
-			gridLineRenderer.line(i, 0,i,canvas.getHeight());
-		}
-
-		// horizontal
-		for (float i = ((int)(-cyCamera * worldScale.x) % dpsH - dpsH); i < canvas.getHeight(); i += dpsH) {
-			gridLineRenderer.setColor(Color.FOREST);
-			gridLineRenderer.line(0, i,canvas.getWidth(),i);
-		}
-		gridLineRenderer.end();
-		canvas.end();
-	}
-
-	private void drawEntitySelector(){
-		circleShape.setRadius(MAX_SNAP_DISTANCE);
-		Gdx.gl.glLineWidth(5);
-		canvas.beginDebug(camTrans);
-		Entity ent = entityQuery();
-		if(ent!= null)
-			canvas.drawPhysics(circleShape, new Color(0xcfcf000f),ent.getPosition().x , ent.getPosition().y ,worldScale.x,worldScale.y );
-
-		circleShape.setRadius(.05f);
-		for(Entity e : objects){
-			//if(e.getPosition().x * worldScale.x  > GUI_LEFT_BAR_WIDTH && )
-			canvas.drawPhysics(circleShape, new Color(0xcfcf000f),e.getPosition().x , e.getPosition().y ,worldScale.x,worldScale.y );
-			if(e instanceof BackgroundEntity){
-				float offsetx = ((e.getPosition().x - adjustedCxCamera) * worldScale.x) / ((BackgroundEntity) e).getDepth();
-				float offsety = ((e.getPosition().y - adjustedCyCamera) * worldScale.y) / ((BackgroundEntity) e).getDepth();
-				canvas.drawLine(e.getPosition().x *worldScale.x, e.getPosition().y *worldScale.y , adjustedCxCamera*worldScale.x  + offsetx, adjustedCyCamera*worldScale.y + offsety, Color.YELLOW, Color.CHARTREUSE);
-			}
-		}
-
-		canvas.endDebug();
-
-	}
-
-	public Vector2 getModifiedPosition(Entity e){
-		Vector2 pos = e.getPosition();
-		if(e instanceof BackgroundEntity){
-			pos.scl(1f/((BackgroundEntity) e).getDepth());
-		}
-		return pos;
-	}
-
-	public void setModifiedPosition(Entity e, float x, float y){
-		if(e instanceof BackgroundEntity){
-			e.setPosition(x * ((BackgroundEntity) e).getDepth(), y * ((BackgroundEntity) e).getDepth());
-		} else{
-			e.setPosition(x,y);
-		}
-	}
-	
-	//ox and oy are bottom left corner
-	public boolean inBounds(float x ,float y, float ox ,float oy, float width, float height){
-		return  x >= ox && x <= ox + width && y >= oy && y <= oy + height;
-	}
-
-	private int getEntityMenuButton(float mousex, float mousey){
-		float margin = 18f;
-		float startx = GUI_LEFT_BAR_WIDTH + margin;
-		float starty = GUI_LOWER_BAR_HEIGHT - margin;
-		float sizex = 64f;
-		float sizey = 64f;
-
-		if(inBounds(mousex,mousey,startx,starty-sizey,sizex,sizey)) {
-			return -1;
-		}
-
-		for(int i = 0; i < entityTree.current.children.size(); i++) {
-			float x = startx + ((i + 1) * (sizex + margin));
-			float y = starty - sizey;
-			if (inBounds(mousex, mousey, x, y, sizex, sizey)) {
-				return i;
-			}
-
-		}
-
-		return  -2;
-
-	}
-	private void drawEntityMenu(){
-		float margin = 18f;
-		float startx = GUI_LEFT_BAR_WIDTH + margin;
-		float starty = GUI_LOWER_BAR_HEIGHT - margin;
-		float sizex = 64f;
-		float sizey = 64f;
-
-		float mousex = mouseX * worldScale.x;
-		float mousey = mouseY * worldScale.y;
-
-		Texture tex = upFolder;
-
-		if(entityTree.current.parent == null){
-			tex = placeholder;
-		}
-		if(inBounds(mousex,mousey,startx,starty-sizey,sizex,sizey)){
-			canvas.draw(yellowbox ,Color.WHITE,0,0,startx - 3f ,starty - sizey -3f ,0,(sizex+6f) /yellowbox.getWidth(), (sizey + 6f)/yellowbox.getHeight());
-		}
-		canvas.draw(tex ,Color.WHITE,0,tex.getHeight(),startx ,starty,0,sizex /tex.getWidth(), sizey/tex.getHeight());
-
-		for(int i = 0; i < entityTree.current.children.size(); i++){
-
-			tex = entityTree.current.children.get(i).texture;
-			if (!entityTree.current.children.get(i).isLeaf){
-				tex = folder;
-			}
-			float x = startx + ((i + 1) * (sizex + margin));
-			float y = starty - sizey;
-			if(inBounds(mousex,mousey,x,y,sizex,sizey)){
-				canvas.draw(yellowbox ,Color.WHITE,0,0,x - 3f ,y-3f ,0,(sizex+6f) /yellowbox.getWidth(), (sizey + 6f)/yellowbox.getHeight());
-			}
-			canvas.draw(tex ,Color.WHITE,0,0,x ,y,0,sizex /tex.getWidth(), sizey/tex.getHeight());
-			canvas.drawTextStandard(entityTree.current.children.get(i).name, x, y - 10f);
-
-
-		}
-
-
-	}
-
-	private void drawGUI(){
-		canvas.begin();
-		canvas.draw(grey,Color.WHITE,0,0,0,0,0,GUI_LEFT_BAR_WIDTH /grey.getWidth(), ((float)canvas.getHeight())/grey.getHeight());
-		canvas.draw(grey,Color.WHITE,0,0,GUI_LEFT_BAR_WIDTH,0,0,((float)canvas.getWidth() - GUI_LEFT_BAR_WIDTH) /grey.getWidth(), GUI_LOWER_BAR_HEIGHT/grey.getHeight());
-		//canvas.draw(grey,Color.WHITE,0,0,0,0,0,2.0f * worldScale.x /grey.getWidth(), 9.0f * worldScale.y/grey.getHeight());
-
-		drawEntityMenu();
-		canvas.end();
-	}
-
-	private void drawHelp(){
-		// Text- independent of where you scroll
-		canvas.begin(); // DO NOT SCALE
-		if (showHelp) {
-			String[] splitHelp = HELP_TEXT.split("\\R");
-			float beginY = GUI_LOWER_BAR_HEIGHT + (9f * worldScale.y);
-			for (int i = 0; i < splitHelp.length; i++) {
-				canvas.drawTextStandard(splitHelp[i], GUI_LEFT_BAR_WIDTH + 10, beginY);
-				beginY -= .3 * worldScale.y;
-			}
-		}
-
-
-		canvas.drawTextStandard("MOUSE: " + adjustedMouseX + " , " + adjustedMouseY, GUI_LEFT_BAR_WIDTH + 10, GUI_LOWER_BAR_HEIGHT + (1.4f * worldScale.y));
-		canvas.drawTextStandard(cxCamera + "," + cyCamera , GUI_LEFT_BAR_WIDTH + 10, GUI_LOWER_BAR_HEIGHT + (1.1f * worldScale.y));
-		canvas.drawTextStandard("Level: " + currentLevel, GUI_LEFT_BAR_WIDTH + 10, GUI_LOWER_BAR_HEIGHT + (.8f * worldScale.y));
-
-		canvas.end();
-	}
-
-	@Override
-	public void draw(float delta) {
-		canvas.clear();
-
-		//draw background
-		canvas.begin();
-		canvas.draw(background);
-		canvas.end();
-
-		// Translate camera to cx, cy
-		camTrans.setToTranslation(0,0);
-		camTrans.setToTranslation(-cxCamera * worldScale.x, -cyCamera* worldScale.y);
-
-		Vector2 pos = canvas.getCampos();
-		pos.set(adjustedCxCamera * worldScale.x ,adjustedCyCamera * worldScale.y);
-		canvas.begin(camTrans);
-		Collections.sort(objects);
-		for(Entity obj : objects) {
-			obj.setDrawScale(worldScale);
-			obj.draw(canvas);
-		}
-		canvas.end();
-
-
-		drawGridLines();
-		drawEntitySelector();
-		drawGUI();
-		drawHelp();
-
-	}
-
-	@Override
-	public void postUpdate(float dt) {
-
-		// Turn the physics engine crank.
-		//world.step(WORLD_STEP,WORLD_VELOC,WORLD_POSIT);
-
-		for (Entity ent :objects){
-
-			if(ent instanceof Obstacle){
-				Obstacle obj  = (Obstacle)ent;
-				if (obj.isRemoved()) {
-					obj.deactivatePhysics(world);
-					objects.remove(ent);
-					continue;
-				}
-			}
-			ent.update(dt); // called last!
-		}
-	}
-
-	/** Unused ContactListener method */
-	public void postSolve(Contact contact, ContactImpulse impulse) {}
-	/** Unused ContactListener method */
-	public void preSolve(Contact contact, Manifold oldManifold) {}
-
-	@Override
-	public void setCanvas(GameCanvas canvas) {
-		// unscale
-		this.canvas = canvas;
-		this.worldScale.x = 1.0f * canvas.getWidth()/bounds.getWidth();
-		this.worldScale.y = 1.0f * canvas.getHeight()/bounds.getHeight();
-		jsonLoaderSaver.setScale(this.worldScale);
-	}
-
-	private void makeGuiWindow() {
-		if (editorWindow != null) {
-			editorWindow.dispose();
-		}
-		//GUI Mode Enabled
-		//Prevent multiple windows from being created
-		//Window Settings
-		editorWindow = new JFrame();
-		GridLayout gridLayout = new GridLayout(12,2);
-		gridLayout.setVgap(2);
-		gridLayout.setHgap(10);
-
-		editorWindow.setLayout(gridLayout);
-
-		JsonObject levelJson = jsonLoaderSaver.gsonToJsonObject(levelModel);
-
-		//Load/Save/LevelName
-		JButton loadButton = new JButton("Load");
-		JButton saveButton = new JButton("Save");
-		JLabel fileLabel = new JLabel("File Name");
-		JTextField fileName = new JTextField(currentLevel);
-
-		loadButton.setSize(BUTTON_WIDTH,BUTTON_HEIGHT);
-		saveButton.setSize(BUTTON_WIDTH,BUTTON_HEIGHT);
-
-		loadButton.addActionListener(e -> {
-			loadLevel(fileName.getText());
-		});
-
-		saveButton.addActionListener(e -> {
-			currentLevel = fileName.getText();
-			saveLevel();
-		});
-
-		editorWindow.add(fileLabel);
-		editorWindow.add(fileName);
-		editorWindow.add(loadButton);
-		editorWindow.add(saveButton);
-
-		generateSwingPropertiesForEntity(levelJson,editorWindow,0);
-
-		editorWindow.setSize(canvas.getWidth() * 3 / 5, canvas.getHeight() * 2 / 3);
-
-		//TODO Add ability to edit entity parameters (on click/selecting only?)
-
-		JLabel editEntityHeader = new JLabel("Click a Stage Entity to Edit It");
-
-		editEntityHeader.setSize(250, TEXT_HEIGHT1);
-
-		editorWindow.add(editEntityHeader);
-
-		//Display Everything
-		editorWindow.setVisible(true);
-	}
-
-
-	private int generateSwingPropertiesForEntity(JsonObject e, JFrame jPanel, int rowNum) {
-		for(Map.Entry<String,JsonElement> entry : e.entrySet()) {
-			// Add key
-			String key = entry.getKey();
-			JLabel paramText = new JLabel(key + ":");
-
-			JComponent valueComponent;
-			// Add value based on type
-			JsonElement value = entry.getValue();
-			if (value.isJsonArray()) {
-				// TODO (hard), recurse
-				System.err.println("TODO: JSON Array. Use Henry's click and drag!");
-				continue;
-			} else if (value.isJsonPrimitive()) {
-				JsonPrimitive primitive = value.getAsJsonPrimitive();
-				if (primitive.isBoolean()) {
-					valueComponent = new JCheckBox("",primitive.getAsBoolean());
-				} else if (primitive.isNumber()) {
-					valueComponent = new JTextField(primitive.getAsNumber().toString());
-				} else if (primitive.isString()) {
-					valueComponent = new JTextField(primitive.getAsString());
-				} else {
-					System.err.println("Unknown primitive type: " + entry);
-					continue;
-				}
-			} else if (value.isJsonObject()) {
-				System.err.println("Unknown object type: " + entry);
-				continue;
-			} else {
-				System.err.println("Unknown type: " + entry);
-				continue;
-			}
-
-			paramText.setSize(FIELD_TEXT_WIDTH, TEXT_HEIGHT);
-			valueComponent.setSize(FIELD_BOX_WIDTH, TEXT_HEIGHT);
-
-			// Update panel with key, value
-			jPanel.add(paramText);
-			jPanel.add(valueComponent);
-			rowNum++;
-		}
-
-		return rowNum;
-	}
-
-	private void loadLevel(){
-		if (!loadingLevelPrompt) {
-			loadingLevelPrompt = true;
-			loadLevel(showInputDialog("What level do you want to load?"));
-			loadingLevelPrompt = false;
-		}
-		inputRateLimiter = UI_WAIT_LONG;
-	}
-
-
-	private void loadLevel(String toLoad){
-		currentLevel = toLoad;
-		try {
-			Thread.sleep(1000);
-			reset();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-	}
-
-	private void saveLevel(){
-		System.out.println("Saving...");
-		LevelModel timeToSave = new LevelModel();
-//		if (!vimMode) {
-			// Grab params from gui
-			JsonObject levelJson = jsonLoaderSaver.gsonToJsonObject(levelModel);
-			grabUpdatedObjectValuesFromGUI(levelJson,editorWindow.getRootPane().getContentPane());
-			timeToSave = jsonLoaderSaver.levelFromJson(levelJson);
-			timeToSave.entities.clear();
-//		}
-		for (Entity o : objects) {
-			timeToSave.addEntity(o);
-		}
-		if (jsonLoaderSaver.saveLevel(timeToSave, currentLevel)) {
-			System.out.println("Saved!");
-		} else {
-			System.err.println("ERROR IN SAVE");
-		}
-		inputRateLimiter = UI_WAIT_LONG;
-	}
-
-	private void grabUpdatedObjectValuesFromGUI(JsonObject entityProp, Container p) {
-		for(Map.Entry<String,JsonElement> entry : entityProp.entrySet()) {
-			// Add key
-			String key = entry.getKey();
-
-			JsonElement value = entry.getValue();
-			if (value.isJsonArray()) {
-				// TODO (hard), recurse
-				System.err.println("TODO: JSON Array");
-			} else if (value.isJsonPrimitive()) {
-				entityProp.add(key,findInPanel(key,p));
-			} else if (value.isJsonObject()) {
-				System.err.println("Unknown object type: " + entry);
-			} else {
-				System.err.println("Unknown type: " + entry);
-			}
-		}
-	}
-
-
-	private JsonElement findInPanel(String key, Container panel) {
-		boolean grabNext = false;
-		for (Component c : panel.getComponents()) {
-			if (grabNext) {
-				if (c instanceof JCheckBox) {
-					return new JsonPrimitive(((JCheckBox)c).isSelected());
-				} else if (c instanceof JTextField) {
-					return new JsonPrimitive((((JTextField)c).getText()));
-				} else {
-					System.err.println("UNKNOWN FOR " + key);
-					return null;
-				}
-			}
-			if (c instanceof JLabel) {
-				if (((JLabel) c).getText().equals(key+":")) {
-					grabNext = true;
-				}
-			}
-		}
-		System.err.println("CANT FIND " + key);
-		return null;
-	}
+	//endregion
 
 }
