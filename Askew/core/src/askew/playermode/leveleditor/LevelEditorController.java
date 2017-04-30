@@ -623,21 +623,7 @@ public class LevelEditorController extends WorldController {
 			}
 			creating = false;
 		}
-
-
-		// Edit
-		if (InputController.getInstance().isEKeyPressed()) {
-			Entity select = entityQuery();
-			if (select != null) {
-				promptTemplate(select);
-				objects.remove(select);
-			}
-			inputRateLimiter = UI_WAIT_SHORT;
-		}
-
-
-
-
+		
 		// Help
 		if (InputController.getInstance().isHKeyPressed()) {
 			showHelp = !showHelp;
