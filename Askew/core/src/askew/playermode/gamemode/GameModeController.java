@@ -62,7 +62,10 @@ public class GameModeController extends WorldController {
 	protected boolean paused = false;
 	private boolean prevPaused = false;
 	// fern selection indicator locations for pause menu options
-	private Vector2[] pause_locs = {new Vector2(11f,4.8f), new Vector2(9f,3.9f), new Vector2(11f,3f)};
+	private Vector2[] pause_locs = {
+			new Vector2(0.68f,0.53f),
+			new Vector2(0.55f,0.43f),
+			new Vector2(0.68f,0.33f)};
 
 	public static final String[] GAMEPLAY_MUSIC = new String[] {
 			"sound/music/askew.ogg",
@@ -367,11 +370,11 @@ public class GameModeController extends WorldController {
 
 		InputController input = InputController.getInstance();
 
-		if (input.didLeftDPadPress() || input.isLKeyPressed()) {
+		if ((input.didLeftDPadPress() || input.isLKeyPressed()) && !paused) {
 			System.out.println("LE");
 			listener.exitScreen(this, EXIT_GM_LE);
 			return false;
-		} else if (input.didTopDPadPress()) {
+		} else if ((input.didTopDPadPress()) && !paused) {
 			System.out.println("MM");
 			listener.exitScreen(this, EXIT_GM_MM);
 			return false;
@@ -686,9 +689,11 @@ public class GameModeController extends WorldController {
 		if (paused) {
 			canvas.begin();
 			canvas.draw(pauseTexture);
+			System.out.println(worldScale.x+","+worldScale.y);
+			System.out.println("("+2*worldScale.x/fern.getWidth()+","+ 2*worldScale.y/fern.getHeight()+")");
 			canvas.draw(fern, Color.WHITE,fern.getWidth()/2, fern.getHeight()/2,
-					pause_locs[pause_mode].x * worldScale.x, pause_locs[pause_mode].y* worldScale.y,
-					0,worldScale.x/fern.getWidth(),worldScale.y/fern.getHeight());
+					pause_locs[pause_mode].x * canvas.getWidth(), pause_locs[pause_mode].y* canvas.getHeight(),
+					0,2*worldScale.x/fern.getWidth(), 2*worldScale.y/fern.getHeight());
 			canvas.end();
 		}
 
