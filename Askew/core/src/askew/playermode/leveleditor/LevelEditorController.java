@@ -125,6 +125,7 @@ public class LevelEditorController extends WorldController {
 
 	private EntityTree entityTree;
 	private Entity selected;
+	private Button manip;
 	private boolean dragging = false;
 	private boolean creating = false;
 	private boolean snapping = false;
@@ -284,6 +285,23 @@ public class LevelEditorController extends WorldController {
 		buttons.add(new ToggleButton(GUI_LEFT_BAR_MARGIN, 5 * GUI_LEFT_BAR_MARGIN,
 				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
 				"LEOptions", 0, "snapping"));
+
+		buttons.add(new Button(GUI_LEFT_BAR_MARGIN, 9 * GUI_LEFT_BAR_MARGIN,
+				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
+				"Entity", 0, "edit"));
+
+		buttons.add(new Button(GUI_LEFT_BAR_MARGIN, 11 * GUI_LEFT_BAR_MARGIN,
+				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
+				"Entity", 1, "delete"));
+
+		buttons.add(new Button(GUI_LEFT_BAR_MARGIN, 13 * GUI_LEFT_BAR_MARGIN,
+				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
+				"Entity", 2, "copy"));
+
+		buttons.add(new Button(GUI_LEFT_BAR_MARGIN, 15 * GUI_LEFT_BAR_MARGIN,
+				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
+				"Entity", 3, "deselect"));
+
 	}
 
 	//region Utility Helpers
@@ -404,6 +422,36 @@ public class LevelEditorController extends WorldController {
 							break;
 					}
 					break;
+				case("Entity"):
+					switch(b.getName()){
+						case("edit"):
+							if (selected != null) {
+								promptTemplate(selected);
+								objects.remove(selected);
+								selected = null;
+							}
+							dragging = false;
+							creating = false;
+							break;
+						case("delete"):
+							if (selected != null) {
+								objects.remove(selected);
+								selected = null;
+							}
+							dragging = false;
+							creating = false;
+							break;
+						case("copy"):
+
+							break;
+						case("deselect"):
+							selected = null;
+							dragging = false;
+							creating = false;
+							break;
+						default:
+							break;
+					}
 				default:
 					break;
 			}
@@ -496,6 +544,7 @@ public class LevelEditorController extends WorldController {
 		// Left Click
 		if (InputController.getInstance().didLeftClick()) {
 			if(!processButtons()) {
+
 				if (mouseX * worldScale.x <= GUI_LEFT_BAR_WIDTH) {
 
 				} else if (mouseY * worldScale.y <= GUI_LOWER_BAR_HEIGHT) {
@@ -506,10 +555,14 @@ public class LevelEditorController extends WorldController {
 					} else if (button == -1) {
 						if (entityTree.current.parent != null) {
 							entityTree.upFolder();
+							creating = false;
+							selected = null;
 						}
 					} else {
 						if (!entityTree.current.children.get(button).isLeaf) {
 							entityTree.setCurrent(entityTree.current.children.get(button));
+							creating = false;
+							selected = null;
 						} else {
 							selected = createXY(entityTree.current.children.get(button), adjustedMouseX, adjustedMouseY);
 							if (selected != null) {
@@ -518,26 +571,16 @@ public class LevelEditorController extends WorldController {
 							}
 						}
 					}
-
-
 				} else {
 					creating = false;
 					dragging = false;
 					selected = entityQuery();
-					if (selected == null) {
+					if (selected != null) {
 						//createXY(creationOptions[entityIndex], adjustedMouseX,adjustedMouseY);
 					}
-				/*
-				if(selected instanceof BackgroundEntity){
-					adjustedCxCamera = -adjustedMouseX;
-					adjustedCyCamera = -adjustedMouseY;
-					camUpdate();
-				}*/
-
 				}
 
 			}
-
 		}
 
 		if(InputController.getInstance().didLeftDrag()){
@@ -546,85 +589,41 @@ public class LevelEditorController extends WorldController {
 			}else if(mouseY * worldScale.y <= GUI_LOWER_BAR_HEIGHT){
 
 			}else{
+
 				dragging = true;
+				if(selected != null){
 
-				if(selected != null) {
-					/*
-					if(false && selected instanceof BackgroundEntity){
-						if (mouseX < -adjustedCxCamera + 3 ) {
-							// Pan left
-							adjustedCxCamera += CAMERA_PAN_SPEED/worldScale.x;
-						}
-						if (mouseY < -adjustedCyCamera + 3 ) {
-							// down
-							adjustedCyCamera += CAMERA_PAN_SPEED/worldScale.y;
-						}
-						if (mouseX > -adjustedCxCamera - 3) {
-							adjustedCxCamera -= CAMERA_PAN_SPEED/worldScale.x;
-						}
-						if (mouseY > -adjustedCyCamera - 3) {
-							adjustedCyCamera -= CAMERA_PAN_SPEED/worldScale.y;
-						}
-						camUpdate();
-
-						selected.setPosition(adjustedCxCamera, adjustedCyCamera);
-
-
-
-					}
-					else {*/
 					selected.setPosition(adjustedMouseX, adjustedMouseY);
 					selected.setTextures(getMantisAssetManager());
-
-
+				}else{
 
 				}
-				//get offset
-				//display stuff related to it
-
 			}
-
 		}
-
 		if(InputController.getInstance().didLeftRelease()){
 			if(mouseX* worldScale.x <= GUI_LEFT_BAR_WIDTH ){
 
 			}else if(mouseY * worldScale.y <= GUI_LOWER_BAR_HEIGHT){
 
 			}else{
-
-				if(dragging) {
-					dragging = false;
-					if (selected != null) {
-						if(selected instanceof BackgroundEntity){
-							selected.setPosition(adjustedMouseX, adjustedMouseY);
-						}
-						else {
+				if(selected != null){
+					if(dragging) {
+						dragging = false;
+						if (selected != null) {
 							selected.setPosition(adjustedMouseX, adjustedMouseY);
 							selected.setTextures(getMantisAssetManager());
 						}
+						if (creating) {
+							promptTemplate(selected);
+						}
 					}
-					if (creating) {
-						promptTemplate(selected);
-					}
-					selected = null;
-				}
-				else{
-
+				}else {
 
 				}
-
 			}
 			creating = false;
-
 		}
 
-		// Delete
-		if (InputController.getInstance().isRightClickPressed()) {
-			Entity select = entityQuery();
-			if (select != null) objects.remove(select);
-			inputRateLimiter = UI_WAIT_LONG;
-		}
 
 		// Edit
 		if (InputController.getInstance().isEKeyPressed()) {
@@ -815,6 +814,17 @@ public class LevelEditorController extends WorldController {
 
 	}
 
+	private void drawSelected(){
+
+		circleShape.setRadius(MAX_SNAP_DISTANCE);
+		Gdx.gl.glLineWidth(5);
+		canvas.beginDebug(camTrans);
+		Entity ent = selected;
+		if(ent!= null)
+			canvas.drawPhysics(circleShape, new Color(Color.FIREBRICK),ent.getPosition().x , ent.getPosition().y ,worldScale.x,worldScale.y );
+		canvas.endDebug();
+	}
+
 	private void drawButtons(){
 		buttons.setTextures(mantisAssetManager);
 		buttons.draw(canvas, mouseX * worldScale.x, mouseY * worldScale.y );
@@ -880,6 +890,7 @@ public class LevelEditorController extends WorldController {
 		drawGridLines();
 		drawEntitySelector();
 		drawGUI();
+		drawSelected();
 		drawHelp();
 
 	}
