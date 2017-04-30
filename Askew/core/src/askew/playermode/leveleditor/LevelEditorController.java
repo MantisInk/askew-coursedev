@@ -244,6 +244,9 @@ public class LevelEditorController extends WorldController {
 		adjustedCxCamera = 0;
 		adjustedCyCamera = 0;
 		camUpdate();
+
+		pressedL = false;
+		prevPressedL = false;
 	}
 
 	/**
@@ -362,168 +365,8 @@ public class LevelEditorController extends WorldController {
 
 	}
 
-
-	private void promptTemplate(Entity template) {
-		if (!prompting) {
-			prompting = true; //Use different constant? Can just use the same one?
-
-			JDialog entityDisplay = new JDialog();
-			entityDisplay.setUndecorated(true);
-			entityDisplay.setSize(600,600);
-//			entityDisplay.setLocationRelativeTo(null);
-			entityDisplay.toFront();
-			JPanel panel = makeEntityWindow(template,entityDisplay);
-
-			entityDisplay.add(panel);
-			entityDisplay.setVisible(true);
-		}
-	}
-
-	private JPanel makeEntityWindow(Entity template, JDialog parentWindow){
-		JsonObject entityObject = jsonLoaderSaver.gsonToJsonObject(template);
-
-		JsonObject entityProp = entityObject.get("INSTANCE").getAsJsonObject();
-		String entityName = entityObject.get("CLASSNAME").getAsString();
-		entityName = entityName.substring(entityName.lastIndexOf("."));
-
-		JPanel panel = new JPanel();
-		panel.setLayout(null);
-
-		int rowNum = 0;
-
-		JLabel header = new JLabel(entityName+" Properties (Please hit OK instead of X to closeout window)");
-		JButton okButton = new JButton("OK");
-		JButton deleteButton = new JButton("Delete Entity");
-
-		//Define top elements
-		header.setBounds(BUFFER, BUFFER, 500, TEXT_HEIGHT);
-		rowNum++;
-		deleteButton.setBounds(BUFFER, (rowNum*TEXT_HEIGHT)+((rowNum+1)* BUFFER), 150, TEXT_HEIGHT);
-		rowNum++;
-
-		// Add properties
-		rowNum = generateSwingPropertiesForEntity(entityProp,panel,rowNum);
-
-		//Add okay button
-		okButton.addActionListener(e -> {
-			grabUpdatedObjectValuesFromGUI(entityProp,panel);
-			entityObject.add("INSTANCE", entityProp);
-			objects.remove(template);
-
-			//Get the string form of the entityObject
-			String stringJson = jsonLoaderSaver.stringFromJson(entityObject);
-			promptTemplateCallback(stringJson);
-
-			parentWindow.setVisible(false);
-			parentWindow.dispose();
-			prompting = false;
-		});
-
-		okButton.setBounds(125, ((rowNum+1)*TEXT_HEIGHT)+((rowNum+1)* BUFFER), 100, TEXT_HEIGHT);
-
-		deleteButton.addActionListener(e -> {
-			deleteEntity(template);
-			parentWindow.setVisible(false);
-			parentWindow.dispose();
-			prompting = false;
-		});
-
-		panel.add(header);
-		panel.add(okButton);
-		panel.add(deleteButton);
-
-		return panel;
-	}
-
-	private int generateSwingPropertiesForEntity(JsonObject e, JPanel jPanel, int rowNum) {
-		for(Map.Entry<String,JsonElement> entry : e.entrySet()) {
-			// Add key
-			String key = entry.getKey();
-			JLabel paramText = new JLabel(key + ":");
-
-			JComponent valueComponent;
-			// Add value based on type
-			JsonElement value = entry.getValue();
-			if (value.isJsonArray()) {
-				// TODO (hard), recurse
-				System.err.println("TODO: JSON Array. Use Henry's click and drag!");
-				continue;
-			} else if (value.isJsonPrimitive()) {
-				JsonPrimitive primitive = value.getAsJsonPrimitive();
-				if (primitive.isBoolean()) {
-					valueComponent = new JCheckBox("",primitive.getAsBoolean());
-				} else if (primitive.isNumber()) {
-					valueComponent = new JTextField(primitive.getAsNumber().toString());
-				} else if (primitive.isString()) {
-					valueComponent = new JTextField(primitive.getAsString());
-				} else {
-					System.err.println("Unknown primitive type: " + entry);
-					continue;
-				}
-			} else if (value.isJsonObject()) {
-				System.err.println("Unknown object type: " + entry);
-				continue;
-			} else {
-				System.err.println("Unknown type: " + entry);
-				continue;
-			}
-
-			paramText.setBounds((2 * BUFFER), (rowNum * TEXT_HEIGHT) + ((rowNum + 1) * BUFFER), FIELD_TEXT_WIDTH, TEXT_HEIGHT);
-			valueComponent.setBounds((3 * BUFFER) + FIELD_TEXT_WIDTH, (rowNum * TEXT_HEIGHT) + ((rowNum + 1) * BUFFER), FIELD_BOX_WIDTH, TEXT_HEIGHT);
-
-			// Update panel with key, value
-			jPanel.add(paramText);
-			jPanel.add(valueComponent);
-			rowNum++;
-		}
-
-		return rowNum;
-	}
-
-	private void deleteEntity(){
-		Entity select = entityQuery();
-		if (select != null) objects.remove(select);
-		inputRateLimiter = UI_WAIT_SHORT;
-	}
-
 	private void deleteEntity(Entity target){
 		objects.remove(target);
-	}
-
-
-	private void promptTemplateCallback(String json) {
-		Entity toAdd = jsonLoaderSaver.entityFromJson(json);
-		addObject( toAdd);
-		prompting = false;
-	}
-
-	private void promptGlobalConfig() {
-		if (!prompting) {
-			prompting = true;
-			String jsonOfConfig = jsonLoaderSaver.prettyJson(JSONLoaderSaver
-					.loadArbitrary("data/config.json").orElseGet
-							(JsonObject::new));
-			JDialog mainFrame = new JDialog();
-			mainFrame.setSize(600,600);
-			mainFrame.setLocationRelativeTo(null);
-			JPanel panel = new JPanel();
-			panel.setLayout(new FlowLayout());
-			final JTextArea commentTextArea =
-					new JTextArea(jsonOfConfig,20,30);
-			panel.add(commentTextArea);
-			mainFrame.add(panel);
-			JButton okButton = new JButton("OK");
-			okButton.addActionListener(e -> {
-				JSONLoaderSaver.saveArbitrary("data/config.json",commentTextArea
-						.getText());
-				GlobalConfiguration.update();
-				mainFrame.setVisible(false);
-				mainFrame.dispose();
-				prompting = false;
-			});
-			panel.add(okButton);
-			mainFrame.setVisible(true);
-		}
 	}
 
 	public Entity entityQuery() {
@@ -744,12 +587,7 @@ public class LevelEditorController extends WorldController {
 
 		// Load level
 		if (pressedL && !prevPressedL) {
-			if (!loadingLevelPrompt) {
-				loadingLevelPrompt = true;
-				currentLevel = showInputDialog("What level do you want to load?");
-				loadingLevelPrompt = false;
-				reset();
-			}
+			loadLevel();
 			inputRateLimiter = UI_WAIT_ETERNAL;
 		}
 
@@ -1031,6 +869,7 @@ public class LevelEditorController extends WorldController {
 		jsonLoaderSaver.setScale(this.worldScale);
 	}
 
+	//region JSON Stuff
 	private void makeGuiWindow() {
 		if (editorWindow != null) {
 			editorWindow.dispose();
@@ -1086,7 +925,6 @@ public class LevelEditorController extends WorldController {
 		editorWindow.setVisible(true);
 	}
 
-
 	private int generateSwingPropertiesForEntity(JsonObject e, JFrame jPanel, int rowNum) {
 		for(Map.Entry<String,JsonElement> entry : e.entrySet()) {
 			// Add key
@@ -1140,7 +978,6 @@ public class LevelEditorController extends WorldController {
 		}
 		inputRateLimiter = UI_WAIT_LONG;
 	}
-
 
 	private void loadLevel(String toLoad){
 		currentLevel = toLoad;
@@ -1214,5 +1051,158 @@ public class LevelEditorController extends WorldController {
 		System.err.println("CANT FIND " + key);
 		return null;
 	}
+
+	private void promptTemplate(Entity template) {
+		if (!prompting) {
+			prompting = true; //Use different constant? Can just use the same one?
+
+			JDialog entityDisplay = new JDialog();
+			entityDisplay.setUndecorated(true);
+			entityDisplay.setSize(600,600);
+//			entityDisplay.setLocationRelativeTo(null);
+			entityDisplay.toFront();
+			JPanel panel = makeEntityWindow(template,entityDisplay);
+
+			entityDisplay.add(panel);
+			entityDisplay.setVisible(true);
+		}
+	}
+
+	private JPanel makeEntityWindow(Entity template, JDialog parentWindow){
+		JsonObject entityObject = jsonLoaderSaver.gsonToJsonObject(template);
+
+		JsonObject entityProp = entityObject.get("INSTANCE").getAsJsonObject();
+		String entityName = entityObject.get("CLASSNAME").getAsString();
+		entityName = entityName.substring(entityName.lastIndexOf("."));
+
+		JPanel panel = new JPanel();
+		panel.setLayout(null);
+
+		int rowNum = 0;
+
+		JLabel header = new JLabel(entityName+" Properties (Please hit OK instead of X to closeout window)");
+		JButton okButton = new JButton("OK");
+		JButton deleteButton = new JButton("Delete Entity");
+
+		//Define top elements
+		header.setBounds(BUFFER, BUFFER, 500, TEXT_HEIGHT);
+		rowNum++;
+		deleteButton.setBounds(BUFFER, (rowNum*TEXT_HEIGHT)+((rowNum+1)* BUFFER), 150, TEXT_HEIGHT);
+		rowNum++;
+
+		// Add properties
+		rowNum = generateSwingPropertiesForEntity(entityProp,panel,rowNum);
+
+		//Add okay button
+		okButton.addActionListener(e -> {
+			grabUpdatedObjectValuesFromGUI(entityProp,panel);
+			entityObject.add("INSTANCE", entityProp);
+			objects.remove(template);
+
+			//Get the string form of the entityObject
+			String stringJson = jsonLoaderSaver.stringFromJson(entityObject);
+			promptTemplateCallback(stringJson);
+
+			parentWindow.setVisible(false);
+			parentWindow.dispose();
+			prompting = false;
+		});
+
+		okButton.setBounds(125, ((rowNum+1)*TEXT_HEIGHT)+((rowNum+1)* BUFFER), 100, TEXT_HEIGHT);
+
+		deleteButton.addActionListener(e -> {
+			deleteEntity(template);
+			parentWindow.setVisible(false);
+			parentWindow.dispose();
+			prompting = false;
+		});
+
+		panel.add(header);
+		panel.add(okButton);
+		panel.add(deleteButton);
+
+		return panel;
+	}
+
+	private int generateSwingPropertiesForEntity(JsonObject e, JPanel jPanel, int rowNum) {
+		for(Map.Entry<String,JsonElement> entry : e.entrySet()) {
+			// Add key
+			String key = entry.getKey();
+			JLabel paramText = new JLabel(key + ":");
+
+			JComponent valueComponent;
+			// Add value based on type
+			JsonElement value = entry.getValue();
+			if (value.isJsonArray()) {
+				// TODO (hard), recurse
+				System.err.println("TODO: JSON Array. Use Henry's click and drag!");
+				continue;
+			} else if (value.isJsonPrimitive()) {
+				JsonPrimitive primitive = value.getAsJsonPrimitive();
+				if (primitive.isBoolean()) {
+					valueComponent = new JCheckBox("",primitive.getAsBoolean());
+				} else if (primitive.isNumber()) {
+					valueComponent = new JTextField(primitive.getAsNumber().toString());
+				} else if (primitive.isString()) {
+					valueComponent = new JTextField(primitive.getAsString());
+				} else {
+					System.err.println("Unknown primitive type: " + entry);
+					continue;
+				}
+			} else if (value.isJsonObject()) {
+				System.err.println("Unknown object type: " + entry);
+				continue;
+			} else {
+				System.err.println("Unknown type: " + entry);
+				continue;
+			}
+
+			paramText.setBounds((2 * BUFFER), (rowNum * TEXT_HEIGHT) + ((rowNum + 1) * BUFFER), FIELD_TEXT_WIDTH, TEXT_HEIGHT);
+			valueComponent.setBounds((3 * BUFFER) + FIELD_TEXT_WIDTH, (rowNum * TEXT_HEIGHT) + ((rowNum + 1) * BUFFER), FIELD_BOX_WIDTH, TEXT_HEIGHT);
+
+			// Update panel with key, value
+			jPanel.add(paramText);
+			jPanel.add(valueComponent);
+			rowNum++;
+		}
+
+		return rowNum;
+	}
+
+	private void promptTemplateCallback(String json) {
+		Entity toAdd = jsonLoaderSaver.entityFromJson(json);
+		addObject( toAdd);
+		prompting = false;
+	}
+
+	private void promptGlobalConfig() {
+		if (!prompting) {
+			prompting = true;
+			String jsonOfConfig = jsonLoaderSaver.prettyJson(JSONLoaderSaver
+					.loadArbitrary("data/config.json").orElseGet
+							(JsonObject::new));
+			JDialog mainFrame = new JDialog();
+			mainFrame.setSize(600,600);
+			mainFrame.setLocationRelativeTo(null);
+			JPanel panel = new JPanel();
+			panel.setLayout(new FlowLayout());
+			final JTextArea commentTextArea =
+					new JTextArea(jsonOfConfig,20,30);
+			panel.add(commentTextArea);
+			mainFrame.add(panel);
+			JButton okButton = new JButton("OK");
+			okButton.addActionListener(e -> {
+				JSONLoaderSaver.saveArbitrary("data/config.json",commentTextArea
+						.getText());
+				GlobalConfiguration.update();
+				mainFrame.setVisible(false);
+				mainFrame.dispose();
+				prompting = false;
+			});
+			panel.add(okButton);
+			mainFrame.setVisible(true);
+		}
+	}
+	//endregion
 
 }
