@@ -120,12 +120,25 @@ public class JsonEntityFactory {
         float height = instance.get("height").getAsFloat();
         float depth = instance.get("depth").getAsFloat();
         float angle = instance.get("angle").getAsFloat();
-        float alpha = instance.get("alpha").getAsFloat();
         float scalex = instance.get("scalex").getAsFloat();
         float scaley = instance.get("scaley").getAsFloat();
+        String colorString = instance.get("color").getAsString();
+        int intColor;
+        try {
+            long color = instance.get("color").getAsLong();
+            intColor = (int) color;
+        } catch (Exception e) {
+            try {
+                long color = Long.decode(colorString);
+                intColor = (int) color;
+            } catch (Exception ee) {
+                long color = Long.valueOf(colorString, 16);
+                intColor = (int) color;
+            }
+        }
         String tex = instance.get("texturePath").getAsString();
 
-        bge = new BackgroundEntity(x,y,width,height,depth,angle,alpha,scalex,scaley,tex);
+        bge = new BackgroundEntity(x,y,width,height,depth,angle,scalex,scaley,tex,intColor);
         bge.setTextures(manager);
         return bge;
     }
