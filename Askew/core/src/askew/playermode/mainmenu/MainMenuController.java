@@ -110,7 +110,7 @@ public class MainMenuController extends WorldController {
             System.out.println("GM");
             listener.exitScreen(this, EXIT_MM_GM);
             return false;
-        } else if (input.didLeftDPadPress() && mode == HOME_SCREEN) {
+        } else if (input.didLeftDPadPress() && mode != LEVEL_SELECT) {
             System.out.println("LE");
             listener.exitScreen(this, EXIT_MM_LE);
             return false;

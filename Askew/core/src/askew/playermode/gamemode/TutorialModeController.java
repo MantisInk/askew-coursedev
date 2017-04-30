@@ -113,6 +113,7 @@ public class TutorialModeController extends GameModeController {
 	 */
 	@Override
 	protected void populateLevel() {
+		System.out.println(loadLevel);
 		super.populateLevel();
 		for(Entity e: objects) {
 			if(e instanceof Trunk) {
@@ -129,7 +130,9 @@ public class TutorialModeController extends GameModeController {
 		}
 		float sloth_x = sloth.getX();
 		float sloth_y = sloth.getY();
-		WheelObstacle pin = new WheelObstacle(sloth_x,sloth_y,1);
+		WheelObstacle pin;
+		if(stepsDone == STAGE_PINNED)
+			pin = new WheelObstacle(sloth_x,sloth_y,1);
 	}
 
 	/**

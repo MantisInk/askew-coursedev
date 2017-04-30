@@ -326,7 +326,7 @@ public class GameModeController extends WorldController {
 			for (Entity o : levelModel.getEntities()) {
 				// drawing
 
-				addObject( o);
+				addObject(o);
 				if (o instanceof SlothModel) {
 					sloth = (SlothModel) o;
 					sloth.activateSlothPhysics(world);
@@ -689,8 +689,6 @@ public class GameModeController extends WorldController {
 		if (paused) {
 			canvas.begin();
 			canvas.draw(pauseTexture);
-			System.out.println(worldScale.x+","+worldScale.y);
-			System.out.println("("+2*worldScale.x/fern.getWidth()+","+ 2*worldScale.y/fern.getHeight()+")");
 			canvas.draw(fern, Color.WHITE,fern.getWidth()/2, fern.getHeight()/2,
 					pause_locs[pause_mode].x * canvas.getWidth(), pause_locs[pause_mode].y* canvas.getHeight(),
 					0,2*worldScale.x/fern.getWidth(), 2*worldScale.y/fern.getHeight());
