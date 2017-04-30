@@ -214,6 +214,7 @@ public class LevelEditorController extends WorldController {
 		pressedL = false;
 		prevPressedL = false;
 	}
+
 	public void setLevel(String levelName) {
 		currentLevel = levelName;
 	}
@@ -361,12 +362,8 @@ public class LevelEditorController extends WorldController {
 
 	}
 
+
 	private void promptTemplate(Entity template) {
-			changeEntityParam(template);
-	}
-
-
-	private void changeEntityParam(Entity template) {
 		if (!prompting) {
 			prompting = true; //Use different constant? Can just use the same one?
 
@@ -1025,11 +1022,6 @@ public class LevelEditorController extends WorldController {
 		}
 	}
 
-	/** Unused ContactListener method */
-	public void postSolve(Contact contact, ContactImpulse impulse) {}
-	/** Unused ContactListener method */
-	public void preSolve(Contact contact, Manifold oldManifold) {}
-
 	@Override
 	public void setCanvas(GameCanvas canvas) {
 		// unscale
@@ -1199,7 +1191,6 @@ public class LevelEditorController extends WorldController {
 			}
 		}
 	}
-
 
 	private JsonElement findInPanel(String key, Container panel) {
 		boolean grabNext = false;

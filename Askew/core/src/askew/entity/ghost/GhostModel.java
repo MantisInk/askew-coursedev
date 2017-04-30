@@ -113,7 +113,7 @@ public class GhostModel extends BoxObstacle  {
                 (1.0f/texture.getRegionHeight() * getHeight()* getDrawScale().y * objectScale.y));
 
     }
-
+    //TODO MAKE POSITION LIST NOT USE X,Y
     @Override
     public void update(float dtime) {
         // Calculate vector to destination

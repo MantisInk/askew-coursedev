@@ -1,7 +1,7 @@
 {
   "flowGrabAnything": false,
   "flowArmDensity": 1.1,
-  "flowTorque": 2.2,
+  "flowTorque": 3.0,
   "flowOmegaNormalizer": 5.0,
   "flowGravityScale": 0.7,
   "flowCanMoveGrabbingHand": true,

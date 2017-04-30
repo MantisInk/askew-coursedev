@@ -88,7 +88,6 @@ public class Vine extends ComplexObstacle {
 		this.omega = omega;
 
 		build();
-		setCustomScale(3,1);
 	}
 
 	public void build() {
@@ -138,6 +137,8 @@ public class Vine extends ComplexObstacle {
 			plank.setFilterData(f);
 			bodies.add(plank);
 		}
+
+		setCustomScale(3,1);
 	}
 
 
