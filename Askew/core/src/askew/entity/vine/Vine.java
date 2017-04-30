@@ -140,11 +140,6 @@ public class Vine extends ComplexObstacle {
 		}
 	}
 
-	public void rebuild(float xa , float ya){
-		this.x = xa;
-		this.y = ya;
-		rebuild();
-	}
 
 	public void rebuild() {
 		bodies.clear();
@@ -271,12 +266,4 @@ public class Vine extends ComplexObstacle {
 		}
 	}
 
-	public void fillJSON() {
-		this.x = getPosition().x;
-		this.y = getPosition().y;
-		this.numLinks = numLinks;
-		this.pin = pin;
-		this.angle = angle;
-		this.omega = omega;
-	}
 }

@@ -17,7 +17,6 @@ import askew.MantisAssetManager;
 import askew.entity.BackgroundEntity;
 import askew.entity.Entity;
 import askew.entity.ghost.GhostModel;
-import askew.entity.obstacle.ComplexObstacle;
 import askew.entity.obstacle.Obstacle;
 import askew.entity.owl.OwlModel;
 import askew.entity.sloth.SlothModel;
@@ -27,6 +26,7 @@ import askew.entity.tree.Trunk;
 import askew.entity.vine.Vine;
 import askew.entity.wall.WallModel;
 import askew.playermode.WorldController;
+import askew.playermode.leveleditor.button.ButtonList;
 import askew.util.json.JSONLoaderSaver;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -77,18 +77,19 @@ public class LevelEditorController extends WorldController {
 	private Texture folder;
 	private Texture placeholder;
 	private Texture yellowbox;
+
+
 	JFrame editorWindow;
-	private boolean guiPrompt;
 
-
+	//Camera Variables
 	Affine2 camTrans;
-	float cxCamera;
+	float cxCamera;				//lower left corner position
 	float cyCamera;
-	float adjustedCxCamera;
+	float adjustedCxCamera;		//center of le window position
 	float adjustedCyCamera;
-	float mouseX;
+	float mouseX;				//mouse position in window
 	float mouseY;
-	float adjustedMouseX;
+	float adjustedMouseX;		//mouse position adjusted to camera
 	float adjustedMouseY;
 
 
@@ -102,13 +103,8 @@ public class LevelEditorController extends WorldController {
 	@Getter
 	private String currentLevel;
 
-	private String createClass;
-
 	/** A decrementing int that helps prevent accidental repeats of actions through an arbitrary countdown */
 	private int inputRateLimiter = 0;
-
-	private int tentativeEntityIndex = 0;
-	private int entityIndex = 0;
 
 	public static final int UI_WAIT_SHORT = 2;
 	public static final int UI_WAIT_LONG = 15;
@@ -126,20 +122,9 @@ public class LevelEditorController extends WorldController {
 	private boolean dragging = false;
 	private boolean creating = false;
 
+	private ButtonList buttons;
 
 
-	public static final String[] creationOptions = {
-			".SlothModel",
-			".Vine",
-			".PoleVault",
-			".Trunk",
-			".StiffBranch",
-			".OwlModel",
-			".WallModel",
-			".OwlModel",
-			".GhostModel",
-			".BackgroundEntity"
-	};
 
 	private boolean prompting;
 	private boolean showHelp;
@@ -214,10 +199,10 @@ public class LevelEditorController extends WorldController {
 		setDebug(false);
 		setComplete(false);
 		setFailure(false);
+		buttons = new ButtonList(mantisAssetManager);
 		jsonLoaderSaver = new JSONLoaderSaver();
 		entityTree = new EntityTree();
 		currentLevel = "test_save_obstacle";
-		createClass = ".SlothModel";
 		showHelp = true;
 		shouldDrawGrid = true;
 		camTrans = new Affine2();
@@ -328,7 +313,6 @@ public class LevelEditorController extends WorldController {
 		String name = node.name;
 
 
-		//creationOptions[entityIndex]
 		switch (name) {
 			case "SlothModel":
 				entity = new SlothModel(x,y);
@@ -337,7 +321,7 @@ public class LevelEditorController extends WorldController {
 				entity = new Vine(x,y,5.0f, 5f, -400f);
 				break;
 			case "Trunk":
-				entity = new Trunk(x,y, 5.0f, 0.25f, 1.0f, 3.0f,oneScale, 0);
+				entity = new Trunk(x,y, 5.0f, 0);
 				break;
 			case "PoleVault":
 				entity = new PoleVault(x,y, 5.0f, 0.25f, 1.0f, oneScale, 0);
@@ -563,8 +547,8 @@ public class LevelEditorController extends WorldController {
 	}
 
 	public void camUpdate(){
-		cxCamera = adjustedCxCamera + (((bounds.getWidth()-(GUI_LEFT_BAR_WIDTH/worldScale.x) )/2f)+(GUI_LEFT_BAR_WIDTH / worldScale.x) );
-		cyCamera = adjustedCyCamera + (((bounds.getHeight()-(GUI_LOWER_BAR_HEIGHT/worldScale.y))/2f) + (GUI_LOWER_BAR_HEIGHT / worldScale.y));
+		cxCamera = adjustedCxCamera - (((bounds.getWidth()-(GUI_LEFT_BAR_WIDTH/worldScale.x) )/2f)+(GUI_LEFT_BAR_WIDTH / worldScale.x) );
+		cyCamera = adjustedCyCamera - (((bounds.getHeight()-(GUI_LOWER_BAR_HEIGHT/worldScale.y))/2f) + (GUI_LOWER_BAR_HEIGHT / worldScale.y));
 		
 	}
 
@@ -580,24 +564,24 @@ public class LevelEditorController extends WorldController {
 		mouseX = InputController.getInstance().getCrossHair().x;
 		mouseY = InputController.getInstance().getCrossHair().y;
 
-		adjustedMouseX = mouseX - cxCamera ;
-		adjustedMouseY = mouseY - cyCamera ;
+		adjustedMouseX = mouseX + cxCamera ;
+		adjustedMouseY = mouseY + cyCamera ;
 
 		if(InputController.getInstance().isShiftKeyPressed()) {
 			// Check for pan
 			if (mouseX < GUI_LEFT_BAR_WIDTH / worldScale.x ) {
 				// Pan left
-				adjustedCxCamera += CAMERA_PAN_SPEED/worldScale.x;
+				adjustedCxCamera -= CAMERA_PAN_SPEED/worldScale.x;
 			}
 			if (mouseY < GUI_LOWER_BAR_HEIGHT / worldScale.y ) {
 				// down
-				adjustedCyCamera += CAMERA_PAN_SPEED/worldScale.y;
+				adjustedCyCamera -= CAMERA_PAN_SPEED/worldScale.y;
 			}
 			if (mouseX > (bounds.getWidth() ) - 1) {
-				adjustedCxCamera -= CAMERA_PAN_SPEED/worldScale.x;
+				adjustedCxCamera += CAMERA_PAN_SPEED/worldScale.x;
 			}
 			if (mouseY > (bounds.getHeight() ) - 1) {
-				adjustedCyCamera -= CAMERA_PAN_SPEED/worldScale.y;
+				adjustedCyCamera += CAMERA_PAN_SPEED/worldScale.y;
 			}
 			if(InputController.getInstance().isSpaceKeyPressed()){
 				adjustedCxCamera = 0;
@@ -686,12 +670,9 @@ public class LevelEditorController extends WorldController {
 
 					}
 					else {*/
-						selected.setPosition(adjustedMouseX, adjustedMouseY);
-						if (selected instanceof ComplexObstacle) {
-							((ComplexObstacle) selected).rebuild(adjustedMouseX, adjustedMouseY);
-							selected.setTextures(getMantisAssetManager());
-						//}
-					}
+					selected.setPosition(adjustedMouseX, adjustedMouseY);
+					selected.setTextures(getMantisAssetManager());
+
 
 
 				}
@@ -717,12 +698,7 @@ public class LevelEditorController extends WorldController {
 						}
 						else {
 							selected.setPosition(adjustedMouseX, adjustedMouseY);
-							if (selected instanceof ComplexObstacle) {
-
-								System.out.println("move complex");
-								((ComplexObstacle) selected).rebuild(adjustedMouseX, adjustedMouseY);
-								selected.setTextures(getMantisAssetManager());
-							}
+							selected.setTextures(getMantisAssetManager());
 						}
 					}
 					if (creating) {
@@ -736,6 +712,7 @@ public class LevelEditorController extends WorldController {
 				}
 
 			}
+			creating = false;
 
 		}
 
@@ -795,20 +772,17 @@ public class LevelEditorController extends WorldController {
 
 		// Scroll backward ent
 		if (InputController.getInstance().isLeftKeyPressed()) {
-			tentativeEntityIndex = (tentativeEntityIndex + 1 + creationOptions.length) % creationOptions.length;
-			inputRateLimiter = UI_WAIT_LONG;
+
 		}
 
 		// Scroll forward ent
 		if (InputController.getInstance().isRightKeyPressed()) {
-			tentativeEntityIndex = (tentativeEntityIndex - 1 + creationOptions.length) % creationOptions.length;
-			inputRateLimiter = UI_WAIT_LONG;
+
 		}
 
 		// Select ent
 		if (InputController.getInstance().isEnterKeyPressed()) {
-			entityIndex = tentativeEntityIndex;
-			inputRateLimiter = UI_WAIT_LONG;
+
 		}
 
 		// Help
@@ -838,25 +812,27 @@ public class LevelEditorController extends WorldController {
 
 	private void drawGridLines() {
 		// debug lines
+		if (!shouldDrawGrid)
+			return;
+		canvas.begin(camTrans);
 		Gdx.gl.glLineWidth(1);
 		// vertical
 		float dpsW = ((canvas.getWidth()) / bounds.width);
 		float dpsH = ((canvas.getHeight()) / bounds.height);
 
-		for (float i = ((int)(cxCamera * worldScale.x) % dpsW - dpsW); i < canvas.getWidth(); i += dpsW) {
-			gridLineRenderer.begin(ShapeRenderer.ShapeType.Line);
+		gridLineRenderer.begin(ShapeRenderer.ShapeType.Line);
+		for (float i = ((int)(-cxCamera * worldScale.x) % dpsW - dpsW); i < canvas.getWidth(); i += dpsW) {
 			gridLineRenderer.setColor(Color.FOREST);
 			gridLineRenderer.line(i, 0,i,canvas.getHeight());
-			gridLineRenderer.end();
 		}
 
 		// horizontal
-		for (float i = ((int)(cyCamera * worldScale.x) % dpsH - dpsH); i < canvas.getHeight(); i += dpsH) {
-			gridLineRenderer.begin(ShapeRenderer.ShapeType.Line);
+		for (float i = ((int)(-cyCamera * worldScale.x) % dpsH - dpsH); i < canvas.getHeight(); i += dpsH) {
 			gridLineRenderer.setColor(Color.FOREST);
 			gridLineRenderer.line(0, i,canvas.getWidth(),i);
-			gridLineRenderer.end();
 		}
+		gridLineRenderer.end();
+		canvas.end();
 	}
 
 	private void drawEntitySelector(){
@@ -869,11 +845,12 @@ public class LevelEditorController extends WorldController {
 
 		circleShape.setRadius(.05f);
 		for(Entity e : objects){
+			//if(e.getPosition().x * worldScale.x  > GUI_LEFT_BAR_WIDTH && )
 			canvas.drawPhysics(circleShape, new Color(0xcfcf000f),e.getPosition().x , e.getPosition().y ,worldScale.x,worldScale.y );
 			if(e instanceof BackgroundEntity){
-				float offsetx = ((e.getPosition().x + adjustedCxCamera) * worldScale.x) / ((BackgroundEntity) e).getDepth();
-				float offsety = ((e.getPosition().y + adjustedCyCamera) * worldScale.y) / ((BackgroundEntity) e).getDepth();
-				canvas.drawLine(e.getPosition().x *worldScale.x, e.getPosition().y *worldScale.y , -adjustedCxCamera*worldScale.x  + offsetx, -adjustedCyCamera*worldScale.y + offsety, Color.YELLOW, Color.CHARTREUSE);
+				float offsetx = ((e.getPosition().x - adjustedCxCamera) * worldScale.x) / ((BackgroundEntity) e).getDepth();
+				float offsety = ((e.getPosition().y - adjustedCyCamera) * worldScale.y) / ((BackgroundEntity) e).getDepth();
+				canvas.drawLine(e.getPosition().x *worldScale.x, e.getPosition().y *worldScale.y , adjustedCxCamera*worldScale.x  + offsetx, adjustedCyCamera*worldScale.y + offsety, Color.YELLOW, Color.CHARTREUSE);
 			}
 		}
 
@@ -975,36 +952,7 @@ public class LevelEditorController extends WorldController {
 		canvas.end();
 	}
 
-	@Override
-	public void draw(float delta) {
-		canvas.clear();
-
-		//draw background
-		canvas.begin();
-		canvas.draw(background);
-		canvas.end();
-
-		// Translate camera to cx, cy
-		camTrans.setToTranslation(0,0);
-		camTrans.setToTranslation(cxCamera * worldScale.x, cyCamera* worldScale.y);
-
-		Vector2 pos = canvas.getCampos();
-		pos.set(-adjustedCxCamera * worldScale.x ,-adjustedCyCamera * worldScale.y);
-		canvas.begin(camTrans);
-		Collections.sort(objects);
-		for(Entity obj : objects) {
-			obj.setDrawScale(worldScale);
-			obj.draw(canvas);
-		}
-		canvas.end();
-
-		canvas.begin(camTrans);
-		if (shouldDrawGrid) {
-			drawGridLines();
-		}
-		canvas.end();
-		drawGUI();
-
+	private void drawHelp(){
 		// Text- independent of where you scroll
 		canvas.begin(); // DO NOT SCALE
 		if (showHelp) {
@@ -1018,17 +966,40 @@ public class LevelEditorController extends WorldController {
 
 
 		canvas.drawTextStandard("MOUSE: " + adjustedMouseX + " , " + adjustedMouseY, GUI_LEFT_BAR_WIDTH + 10, GUI_LOWER_BAR_HEIGHT + (1.4f * worldScale.y));
-		canvas.drawTextStandard(-adjustedCxCamera + "," + -adjustedCyCamera , GUI_LEFT_BAR_WIDTH + 10, GUI_LOWER_BAR_HEIGHT + (1.1f * worldScale.y));
+		canvas.drawTextStandard(cxCamera + "," + cyCamera , GUI_LEFT_BAR_WIDTH + 10, GUI_LOWER_BAR_HEIGHT + (1.1f * worldScale.y));
 		canvas.drawTextStandard("Level: " + currentLevel, GUI_LEFT_BAR_WIDTH + 10, GUI_LOWER_BAR_HEIGHT + (.8f * worldScale.y));
-		canvas.drawTextStandard("Creating: " + creationOptions[tentativeEntityIndex], GUI_LEFT_BAR_WIDTH + 10, GUI_LOWER_BAR_HEIGHT + (.5f * worldScale.y));
-		if (tentativeEntityIndex != entityIndex) {
-			canvas.drawTextStandard("Hit Enter to Select New Object Type.", GUI_LEFT_BAR_WIDTH + 10, GUI_LOWER_BAR_HEIGHT + (.2f * worldScale.y));
+
+		canvas.end();
+	}
+
+	@Override
+	public void draw(float delta) {
+		canvas.clear();
+
+		//draw background
+		canvas.begin();
+		canvas.draw(background);
+		canvas.end();
+
+		// Translate camera to cx, cy
+		camTrans.setToTranslation(0,0);
+		camTrans.setToTranslation(-cxCamera * worldScale.x, -cyCamera* worldScale.y);
+
+		Vector2 pos = canvas.getCampos();
+		pos.set(adjustedCxCamera * worldScale.x ,adjustedCyCamera * worldScale.y);
+		canvas.begin(camTrans);
+		Collections.sort(objects);
+		for(Entity obj : objects) {
+			obj.setDrawScale(worldScale);
+			obj.draw(canvas);
 		}
 		canvas.end();
 
+
+		drawGridLines();
 		drawEntitySelector();
-
-
+		drawGUI();
+		drawHelp();
 
 	}
 
@@ -1072,7 +1043,6 @@ public class LevelEditorController extends WorldController {
 		}
 		//GUI Mode Enabled
 		//Prevent multiple windows from being created
-		guiPrompt = true;
 		//Window Settings
 		editorWindow = new JFrame();
 		GridLayout gridLayout = new GridLayout(12,2);

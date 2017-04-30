@@ -41,9 +41,7 @@ public class JsonEntityFactory {
         float y = instance.get("y").getAsFloat();
         float angle = instance.get("angle").getAsFloat();
         float numlinks = instance.get("numLinks").getAsFloat();
-        float linksize = instance.get("linksize").getAsFloat();
-        float stiff = instance.get("stiffLen").getAsFloat();
-        trunk = new Trunk(x, y, numlinks, 0.25f, linksize, stiff,scale, angle);
+        trunk = new Trunk(x, y, numlinks, angle);
         trunk.setDrawScale(scale.x, scale.y);
         trunk.setTextures(manager);
         return trunk;
@@ -81,18 +79,6 @@ public class JsonEntityFactory {
         branch.setTextures(manager);
         return branch;
     }
-
-    public static StiffBranch createBranchforTree(MantisAssetManager manager, JsonObject instance, Vector2 scale, Trunk tr) {
-        StiffBranch branch;
-        float x = instance.get("x").getAsFloat();
-        float y = instance.get("y").getAsFloat();
-        float stiff = instance.get("stiffLen").getAsFloat();
-        float angle = instance.get("angle").getAsFloat();
-        branch = new StiffBranch(tr.final_norm.x, tr.final_norm.y, stiff, 0.25f, 1f,scale, angle);
-        branch.setDrawScale(scale.x, scale.y);
-        branch.setTextures(manager);
-        return branch;
-        }
 
     public static OwlModel createOwl(MantisAssetManager manager, JsonObject instance, Vector2 scale) {
         OwlModel owl;
