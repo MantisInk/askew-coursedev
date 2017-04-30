@@ -12,15 +12,16 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import lombok.Getter;
 import lombok.Setter;
 
 public class MainMenuController extends WorldController {
     @Getter @Setter
-    private int selected = 0;
+    private int selected = 1;
     @Getter @Setter
-    private int minLevel = 0;
+    private int minLevel = 1;
     @Getter @Setter
     private int maxLevel = 10;
 
@@ -39,9 +40,8 @@ public class MainMenuController extends WorldController {
     private final int QUIT_BUTTON = 3;
     private int home_button = PLAY_BUTTON;
     private String[] home_text = {"Play", "Tutorial", "Level Select", "Quit"};
-//    private Vector2[] home_text_locs = {new Vector2(8.4f, 4.8f), new Vector2(7.25f, 4.2f), new Vector2(6.05f, 3.6f), new Vector2(8.5f,3.0f)};
-    private Vector2[] home_text_locs = {new Vector2(10f, 4.8f), new Vector2(10f, 4.2f), new Vector2(10f, 3.6f), new Vector2(10f,3.0f)};
-    private Vector2[] home_button_locs = {new Vector2(10.5f,4.7f), new Vector2(10.5f,4.1f), new Vector2(10.5f,3.5f), new Vector2(10.5f, 2.9f)};
+    private Vector2[] home_text_locs = {new Vector2(0.6f, 0.54f), new Vector2(0.6f, 0.47f), new Vector2(0.6f, 0.40f), new Vector2(0.6f,0.33f)};
+    private Vector2[] home_button_locs = {new Vector2(0.65f,0.53f), new Vector2(0.65f,0.46f), new Vector2(0.65f,0.39f), new Vector2(0.65f, 0.32f)};
 
     // level select mode options
     private final int CHOOSE_LEVEL = 0;
@@ -144,11 +144,11 @@ public class MainMenuController extends WorldController {
         canvas.draw(menu);
         if(mode == HOME_SCREEN) {
             for(int i = 0; i < home_text_locs.length; i++) {
-                canvas.drawTextAlignedRight(home_text[i], regina, home_text_locs[i].x * worldScale.x, home_text_locs[i].y * worldScale.y, Color.GREEN);
+                canvas.drawTextAlignedRight(home_text[i], regina, home_text_locs[i].x * canvas.getWidth(), home_text_locs[i].y * canvas.getHeight(), Color.GREEN);
             }
             canvas.draw(fern, Color.WHITE,fern.getWidth()/2, fern.getHeight()/2,
-                    home_button_locs[home_button].x * worldScale.x, home_button_locs[home_button].y* worldScale.y,
-                    0,worldScale.x/fern.getWidth(),worldScale.y/fern.getHeight());
+                    home_button_locs[home_button].x * canvas.getWidth(), home_button_locs[home_button].y* canvas.getHeight(),
+                    0, worldScale.x/fern.getWidth(),worldScale.y/fern.getHeight());
         }
         // TODO: new level select screen
         else if(mode == LEVEL_SELECT) {
@@ -163,6 +163,7 @@ public class MainMenuController extends WorldController {
 
     @Override
     public void reset() {
+        bounds = new Rectangle(0,0,16.0f, 9.0f);
         Gdx.input.setCursorCatched(false);
         nextCon = "";
         SoundController instance = SoundController.getInstance();

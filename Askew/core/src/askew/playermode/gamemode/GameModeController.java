@@ -222,9 +222,7 @@ public class GameModeController extends WorldController {
 	// for use in progressing through levels
 	public void setLevel() {
 		int lvl = GlobalConfiguration.getInstance().getCurrentLevel();
-		if (lvl == 0) {
-			loadLevel = DEFAULT_LEVEL;
-		} else if (lvl > MAX_LEVEL) {
+		if (lvl > MAX_LEVEL) {
 			loadLevel = "level"+MAX_LEVEL;
 			System.out.println("MM");
 			listener.exitScreen(this, EXIT_GM_MM);
@@ -316,6 +314,7 @@ public class GameModeController extends WorldController {
 		lastLevel = loadLevel;
 		try {
 			levelModel = jsonLoaderSaver.loadLevel(loadLevel);
+			System.out.println(levelModel.getTitle());
 			recordTime = levelModel.getRecordTime();
 			if (levelModel == null) {
 				levelModel = new LevelModel();
