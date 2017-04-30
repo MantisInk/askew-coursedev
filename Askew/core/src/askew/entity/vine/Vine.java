@@ -88,7 +88,6 @@ public class Vine extends ComplexObstacle {
 		this.omega = omega;
 
 		build();
-		setCustomScale(3,1);
 	}
 
 	public void build() {
@@ -131,6 +130,7 @@ public class Vine extends ComplexObstacle {
 			BoxObstacle plank = new BoxObstacle(pos.x, pos.y, planksize.x, planksize.y);
 			plank.setName(PLANK_NAME+ii);
 			plank.setDensity(BASIC_DENSITY);
+			plank.setAngle((float)Math.toRadians(angle));
 			plank.setAngularVelocity(omega*(nLinks-ii-1)/(nLinks));
 			Filter f = new Filter();
 			f.maskBits = FilterGroup.WALL | FilterGroup.SLOTH | FilterGroup.HAND;
@@ -138,6 +138,8 @@ public class Vine extends ComplexObstacle {
 			plank.setFilterData(f);
 			bodies.add(plank);
 		}
+
+		setCustomScale(3,1);
 	}
 
 

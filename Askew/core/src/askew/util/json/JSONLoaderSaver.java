@@ -114,9 +114,6 @@ public class JSONLoaderSaver {
         return gson.toJson(notPrettyJson);
     }
 
-    public void setScale(Vector2 scale) {
-        wrapper.setScale(scale);
-    }
 
     public void setManager(MantisAssetManager manager) {
         wrapper.setManager(manager);

@@ -20,7 +20,7 @@ import java.util.List;
  */
 public class JsonEntityFactory {
 
-    public static Vine createVine(MantisAssetManager manager, JsonObject instance, Vector2 scale) {
+    public static Vine createVine(MantisAssetManager manager, JsonObject instance) {
         Vine vine;
         float x = instance.get("x").getAsFloat();
         float y = instance.get("y").getAsFloat();
@@ -30,67 +30,61 @@ public class JsonEntityFactory {
         Texture managedTexture = manager.get(Vine.VINE_TEXTURE, Texture.class);
         //TextureRegion vineTexture = new TextureRegion(managedTexture);
 		vine = new Vine(x, y, numlinks, angle, omega);
-		vine.setDrawScale(scale.x, scale.y);
 		vine.setTextures(manager);
         return vine;
     }
 
-    public static Trunk createTrunk(MantisAssetManager manager, JsonObject instance, Vector2 scale) {
+    public static Trunk createTrunk(MantisAssetManager manager, JsonObject instance) {
         Trunk trunk;
         float x = instance.get("x").getAsFloat();
         float y = instance.get("y").getAsFloat();
         float angle = instance.get("angle").getAsFloat();
         float numlinks = instance.get("numLinks").getAsFloat();
         trunk = new Trunk(x, y, numlinks, angle);
-        trunk.setDrawScale(scale.x, scale.y);
         trunk.setTextures(manager);
         return trunk;
     }
 
-    public static PoleVault createPoleVault(MantisAssetManager manager, JsonObject instance, Vector2 scale) {
+    public static PoleVault createPoleVault(MantisAssetManager manager, JsonObject instance) {
         PoleVault poleVault;
         float x = instance.get("x").getAsFloat();
         float y = instance.get("y").getAsFloat();
         float angle = instance.get("angle").getAsFloat();
         float numlinks = instance.get("numLinks").getAsFloat();
         float linksize = instance.get("linksize").getAsFloat();
-        poleVault = new PoleVault(x, y, numlinks, 0.25f, linksize, scale, angle);
-        poleVault.setDrawScale(scale.x, scale.y);
+        poleVault = new PoleVault(x, y, numlinks, 0.25f, linksize, new Vector2(1,1), angle);
         poleVault.setTextures(manager);
         return poleVault;
     }
 
-    public static SlothModel createSloth(MantisAssetManager manager, JsonObject instance, Vector2 scale) {
+    public static SlothModel createSloth(MantisAssetManager manager, JsonObject instance) {
         SlothModel ret;
         ret = new SlothModel(instance.get("x").getAsFloat(), instance.get("y").getAsFloat());
-        ret.setDrawScale(scale.x, scale.y);
         ret.setTextures(manager);
         return ret;
     }
 
-    public static StiffBranch createStiffBranch(MantisAssetManager manager, JsonObject instance, Vector2 scale) {
+    public static StiffBranch createStiffBranch(MantisAssetManager manager, JsonObject instance) {
         StiffBranch branch;
         float x = instance.get("x").getAsFloat();
         float y = instance.get("y").getAsFloat();
         float stiff = instance.get("stiffLen").getAsFloat();
         float angle = instance.get("angle").getAsFloat();
-        branch = new StiffBranch(x, y, stiff, 0.25f, 1f,scale, angle);
-        branch.setDrawScale(scale.x, scale.y);
+        branch = new StiffBranch(x, y, stiff, 0.25f, 1f,new Vector2(1,1), angle);
         branch.setTextures(manager);
         return branch;
     }
 
-    public static OwlModel createOwl(MantisAssetManager manager, JsonObject instance, Vector2 scale) {
+    public static OwlModel createOwl(MantisAssetManager manager, JsonObject instance) {
         OwlModel owl;
         float x = instance.get("x").getAsFloat();
         float y = instance.get("y").getAsFloat();
         owl = new OwlModel(x, y);
-        owl.setDrawScale(scale.x, scale.y);
         owl.setTextures(manager);
         return owl;
     }
 
-    public static WallModel createWall(MantisAssetManager manager, JsonObject instance, Vector2 scale) {
+    public static WallModel createWall(MantisAssetManager manager, JsonObject instance) {
         WallModel wall;
         float x = instance.get("x").getAsFloat();
         float y = instance.get("y").getAsFloat();
@@ -103,24 +97,22 @@ public class JsonEntityFactory {
             copy[i] = arrayPoints[i];
         }
         wall = new WallModel(x, y, copy, thorn);
-        wall.setDrawScale(scale.x, scale.y);
         wall.setTextures(manager);
         return wall;
     }
 
-    public static GhostModel createGhost(MantisAssetManager manager, JsonObject instance, Vector2 scale) {
+    public static GhostModel createGhost(MantisAssetManager manager, JsonObject instance) {
         GhostModel ghost;
         float x = instance.get("x").getAsFloat();
         float y = instance.get("y").getAsFloat();
         float patroldx = instance.get("patroldx").getAsFloat();
         float patroldy = instance.get("patroldy").getAsFloat();
         ghost = new GhostModel(x, y, patroldx, patroldy);
-        ghost.setDrawScale(scale.x, scale.y);
         ghost.setTextures(manager);
         return ghost;
     }
 
-    public static BackgroundEntity createBGEntity(MantisAssetManager manager, JsonObject instance, Vector2 scale) {
+    public static BackgroundEntity createBGEntity(MantisAssetManager manager, JsonObject instance) {
         BackgroundEntity bge;
         float x = instance.get("x").getAsFloat();
         float y = instance.get("y").getAsFloat();
@@ -135,7 +127,6 @@ public class JsonEntityFactory {
 
         bge = new BackgroundEntity(x,y,width,height,depth,angle,alpha,scalex,scaley,tex);
         bge.setTextures(manager);
-        bge.setDrawScale(scale);
         return bge;
     }
 }

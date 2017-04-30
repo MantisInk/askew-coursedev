@@ -1,4 +1,3 @@
-texture/background/background.png
 texture/background/background1.png
 texture/background/fern.png
 texture/background/menu1.png
@@ -35,6 +34,7 @@ texture/leveleditor/grey.png
 texture/leveleditor/placeholder.png
 texture/leveleditor/up.png
 texture/leveleditor/yellowbox.png
+texture/leveleditor/button.png
 texture/sloth/arm.png
 texture/sloth/backarm.png
 texture/sloth/backarm_moving.png
