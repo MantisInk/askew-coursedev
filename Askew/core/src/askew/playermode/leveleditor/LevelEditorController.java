@@ -270,7 +270,7 @@ public class LevelEditorController extends WorldController {
 		}
 
 		for (Entity o : levelModel.getEntities()) {
-			addObject( o);
+			objects.add(o);
 		}
 	}
 
@@ -395,8 +395,7 @@ public class LevelEditorController extends WorldController {
 
 	}
 
-	private boolean processButtons(){
-		Button b = buttons.findButton(mouseX * worldScale.x, mouseY * worldScale.y);
+	private boolean processButtons(Button b){
 		if(b != null){
 			switch (b.getGroup()){
 				case("JSON"):
@@ -543,7 +542,7 @@ public class LevelEditorController extends WorldController {
 
 		// Left Click
 		if (InputController.getInstance().didLeftClick()) {
-			if(!processButtons()) {
+			if(!processButtons(buttons.findButton(mouseX * worldScale.x, mouseY * worldScale.y))) {
 
 				if (mouseX * worldScale.x <= GUI_LEFT_BAR_WIDTH) {
 
@@ -623,7 +622,7 @@ public class LevelEditorController extends WorldController {
 			}
 			creating = false;
 		}
-		
+
 		// Help
 		if (InputController.getInstance().isHKeyPressed()) {
 			showHelp = !showHelp;
