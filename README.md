@@ -36,7 +36,7 @@ Playing as Flow, you must swing from vine to vine to reach the owl, the goal! Re
 - _**Right click**_: _(while already grabbing/holding left click)_ safe transfer of active arm (if the active hand is over a grabbable object, Flow grabs it, releases the opposite hand, and safely switches the active arm)
 - _**D Key**_: _(if in a stage)_ enter the level editor
 
-_To navigate the menus, use the **arrow keys** to hover over options and **Enter** to select one.
+_To navigate the menus, use the **arrow keys** to hover over options and **Enter** to select one._
 
 #### Xbox Controls
 
@@ -65,9 +65,9 @@ _To navigate the menus, use the **arrow keys** to hover over options and **Enter
 
 ### Two-armed Control Scheme (Original)
 
-#### Xbox Controls _Only_
+**Xbox Controls _Only_**
 
-##### Grabbing
+#### Grabbing
 _Used to take hold of vines and other parts of the stage!_
 
 - _**Left bumper (LB)**_: grab (_holding the bumper_) or release (_letting go of the bumper_) an object with **left** hand
@@ -76,7 +76,7 @@ _Used to take hold of vines and other parts of the stage!_
 _**Note: Whenever you press RB or LB, a small yellow circle will appear over the respective hand. This circle will turn blue once that hand is grabbing an object.**_
 
 
-##### Rules for Grabbing
+#### Rules for Grabbing
 
 You are only able to grab branches and vines.
 
@@ -94,7 +94,7 @@ _**Note:** 360 degrees of motion is possible here_
 - Another trick is that the **right** arm is the arm with the b**right** color.
 
 
-##### _Tips for Swinging_
+#### _Tips for Swinging_
 
 **Swinging has been improved since the last prototype.** Move the joystick of your respective arm applies a torque in the direction you tilt, causing the arm to swing. It is much easier to use one arm to swing now, but you will still be rewarded for using both joysticks (stages are designed assuming that you do not do this however).
 
