@@ -13,6 +13,7 @@ package askew.playermode.gamemode;
 import askew.InputController;
 import askew.MantisAssetManager;
 import askew.entity.Entity;
+import askew.entity.obstacle.WheelObstacle;
 import askew.entity.tree.Trunk;
 import askew.entity.vine.Vine;
 import com.badlogic.gdx.graphics.Color;
@@ -126,6 +127,10 @@ public class TutorialModeController extends GameModeController {
 				tutorialEntities.add(e);
 			}
 		}
+		float sloth_x = sloth.getX();
+		float sloth_y = sloth.getY();
+		WheelObstacle pin = new WheelObstacle(sloth_x,sloth_y,1);
+
 	}
 
 	/**

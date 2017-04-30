@@ -219,8 +219,8 @@ public class GameModeController extends WorldController {
 		control_three_wait = 0;
 	}
 
+	// for use in progressing through levels
 	public void setLevel() {
-		//numLevel = lvl;
 		int lvl = GlobalConfiguration.getInstance().getCurrentLevel();
 		if (lvl == 0) {
 			loadLevel = DEFAULT_LEVEL;
@@ -230,6 +230,10 @@ public class GameModeController extends WorldController {
 			listener.exitScreen(this, EXIT_GM_MM);
 		} else
 			loadLevel = "level"+lvl;
+	}
+	// for use in loading levels that aren't part of the progression
+	public void setLevel(String lvlName) {
+		loadLevel = lvlName;
 	}
 
 	public void pause(){
@@ -627,15 +631,10 @@ public class GameModeController extends WorldController {
 
 		camTrans.setToTranslation(-1 * sloth.getBody().getPosition().x * worldScale.x
 				, -1 * sloth.getBody().getPosition().y * worldScale.y);
-
 		camTrans.translate(canvas.getWidth()/2,canvas.getHeight()/2);
-    
 		canvas.getCampos().set( sloth.getBody().getPosition().x * worldScale.x
 				, sloth.getBody().getPosition().y * worldScale.y);
 		canvas.begin(camTrans);
-		//canvas.draw(background, Color.WHITE, .25f*background.getWidth(),.75f * background.getHeight(),initFlowX*worldScale.x,initFlowY*worldScale.y,background.getWidth(), background.getHeight());
-
-
 		Collections.sort(objects);
 		for(Entity obj : objects) {
 			obj.setDrawScale(worldScale);
@@ -662,9 +661,7 @@ public class GameModeController extends WorldController {
 				if( obj instanceof  Obstacle){
 					((Obstacle)obj).drawDebug(canvas);
 				}
-
 			}
-
 			canvas.endDebug();
 			canvas.begin();
 			// text
@@ -692,11 +689,9 @@ public class GameModeController extends WorldController {
 		if (paused) {
 			canvas.begin();
 			canvas.draw(pauseTexture);
-
 			canvas.draw(fern, Color.WHITE,fern.getWidth()/2, fern.getHeight()/2,
 					pause_locs[pause_mode].x * worldScale.x, pause_locs[pause_mode].y* worldScale.y,
 					0,worldScale.x/fern.getWidth(),worldScale.y/fern.getHeight());
-
 			canvas.end();
 		}
 
