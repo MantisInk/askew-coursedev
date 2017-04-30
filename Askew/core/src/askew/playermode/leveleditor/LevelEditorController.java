@@ -127,6 +127,7 @@ public class LevelEditorController extends WorldController {
 	private Entity selected;
 	private boolean dragging = false;
 	private boolean creating = false;
+	private boolean snapping = false;
 
 	private ButtonList buttons;
 
@@ -250,6 +251,7 @@ public class LevelEditorController extends WorldController {
 
 		pressedL = false;
 		prevPressedL = false;
+
 	}
 
 	/**
@@ -279,6 +281,9 @@ public class LevelEditorController extends WorldController {
 		buttons.add(new Button(GUI_LEFT_BAR_MARGIN, 3 * GUI_LEFT_BAR_MARGIN,
 				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
 				"JSON", 1, "globalconfig"));
+		buttons.add(new ToggleButton(GUI_LEFT_BAR_MARGIN, 5 * GUI_LEFT_BAR_MARGIN,
+				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
+				"LEOptions", 0, "snapping"));
 	}
 
 	//region Utility Helpers
@@ -388,7 +393,17 @@ public class LevelEditorController extends WorldController {
 							break;
 					}
 					break;
-
+				case("LEOptions"):
+					switch (b.getName()){
+						case("snapping"):
+							ToggleButton t = ((ToggleButton)b);
+							t.setOn(!t.isOn());
+							snapping = t.isOn();
+							break;
+						default:
+							break;
+					}
+					break;
 				default:
 					break;
 			}
@@ -444,8 +459,7 @@ public class LevelEditorController extends WorldController {
 		mouseX = InputController.getInstance().getCrossHair().x;
 		mouseY = InputController.getInstance().getCrossHair().y;
 
-		adjustedMouseX = mouseX + cxCamera ;
-		adjustedMouseY = mouseY + cyCamera ;
+
 
 		if(InputController.getInstance().isShiftKeyPressed()) {
 			// Check for pan
@@ -468,6 +482,14 @@ public class LevelEditorController extends WorldController {
 				adjustedCyCamera = 0;
 			}
 			camUpdate();
+		}
+
+		adjustedMouseX = mouseX + cxCamera ;
+		adjustedMouseY = mouseY + cyCamera ;
+		if(snapping){
+			adjustedMouseX = Math.round(adjustedMouseX);
+			adjustedMouseY = Math.round(adjustedMouseY);
+
 		}
 
 
@@ -831,6 +853,7 @@ public class LevelEditorController extends WorldController {
 
 	@Override
 	public void draw(float delta) {
+
 		canvas.clear();
 
 		//draw background
@@ -853,6 +876,7 @@ public class LevelEditorController extends WorldController {
 		canvas.end();
 
 
+		canvas.font.setColor(Color.GOLDENROD);
 		drawGridLines();
 		drawEntitySelector();
 		drawGUI();
@@ -974,7 +998,7 @@ public class LevelEditorController extends WorldController {
 	private void loadLevel(String toLoad){
 		currentLevel = toLoad;
 		try {
-			Thread.sleep(1000);
+			Thread.sleep(250);
 			reset();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
