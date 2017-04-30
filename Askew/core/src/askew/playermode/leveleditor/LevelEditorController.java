@@ -860,14 +860,6 @@ public class LevelEditorController extends WorldController {
 		}
 	}
 
-	@Override
-	public void setCanvas(GameCanvas canvas) {
-		// unscale
-		this.canvas = canvas;
-		this.worldScale.x = 1.0f * canvas.getWidth()/bounds.getWidth();
-		this.worldScale.y = 1.0f * canvas.getHeight()/bounds.getHeight();
-		jsonLoaderSaver.setScale(this.worldScale);
-	}
 
 	//region JSON Stuff
 	private void makeGuiWindow() {
