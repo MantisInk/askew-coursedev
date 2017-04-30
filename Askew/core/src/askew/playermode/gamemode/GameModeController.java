@@ -281,11 +281,12 @@ public class GameModeController extends WorldController {
 
 		// Setup sound
 		SoundController instance = SoundController.getInstance();
-		if (instance.isActive("menumusic")) instance.stop("menumusic");
-		if (instance.isActive("bgmusic")) instance.stop("bgmusic");
-		if (selectedTrack != null) {
-			instance.play("bgmusic", selectedTrack, true);
-
+		if (playingMusic) {
+			if (instance.isActive("menumusic")) instance.stop("menumusic");
+			if (instance.isActive("bgmusic")) instance.stop("bgmusic");
+			if (selectedTrack != null) {
+				instance.play("bgmusic", selectedTrack, true);
+			}
 		}
 
 		if (!instance.isActive("fallmusic")) {
@@ -564,11 +565,13 @@ public class GameModeController extends WorldController {
 					if (coverOpacity > 1) coverOpacity = 1;
 					SoundController.getInstance().setVolume("fallmusic", 1 -
 							normalizedDistanceFromDeath);
+					if (playingMusic)
 					SoundController.getInstance().setVolume("bgmusic",
 							normalizedDistanceFromDeath);
 				}
 			} else {
 				SoundController.getInstance().setVolume("fallmusic", 0);
+				if (playingMusic)
 				SoundController.getInstance().setVolume("bgmusic",
 						1);
 				if ((playerIsReady || paused) && (collisions.isFlowKill() || !collisions.isFlowWin())) {

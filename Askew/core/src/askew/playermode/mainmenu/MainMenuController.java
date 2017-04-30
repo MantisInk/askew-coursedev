@@ -146,8 +146,10 @@ public class MainMenuController extends WorldController {
         Gdx.input.setCursorCatched(false);
         nextCon = "";
         SoundController instance = SoundController.getInstance();
-        if (instance.isActive("bgmusic")) instance.stop("bgmusic");
-        if (!instance.isActive("menumusic")) instance.play("menumusic", MENU_MUSIC, true);
+        if (playingMusic) {
+            if (instance.isActive("bgmusic")) instance.stop("bgmusic");
+            if (!instance.isActive("menumusic")) instance.play("menumusic", MENU_MUSIC, true);
+        }
     }
 
     @Override

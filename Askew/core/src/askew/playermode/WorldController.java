@@ -76,6 +76,7 @@ public abstract class WorldController implements Screen {
 	/** Retro font for displaying messages */
 	private static String FONT_FILE = "shared/RetroGame.ttf";
 	private static int FONT_SIZE = 64;
+	protected boolean playingMusic;
 
 	/** The font for giving messages to the player */
 	protected BitmapFont displayFont;
@@ -329,8 +330,8 @@ public abstract class WorldController implements Screen {
 	 */
 	public void setCanvas(GameCanvas canvas) {
 		this.canvas = canvas;
-		this.worldScale.x = 1.0f * (float)canvas.getWidth()/(float)bounds.getWidth();
-		this.worldScale.y = 1.0f * (float)canvas.getHeight()/(float)bounds.getHeight();
+		this.worldScale.x = 2.0f * (float)canvas.getWidth()/(float)bounds.getWidth();
+		this.worldScale.y = 2.0f * (float)canvas.getHeight()/(float)bounds.getHeight();
 		//System.out.println("SETCANVAS SET SCALE");
 	}
 	
@@ -383,6 +384,7 @@ public abstract class WorldController implements Screen {
 		debug  = false;
 		active = false;
 		countdown = -1;
+		playingMusic = GlobalConfiguration.getInstance().getAsBoolean("enableMusic");
 		//System.out.println("SETTING SCALE IN CONSTRUCTOR");
 	}
 	

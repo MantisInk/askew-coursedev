@@ -12,5 +12,6 @@
   "defaultLevel": "level0",
   "storeTimeRecords": false,
   "maxLevel": 9,
-  "currentLevel": 1
+  "currentLevel": 1,
+  "enableMusic": false
 }
