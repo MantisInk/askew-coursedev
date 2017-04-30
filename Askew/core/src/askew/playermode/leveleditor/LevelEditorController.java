@@ -27,7 +27,8 @@ import askew.entity.tree.Trunk;
 import askew.entity.vine.Vine;
 import askew.entity.wall.WallModel;
 import askew.playermode.WorldController;
-import askew.playermode.leveleditor.button.ButtonList;
+import askew.playermode.leveleditor.button.*;
+import askew.playermode.leveleditor.button.Button;
 import askew.util.PooledList;
 import askew.util.json.JSONLoaderSaver;
 import com.badlogic.gdx.Gdx;
@@ -117,6 +118,7 @@ public class LevelEditorController extends WorldController {
 	//In Pixels, divide by world scale for box2d.
 	public static final float GUI_LOWER_BAR_HEIGHT = 200.f;
 	public static final float GUI_LEFT_BAR_WIDTH = 200.f;
+	public static final float GUI_LEFT_BAR_MARGIN = 16f;
 
 	public float MAX_SNAP_DISTANCE = 1f;
 	public float CAMERA_PAN_SPEED = 20f;
@@ -188,6 +190,8 @@ public class LevelEditorController extends WorldController {
 		placeholder = manager.get("texture/leveleditor/placeholder.png");
 		yellowbox = manager.get("texture/leveleditor/yellowbox.png");
 		entityTree.setTextures(manager);
+		buttons.setManager(manager);
+		buttons.setTextures(manager);
 		levelEditorAssetState = AssetState.COMPLETE;
 	}
 
@@ -200,12 +204,9 @@ public class LevelEditorController extends WorldController {
 	public LevelEditorController() {
 //		super(36,18,0); I want this scale but for the sake of alpha:
 		super(DEFAULT_WIDTH,DEFAULT_HEIGHT,0);
-		setDebug(false);
-		setComplete(false);
-		setFailure(false);
-		buttons = new ButtonList(mantisAssetManager);
 		jsonLoaderSaver = new JSONLoaderSaver();
 		entityTree = new EntityTree();
+		buttons = new ButtonList();
 		currentLevel = "test_save_obstacle";
 		showHelp = true;
 		shouldDrawGrid = true;
@@ -234,12 +235,14 @@ public class LevelEditorController extends WorldController {
 		}
 
 		objects.clear();
+		buttons.clear();
 		world.dispose();
 
 		world = new World(gravity,false);
 		setComplete(false);
 		setFailure(false);
 		populateLevel();
+		populateButtons();
 
 		adjustedCxCamera = 0;
 		adjustedCyCamera = 0;
@@ -264,46 +267,21 @@ public class LevelEditorController extends WorldController {
 		}
 
 		for (Entity o : levelModel.getEntities()) {
-
 			addObject( o);
-
-			//System.err.println("UNSUPPORTED: Adding non obstacle entity");
-
 		}
 	}
 
-	/**
-	 * Returns whether to process the update loop
-	 *
-	 * At the start of the update loop, we check if it is time
-	 * to switch to a new game mode.  If not, the update proceeds
-	 * normally.
-	 *
-	 * @param dt Number of seconds since last animation frame
-	 *
-	 * @return whether to process the update loop
-	 */
-	public boolean preUpdate(float dt) {
-		if (!super.preUpdate(dt)) {
-			return false;
-		}
+	private void populateButtons(){
+		buttons.add(new Button(GUI_LEFT_BAR_MARGIN, GUI_LEFT_BAR_MARGIN,
+				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
+				"JSON", 0, "levelgui"));
 
-		InputController input = InputController.getInstance();
-		prevPressedL = pressedL;
-		pressedL = input.isLKeyPressed();
-		if (input.didLeftButtonPress()) {
-			System.out.println("GM");
-			listener.exitScreen(this, EXIT_LE_GM);
-			return false;
-		} else if (input.didTopButtonPress()) {
-			System.out.println("MM");
-			listener.exitScreen(this, EXIT_LE_MM);
-			return false;
-		}
-
-		return true;
+		buttons.add(new Button(GUI_LEFT_BAR_MARGIN, 3 * GUI_LEFT_BAR_MARGIN,
+				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
+				"JSON", 0, "levelgui"));
 	}
 
+	//region Utility Helpers
 	/**
 	 * Type safety is overrated [trevor]
 	 * @param x
@@ -391,7 +369,40 @@ public class LevelEditorController extends WorldController {
 	public void camUpdate(){
 		cxCamera = adjustedCxCamera - (((bounds.getWidth()-(GUI_LEFT_BAR_WIDTH/worldScale.x) )/2f)+(GUI_LEFT_BAR_WIDTH / worldScale.x) );
 		cyCamera = adjustedCyCamera - (((bounds.getHeight()-(GUI_LOWER_BAR_HEIGHT/worldScale.y))/2f) + (GUI_LOWER_BAR_HEIGHT / worldScale.y));
-		
+
+	}
+	//endregion
+
+	/**
+	 * Returns whether to process the update loop
+	 *
+	 * At the start of the update loop, we check if it is time
+	 * to switch to a new game mode.  If not, the update proceeds
+	 * normally.
+	 *
+	 * @param dt Number of seconds since last animation frame
+	 *
+	 * @return whether to process the update loop
+	 */
+	public boolean preUpdate(float dt) {
+		if (!super.preUpdate(dt)) {
+			return false;
+		}
+
+		InputController input = InputController.getInstance();
+		prevPressedL = pressedL;
+		pressedL = input.isLKeyPressed();
+		if (input.didLeftButtonPress()) {
+			System.out.println("GM");
+			listener.exitScreen(this, EXIT_LE_GM);
+			return false;
+		} else if (input.didTopButtonPress()) {
+			System.out.println("MM");
+			listener.exitScreen(this, EXIT_LE_MM);
+			return false;
+		}
+
+		return true;
 	}
 
 	public void update(float dt) {
@@ -647,6 +658,28 @@ public class LevelEditorController extends WorldController {
 		}
 	}
 
+	@Override
+	public void postUpdate(float dt) {
+
+		// Turn the physics engine crank.
+		//world.step(WORLD_STEP,WORLD_VELOC,WORLD_POSIT);
+
+		for (Entity ent :objects){
+
+			if(ent instanceof Obstacle){
+				Obstacle obj  = (Obstacle)ent;
+				if (obj.isRemoved()) {
+					obj.deactivatePhysics(world);
+					objects.remove(ent);
+					continue;
+				}
+			}
+			ent.update(dt); // called last!
+		}
+	}
+
+
+	//region Draw and Helpers
 	private void drawGridLines() {
 		// debug lines
 		if (!shouldDrawGrid)
@@ -710,7 +743,7 @@ public class LevelEditorController extends WorldController {
 			e.setPosition(x,y);
 		}
 	}
-	
+
 	//ox and oy are bottom left corner
 	public boolean inBounds(float x ,float y, float ox ,float oy, float width, float height){
 		return  x >= ox && x <= ox + width && y >= oy && y <= oy + height;
@@ -739,6 +772,7 @@ public class LevelEditorController extends WorldController {
 		return  -2;
 
 	}
+
 	private void drawEntityMenu(){
 		float margin = 18f;
 		float startx = GUI_LEFT_BAR_WIDTH + margin;
@@ -779,6 +813,11 @@ public class LevelEditorController extends WorldController {
 
 	}
 
+	private void drawButtons(){
+		buttons.setTextures(mantisAssetManager);
+		buttons.draw(canvas, mouseX * worldScale.x, mouseY * worldScale.y );
+	}
+
 	private void drawGUI(){
 		canvas.begin();
 		canvas.draw(grey,Color.WHITE,0,0,0,0,0,GUI_LEFT_BAR_WIDTH /grey.getWidth(), ((float)canvas.getHeight())/grey.getHeight());
@@ -786,6 +825,7 @@ public class LevelEditorController extends WorldController {
 		//canvas.draw(grey,Color.WHITE,0,0,0,0,0,2.0f * worldScale.x /grey.getWidth(), 9.0f * worldScale.y/grey.getHeight());
 
 		drawEntityMenu();
+		drawButtons();
 		canvas.end();
 	}
 
@@ -839,27 +879,7 @@ public class LevelEditorController extends WorldController {
 		drawHelp();
 
 	}
-
-	@Override
-	public void postUpdate(float dt) {
-
-		// Turn the physics engine crank.
-		//world.step(WORLD_STEP,WORLD_VELOC,WORLD_POSIT);
-
-		for (Entity ent :objects){
-
-			if(ent instanceof Obstacle){
-				Obstacle obj  = (Obstacle)ent;
-				if (obj.isRemoved()) {
-					obj.deactivatePhysics(world);
-					objects.remove(ent);
-					continue;
-				}
-			}
-			ent.update(dt); // called last!
-		}
-	}
-
+	//endregion
 
 	//region JSON Stuff
 	private void makeGuiWindow() {
