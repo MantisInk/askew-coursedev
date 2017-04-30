@@ -1,11 +1,8 @@
 package askew.entity.wall;
 
-import askew.GameCanvas;
 import askew.MantisAssetManager;
 import askew.entity.FilterGroup;
 import askew.entity.obstacle.PolygonObstacle;
-import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Filter;
