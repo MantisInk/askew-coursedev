@@ -278,7 +278,7 @@ public class LevelEditorController extends WorldController {
 
 		buttons.add(new Button(GUI_LEFT_BAR_MARGIN, 3 * GUI_LEFT_BAR_MARGIN,
 				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
-				"JSON", 0, "levelgui"));
+				"JSON", 1, "globalconfig"));
 	}
 
 	//region Utility Helpers
@@ -371,6 +371,33 @@ public class LevelEditorController extends WorldController {
 		cyCamera = adjustedCyCamera - (((bounds.getHeight()-(GUI_LOWER_BAR_HEIGHT/worldScale.y))/2f) + (GUI_LOWER_BAR_HEIGHT / worldScale.y));
 
 	}
+
+	private boolean processButtons(){
+		Button b = buttons.findButton(mouseX * worldScale.x, mouseY * worldScale.y);
+		if(b != null){
+			switch (b.getGroup()){
+				case("JSON"):
+					switch (b.getName()){
+						case("levelgui"):
+							makeGuiWindow();
+							break;
+						case("globalconfig"):
+							promptGlobalConfig();
+							break;
+						default:
+							break;
+					}
+					break;
+
+				default:
+					break;
+			}
+			return true;
+		}
+		else{
+			return false;
+		}
+	}
 	//endregion
 
 	/**
@@ -446,37 +473,38 @@ public class LevelEditorController extends WorldController {
 
 		// Left Click
 		if (InputController.getInstance().didLeftClick()) {
-			if(mouseX* worldScale.x <= GUI_LEFT_BAR_WIDTH ){
+			if(!processButtons()) {
+				if (mouseX * worldScale.x <= GUI_LEFT_BAR_WIDTH) {
 
-			}else if(mouseY * worldScale.y <= GUI_LOWER_BAR_HEIGHT){
+				} else if (mouseY * worldScale.y <= GUI_LOWER_BAR_HEIGHT) {
 
-				int button = getEntityMenuButton(mouseX * worldScale.x, mouseY * worldScale.y);
-				if(button == -2){
-					//do nothing
-				} else if(button == -1){
-					if(entityTree.current.parent != null){
-						entityTree.upFolder();
-					}
-				} else{
-					if(!entityTree.current.children.get(button).isLeaf){
-						entityTree.setCurrent(entityTree.current.children.get(button));
-					}else{
-						selected = createXY(entityTree.current.children.get(button),adjustedMouseX, adjustedMouseY);
-						if(selected != null) {
-							selected.setTextures(getMantisAssetManager());
-							creating = true;
+					int button = getEntityMenuButton(mouseX * worldScale.x, mouseY * worldScale.y);
+					if (button == -2) {
+						//do nothing
+					} else if (button == -1) {
+						if (entityTree.current.parent != null) {
+							entityTree.upFolder();
+						}
+					} else {
+						if (!entityTree.current.children.get(button).isLeaf) {
+							entityTree.setCurrent(entityTree.current.children.get(button));
+						} else {
+							selected = createXY(entityTree.current.children.get(button), adjustedMouseX, adjustedMouseY);
+							if (selected != null) {
+								selected.setTextures(getMantisAssetManager());
+								creating = true;
+							}
 						}
 					}
-				}
 
 
-			}else{
-				creating = false;
-				dragging = false;
-				selected = entityQuery();
-				if(selected == null){
-					//createXY(creationOptions[entityIndex], adjustedMouseX,adjustedMouseY);
-				}
+				} else {
+					creating = false;
+					dragging = false;
+					selected = entityQuery();
+					if (selected == null) {
+						//createXY(creationOptions[entityIndex], adjustedMouseX,adjustedMouseY);
+					}
 				/*
 				if(selected instanceof BackgroundEntity){
 					adjustedCxCamera = -adjustedMouseX;
@@ -484,9 +512,9 @@ public class LevelEditorController extends WorldController {
 					camUpdate();
 				}*/
 
+				}
+
 			}
-
-
 
 		}
 
@@ -569,10 +597,6 @@ public class LevelEditorController extends WorldController {
 
 		}
 
-
-		if (InputController.getInstance().didRightArrowPress()) {
-			makeGuiWindow();
-		}
 		// Delete
 		if (InputController.getInstance().isRightClickPressed()) {
 			Entity select = entityQuery();
@@ -590,48 +614,8 @@ public class LevelEditorController extends WorldController {
 			inputRateLimiter = UI_WAIT_SHORT;
 		}
 
-		// Name level
-		if (InputController.getInstance().isNKeyPressed()) {
-			currentLevel = showInputDialog("What should we call this level?");
-			inputRateLimiter = UI_WAIT_LONG;
-		}
 
-		// Load level
-		if (pressedL && !prevPressedL) {
-			loadLevel();
-			inputRateLimiter = UI_WAIT_ETERNAL;
-		}
 
-		// Save
-		if (InputController.getInstance().isSKeyPressed()) {
-			System.out.println("Saving...");
-			LevelModel timeToSave = new LevelModel();
-			timeToSave.setTitle(currentLevel);
-			for (Entity o : objects) {
-				timeToSave.addEntity(o);
-			}
-			if (jsonLoaderSaver.saveLevel(timeToSave, currentLevel)) {
-				System.out.println("Saved!");
-			} else {
-				System.err.println("ERROR IN SAVE");
-			}
-			inputRateLimiter = UI_WAIT_LONG;
-		}
-
-		// Scroll backward ent
-		if (InputController.getInstance().isLeftKeyPressed()) {
-
-		}
-
-		// Scroll forward ent
-		if (InputController.getInstance().isRightKeyPressed()) {
-
-		}
-
-		// Select ent
-		if (InputController.getInstance().isEnterKeyPressed()) {
-
-		}
 
 		// Help
 		if (InputController.getInstance().isHKeyPressed()) {
@@ -651,10 +635,6 @@ public class LevelEditorController extends WorldController {
 			// TODO: Update the drawn background (after henry implements the engine)
 			background = getMantisAssetManager().get("texture/background/background1.png");
 
-		}
-
-		if (InputController.getInstance().isGKeyPressed()) {
-			promptGlobalConfig();
 		}
 	}
 
