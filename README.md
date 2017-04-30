@@ -17,27 +17,63 @@
 ## Objective
 Playing as Flow, you must swing from vine to vine to reach the owl, the goal! Reaching the goal requires colliding with the owl, which will immediataely bring you to the next stage!
 
-## PC Controls
+## Key Updates
 
-We now have keyboard support! The PC controls use a one-arm variant control scheme. The controls are:
+- We are testing two new control schemes: a two-armed control scheme (original) and a one-arm control scheme. _**The latter supports keyboard/mouse controls**_
+- Whenever you give joystick input, the corresonding arm with have a faint glow (light arm - blue, dark arm - white)
+- Main menu now supports joystick input
 
-- *Arrow Keys*: Swing active arm
-- *Left click*: Grab
-- *Right click*: Safe transfer (if the free hand is over a grabbable object, grabs it and releases opposite hand)
+## Controls 
 
-To navigate the menus, use the arrow keys to hover over options and enter to select. Tap d to enter the level editor.
+### One-armed Control Scheme
 
-## Xbox Controls
+#### PC Controls
 
-### Grabbing
+**We now have keyboard support! The PC controls use a one-arm variant control scheme. We recommend using a mouse if you can**
+
+- _**Arrow Keys**_: swing active arm in the respective direction
+- _**Left click**_: grab (_holding the bumper_) or release (_letting go of the bumper_) 
+- _**Right click**_: _(while already grabbing/holding left click)_ safe transfer of active arm (if the active hand is over a grabbable object, Flow grabs it, releases the opposite hand, and safely switches the active arm)
+- _**D Key**_: _(if in a stage)_ enter the level editor
+
+_To navigate the menus, use the **arrow keys** to hover over options and **Enter** to select one._
+
+#### Xbox Controls
+
+- _**Left joystick**_: swing active arm
+- _**Right bumper (LB)**_: grab (_holding the bumper_) or release (_letting go of the bumper_) 
+- _**A Button**_: _(while already grabbing)_ safe transfer of active arm (if the active hand is over a grabbable object, Flow grabs it, releases the opposite hand, and safely switches the active arm)
+- _**Start button**_: pause the game, allowing you to restart the stage or return to the main menu
+- _**X button**_: _(if in a stage)_ activate the level editor for the given stage
+- _**Y button**_:  reset the level immediately
+- _**Any other button**_: nothing
+
+#### Control Notes
+
+- Your _inactive arm_ is shaded black and is not capable of moving or grabbing. 
+- You are only able to grab branches and vines 
+- Whenever you press your grab button, a small yellow circle will appear over your hand. This circle will turn blue once that hand is grabbing an object.
+- 360 degrees of motion is possible here
+
+
+#### _Tips for Swinging_
+
+- **Use your free arm to swing.** As before, using your heavy arms to bulid momentum will help you swing higher on vines. Think of swinging on a swing and how you move your legs to gain altitude. 
+- **Move individual joysticks if you confuse the arms.** When you're confused about which arm is which, or you just don't know which way to position your arms, letting go of the joystick while still grabbing will help you reorient yourself.
+- **Jump!** If you get stuck on the ground, try swinging your arms in opposite directions to the direction you want to go. The more your arms rotate, the further you jump. One of our emergent behaviors from swinging is that this motion will cause you to fly off the ground slightly, which should be enough height to get you level with a grabbable object.
+
+
+### Two-armed Control Scheme (Original)
+
+**Xbox Controls _Only_**
+
+#### Grabbing
 _Used to take hold of vines and other parts of the stage!_
 
 - _**Left bumper (LB)**_: grab (_holding the bumper_) or release (_letting go of the bumper_) an object with **left** hand
 - _**Right bumper (LB)**_: grab (_holding the bumper_) or release (_letting go of the bumper_) an object with **right** hand
 
-_**NEW: Whenever you press RB or LB, a small yellow circle will appear over the respective hand. This circle will turn blue once that hand is grabbing an object.**_
-
-_**NEW: Whenever you give joystick input, the corresonding arm with have a faint glow (light arm - blue, dark arm - white)**_
+_**Note: Whenever you press RB or LB, a small yellow circle will appear over the respective hand. This circle will turn blue once that hand is grabbing an object.**_
 
 
 #### Rules for Grabbing
@@ -45,7 +81,7 @@ _**NEW: Whenever you give joystick input, the corresonding arm with have a faint
 You are only able to grab branches and vines.
 
 
-### Swinging
+#### Swinging
 _Used to gain momentum on vines to swing yourself across the stage!_
 
 - _**Left joystick**_: swing **darker** arm in whichever direction you tilt
@@ -58,7 +94,7 @@ _**Note:** 360 degrees of motion is possible here_
 - Another trick is that the **right** arm is the arm with the b**right** color.
 
 
-#### _Tips for Swinging **(Updated)**_
+#### _Tips for Swinging_
 
 **Swinging has been improved since the last prototype.** Move the joystick of your respective arm applies a torque in the direction you tilt, causing the arm to swing. It is much easier to use one arm to swing now, but you will still be rewarded for using both joysticks (stages are designed assuming that you do not do this however).
 
@@ -67,10 +103,10 @@ _**Note:** 360 degrees of motion is possible here_
 - **Jump!** If you get stuck on the ground, try swinging your arms in opposite directions to the direction you want to go. The more your arms rotate, the further you jump. One of our emergent behaviors from swinging is that this motion will cause you to fly off the ground slightly, which should be enough height to get you level with a grabbable object.
 
 
-### Misc.
+#### Misc.
 - _**Start button**_: pause the game, allowing you to restart the stage or return to the main menu
-- _**Y button**_: (if in a stage) activate the level editor for the given stage
-- _**A button**_: restarts the level (used for faster playtesting)
+- _**X button**_: _(if in a stage)_ activate the level editor for the given stage
+- _**Y button**_:  reset the level immediately
 - _**Any other button**_: nothing
 
 
@@ -83,7 +119,7 @@ _**Note:** 360 degrees of motion is possible here_
 ## Known Issue(s)
 
 - We have a fullscreen mode for the game that scales very well, but unfortunately this doesn't work well with the GUI. The final submission of the game won't have this problem though as the level editor will not be there.
-- ~~You can only scroll on the main menu using the directional pad and not the joystick.~~
+- The buffer for "dying" when you pass below a certain threshold doesn't properly reset when going on to the next level. This unfortunately causes some spontaneous loses where you can't progress at first. Once you die the threshold is properly set though.
 
 ## Maximizing Fun
 
@@ -91,9 +127,9 @@ _**Note:** 360 degrees of motion is possible here_
 
 ## Level Editor
 
-- The level editor can be accessed via the main menu either by pressing _D_ on the keyboard _Y_ on the Xbox controller (pressing _Y_ on the Xbox controller anywhere else brings you to the main menu)
+- The level editor can be accessed via the main menu either by pressing _D_ on the keyboard _X_ on the Xbox controller
 - From the level editor, you can toggle between playing and editing a stage by pressing _X_ on the Xbox controller (make sure you place Flow as a starting point first though!)
-- You can leave the level editor by pressing _D_ on the keyboard _Y_ on the Xbox controller again (while not playing a stage in the level editor)
+- You can leave the level editor by pressing _D_ on the keyboard or _X_ on the Xbox controller again (while not playing a stage in the level editor)
 
 
 

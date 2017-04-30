@@ -32,7 +32,7 @@ public class SlothModel extends ComplexObstacle  {
     /** Constants for tuning sloth behaviour */
     private static final float HAND_DENSITY = 10.0f;
     private transient float ARM_DENSITY;
-    private static final float BODY_DENSITY = .8f;
+    private static final float BODY_DENSITY = .7f;
     private transient float TORQUE;
     private static final boolean BODY_FIXED_ROTATION = true;
     private static final boolean HANDS_FIXED_ROTATION = true;
@@ -163,7 +163,7 @@ public class SlothModel extends ComplexObstacle  {
 
     private static final float HAND_YOFFSET    = 0;
 
-    private static final float BODY_HEIGHT = 1.8f;
+    private static final float BODY_HEIGHT = 1.4f;
     private static final float BODY_WIDTH = 1.8f * (489f / 835f);
 
     private static final float ARM_WIDTH = 1.75f;
@@ -215,7 +215,8 @@ public class SlothModel extends ComplexObstacle  {
         bodies.clear();
         build();
     }
- 	public void rebuild(float x , float y){
+ 	public void setPosition(float x , float y){
+ 	    super.setPosition(x,y);
  	    this.x = x;
  	    this.y = y;
  	    rebuild();

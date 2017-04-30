@@ -31,9 +31,7 @@
       "INSTANCE": {
         "x": 3.0,
         "y": 1.0,
-        "stiffLen": 0.0,
         "angle": -90.0,
-        "linksize": 1.0,
         "numLinks": 10.0
       }
     },
@@ -41,7 +39,11 @@
       "CLASSNAME": "askew.entity.sloth.SlothModel",
       "INSTANCE": {
         "x": 8.0,
-        "y": 10.0
+        "y": 10.0,
+        "lTheta": 0.0,
+        "rTheta": 0.0,
+        "setLastGrabX": false,
+        "lastGrabX": 0.0
       }
     },
     {
@@ -49,9 +51,7 @@
       "INSTANCE": {
         "x": 6.5,
         "y": 7.5,
-        "stiffLen": 0.0,
         "angle": 270.0,
-        "linksize": 1.0,
         "numLinks": 3.0
       }
     },
@@ -60,9 +60,7 @@
       "INSTANCE": {
         "x": 3.0,
         "y": 1.0,
-        "stiffLen": 0.0,
         "angle": 0.0,
-        "linksize": 1.0,
         "numLinks": 8.0
       }
     },
@@ -71,9 +69,7 @@
       "INSTANCE": {
         "x": 13.0,
         "y": 1.0,
-        "stiffLen": 0.0,
         "angle": 0.0,
-        "linksize": 1.0,
         "numLinks": 8.0
       }
     },

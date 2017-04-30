@@ -66,14 +66,10 @@ public class OwlModel extends BoxObstacle  {
         this.setName("owl");
     }
 
-    public void setDrawScale(float x, float y) {
-        super.setDrawScale(x,y);
-    }
-
-
-    public void drawDebug(GameCanvas canvas) {
-        super.drawDebug(canvas);
-        // TODO
+    public void setPosition(float x, float y){
+        super.setPosition(x,y);
+        this.x = x;
+        this.y = y;
     }
 
 
@@ -115,11 +111,6 @@ public class OwlModel extends BoxObstacle  {
         canvas.draw(drawFrame,Color.WHITE,origin.x,origin.y,getPosition().x*drawScale.x,getPosition().y*drawScale.y,getAngle(),
                (1.0f/drawFrame.getRegionWidth()) *   getWidth() * getDrawScale().x * objectScale.x,
                (1.0f/drawFrame.getRegionHeight()  * getHeight()* getDrawScale().y * objectScale.y));
-    }
-
-    public void fillJSON() {
-        this.x = getPosition().x;
-        this.y = getPosition().y;
     }
 
     public float doVictory() {

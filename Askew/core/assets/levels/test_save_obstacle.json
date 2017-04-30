@@ -24,21 +24,12 @@
       }
     },
     {
-      "CLASSNAME": "askew.entity.vine.Vine",
-      "INSTANCE": {
-        "numLinks": 5.0,
-        "x": 5.325001,
-        "y": -0.9500003,
-        "angle": 5.0,
-        "omega": -400.0,
-        "pin": false
-      }
-    },
-    {
       "CLASSNAME": "askew.entity.sloth.SlothModel",
       "INSTANCE": {
         "x": 1.1399994,
         "y": 9.519995,
+        "lTheta": 0.0,
+        "rTheta": 0.0,
         "setLastGrabX": false,
         "lastGrabX": 0.0
       }
@@ -46,12 +37,43 @@
     {
       "CLASSNAME": "askew.entity.tree.Trunk",
       "INSTANCE": {
-        "x": 3.71,
-        "y": -1.98,
-        "stiffLen": 3.0,
+        "x": 2.7999992,
+        "y": -1.6199999,
         "angle": 90.0,
-        "linksize": 1.0,
         "numLinks": 5.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "numLinks": 5.0,
+        "x": 5.0,
+        "y": 1.0,
+        "angle": 33.0,
+        "omega": -400.0,
+        "pin": false
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "numLinks": 5.0,
+        "x": 3.0,
+        "y": 1.0,
+        "angle": 20.0,
+        "omega": -400.0,
+        "pin": false
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.sloth.SlothModel",
+      "INSTANCE": {
+        "x": 3.0,
+        "y": 3.0,
+        "lTheta": 0.0,
+        "rTheta": 0.0,
+        "setLastGrabX": false,
+        "lastGrabX": 0.0
       }
     }
   ]

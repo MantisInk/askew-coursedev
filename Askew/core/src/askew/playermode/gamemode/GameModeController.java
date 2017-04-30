@@ -280,7 +280,6 @@ public class GameModeController extends WorldController {
 		world.setContactListener(collisions);
 		setComplete(false);
 		setFailure(false);
-		setLevel();
 		populateLevel();
 
 		// Setup sound
@@ -305,20 +304,12 @@ public class GameModeController extends WorldController {
 	 * Lays out the game geography.
 	 */
 	protected void populateLevel() {
-		jsonLoaderSaver.setScale(this.worldScale);
 		// Are we loading a new level?
 		if (lastLevel == null || !lastLevel.equals(loadLevel)) {
 			selectedTrack = GAMEPLAY_MUSIC[(int)Math.floor(GAMEPLAY_MUSIC.length * Math.random())];
 		}
 		lastLevel = loadLevel;
 		try {
-			float level_num = Integer.parseInt(loadLevel.substring(5));
-			if (level_num==0){
-				System.out.println("Tutorial");
-				listener.exitScreen(this,EXIT_GM_TL);
-				return;
-			}
-
 			levelModel = jsonLoaderSaver.loadLevel(loadLevel);
 			recordTime = levelModel.getRecordTime();
 			if (levelModel == null) {
@@ -597,6 +588,7 @@ public class GameModeController extends WorldController {
 				int current = GlobalConfiguration.getInstance().getCurrentLevel();
 				GlobalConfiguration.getInstance().setCurrentLevel(current + 1);
 				System.out.println("GG");
+				setLevel();
 				listener.exitScreen(this, EXIT_GM_GM);
 			}
 

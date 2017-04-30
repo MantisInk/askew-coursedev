@@ -9,43 +9,11 @@
   "soundtrack": "TODO",
   "entities": [
     {
-      "CLASSNAME": "askew.entity.BackgroundEntity",
-      "INSTANCE": {
-        "x": 18.199993,
-        "y": 9.749994,
-        "width": 20.0,
-        "height": 20.0,
-        "depth": 20.0,
-        "angle": 0.0,
-        "alpha": 1.0,
-        "scalex": 1.0,
-        "scaley": 1.0,
-        "texturePath": "texture/background/sil4.png"
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.BackgroundEntity",
-      "INSTANCE": {
-        "x": -10.0,
-        "y": 16.499992,
-        "width": 15.0,
-        "height": 10.0,
-        "depth": 12.0,
-        "angle": 0.0,
-        "alpha": 1.0,
-        "scalex": 1.0,
-        "scaley": 1.0,
-        "texturePath": "texture/background/sil1.png"
-      }
-    },
-    {
       "CLASSNAME": "askew.entity.tree.Trunk",
       "INSTANCE": {
         "x": 7.0,
         "y": 14.0,
-        "stiffLen": 0.0,
         "angle": 225.0,
-        "linksize": 1.0,
         "numLinks": 5.0
       }
     },
@@ -72,9 +40,7 @@
       "INSTANCE": {
         "x": 12.739994,
         "y": 6.999997,
-        "stiffLen": 3.0,
         "angle": 90.0,
-        "linksize": 1.0,
         "numLinks": 7.0
       }
     },
@@ -119,40 +85,8 @@
       "INSTANCE": {
         "x": -3.0,
         "y": 14.0,
-        "stiffLen": 0.0,
         "angle": 270.0,
-        "linksize": 1.0,
         "numLinks": 10.0
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.BackgroundEntity",
-      "INSTANCE": {
-        "x": -2.5899997,
-        "y": 12.699991,
-        "width": 2.0,
-        "height": 2.0,
-        "depth": 0.99,
-        "angle": 0.0,
-        "alpha": 1.0,
-        "scalex": 1.0,
-        "scaley": 1.0,
-        "texturePath": "texture/background/fern.png"
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.BackgroundEntity",
-      "INSTANCE": {
-        "x": -3.3099995,
-        "y": 14.519991,
-        "width": 2.0,
-        "height": 2.0,
-        "depth": 0.99,
-        "angle": 0.0,
-        "alpha": 1.0,
-        "scalex": 1.0,
-        "scaley": 1.0,
-        "texturePath": "texture/background/fern.png"
       }
     }
   ]
