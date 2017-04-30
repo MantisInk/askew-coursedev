@@ -103,6 +103,7 @@ public class GameModeController extends WorldController {
 	private float fallDeathHeight;
 	private String selectedTrack;
 	private String lastLevel;
+	private MantisAssetManager manager;
 
 	//For playtesting control schemes
 	private String typeMovement;
@@ -140,6 +141,7 @@ public class GameModeController extends WorldController {
 
 		platformAssetState = AssetState.LOADING;
 		jsonLoaderSaver.setManager(manager);
+		this.manager = manager;
 		super.preLoadContent(manager);
 	}
 
@@ -165,7 +167,6 @@ public class GameModeController extends WorldController {
 
 		grabSound = Gdx.audio.newSound(Gdx.files.internal(GRAB_SOUND));
 
-		background = manager.get("texture/background/background1.png", Texture.class);
 		pauseTexture = manager.get("texture/background/pause.png", Texture.class);
 		fern = manager.get("texture/background/fern.png");
 
@@ -182,12 +183,8 @@ public class GameModeController extends WorldController {
 
 	// Physics objects for the game
 	/** Reference to the character avatar */
-
 	protected SlothModel sloth;
 	private static OwlModel owl;
-
-	/** Reference to the goalDoor (for collision detection) */
-	private BoxObstacle goalDoor;
 
 	/** Mark set to handle more sophisticated collision callbacks */
 	protected ObjectSet<Fixture> sensorFixtures;
@@ -311,6 +308,7 @@ public class GameModeController extends WorldController {
 		lastLevel = loadLevel;
 		try {
 			levelModel = jsonLoaderSaver.loadLevel(loadLevel);
+			background = manager.get(levelModel.getBackground(), Texture.class);
 			recordTime = levelModel.getRecordTime();
 			if (levelModel == null) {
 				levelModel = new LevelModel();

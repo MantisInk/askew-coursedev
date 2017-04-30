@@ -252,7 +252,6 @@ public class LevelEditorController extends WorldController {
 
 		pressedL = false;
 		prevPressedL = false;
-
 	}
 
 	/**
@@ -261,6 +260,7 @@ public class LevelEditorController extends WorldController {
 	private void populateLevel() {
 		try {
 			levelModel = jsonLoaderSaver.loadLevel(currentLevel);
+			background = mantisAssetManager.get(levelModel.getBackground(), Texture.class);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}

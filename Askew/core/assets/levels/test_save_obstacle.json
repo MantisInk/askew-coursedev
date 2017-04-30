@@ -5,7 +5,7 @@
   "goalTimeBronze": 60,
   "recordTime": 9999999.0,
   "title": "test_save_obstacle",
-  "background": "texture/background/background1.png",
+  "background": "texture/background/loading.png",
   "soundtrack": "TODO",
   "entities": [
     {
@@ -21,17 +21,6 @@
         "scalex": 1.0,
         "scaley": 1.0,
         "texturePath": "texture/background/fern.png"
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.sloth.SlothModel",
-      "INSTANCE": {
-        "x": 1.1399994,
-        "y": 9.519995,
-        "lTheta": 0.0,
-        "rTheta": 0.0,
-        "setLastGrabX": false,
-        "lastGrabX": 0.0
       }
     },
     {
@@ -69,11 +58,13 @@
       "CLASSNAME": "askew.entity.sloth.SlothModel",
       "INSTANCE": {
         "x": 3.0,
-        "y": 3.0,
+        "y": 4.0,
         "lTheta": 0.0,
         "rTheta": 0.0,
         "setLastGrabX": false,
-        "lastGrabX": 0.0
+        "lastGrabX": 0.0,
+        "didOneArmCheck": false,
+        "waitingForSafeRelease": false
       }
     }
   ]
