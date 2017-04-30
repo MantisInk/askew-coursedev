@@ -186,7 +186,7 @@ public class GameModeController extends WorldController {
 	/** Reference to the character avatar */
 
 	protected SlothModel sloth;
-	private static OwlModel owl;
+	protected static OwlModel owl;
 
 	/** Reference to the goalDoor (for collision detection) */
 	private BoxObstacle goalDoor;
@@ -201,9 +201,6 @@ public class GameModeController extends WorldController {
 	 */
 	public GameModeController() {
 		super(DEFAULT_WIDTH,DEFAULT_HEIGHT,DEFAULT_GRAVITY);
-		setDebug(false);
-		setComplete(false);
-		setFailure(false);
 		collisions = new PhysicsController();
 		world.setContactListener(collisions);
 		sensorFixtures = new ObjectSet<Fixture>();
@@ -263,15 +260,10 @@ public class GameModeController extends WorldController {
 		Vector2 gravity = new Vector2(world.getGravity() );
 
 		InputController.getInstance().releaseGrabs();
-		fallDeathHeight = Float.MAX_VALUE;
+
 		for(Entity obj : objects) {
 			if( (obj instanceof Obstacle && !(obj instanceof SlothModel)))
 				((Obstacle)obj).deactivatePhysics(world);
-			float potentialFallDeath = obj.getY() -
-					LOWEST_ENTITY_FALL_DEATH_THRESHOLD;
-			if (potentialFallDeath < fallDeathHeight) {
-				fallDeathHeight = potentialFallDeath;
-			}
 		}
 
 		objects.clear();
@@ -286,6 +278,15 @@ public class GameModeController extends WorldController {
 		setComplete(false);
 		setFailure(false);
 		populateLevel();
+		// set death height
+		fallDeathHeight = Float.MAX_VALUE;
+		for(Entity obj: objects) {
+			float potentialFallDeath = obj.getY() -
+					LOWEST_ENTITY_FALL_DEATH_THRESHOLD;
+			if (potentialFallDeath < fallDeathHeight) {
+				fallDeathHeight = potentialFallDeath;
+			}
+		}
 
 		// Setup sound
 		SoundController instance = SoundController.getInstance();
@@ -448,7 +449,7 @@ public class GameModeController extends WorldController {
 	public void printHelp(){
 		//Display waiting text if not ready
 		displayFont.setColor(Color.YELLOW);
-		canvas.drawText("Hold RB/LB \n to start!", displayFont, initFlowX * worldScale.x, initFlowY * worldScale.y + 200f);
+		canvas.drawText("Hold RB/LB \n to start!", displayFont, initFlowX * worldScale.x, initFlowY * worldScale.y + 150f);
 	}
 
 	/**

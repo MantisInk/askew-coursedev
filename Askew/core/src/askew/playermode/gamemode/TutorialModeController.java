@@ -51,7 +51,12 @@ public class TutorialModeController extends GameModeController {
 	private boolean cw;
 	private boolean ccw;
 
+	private float countdown = 0.15f;
+
 	private boolean pressedA = false;
+	private boolean prevRightGrab;
+	private boolean prevLeftGrab;
+	private int grabs = 0;
 
 	private float time = 0f;
 
@@ -111,6 +116,9 @@ public class TutorialModeController extends GameModeController {
 	public void reset() {
 		loadLevel = "tutorial"+currentStage;
 		super.reset();
+		time = 0;
+		grabs = 0;
+
 		joystickTexture = joystickAnimation.getKeyFrame(0);
 		bumperLTexture = bumperLAnimation.getKeyFrame(0);
 		bumperRTexture = bumperRAnimation.getKeyFrame(0);
@@ -192,11 +200,20 @@ public class TutorialModeController extends GameModeController {
 				canvas.draw(joystickNeutralTexture, Color.WHITE, joystickNeutralTexture.getRegionWidth() / 2, 0, 350, 450, 0, worldScale.x / joystickNeutralTexture.getRegionWidth(), worldScale.y / joystickNeutralTexture.getRegionHeight());
 				canvas.draw(joystickTexture, Color.WHITE, joystickTexture.getRegionWidth() / 2, 0, 450, 450, 0, worldScale.x / joystickTexture.getRegionWidth(), worldScale.y / joystickTexture.getRegionHeight());
 			}
-			if(time > 6f) {
-				canvas.drawTextCentered("Press A to continue", displayFont, 200f);
-			}
 		}
-//		if (currentStage == DID_NOTHING) {
+		if (currentStage >= STAGE_GRAB && currentStage < STAGE_VINE) {
+			if(grabs < 5) {
+				canvas.drawTextCentered("Try to grab 5x", displayFont, 200f);
+			}
+			if(sloth.isActualRightGrab()) {
+				canvas.draw(bumperRTexture, Color.WHITE, bumperLTexture.getRegionWidth() / 2, 0, 400, 400, 0, worldScale.x * 3 / bumperLTexture.getRegionWidth(), worldScale.y * 3 / bumperLTexture.getRegionHeight());
+				canvas.draw(joystickTexture, Color.WHITE, joystickTexture.getRegionWidth() / 2, 0, 350, 450, 0, worldScale.x / joystickTexture.getRegionWidth(), worldScale.y / joystickTexture.getRegionHeight());
+				canvas.draw(joystickNeutralTexture, Color.WHITE, joystickNeutralTexture.getRegionWidth() / 2, 0, 450, 450, 0, worldScale.x/ joystickNeutralTexture.getRegionWidth(), worldScale.y / joystickNeutralTexture.getRegionHeight());
+			} else {
+				canvas.draw(bumperLTexture, Color.WHITE, bumperRTexture.getRegionWidth() / 2, 0, 400, 400, 0, worldScale.x * 3 / bumperRTexture.getRegionWidth(), worldScale.y * 3 / bumperRTexture.getRegionHeight());
+				canvas.draw(joystickNeutralTexture, Color.WHITE, joystickNeutralTexture.getRegionWidth() / 2, 0, 350, 450, 0, worldScale.x / joystickNeutralTexture.getRegionWidth(), worldScale.y / joystickNeutralTexture.getRegionHeight());
+				canvas.draw(joystickTexture, Color.WHITE, joystickTexture.getRegionWidth() / 2, 0, 450, 450, 0, worldScale.x / joystickTexture.getRegionWidth(), worldScale.y / joystickTexture.getRegionHeight());
+			}
 //		} else if (currentStage == MOVED_LEFT) {
 //		} else if (currentStage == MOVED_RIGHT) {
 //			canvas.draw(bumperLTexture, Color.WHITE, bumperLTexture.getRegionWidth() / 2, 0, 400, 400, 0, worldScale.x * 3 / bumperLTexture.getRegionWidth(), worldScale.y * 3 / bumperLTexture.getRegionHeight());
@@ -207,17 +224,11 @@ public class TutorialModeController extends GameModeController {
 //			canvas.draw(joystickNeutralTexture, Color.WHITE, joystickNeutralTexture.getRegionWidth() / 2, 0, 350, 450, 0, worldScale.x / joystickNeutralTexture.getRegionWidth(), worldScale.y / joystickNeutralTexture.getRegionHeight());
 //			canvas.draw(joystickTexture, Color.WHITE, joystickTexture.getRegionWidth() / 2, 0, 450, 450, 0, worldScale.x / joystickTexture.getRegionWidth(), worldScale.y / joystickTexture.getRegionHeight());
 //		} else if (currentStage >= GRABBED_RIGHT) {
-//			if(sloth.isRightGrab()) {
-//				canvas.draw(bumperRTexture, Color.WHITE, bumperLTexture.getRegionWidth() / 2, 0, 400, 400, 0, worldScale.x * 3 / bumperLTexture.getRegionWidth(), worldScale.y * 3 / bumperLTexture.getRegionHeight());
-//				canvas.draw(joystickTexture, Color.WHITE, joystickTexture.getRegionWidth() / 2, 0, 350, 450, 0, worldScale.x / joystickTexture.getRegionWidth(), worldScale.y / joystickTexture.getRegionHeight());
-//				canvas.draw(joystickNeutralTexture, Color.WHITE, joystickNeutralTexture.getRegionWidth() / 2, 0, 450, 450, 0, worldScale.x/ joystickNeutralTexture.getRegionWidth(), worldScale.y / joystickNeutralTexture.getRegionHeight());
-//			}
-//			else {
-//				canvas.draw(bumperLTexture, Color.WHITE, bumperRTexture.getRegionWidth() / 2, 0, 400, 400, 0, worldScale.x * 3 / bumperRTexture.getRegionWidth(), worldScale.y * 3 / bumperRTexture.getRegionHeight());
-//				canvas.draw(joystickNeutralTexture, Color.WHITE, joystickNeutralTexture.getRegionWidth() / 2, 0, 350, 450, 0, worldScale.x / joystickNeutralTexture.getRegionWidth(), worldScale.y / joystickNeutralTexture.getRegionHeight());
-//				canvas.draw(joystickTexture, Color.WHITE, joystickTexture.getRegionWidth() / 2, 0, 450, 450, 0, worldScale.x / joystickTexture.getRegionWidth(), worldScale.y / joystickTexture.getRegionHeight());
-//			}
-//		}
+		}
+		if((currentStage == STAGE_PINNED && time > 6f) ||
+				(currentStage == STAGE_GRAB && grabs >= 5)) {
+			canvas.drawTextCentered("Press A to continue", displayFont, 200f);
+		}
 	}
 
 	/**
@@ -254,32 +265,40 @@ public class TutorialModeController extends GameModeController {
 					} else {
 						sloth.getLeftArm().setAngle((float)Math.PI);
 					}
-					if(moveToNextStage())
-						next = true;
 					break;
 				case STAGE_GRAB:
-					if(moveToNextStage())
-						next = true;
-					break;
+					if((!prevRightGrab && sloth.isActualRightGrab()) || (!prevLeftGrab && sloth.isActualLeftGrab())) {
+						grabs++;
+					}
 				case STAGE_SHIMMY:
-					if(moveToNextStage())
-						next = true;
-					break;
 				case STAGE_FLING:
-					if(moveToNextStage())
-						next = true;
+					if(!isPlayerIsReady() || (isPlayerIsReady() && countdown > 0)) {
+						sloth.setLeftGrab(true);
+						sloth.setRightGrab(true);
+					} else if (isPlayerIsReady() && countdown > 0) {
+						countdown -= dt;
+					}
 					break;
 				case STAGE_VINE:
-					if(moveToNextStage())
-						next = true;
 					break;
 				default:
 					System.err.println(currentStage);
 			}
+			if(moveToNextStage())
+				next = true;
+			prevLeftGrab = sloth.isActualLeftGrab();
+			prevRightGrab = sloth.isActualRightGrab();
 		}
 	}
 	public boolean moveToNextStage() {
-		return (time > 6f && pressedA);
+		if(currentStage == STAGE_PINNED) {
+			return (time > 1.5f && pressedA);
+		} else if (currentStage == STAGE_GRAB) {
+			return (grabs > 5 && pressedA);
+		}else if(currentStage > STAGE_PINNED) {
+			return owl.didVictory();
+		}
+		return false;
 	}
 
 	public void draw(float delta){
@@ -289,6 +308,10 @@ public class TutorialModeController extends GameModeController {
 		drawInstructions();
 		canvas.end();
 
+	}
+
+	public void restart() {
+		currentStage = 0;
 	}
 
 }

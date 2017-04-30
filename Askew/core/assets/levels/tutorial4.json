@@ -4,7 +4,7 @@
   "goalTimeSilver": 45,
   "goalTimeBronze": 60,
   "recordTime": 9999999.0,
-  "title": "tutorial1",
+  "title": "tutorial4",
   "background": "texture/background/background1.png",
   "soundtrack": "TODO",
   "entities": [
@@ -50,10 +50,30 @@
       }
     },
     {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "numLinks": 5.0,
+        "x": 5.0200014,
+        "y": 16.699997,
+        "angle": 5.0,
+        "omega": -50.0,
+        "pin": false
+      }
+    },
+    {
       "CLASSNAME": "askew.entity.tree.Trunk",
       "INSTANCE": {
         "x": -3.9800005,
         "y": 14.059995,
+        "angle": -90.0,
+        "numLinks": 8.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 12.780001,
+        "y": 13.039996,
         "angle": -90.0,
         "numLinks": 5.0
       }
@@ -61,44 +81,19 @@
     {
       "CLASSNAME": "askew.entity.owl.OwlModel",
       "INSTANCE": {
-        "x": 22.399992,
-        "y": 18.699997
+        "x": 16.119999,
+        "y": 14.119994
       }
     },
     {
-      "CLASSNAME": "askew.entity.tree.Trunk",
+      "CLASSNAME": "askew.entity.vine.Vine",
       "INSTANCE": {
-        "x": -3.8600006,
-        "y": 11.72,
-        "angle": -90.0,
-        "numLinks": 5.0
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.tree.Trunk",
-      "INSTANCE": {
-        "x": -3.9400005,
-        "y": 9.3,
-        "angle": -90.0,
-        "numLinks": 5.0
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.tree.Trunk",
-      "INSTANCE": {
-        "x": -3.9800005,
-        "y": 6.9800005,
-        "angle": -90.0,
-        "numLinks": 5.0
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.tree.Trunk",
-      "INSTANCE": {
-        "x": -3.9400005,
-        "y": 4.6800003,
-        "angle": -90.0,
-        "numLinks": 5.0
+        "numLinks": 5.0,
+        "x": 8.82,
+        "y": 16.659996,
+        "angle": 5.0,
+        "omega": -50.0,
+        "pin": false
       }
     },
     {

@@ -183,6 +183,7 @@ public class GDXRoot extends Game implements ScreenListener {
 
 		} else if (exitCode == WorldController.EXIT_MM_TL) {
 			current = CON_TL;
+			((TutorialModeController)controllers[current]).restart();
 			controllers[current].reset();
 			setScreen(controllers[current]);
 
