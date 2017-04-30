@@ -103,6 +103,7 @@ public class GameModeController extends WorldController {
 	private float fallDeathHeight;
 	private String selectedTrack;
 	private String lastLevel;
+	private MantisAssetManager manager;
 
 	//For playtesting control schemes
 	private String typeMovement;
@@ -140,6 +141,7 @@ public class GameModeController extends WorldController {
 
 		platformAssetState = AssetState.LOADING;
 		jsonLoaderSaver.setManager(manager);
+		this.manager = manager;
 		super.preLoadContent(manager);
 	}
 
@@ -165,7 +167,6 @@ public class GameModeController extends WorldController {
 
 		grabSound = Gdx.audio.newSound(Gdx.files.internal(GRAB_SOUND));
 
-		background = manager.get("texture/background/background1.png", Texture.class);
 		pauseTexture = manager.get("texture/background/pause.png", Texture.class);
 		fern = manager.get("texture/background/fern.png");
 
@@ -182,12 +183,8 @@ public class GameModeController extends WorldController {
 
 	// Physics objects for the game
 	/** Reference to the character avatar */
-
 	protected SlothModel sloth;
 	private static OwlModel owl;
-
-	/** Reference to the goalDoor (for collision detection) */
-	private BoxObstacle goalDoor;
 
 	/** Mark set to handle more sophisticated collision callbacks */
 	protected ObjectSet<Fixture> sensorFixtures;
@@ -280,7 +277,6 @@ public class GameModeController extends WorldController {
 		world.setContactListener(collisions);
 		setComplete(false);
 		setFailure(false);
-		setLevel();
 		populateLevel();
 
 		// Setup sound
@@ -305,21 +301,14 @@ public class GameModeController extends WorldController {
 	 * Lays out the game geography.
 	 */
 	protected void populateLevel() {
-		jsonLoaderSaver.setScale(this.worldScale);
 		// Are we loading a new level?
 		if (lastLevel == null || !lastLevel.equals(loadLevel)) {
 			selectedTrack = GAMEPLAY_MUSIC[(int)Math.floor(GAMEPLAY_MUSIC.length * Math.random())];
 		}
 		lastLevel = loadLevel;
 		try {
-			float level_num = Integer.parseInt(loadLevel.substring(5));
-			if (level_num==0){
-				System.out.println("Tutorial");
-				listener.exitScreen(this,EXIT_GM_TL);
-				return;
-			}
-
 			levelModel = jsonLoaderSaver.loadLevel(loadLevel);
+			background = manager.get(levelModel.getBackground(), Texture.class);
 			recordTime = levelModel.getRecordTime();
 			if (levelModel == null) {
 				levelModel = new LevelModel();
@@ -508,20 +497,10 @@ public class GameModeController extends WorldController {
 			sloth.setLeftVert(InputController.getInstance().getLeftVertical());
 			sloth.setRightHori(InputController.getInstance().getRightHorizontal());
 			sloth.setRightVert(InputController.getInstance().getRightVertical());
-			boolean didSafe = InputController.getInstance()
-					.isBottomButtonPressed();
-			if (sloth.controlMode == 0) {
-				// TODO: Make more elegant - trevor
-				sloth.setLeftGrab(InputController.getInstance().getLeftGrab());
-				sloth.setRightGrab(InputController.getInstance().getRightGrab());
-			} else {
-				if (!didSafe) {
-					sloth.setOneGrab(InputController.getInstance()
-							.getRightGrab());
-				}
-				sloth.setSafeGrab(didSafe, leftCollisionBody,
-						rightCollisionBody, world);
-			}
+			sloth.setSafeGrab(InputController.getInstance().isBottomButtonPressed(), leftCollisionBody,
+					rightCollisionBody, world);
+			sloth.setLeftGrab(InputController.getInstance().getLeftGrab());
+			sloth.setRightGrab(InputController.getInstance().getRightGrab());
 			sloth.setLeftStickPressed(InputController.getInstance().getLeftStickPressed());
 			sloth.setRightStickPressed(InputController.getInstance().getRightStickPressed());
 			currentTime += dt;
@@ -550,18 +529,16 @@ public class GameModeController extends WorldController {
 			} else {
 				// Physics tiem
 				// Gribby grab
-				if (sloth.controlMode == 0 || !didSafe) {
-					if (sloth.isLeftGrab()) {
-						sloth.grab(world, leftCollisionBody, true);
-					} else {
-						sloth.releaseLeft(world);
-					}
+				if (sloth.isLeftGrab()) {
+					sloth.grab(world, leftCollisionBody, true);
+				} else {
+					sloth.releaseLeft(world);
+				}
 
-					if (sloth.isRightGrab()) {
-						sloth.grab(world, rightCollisionBody, false);
-					} else {
-						sloth.releaseRight(world);
-					}
+				if (sloth.isRightGrab()) {
+					sloth.grab(world, rightCollisionBody, false);
+				} else {
+					sloth.releaseRight(world);
 				}
 			}
 
@@ -609,6 +586,7 @@ public class GameModeController extends WorldController {
 				int current = GlobalConfiguration.getInstance().getCurrentLevel();
 				GlobalConfiguration.getInstance().setCurrentLevel(current + 1);
 				System.out.println("GG");
+				setLevel();
 				listener.exitScreen(this, EXIT_GM_GM);
 			}
 

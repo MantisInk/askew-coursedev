@@ -202,6 +202,9 @@ public class TutorialModeController extends GameModeController {
 	 */
 	@Override
 	protected void populateLevel() {
+		//setLoadLevel("level0");
+		//super.populateLevel();
+		//#TODO extend level import to tutorial for le usage
 		System.out.println("populating");
 		float sloth_x = 0;
 		float sloth_y = 0;
@@ -224,12 +227,12 @@ public class TutorialModeController extends GameModeController {
 		platform.setTextures(manager);
 		addObject(platform);
 
-		Trunk branch = new Trunk(sloth_x-1f,sloth_y+1.5f,11,0.25f,1,0,worldScale,-90.0f);
+		Trunk branch = new Trunk(sloth_x-1f,sloth_y+1.5f,11,-90.0f);
 		branch.setTextures(manager);
 		branch.setName("long branch");
 		addObject(branch);
 
-		Trunk branch1 = new Trunk(sloth_x-1f,sloth_y+1.5f,3,0.25f,1,0,worldScale,-90.0f);
+		Trunk branch1 = new Trunk(sloth_x-1f,sloth_y+1.5f,3,-90.0f);
 		branch1.setTextures(manager);
 		branch1.setName("short branch");
 		addObject(branch1);
@@ -356,12 +359,12 @@ public class TutorialModeController extends GameModeController {
 			canvas.draw(joystickTexture, Color.WHITE, joystickTexture.getRegionWidth() / 2, 0, 450, 450, 0, worldScale.x / joystickTexture.getRegionWidth(), worldScale.y / joystickTexture.getRegionHeight());
 		} else if (stepsDone >= GRABBED_RIGHT) {
 			if(sloth.isRightGrab()) {
-				canvas.draw(bumperLTexture, Color.WHITE, bumperLTexture.getRegionWidth() / 2, 0, 400, 400, 0, worldScale.x * 3 / bumperLTexture.getRegionWidth(), worldScale.y * 3 / bumperLTexture.getRegionHeight());
+				canvas.draw(bumperRTexture, Color.WHITE, bumperLTexture.getRegionWidth() / 2, 0, 400, 400, 0, worldScale.x * 3 / bumperLTexture.getRegionWidth(), worldScale.y * 3 / bumperLTexture.getRegionHeight());
 				canvas.draw(joystickTexture, Color.WHITE, joystickTexture.getRegionWidth() / 2, 0, 350, 450, 0, worldScale.x / joystickTexture.getRegionWidth(), worldScale.y / joystickTexture.getRegionHeight());
 				canvas.draw(joystickNeutralTexture, Color.WHITE, joystickNeutralTexture.getRegionWidth() / 2, 0, 450, 450, 0, worldScale.x/ joystickNeutralTexture.getRegionWidth(), worldScale.y / joystickNeutralTexture.getRegionHeight());
 			}
 			else {
-				canvas.draw(bumperRTexture, Color.WHITE, bumperRTexture.getRegionWidth() / 2, 0, 400, 400, 0, worldScale.x * 3 / bumperRTexture.getRegionWidth(), worldScale.y * 3 / bumperRTexture.getRegionHeight());
+				canvas.draw(bumperLTexture, Color.WHITE, bumperRTexture.getRegionWidth() / 2, 0, 400, 400, 0, worldScale.x * 3 / bumperRTexture.getRegionWidth(), worldScale.y * 3 / bumperRTexture.getRegionHeight());
 				canvas.draw(joystickNeutralTexture, Color.WHITE, joystickNeutralTexture.getRegionWidth() / 2, 0, 350, 450, 0, worldScale.x / joystickNeutralTexture.getRegionWidth(), worldScale.y / joystickNeutralTexture.getRegionHeight());
 				canvas.draw(joystickTexture, Color.WHITE, joystickTexture.getRegionWidth() / 2, 0, 450, 450, 0, worldScale.x / joystickTexture.getRegionWidth(), worldScale.y / joystickTexture.getRegionHeight());
 			}
@@ -515,7 +518,7 @@ public class TutorialModeController extends GameModeController {
 //			boolean didSafe = InputController.getInstance().getRightGrab();
 
 			//Increment Steps
-			System.out.println(stepsDone);
+			//System.out.println(stepsDone);
 			if(stepsDone==DID_NOTHING){
 				//Check for left joystick movement
 				if(Math.abs(input.getLeftHorizontal())>CONTROLLER_DEADZONE || Math.abs(input.getLeftVertical())>CONTROLLER_DEADZONE){

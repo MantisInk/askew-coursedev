@@ -6,9 +6,7 @@ import askew.entity.FilterGroup;
 import askew.entity.obstacle.BoxObstacle;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -74,14 +72,15 @@ public class GhostModel extends BoxObstacle  {
         elapseTime = 1;
     }
 
-    public void setDrawScale(float x, float y) {
-        super.setDrawScale(x,y);
-    }
-
-
     public void drawDebug(GameCanvas canvas) {
         super.drawDebug(canvas);
         // TODO
+    }
+
+    public void setPosition(float x, float y){
+        super.setPosition(x,y);
+        this.x = x;
+        this.y = y;
     }
 
 
@@ -114,7 +113,7 @@ public class GhostModel extends BoxObstacle  {
                 (1.0f/texture.getRegionHeight() * getHeight()* getDrawScale().y * objectScale.y));
 
     }
-
+    //TODO MAKE POSITION LIST NOT USE X,Y
     @Override
     public void update(float dtime) {
         // Calculate vector to destination
@@ -152,9 +151,5 @@ public class GhostModel extends BoxObstacle  {
         this.setPosition(this.getPosition().x + (float) moveX * actualMoveDistance, this.getPosition().y + (float) moveY * actualMoveDistance);
     }
 
-    public void fillJSON() {
-        this.x = getPosition().x;
-        this.y = getPosition().y;
-    }
 }
 

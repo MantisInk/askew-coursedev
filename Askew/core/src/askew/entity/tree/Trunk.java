@@ -23,6 +23,8 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.*;
 
 import askew.entity.obstacle.*;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * A tree trunk with planks connected by weld joints.
@@ -32,105 +34,73 @@ import askew.entity.obstacle.*;
  */
 public class Trunk extends ComplexObstacle {
 
-	private transient int nLinks;
-	private transient float width,height;
 	private static final String TRUNK_NAME = "trunk";			/** The debug name for the entire obstacle */
 	private static final String PLANK_NAME = "driftwood";		/** The debug name for each plank */
-	private static final String TRUNK_PIN_NAME = "pin";			/** The debug name for each anchor pin */
-	private static final float TRUNK_PIN_RADIUS = 0.1f;			/** The radius of each anchor pin */
 	private static final float BASIC_DENSITY = 13f;				/** The density of each plank in the bridge */
+	private static final float lwidth = .25f;
+	private static final float lheight = 1.0f;
 
 	/** The spacing between each link */
 	protected transient Vector2 dimension;						/** The size of the entire bridge */
-	private float x,y,stiffLen, angle; 							/** starting coords of bottom anchor and length for branch */
-	protected float linksize;									/** The length of each link */
+
+	@Getter @Setter
+	private float x;
+	@Getter @Setter
+	private float y;
+	@Getter @Setter
+	private float angle;
+	@Getter @Setter
+	private float numLinks;									// param for json constructor
+
 
 	public transient Vector2 final_norm = null;					/** coords for starting branch off this trunk */
-
 	public transient static final float DAMPING_ROTATION = 5f;	/** Set damping constant for joint rotation in vines */
 	protected transient Vector2 planksize;						/** The size of a single plank */
 	// TODO: Fix this from being public (refactor artifact) ?
 	private transient float spacing = 0.0f;						/** The spacing between each link */
 
-	protected float numLinks;									// param for json constructor
 
-	/**
-	 * Creates a new tree trunk at the given position.
-	 *
-	 * This trunk is default vertical, but you can set an angle in degrees.
-	 * The top planks designated by stiffLen will not be created as part of the trunk.
-	 *
-	 * @param x  		The x position of the left anchor
-	 * @param y  		The y position of the left anchor
-	 * @param length	The length of the trunk
-	 * @param lwidth	The plank thickness
-	 * @param lheight	The plank length
-	 *
-	 *
-	 */
-	public Trunk(float x, float y, float length, float lwidth, float lheight, float stiffLen, Vector2 scale) {
-		this(x, y, x, y+length, lwidth, lheight, stiffLen, 0f);
-		numLinks = length;
-		this.x = x;
-		this.y = y;
-		this.linksize = lheight;
-		this.setObjectScale(scale);
-	}
 
-	public Trunk(float x, float y, float length, float lwidth, float lheight, float stiffLen, Vector2 scale, float angle) {
-		this(x, y, x, y+length, lwidth, lheight, stiffLen, angle);
-		numLinks = length;
-		this.x = x;
-		this.y = y;
-		this.linksize = lheight;
-		this.setObjectScale(scale);
-	}
 
-	/**
-	 * Creates a new tree trunk with the given anchors and other params.
-	 *
-	 * @param x0  		The x position of the left anchor
-	 * @param y0  		The y position of the left anchor
-	 * @param x1  		The x position of the right anchor
-	 * @param y1  		The y position of the right anchor
-	 * @param lwidth	The plank thickness
-	 * @param lheight	The plank length
-	 */
-	public Trunk(float x0, float y0, float x1, float y1, float lwidth, float lheight, float stiffLen, float angle) {
-		super(x0,y0);
-		this.angle = angle;
-		this.x = x0;	this.y = y0;	this.stiffLen = stiffLen;		this.linksize = lheight;
+	public Trunk(float x, float y, float length, float angle) {
 		setName(TRUNK_NAME);
+		numLinks = length;
+		this.x = x;
+		this.y = y;
+		this.angle = angle;
+		setPosition(x,y);
+		build();
+	}
 
+	public void build(){
 		planksize = new Vector2(lwidth,lheight);
-		linksize = planksize.y;
 
 		// Compute the bridge length
-		dimension = new Vector2(x1-x0,y1-y0);
+		dimension = new Vector2(0,numLinks);
 		float length = dimension.len();
 		Vector2 norm = new Vector2(dimension);
 		norm.nor();
 		norm.rotate(angle);
 
 		// If too small, only make one plank.
-		int nLinks = (int)(length / linksize);
+		int nLinks = (int)(length / lheight);
 		if (nLinks <= 1) {
 			nLinks = 1;
-//			linksize = length;
+//			lheight = length;
 			spacing = 0;
 		} else {
-			spacing = length - nLinks * linksize;
+			spacing = length - nLinks * lheight;
 			spacing /= (nLinks-1);
 		}
 
 		// Create the planks
-		planksize.y = linksize;
+		planksize.y = lheight;
 		Vector2 pos = new Vector2();
-		for (int ii = 0; ii < nLinks-stiffLen; ii++) {
-			float t = ii*(linksize+spacing) + linksize/2.0f;
+		for (int ii = 0; ii < nLinks; ii++) {
+			float t = ii*(lheight+spacing) + lheight/2.0f;
 			pos.set(norm);
 			pos.scl(t);
-			pos.add(x0,y0);
+			pos.add(x,y);
 			BoxObstacle plank = new BoxObstacle(pos.x, pos.y, planksize.x, planksize.y);
 			plank.setName(PLANK_NAME+ii);
 			plank.setDensity(BASIC_DENSITY);
@@ -144,11 +114,17 @@ public class Trunk extends ComplexObstacle {
 			bodies.add(plank);
 		}
 		final_norm = new Vector2(pos);
-		final_norm.add(0,linksize/2);
+		final_norm.add(0,lheight/2);
+
+
 	}
-	public void build(){}
-	public void rebuild(){}
-	public void rebuild(float x , float y){
+	public void rebuild(){
+		bodies.clear();
+		build();
+	}
+
+	public void setPosition(float x, float y){
+		super.setPosition(x,y);
 		this.x = x;
 		this.y = y;
 		rebuild();
@@ -174,8 +150,8 @@ public class Trunk extends ComplexObstacle {
 
 		Joint joint;
 
-		Vector2 anchor1 = new Vector2(0, linksize/2);
-		Vector2 anchor2 = new Vector2(0, -linksize / 2);
+		Vector2 anchor1 = new Vector2(0, lheight/2);
+		Vector2 anchor2 = new Vector2(0, -lheight / 2);
 
 		// Link the planks together
 		for (int ii = 0; ii < bodies.size-1; ii++) {
@@ -191,18 +167,6 @@ public class Trunk extends ComplexObstacle {
 		}
 
 		return true;
-	}
-
-	public float getLinksize() {return linksize;}
-
-	/**
-	 * Destroys the physics Body(s) of this object if applicable,
-	 * removing them from the world.
-	 *
-	 * @param world Box2D world that stores body
-	 */
-	public void deactivatePhysics(World world) {
-		super.deactivatePhysics(world);
 	}
 
 	/**
