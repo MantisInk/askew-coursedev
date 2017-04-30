@@ -24,7 +24,6 @@ import askew.entity.obstacle.Obstacle;
 import askew.playermode.gamemode.GameModeController;
 import askew.playermode.gamemode.TutorialModeController;
 import askew.util.FilmStrip;
-import askew.util.PooledList;
 import askew.util.ScreenListener;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
@@ -36,9 +35,8 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
-import java.util.ArrayList;
 
-import java.util.Iterator;
+import java.util.ArrayList;
 
 /**
  * Base class for a world-specific controller.
@@ -182,7 +180,7 @@ public abstract class WorldController implements Screen {
 	public static final int EXIT_LE_MM = 5;
 	public static final int EXIT_LE_GM = 6;
 	public static final int EXIT_GM_GM = 7;
-	public static final int EXIT_GM_TL = 8;
+	public static final int EXIT_MM_TL = 8;
 	public static final int EXIT_TL_GM = 9;
 
 	/** How many frames after winning/losing do we continue? */

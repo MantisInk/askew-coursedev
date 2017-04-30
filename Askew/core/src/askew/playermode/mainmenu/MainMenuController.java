@@ -7,8 +7,11 @@ import askew.playermode.WorldController;
 import askew.util.SoundController;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.math.Vector2;
 import lombok.Getter;
 import lombok.Setter;
@@ -31,10 +34,13 @@ public class MainMenuController extends WorldController {
 
     // home mode options
     private final int PLAY_BUTTON = 0;
-    private final int LEVEL_SELECT_BUTTON = 1;
-    private final int QUIT_BUTTON = 2;
+    private final int TUTORIAL_BUTTON = 1;
+    private final int LEVEL_SELECT_BUTTON = 2;
+    private final int QUIT_BUTTON = 3;
     private int home_button = PLAY_BUTTON;
-    private Vector2[] home_button_locs = {new Vector2(10.5f,4.4f), new Vector2(10.5f,3.6f), new Vector2(10.5f,2.8f)};
+    private String[] home_text = {"Play", "Tutorial", "Level Select", "Quit"};
+    private Vector2[] home_text_locs = {new Vector2(8.4f, 4.8f), new Vector2(7.25f, 4.2f), new Vector2(6.05f, 3.6f), new Vector2(8.5f,3.0f)};
+    private Vector2[] home_button_locs = {new Vector2(10.5f,4.7f), new Vector2(10.5f,4.1f), new Vector2(10.5f,3.5f), new Vector2(10.5f, 2.9f)};
 
     // level select mode options
     private final int CHOOSE_LEVEL = 0;
@@ -44,13 +50,15 @@ public class MainMenuController extends WorldController {
 
     private static final String FERN_TEXTURE = "texture/background/fern.png";
     private static final String MENU_BACKGROUND1_TEXTURE = "texture/background/menu1.png";
-
+    private static final String MENU_BACKGROUND2_TEXTURE = "texture/background/menu2.png";
+    private static final String MENU_BACKGROUND_TEXTURE = "texture/background/menu_background.png";
     private boolean prevLeftUp, prevLeftDown,prevLeftLeft,prevLeftRight;        // keep track of previous joystick positions
     private boolean leftUp, leftDown,leftLeft,leftRight;                        // track current joystick positions
-    private static final String MENU_BACKGROUND2_TEXTURE = "texture/background/menu2.png";
     public static final String MENU_MUSIC = "sound/music/levelselect.ogg";
 
-    private Texture fern, menu1, menu2;
+    FileHandle fontFile = Gdx.files.internal("font/ReginaFree.ttf");
+    BitmapFont regina;
+    private Texture fern, menu1, menu2, menu;
 
     // player selected another mode
 
@@ -66,6 +74,13 @@ public class MainMenuController extends WorldController {
         fern = manager.get(FERN_TEXTURE);
         menu1 = manager.get(MENU_BACKGROUND1_TEXTURE);
         menu2 = manager.get(MENU_BACKGROUND2_TEXTURE);
+        menu = manager.get(MENU_BACKGROUND_TEXTURE);
+
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(fontFile);
+        FreeTypeFontGenerator.FreeTypeFontParameter param = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        param.size = 56;
+        regina = generator.generateFont(param);
+        generator.dispose();
         SoundController.getInstance().allocate(manager, MENU_MUSIC);
     }
 
@@ -90,13 +105,16 @@ public class MainMenuController extends WorldController {
 
         InputController input = InputController.getInstance();
 
-        if (input.didRightDPadPress() || nextCon.equals("GM")) {
+        if ((input.didRightDPadPress() || nextCon.equals("GM")) && mode == HOME_SCREEN) {
             System.out.println("GM");
             listener.exitScreen(this, EXIT_MM_GM);
             return false;
-        } else if (input.didLeftDPadPress()) {
+        } else if (input.didLeftDPadPress() && mode == HOME_SCREEN) {
             System.out.println("LE");
             listener.exitScreen(this, EXIT_MM_LE);
+            return false;
+        } else if (nextCon.equals("TL")){
+            listener.exitScreen(this, EXIT_MM_TL);
             return false;
         } else if (input.didBottomDPadPress()) {
             reset();
@@ -118,21 +136,20 @@ public class MainMenuController extends WorldController {
 
     @Override
     public void draw(float delta) {
-        if(mode == HOME_SCREEN) {
-            canvas.clear();
-        }
-        else if (mode == LEVEL_SELECT) {
-            canvas.clear();
-            displayFont.setColor(Color.GREEN);
-        }
+        canvas.clear();
+        displayFont.setColor(Color.GREEN);
 
         canvas.begin(); // DO NOT SCALE
+        canvas.draw(menu);
         if(mode == HOME_SCREEN) {
-            canvas.draw(menu1);
+            for(int i = 0; i < home_text_locs.length; i++) {
+                canvas.drawText(home_text[i], regina, home_text_locs[i].x * worldScale.x, home_text_locs[i].y * worldScale.y);
+            }
             canvas.draw(fern, Color.WHITE,fern.getWidth()/2, fern.getHeight()/2,
                     home_button_locs[home_button].x * worldScale.x, home_button_locs[home_button].y* worldScale.y,
                     0,worldScale.x/fern.getWidth(),worldScale.y/fern.getHeight());
         }
+        // TODO: new level select screen
         else if(mode == LEVEL_SELECT) {
             canvas.draw(menu2);
             canvas.drawText("         " + selected, displayFont, 6.5f*worldScale.x, 4.1f*worldScale.y);
@@ -155,8 +172,6 @@ public class MainMenuController extends WorldController {
     @Override
     public void update(float dt) {
         InputController input = InputController.getInstance();
-//        System.out.print("enter "+input.didEnterKeyPress());
-//        System.out.println("button "+input.didBottomButtonPress());
         if(mode == HOME_SCREEN) {
             if(mode!=prevMode) {
                 return;
@@ -170,6 +185,10 @@ public class MainMenuController extends WorldController {
                 }
                 System.out.println("selected "+selected);
                 nextCon = "GM";
+                return;
+            }
+            else if((input.didBottomButtonPress() || input.didEnterKeyPress()) && home_button == TUTORIAL_BUTTON) {
+                nextCon = "TL";
                 return;
             }
             else if((input.didBottomButtonPress() || input.didEnterKeyPress()) && home_button == LEVEL_SELECT_BUTTON) {

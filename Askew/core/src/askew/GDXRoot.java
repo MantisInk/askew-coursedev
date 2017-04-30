@@ -180,7 +180,7 @@ public class GDXRoot extends Game implements ScreenListener {
 			controllers[current].reset();
 			setScreen(controllers[current]);
 
-		} else if (exitCode == WorldController.EXIT_GM_TL) {
+		} else if (exitCode == WorldController.EXIT_MM_TL) {
 			current = CON_TL;
 			controllers[current].reset();
 			setScreen(controllers[current]);

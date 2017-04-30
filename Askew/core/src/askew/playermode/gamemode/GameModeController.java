@@ -313,12 +313,6 @@ public class GameModeController extends WorldController {
 		lastLevel = loadLevel;
 		try {
 			float level_num = Integer.parseInt(loadLevel.substring(5));
-			// TODO: move to preupdate
-			if (level_num==0){
-				System.out.println("Tutorial");
-				listener.exitScreen(this,EXIT_GM_TL);
-				return;
-			}
 
 			levelModel = jsonLoaderSaver.loadLevel(loadLevel);
 			recordTime = levelModel.getRecordTime();
