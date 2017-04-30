@@ -200,11 +200,14 @@ public class TutorialModeController extends GameModeController {
 				canvas.draw(joystickNeutralTexture, Color.WHITE, joystickNeutralTexture.getRegionWidth() / 2, 0, 350, 450, 0, worldScale.x / joystickNeutralTexture.getRegionWidth(), worldScale.y / joystickNeutralTexture.getRegionHeight());
 				canvas.draw(joystickTexture, Color.WHITE, joystickTexture.getRegionWidth() / 2, 0, 450, 450, 0, worldScale.x / joystickTexture.getRegionWidth(), worldScale.y / joystickTexture.getRegionHeight());
 			}
-		}
-		if (currentStage >= STAGE_GRAB && currentStage < STAGE_VINE) {
-			if(grabs < 5) {
+		} else if(currentStage == STAGE_GRAB) {
+			if (grabs < 5) {
 				canvas.drawTextCentered("Try to grab 5x", displayFont, 200f);
 			}
+		} else if (currentStage == STAGE_SHIMMY) {
+			canvas.drawTextCentered("Try to shimmy across", displayFont, 200f);
+		}
+		if (currentStage >= STAGE_GRAB && currentStage < STAGE_VINE) {
 			if(sloth.isActualRightGrab()) {
 				canvas.draw(bumperRTexture, Color.WHITE, bumperLTexture.getRegionWidth() / 2, 0, 400, 400, 0, worldScale.x * 3 / bumperLTexture.getRegionWidth(), worldScale.y * 3 / bumperLTexture.getRegionHeight());
 				canvas.draw(joystickTexture, Color.WHITE, joystickTexture.getRegionWidth() / 2, 0, 350, 450, 0, worldScale.x / joystickTexture.getRegionWidth(), worldScale.y / joystickTexture.getRegionHeight());
@@ -296,7 +299,7 @@ public class TutorialModeController extends GameModeController {
 		} else if (currentStage == STAGE_GRAB) {
 			return (grabs > 5 && pressedA);
 		}else if(currentStage > STAGE_PINNED) {
-			return owl.didVictory();
+			return owl.isDoingVictory();
 		}
 		return false;
 	}
