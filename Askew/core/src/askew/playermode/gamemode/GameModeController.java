@@ -223,7 +223,7 @@ public class GameModeController extends WorldController {
 	public void setLevel() {
 		int lvl = GlobalConfiguration.getInstance().getCurrentLevel();
 		if (lvl > MAX_LEVEL) {
-			loadLevel = "level"+MAX_LEVEL;
+			loadLevel = "level1";
 			System.out.println("MM");
 			listener.exitScreen(this, EXIT_GM_MM);
 		} else

@@ -107,7 +107,7 @@ public class MainMenuController extends WorldController {
 
         InputController input = InputController.getInstance();
 
-        if ((input.didRightDPadPress() || nextCon.equals("GM")) && mode == HOME_SCREEN) {
+        if (((input.didRightDPadPress() && mode == HOME_SCREEN) || nextCon.equals("GM"))) {
             System.out.println("GM");
             listener.exitScreen(this, EXIT_MM_GM);
             return false;
@@ -230,10 +230,10 @@ public class MainMenuController extends WorldController {
                 return;
             }
 
-            if((input.didLeftDPadPress() || (leftLeft && !prevLeftLeft) || input.didLeftArrowPress()) && selected < maxLevel && select_button == CHOOSE_LEVEL) {
-                selected++;
-            } else if((input.didRightDPadPress() || (leftRight && !prevLeftRight) || input.didRightArrowPress()) && selected > minLevel && select_button == CHOOSE_LEVEL) {
+            if((input.didLeftDPadPress() || (leftLeft && !prevLeftLeft) || input.didLeftArrowPress()) && selected > minLevel && select_button == CHOOSE_LEVEL) {
                 selected--;
+            } else if((input.didRightDPadPress() || (leftRight && !prevLeftRight) || input.didRightArrowPress()) && selected < maxLevel && select_button == CHOOSE_LEVEL) {
+                selected++;
             }
 
             if(input.didTopDPadPress() || input.didUpArrowPress() || (leftUp && !prevLeftUp)) {
@@ -244,11 +244,5 @@ public class MainMenuController extends WorldController {
             }
         }
 
-    }
-
-    public int getLevel() {
-        if(mode == HOME_SCREEN)
-            selected = 1;
-        return selected;
     }
 }
