@@ -4,7 +4,7 @@
   "goalTimeSilver": 45,
   "goalTimeBronze": 60,
   "recordTime": 9999999.0,
-  "title": "tutorial0",
+  "title": "tutorial3",
   "background": "texture/background/background1.png",
   "soundtrack": "TODO",
   "entities": [
@@ -41,12 +41,64 @@
     {
       "CLASSNAME": "askew.entity.sloth.SlothModel",
       "INSTANCE": {
-        "x": -1.0299997,
-        "y": 13.88999,
+        "x": -1.0,
+        "y": 12.879995,
         "lTheta": 0.0,
         "rTheta": 0.0,
         "setLastGrabX": false,
         "lastGrabX": 0.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": -3.0,
+        "y": 14.0,
+        "angle": 270.0,
+        "numLinks": 5.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 11.08,
+        "y": 13.979997,
+        "angle": -90.0,
+        "numLinks": 5.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 4.0200005,
+        "y": 15.999996,
+        "angle": -90.0,
+        "numLinks": 5.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 19.119999,
+        "y": 14.019997,
+        "angle": -90.0,
+        "numLinks": 5.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 26.17999,
+        "y": 11.039996,
+        "angle": -90.0,
+        "numLinks": 5.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.owl.OwlModel",
+      "INSTANCE": {
+        "x": 28.059992,
+        "y": 12.099997
       }
     },
     {

@@ -10,17 +10,13 @@ import askew.GameCanvas;
 import askew.GlobalConfiguration;
 import askew.MantisAssetManager;
 import askew.entity.FilterGroup;
-import askew.entity.obstacle.BoxObstacle;
-import askew.entity.obstacle.ComplexObstacle;
-import askew.entity.obstacle.Obstacle;
-import askew.entity.obstacle.SimpleObstacle;
+import askew.entity.obstacle.*;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
 import com.badlogic.gdx.utils.ObjectSet;
@@ -43,7 +39,7 @@ public class SlothModel extends ComplexObstacle  {
     @Setter
     public transient int controlMode;
     /** After flying this distance, flow starts to experience some serious
-     * air resitance.
+     * air resistance.
      */
     private static final float FLOW_RESISTANCE_DAMPING_LAMBDA = 23f;
 
@@ -89,7 +85,7 @@ public class SlothModel extends ComplexObstacle  {
 
     private transient CircleShape grabGlow = new CircleShape();
 
-
+    private transient WheelObstacle pin;
 
     //JSON
     @Getter @Setter
@@ -126,6 +122,7 @@ public class SlothModel extends ComplexObstacle  {
     private boolean setLastGrabX;
     private float lastGrabX;
     private transient boolean dismembered;
+    private transient boolean tutorial = false;
 
     /**
      * Returns the texture index for the given body part
@@ -391,6 +388,8 @@ public class SlothModel extends ComplexObstacle  {
 
     public float getRightVert() {return this.rightVert;}
 
+    public Body getMainBody() {return bodies.get(0).getBody();}
+
     //theta is in radians between 0 and pi
     public float calculateTorque(float deltaTheta, float omega){
         //return (float) Math.max(-1.0f,Math.min(1.0f, 1.2 * Math.sin(deltaTheta)));
@@ -550,11 +549,19 @@ public class SlothModel extends ComplexObstacle  {
         float forceLeft =  calculateTorque(dLTheta,leftAngularVelocity/OMEGA_NORMALIZER); //#MAGIC 20f default, omega normalizer
         float forceRight = calculateTorque(dRTheta,rightAngularVelocity/OMEGA_NORMALIZER);
 
-        if(impulseL > 0)
+        if(impulseL > 0 && !tutorial)
             forceLeft *= .3f;
 
-        if(impulseR > 0)
+        if(impulseR > 0 && !tutorial)
             forceRight *= .3f;
+
+        // if in tutorial, turn off auto-assist
+        if(tutorial) {
+            impulseL = 0;
+            impulseR = 0;
+            cimpulseL = 0;
+            cimpulseR = 0;
+        }
 
         float lTorque = TORQUE * ((forceLeft  * lLength) + TORQUE * (counterfL * rLength  )) + impulseL + cimpulseL;
         float rTorque = TORQUE * ((forceRight * rLength) + TORQUE * ( counterfR * lLength )) + impulseR + cimpulseR;
@@ -992,5 +999,22 @@ public class SlothModel extends ComplexObstacle  {
         }
         return false;
     }
+
+    public void pin(World world){
+        pin = new WheelObstacle(this.x, this.y, 1);
+        pin.setBodyType(BodyDef.BodyType.StaticBody);
+        pin.activatePhysics(world);
+
+        RevoluteJointDef jointdef = new RevoluteJointDef();
+        Vector2 anchor = new Vector2();
+        jointdef.bodyA = pin.getBody();
+        jointdef.bodyB = this.getMainBody();
+        jointdef.localAnchorA.set(anchor);
+        jointdef.localAnchorB.set(anchor);
+        Joint joint = world.createJoint(jointdef);
+        joints.add(joint);
+    }
+
+    public void setTutorial() {tutorial = true;}
 }
 

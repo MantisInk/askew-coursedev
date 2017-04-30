@@ -13,7 +13,6 @@ package askew.playermode.gamemode;
 import askew.InputController;
 import askew.MantisAssetManager;
 import askew.entity.Entity;
-import askew.entity.obstacle.WheelObstacle;
 import askew.entity.tree.Trunk;
 import askew.entity.vine.Vine;
 import com.badlogic.gdx.graphics.Color;
@@ -47,6 +46,8 @@ public class TutorialModeController extends GameModeController {
 	private float rAngle;
 	private boolean cw;
 	private boolean ccw;
+
+	private float time = 0f;
 
 	private Animation joystickAnimation;
 	private Animation bumperLAnimation;
@@ -128,11 +129,11 @@ public class TutorialModeController extends GameModeController {
 				tutorialEntities.add(e);
 			}
 		}
-		float sloth_x = sloth.getX();
-		float sloth_y = sloth.getY();
-		WheelObstacle pin;
-		if(stepsDone == STAGE_PINNED)
-			pin = new WheelObstacle(sloth_x,sloth_y,1);
+
+		if(stepsDone == STAGE_PINNED) {
+			sloth.pin(world);
+			sloth.setTutorial();
+		}
 	}
 
 	/**
@@ -167,12 +168,20 @@ public class TutorialModeController extends GameModeController {
 		bumperRTexture = bumperRAnimation.getKeyFrame(elapseTime, true);
 
 		canvas.draw(container, Color.WHITE, container.getWidth() / 2, 0, 425, 300, 0, worldScale.x * 5 / container.getWidth(), worldScale.y * 5 / container.getHeight());
+		if(stepsDone == STAGE_PINNED) {
+			if((int)(time/3) %2 == 0){
+				canvas.draw(joystickTexture, Color.WHITE, joystickTexture.getRegionWidth() / 2, 0, 350, 450, 0, worldScale.x / joystickTexture.getRegionWidth(), worldScale.y / joystickTexture.getRegionHeight());
+				canvas.draw(joystickNeutralTexture, Color.WHITE, joystickNeutralTexture.getRegionWidth() / 2, 0, 450, 450, 0, worldScale.x / joystickNeutralTexture.getRegionWidth(), worldScale.y / joystickNeutralTexture.getRegionHeight());
+			} else{
+				canvas.draw(joystickNeutralTexture, Color.WHITE, joystickNeutralTexture.getRegionWidth() / 2, 0, 350, 450, 0, worldScale.x / joystickNeutralTexture.getRegionWidth(), worldScale.y / joystickNeutralTexture.getRegionHeight());
+				canvas.draw(joystickTexture, Color.WHITE, joystickTexture.getRegionWidth() / 2, 0, 450, 450, 0, worldScale.x / joystickTexture.getRegionWidth(), worldScale.y / joystickTexture.getRegionHeight());
+			}
+			if(time > 6f) {
+				canvas.drawTextCentered("Press A to continue", displayFont, 200f);
+			}
+		}
 //		if (stepsDone == DID_NOTHING) {
-//			canvas.draw(joystickTexture, Color.WHITE, joystickTexture.getRegionWidth() / 2, 0, 350, 450, 0, worldScale.x / joystickTexture.getRegionWidth(), worldScale.y / joystickTexture.getRegionHeight());
-//			canvas.draw(joystickNeutralTexture, Color.WHITE, joystickNeutralTexture.getRegionWidth() / 2, 0, 450, 450, 0, worldScale.x/ joystickNeutralTexture.getRegionWidth(), worldScale.y / joystickNeutralTexture.getRegionHeight());
 //		} else if (stepsDone == MOVED_LEFT) {
-//			canvas.draw(joystickNeutralTexture, Color.WHITE, joystickNeutralTexture.getRegionWidth() / 2, 0, 350, 450, 0, worldScale.x / joystickNeutralTexture.getRegionWidth(), worldScale.y / joystickNeutralTexture.getRegionHeight());
-//			canvas.draw(joystickTexture, Color.WHITE, joystickTexture.getRegionWidth() / 2, 0, 450, 450, 0, worldScale.x / joystickTexture.getRegionWidth(), worldScale.y / joystickTexture.getRegionHeight());
 //		} else if (stepsDone == MOVED_RIGHT) {
 //			canvas.draw(bumperLTexture, Color.WHITE, bumperLTexture.getRegionWidth() / 2, 0, 400, 400, 0, worldScale.x * 3 / bumperLTexture.getRegionWidth(), worldScale.y * 3 / bumperLTexture.getRegionHeight());
 //			canvas.draw(joystickTexture, Color.WHITE, joystickTexture.getRegionWidth() / 2, 0, 350, 450, 0, worldScale.x / joystickTexture.getRegionWidth(), worldScale.y / joystickTexture.getRegionHeight());
@@ -208,20 +217,27 @@ public class TutorialModeController extends GameModeController {
 	public void update(float dt) {
 		super.update(dt);
 		if (!paused) {
+			elapseTime += dt;
+			time = time+dt ;
 			// Process actions in object model
 			lAngle = (float) ((sloth.getLeftArm().getAngle()) - 1.5*Math.PI);//+3.14)%3.14);
 			rAngle = (float) ((sloth.getRightArm().getAngle()) - 1.5*Math.PI);//+ 3.14)%3.14);
-			System.out.print(lAngle+" ");
-			System.out.println(rAngle);
+//			System.out.print(lAngle+" ");
+//			System.out.println(rAngle);
 
 			// TODO: move sloth movement in slothmodel
 
 			//Increment Steps
-			System.out.println(stepsDone);
+			System.out.println("stage " + stepsDone);
 			InputController input = InputController.getInstance();
 
 			switch(stepsDone) {
 				case STAGE_PINNED:
+					if( (int)(time/3) %2 == 0) {
+						sloth.getRightArm().setAngle((float)Math.PI);
+					} else {
+						sloth.getLeftArm().setAngle((float)Math.PI);
+					}
 					if(checkPinned())
 						stepsDone++;
 					break;

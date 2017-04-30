@@ -73,7 +73,7 @@ public abstract class WorldController implements Screen {
 	// Pathnames to shared assets
 	/** Retro font for displaying messages */
 	private static String FONT_FILE = "shared/ReginaFree.ttf";
-	private static int FONT_SIZE = 64;
+	private static int FONT_SIZE = 56;
 
 	/** The font for giving messages to the player */
 	protected BitmapFont displayFont;

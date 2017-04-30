@@ -58,6 +58,7 @@ public class MainMenuController extends WorldController {
     public static final String MENU_MUSIC = "sound/music/levelselect.ogg";
 
     FileHandle fontFile = Gdx.files.internal("font/ReginaFree.ttf");
+    @Getter
     BitmapFont regina;
     private Texture fern, menu1, menu2, menu;
 

@@ -694,11 +694,6 @@ public class GameModeController extends WorldController {
 					0,2*worldScale.x/fern.getWidth(), 2*worldScale.y/fern.getHeight());
 			canvas.end();
 		}
-
-		canvas.begin();
-		if (prevPaused && !paused && !playerIsReady)
-			printHelp();
-		canvas.end();
 	}
 
 }
