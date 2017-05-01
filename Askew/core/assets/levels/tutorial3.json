@@ -4,7 +4,7 @@
   "goalTimeSilver": 45,
   "goalTimeBronze": 60,
   "recordTime": 9999999.0,
-  "title": "tutorial3",
+  "title": "Tutorial 4",
   "background": "texture/background/background1.png",
   "soundtrack": "TODO",
   "entities": [
@@ -99,6 +99,24 @@
         "rTheta": 0.0,
         "setLastGrabX": false,
         "lastGrabX": 0.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": -9.0,
+        "y": 7.0199976,
+        "angle": -90.0,
+        "numLinks": 45.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": -5.959999,
+        "y": 9.299997,
+        "angle": 0.0,
+        "numLinks": 6.0
       }
     },
     {

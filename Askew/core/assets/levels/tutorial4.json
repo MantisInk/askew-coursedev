@@ -4,7 +4,7 @@
   "goalTimeSilver": 45,
   "goalTimeBronze": 60,
   "recordTime": 9999999.0,
-  "title": "tutorial4",
+  "title": "Tutorial 5",
   "background": "texture/background/background1.png",
   "soundtrack": "TODO",
   "entities": [
@@ -50,17 +50,6 @@
       }
     },
     {
-      "CLASSNAME": "askew.entity.vine.Vine",
-      "INSTANCE": {
-        "numLinks": 5.0,
-        "x": 5.0200014,
-        "y": 16.699997,
-        "angle": 5.0,
-        "omega": -50.0,
-        "pin": false
-      }
-    },
-    {
       "CLASSNAME": "askew.entity.tree.Trunk",
       "INSTANCE": {
         "x": -3.9800005,
@@ -72,8 +61,8 @@
     {
       "CLASSNAME": "askew.entity.tree.Trunk",
       "INSTANCE": {
-        "x": 12.780001,
-        "y": 13.039996,
+        "x": 27.159985,
+        "y": 13.059994,
         "angle": -90.0,
         "numLinks": 5.0
       }
@@ -81,19 +70,84 @@
     {
       "CLASSNAME": "askew.entity.owl.OwlModel",
       "INSTANCE": {
-        "x": 16.119999,
+        "x": 30.699986,
         "y": 14.119994
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 15.919992,
+        "y": 12.159994,
+        "angle": 30.0,
+        "numLinks": 5.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 6.0199976,
+        "y": 11.939994,
+        "angle": 0.0,
+        "numLinks": 5.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 7.999997,
+        "y": 12.159994,
+        "angle": -30.0,
+        "numLinks": 5.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 11.979997,
+        "y": 12.059995,
+        "angle": 0.0,
+        "numLinks": 5.0
       }
     },
     {
       "CLASSNAME": "askew.entity.vine.Vine",
       "INSTANCE": {
         "numLinks": 5.0,
-        "x": 8.82,
-        "y": 16.659996,
+        "x": 18.079992,
+        "y": 16.899994,
         "angle": 5.0,
-        "omega": -50.0,
+        "omega": -100.0,
         "pin": false
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "numLinks": 5.0,
+        "x": 23.07999,
+        "y": 16.999992,
+        "angle": 5.0,
+        "omega": -100.0,
+        "pin": false
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": -6.080001,
+        "y": 10.379995,
+        "angle": 0.0,
+        "numLinks": 6.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": -9.000001,
+        "y": 8.979995,
+        "angle": -90.0,
+        "numLinks": 45.0
       }
     },
     {
