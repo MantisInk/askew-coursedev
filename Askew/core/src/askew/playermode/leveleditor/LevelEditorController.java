@@ -713,6 +713,31 @@ public class LevelEditorController extends WorldController {
 			gridLineRenderer.line(0, i,canvas.getWidth(),i);
 		}
 		gridLineRenderer.end();
+		gridLineRenderer.begin(ShapeRenderer.ShapeType.Line);
+
+		// While we're at it, just draw the level bounds.
+		gridLineRenderer.setColor(Color.RED);
+		Gdx.gl.glLineWidth(4);
+		float minPixelsX = levelModel.getMinX() * worldScale.x - cxCamera *
+				worldScale.x;
+		float minPixelsY = levelModel.getMinY() * worldScale.y - cyCamera *
+				worldScale.y;
+		float maxPixelsX = levelModel.getMaxX() * worldScale.x - cxCamera *
+				worldScale.x;
+		float maxPixelsY = levelModel.getMaxY() * worldScale.y - cyCamera *
+				worldScale.y;
+
+		// left line
+		gridLineRenderer.line(minPixelsX, maxPixelsY,minPixelsX,minPixelsY);
+		// top line
+		gridLineRenderer.line(minPixelsX, maxPixelsY,maxPixelsX,maxPixelsY);
+		// right line
+		gridLineRenderer.line(maxPixelsX, maxPixelsY,maxPixelsX,minPixelsY);
+		// bottom line
+		gridLineRenderer.line(minPixelsX, minPixelsY,maxPixelsX,minPixelsY);
+
+
+		gridLineRenderer.end();
 		canvas.end();
 	}
 
@@ -921,7 +946,7 @@ public class LevelEditorController extends WorldController {
 		//Prevent multiple windows from being created
 		//Window Settings
 		editorWindow = new JFrame();
-		GridLayout gridLayout = new GridLayout(12,2);
+		GridLayout gridLayout = new GridLayout(18,2);
 		gridLayout.setVgap(2);
 		gridLayout.setHgap(10);
 

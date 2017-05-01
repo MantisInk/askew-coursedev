@@ -35,8 +35,8 @@ public class DesktopLauncher {
 	 */
 	public static void main (String[] arg) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-		config.width  = 1024;
-		config.height = 576;
+		config.width  = 1600;
+		config.height = 900;
 		config.resizable = false;
 		config.fullscreen = false;
 		config.title = "Askew";

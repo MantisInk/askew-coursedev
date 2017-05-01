@@ -265,7 +265,6 @@ public class GameModeController extends WorldController {
 		Vector2 gravity = new Vector2(world.getGravity() );
 
 		InputControllerManager.getInstance().inputControllers().forEach(InputController::releaseGrabs);
-		fallDeathHeight = Float.MAX_VALUE;
 
 		for(Entity obj : objects) {
 			if( (obj instanceof Obstacle && !(obj instanceof SlothModel)))
@@ -285,14 +284,16 @@ public class GameModeController extends WorldController {
 		setFailure(false);
 		populateLevel();
 		// set death height
-		fallDeathHeight = Float.MAX_VALUE;
-		for(Entity obj: objects) {
-			float potentialFallDeath = obj.getY() -
-					LOWEST_ENTITY_FALL_DEATH_THRESHOLD;
-			if (potentialFallDeath < fallDeathHeight) {
-				fallDeathHeight = potentialFallDeath;
-			}
-		}
+//		fallDeathHeight = Float.MAX_VALUE;
+//		for(Entity obj: objects) {
+//			float potentialFallDeath = obj.getY() -
+//					LOWEST_ENTITY_FALL_DEATH_THRESHOLD;
+//			if (potentialFallDeath < fallDeathHeight) {
+//				fallDeathHeight = potentialFallDeath;
+//			}
+//		}
+		fallDeathHeight = levelModel.getMinY() -
+				LOWEST_ENTITY_FALL_DEATH_THRESHOLD;
 
 		// Setup sound
 		SoundController instance = SoundController.getInstance();
@@ -639,13 +640,31 @@ public class GameModeController extends WorldController {
 		cameraX += cameraVelocityX;
 		cameraY +=  cameraVelocityY;
 
+		// Check for camera in bounds
+		// Y Checks
+		if (cameraY - bounds.height /2f < levelModel.getMinY()) {
+			cameraY = levelModel.getMinY() + bounds.height/2f ;
+		}
+
+		if (cameraY + bounds.height / 2f > levelModel.getMaxY()) {
+			cameraY = levelModel.getMaxY() - bounds.height/2f;
+		}
+
+		// X Checks
+		if (cameraX - bounds.width/2 < levelModel.getMinX()) {
+			cameraX = levelModel.getMinX() + bounds.width / 2f;
+		}
+
+		if (cameraX + bounds.width/2f > levelModel.getMaxX()) {
+			cameraX = levelModel.getMaxX() - bounds.width / 2f;
+		}
 
 		camTrans.setToTranslation(-1 * cameraX * worldScale.x
 				, -1 * cameraY * worldScale.y);
 
 		camTrans.translate(canvas.getWidth()/2,canvas.getHeight()/2);
-		canvas.getCampos().set( sloth.getBody().getPosition().x * worldScale.x
-				, sloth.getBody().getPosition().y * worldScale.y);
+		canvas.getCampos().set( cameraX * worldScale.x
+				, cameraY * worldScale.y);
 
 		canvas.begin(camTrans);
 		Collections.sort(objects);
