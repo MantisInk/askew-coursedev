@@ -276,12 +276,12 @@ public class TutorialModeController extends GameModeController {
 					}
 				case STAGE_SHIMMY:
 				case STAGE_FLING:
-					if(!isPlayerIsReady() || (isPlayerIsReady() && countdown > 0)) {
-						sloth.setLeftGrab(true);
-						sloth.setRightGrab(true);
-					} else if (isPlayerIsReady() && countdown > 0) {
-						countdown -= dt;
-					}
+//					if(!isPlayerIsReady() || (isPlayerIsReady() && countdown > 0)) {
+//						sloth.setLeftGrab(true);
+//						sloth.setRightGrab(true);
+//					} else if (isPlayerIsReady() && countdown > 0) {
+//						countdown -= dt;
+//					}
 					break;
 				case STAGE_VINE:
 					break;
