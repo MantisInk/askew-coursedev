@@ -27,6 +27,7 @@ import askew.entity.tree.Trunk;
 import askew.entity.vine.Vine;
 import askew.entity.wall.WallModel;
 import askew.playermode.WorldController;
+import askew.playermode.gamemode.GameModeController;
 import askew.playermode.leveleditor.button.Button;
 import askew.playermode.leveleditor.button.ButtonList;
 import askew.playermode.leveleditor.button.ToggleButton;
@@ -131,6 +132,7 @@ public class LevelEditorController extends WorldController {
 	private boolean dragging = false;
 	private boolean creating = false;
 	private boolean snapping = false;
+	private GameModeController gmc;
 
 	private ButtonList buttons;
 	private boolean didLoad;
@@ -212,7 +214,7 @@ public class LevelEditorController extends WorldController {
 	 *
 	 * The game has default gravity and other settings
 	 */
-	public LevelEditorController() {
+	public LevelEditorController(GameModeController gmc) {
 //		super(36,18,0); I want this scale but for the sake of alpha:
 		super(DEFAULT_WIDTH,DEFAULT_HEIGHT,0);
 		jsonLoaderSaver = new JSONLoaderSaver();
@@ -225,6 +227,7 @@ public class LevelEditorController extends WorldController {
 		oneScale = new Vector2(1,1);
 		pressedL = false;
 		prevPressedL = false;
+		this.gmc = gmc;
 	}
 
 	public void setLevel(String levelName) {
@@ -657,6 +660,13 @@ public class LevelEditorController extends WorldController {
 			background = getMantisAssetManager().get("texture/background/background1.png");
 
 		}
+
+		// Playtest
+		if (InputControllerManager.getInstance().getController(0).isEKeyPressed()) {
+			gmc.setLevel(currentLevel);
+			saveLevel();
+			listener.exitScreen(this, EXIT_LE_GM);
+		}
 	}
 
 	@Override
@@ -1004,15 +1014,6 @@ public class LevelEditorController extends WorldController {
 
 	}
 
-	private void loadLevel(){
-		if (!loadingLevelPrompt) {
-			loadingLevelPrompt = true;
-			loadLevel(showInputDialog("What level do you want to load?"));
-			loadingLevelPrompt = false;
-		}
-		inputRateLimiter = UI_WAIT_LONG;
-	}
-
 	private void loadLevel(String toLoad){
 		currentLevel = toLoad;
 		try {
@@ -1078,7 +1079,7 @@ public class LevelEditorController extends WorldController {
 					JsonArray jarr = new JsonArray();
 					String[] split = text.split(",");
 					for (String s : split) {
-						jarr.add(Float.parseFloat(s));
+						jarr.add(new JsonPrimitive(Float.parseFloat(s)));
 					}
 					return jarr;
 				} else {
@@ -1259,6 +1260,4 @@ public class LevelEditorController extends WorldController {
 			mainFrame.setVisible(true);
 		}
 	}
-	//endregion
-
 }

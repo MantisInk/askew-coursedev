@@ -117,6 +117,8 @@ public class SlothModel extends ComplexObstacle  {
     private transient boolean rightGrabbing;
     @Getter
     private transient boolean grabbedEntity;
+    @Getter
+    private transient boolean releasedEntity;
     private transient boolean leftCanGrabOrIsGrabbing;
     private transient boolean didSafeGrab;
     private boolean setLastGrabX;
@@ -767,6 +769,7 @@ public class SlothModel extends ComplexObstacle  {
         if (leftGrabJoint != null) {
             if (movementMode != GRAB_TOGGLE || !leftGrabbing) world.destroyJoint(leftGrabJoint);
             leftCanGrabOrIsGrabbing = false;
+            releasedEntity = true;
         }
         leftGrabJoint = null;
     }
@@ -776,6 +779,7 @@ public class SlothModel extends ComplexObstacle  {
         if (rightGrabJoint != null) {
             if (movementMode != GRAB_TOGGLE || !rightGrabbing) world.destroyJoint(rightGrabJoint);
             leftCanGrabOrIsGrabbing = true;
+            releasedEntity = true;
         }
         rightGrabJoint = null;
     }
@@ -973,6 +977,7 @@ public class SlothModel extends ComplexObstacle  {
     public void setSafeGrab(boolean leftButtonPressed, Body leftCollisionBody, Body rightCollisionBody, World world) {
         grabbedEntity = false;
         didSafeGrab = false;
+        releasedEntity = false;
         if (waitingForSafeRelease && leftButtonPressed) {
             return;
         }
@@ -983,6 +988,7 @@ public class SlothModel extends ComplexObstacle  {
                     releaseLeft(world);
                     grab(world, rightCollisionBody, false);
                     didSafeGrab = true;
+                    releasedEntity = true;
                     waitingForSafeRelease = true;
                 }
             } else {
@@ -991,6 +997,7 @@ public class SlothModel extends ComplexObstacle  {
                         releaseRight(world);
                         grab(world, leftCollisionBody, true);
                         didSafeGrab = true;
+                        releasedEntity = true;
                         waitingForSafeRelease = true;
                     }
                 }

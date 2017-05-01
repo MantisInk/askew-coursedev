@@ -75,10 +75,12 @@ public class GameModeController extends WorldController {
 	};
 
 	public static final String GRAB_SOUND = "sound/effect/grab.wav";
+	public static final String RELEASE_SOUND = "sound/effect/release.wav";
 	public static final String FALL_MUSIC = "sound/music/fallingtoyourdeath" +
 			".ogg";
 
 	Sound grabSound;
+	Sound releaseSound;
 
 	@Setter
 	protected String loadLevel, DEFAULT_LEVEL;
@@ -145,6 +147,7 @@ public class GameModeController extends WorldController {
 		manager.load(FALL_MUSIC, Sound.class);
 
 		manager.load(GRAB_SOUND, Sound.class);
+		manager.load(RELEASE_SOUND, Sound.class);
 
 		platformAssetState = AssetState.LOADING;
 		jsonLoaderSaver.setManager(manager);
@@ -173,6 +176,7 @@ public class GameModeController extends WorldController {
 		SoundController.getInstance().allocate(manager, FALL_MUSIC);
 
 		grabSound = Gdx.audio.newSound(Gdx.files.internal(GRAB_SOUND));
+		releaseSound = Gdx.audio.newSound(Gdx.files.internal(RELEASE_SOUND));
 
 		pauseTexture = manager.get("texture/background/pause.png", Texture.class);
 		fern = manager.get("texture/background/fern.png");
@@ -185,8 +189,6 @@ public class GameModeController extends WorldController {
 	// Physics constants for initialization
 	/** The new heavier gravity for this world (so it is not so floaty) */
 	private static final float  DEFAULT_GRAVITY = -10.7f;
-
-
 
 	// Physics objects for the game
 	/** Reference to the character avatar */
@@ -231,6 +233,7 @@ public class GameModeController extends WorldController {
 		} else
 			loadLevel = "level"+lvl;
 	}
+
 	// for use in loading levels that aren't part of the progression
 	public void setLevel(String lvlName) {
 		loadLevel = lvlName;
@@ -559,6 +562,10 @@ public class GameModeController extends WorldController {
 
 			if (sloth.isGrabbedEntity()) {
 				grabSound.play();
+			}
+
+			if (sloth.isReleasedEntity()) {
+				releaseSound.play();
 			}
 
 			// Normal physics
