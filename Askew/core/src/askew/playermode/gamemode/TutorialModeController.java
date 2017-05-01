@@ -24,6 +24,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -262,9 +263,38 @@ public class TutorialModeController extends GameModeController {
 		return false;
 	}
 
-	public boolean inRange(Vector2 pt) {
-		// TODO: check if sltoh disth
-		return false;
+	// checks if next set point is in range for changing arm help
+	public boolean inRange(Vector2 setpt) {
+		Body lTarget = sloth.getLeftTarget();
+		Body rTarget = sloth.getRightTarget();
+		if (lTarget == null && rTarget == null) {
+			return false;
+		}
+		Vector2 lPos, rPos;
+		boolean xrange = false;
+		boolean yrange = false;
+		if (lTarget != null && rTarget != null) {
+			lPos = lTarget.getPosition();
+			rPos = rTarget.getPosition();
+			if(lPos.x < rPos.x) {
+				xrange = Math.abs(setpt.x - lPos.x) <= ARMSPAN+0.05;
+				yrange = Math.abs(setpt.y - lPos.y) <= ARMSPAN+0.05;
+			} else {
+				xrange = Math.abs(setpt.x - rPos.x) <= ARMSPAN+0.05;
+				yrange = Math.abs(setpt.y - rPos.y) <= ARMSPAN+0.05;
+			}
+		}
+		if (lTarget != null) {
+			lPos = lTarget.getPosition();
+			xrange = Math.abs(setpt.x - lPos.x) <= ARMSPAN+0.05;
+			yrange = Math.abs(setpt.y - lPos.y) <= ARMSPAN+0.05;
+		}
+		if (rTarget != null) {
+			rPos = rTarget.getPosition();
+			xrange = Math.abs(setpt.x - rPos.x) <= ARMSPAN+0.05;
+			yrange = Math.abs(setpt.y - rPos.y) <= ARMSPAN+0.05;
+		}
+		return xrange && yrange;
 	}
 
 	public boolean moveToNextStage() {
@@ -315,12 +345,14 @@ public class TutorialModeController extends GameModeController {
 						} else {
 							sloth.drawHelpLines(canvas, camTrans, SHIMMY_E);
 						}
+						break;
 					case 4:
 						if(!shimmyGrabbed[inRangeSetPt]){
 							sloth.drawHelpLines(canvas, camTrans, SHIMMY_SE);
 						} else {
 							sloth.drawHelpLines(canvas, camTrans, SHIMMY_E);
 						}
+						break;
 					default:
 						sloth.drawHelpLines(canvas, camTrans, SHIMMY_E);
 				}
@@ -489,7 +521,7 @@ public class TutorialModeController extends GameModeController {
 
 	public void restart() {
 		//change back to 0
-		currentStage = 1;
+		currentStage = 2;
 	}
 
 }

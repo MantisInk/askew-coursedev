@@ -190,7 +190,7 @@ public class SlothModel extends ComplexObstacle  {
     //private static final float HAND_XOFFSET  = (ARM_WIDTH / 2f) - HAND_WIDTH/2;
     private static final float HAND_XOFFSET  = (ARM_WIDTH / 2f) - HAND_WIDTH * 2 - .07f;
 
-    private static final float ARMSPAN = ARM_XOFFSET*2;
+    public static final float ARMSPAN = ARM_XOFFSET*2;
 
 
     /** Texture assets for the body parts */
