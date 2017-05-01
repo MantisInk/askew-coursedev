@@ -1041,15 +1041,16 @@ public class SlothModel extends ComplexObstacle  {
             Vector2 bPos = body.getPosition();
             float lAngle = (float) Math.toDegrees(lTheta);
             float rAngle = (float) Math.toDegrees(rTheta);
+            float armspan = 2*ARM_XOFFSET;
 //            System.out.println("left: "+lAngle+" right: "+rAngle);
             if(isActualLeftGrab() || isActualRightGrab()) {
                 if (isActualLeftGrab()) {
                     if (!isActualRightGrab() || left.getX() < right.getX()) {
-                        rPos = lPos.cpy().sub(bPos).rotate(-45).add(lPos);
+                        rPos = new Vector2(lPos.x+armspan,lPos.y);
                     }
                 } else {
                     if (!isActualLeftGrab() || right.getX() < left.getX()) {
-                        lPos = rPos.cpy().sub(bPos).rotate(-45).add(rPos);
+                        lPos = new Vector2(rPos.x+armspan,rPos.y);
                     }
                 }
 
