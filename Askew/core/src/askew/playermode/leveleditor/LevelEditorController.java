@@ -1030,14 +1030,19 @@ public class LevelEditorController extends WorldController {
 //		if (!vimMode) {
 		// Grab params from gui
 		JsonObject levelJson = jsonLoaderSaver.gsonToJsonObject(levelModel);
-		grabUpdatedObjectValuesFromGUI(levelJson,editorWindow.getRootPane().getContentPane());
+		if (editorWindow != null)
+			grabUpdatedObjectValuesFromGUI(levelJson,editorWindow.getRootPane().getContentPane());
+
 		timeToSave = jsonLoaderSaver.levelFromJson(levelJson);
+
 		if (timeToSave.entities != null)
 			timeToSave.entities.clear();
 		else
 			timeToSave.entities = new ArrayList<>();
-//		}
-		for (Entity o : objects) {
+
+		// copy to avoid concurrent modification
+		ArrayList<Entity> copy = new ArrayList<>(objects);
+		for (Entity o : copy) {
 			timeToSave.addEntity(o);
 		}
 		if (jsonLoaderSaver.saveLevel(timeToSave, currentLevel)) {

@@ -7,5 +7,19 @@
   "title": "test_save_obstacle",
   "background": "texture/background/purple.png",
   "soundtrack": "TODO",
-  "entities": []
+  "entities": [
+    {
+      "CLASSNAME": "askew.entity.sloth.SlothModel",
+      "INSTANCE": {
+        "x": 3.0874996,
+        "y": 1.2390628,
+        "lTheta": 0.0,
+        "rTheta": 0.0,
+        "setLastGrabX": false,
+        "lastGrabX": 0.0,
+        "didOneArmCheck": false,
+        "waitingForSafeRelease": false
+      }
+    }
+  ]
 }
