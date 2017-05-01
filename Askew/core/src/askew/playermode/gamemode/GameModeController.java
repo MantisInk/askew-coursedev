@@ -508,25 +508,14 @@ public class GameModeController extends WorldController {
 			Body leftCollisionBody = collisions.getLeftBody();
 			Body rightCollisionBody = collisions.getRightBody();
 
-			// TODO: move to slothmodel
 			sloth.setLeftHori(InputControllerManager.getInstance().getController(0).getLeftHorizontal());
 			sloth.setLeftVert(InputControllerManager.getInstance().getController(0).getLeftVertical());
 			sloth.setRightHori(InputControllerManager.getInstance().getController(0).getRightHorizontal());
 			sloth.setRightVert(InputControllerManager.getInstance().getController(0).getRightVertical());
-			boolean didSafe = InputControllerManager.getInstance().getController(0)
-					.isBottomButtonPressed();
-			if (sloth.controlMode == 0) {
-				// TODO: Make more elegant - trevor
-				sloth.setLeftGrab(InputControllerManager.getInstance().getController(0).getLeftGrab());
-				sloth.setRightGrab(InputControllerManager.getInstance().getController(0).getRightGrab());
-			} else {
-				if (!didSafe) {
-					sloth.setOneGrab(InputControllerManager.getInstance().getController(0)
-							.getRightGrab());
-				}
-				sloth.setSafeGrab(didSafe, leftCollisionBody,
-						rightCollisionBody, world);
-			}
+			sloth.setLeftGrab(InputControllerManager.getInstance().getController(0).getLeftGrab());
+			sloth.setRightGrab(InputControllerManager.getInstance().getController(0).getRightGrab());
+			sloth.setSafeGrab(InputControllerManager.getInstance().getController(0).isBottomButtonPressed(), leftCollisionBody, rightCollisionBody, world);
+			sloth.setOneGrab(InputControllerManager.getInstance().getController(0).getRightGrab());
 			sloth.setLeftStickPressed(InputControllerManager.getInstance().getController(0).getLeftStickPressed());
 			sloth.setRightStickPressed(InputControllerManager.getInstance().getController(0).getRightStickPressed());
 			currentTime += dt;
