@@ -1036,18 +1036,29 @@ public class SlothModel extends ComplexObstacle  {
             Obstacle right = bodies.get(PART_RIGHT_HAND);
             Obstacle body = bodies.get(PART_BODY);
 
-//            float lAngle = left.getAngle();
-//            float rAngle = right.getAngle();
-//            PolygonShape lLine = new PolygonShape();
-//            PolygonShape rLine = new PolygonShape();
-//            lLine.setAsBox(2,1, new Vector2(0,0),lAngle);
-//            rLine.setAsBox(2,1, new Vector2(0,0), rAngle);
-            canvas.beginDebug(camTrans);
-//            canvas.drawPhysics(lLine, Color.BLUE, left.getX(), left.getY(), left.getAngle(), drawScale.x, drawScale.y);
-//            canvas.drawPhysics(rLine, Color.RED, right.getX(), right.getY(), right.getAngle(), drawScale.x, drawScale.y);
-            canvas.drawLine(body.getPosition().x*drawScale.x,body.getPosition().y * drawScale.y, left.getX()*drawScale.x,left.getY() * drawScale.y,Color.BLUE, Color.BLUE);
-            canvas.drawLine(body.getPosition().x*drawScale.x,body.getPosition().y * drawScale.y, right.getX()*drawScale.x,right.getY() * drawScale.y,Color.RED, Color.RED);
-            canvas.endDebug();
+            Vector2 lPos = left.getPosition();
+            Vector2 rPos = right.getPosition();
+            Vector2 bPos = body.getPosition();
+            float lAngle = (float) Math.toDegrees(lTheta);
+            float rAngle = (float) Math.toDegrees(rTheta);
+//            System.out.println("left: "+lAngle+" right: "+rAngle);
+            if(isActualLeftGrab() || isActualRightGrab()) {
+                if (isActualLeftGrab()) {
+                    if (!isActualRightGrab() || left.getX() < right.getX()) {
+                        rPos = lPos.cpy().sub(bPos).rotate(-45).add(lPos);
+                    }
+                } else {
+                    if (!isActualLeftGrab() || right.getX() < left.getX()) {
+                        lPos = rPos.cpy().sub(bPos).rotate(-45).add(rPos);
+                    }
+                }
+
+//                System.out.println("     left: "+lPos.angle()+" right: "+rPos.angle());
+                canvas.beginDebug(camTrans);
+                canvas.drawLine(body.getPosition().x * drawScale.x, body.getPosition().y * drawScale.y, lPos.x * drawScale.x, lPos.y * drawScale.y, Color.BLUE, Color.BLUE);
+                canvas.drawLine(body.getPosition().x * drawScale.x, body.getPosition().y * drawScale.y, rPos.x * drawScale.x, rPos.y * drawScale.y, Color.RED, Color.RED);
+                canvas.endDebug();
+            }
         }
     }
 }
