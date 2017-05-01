@@ -298,7 +298,7 @@ public class TutorialModeController extends GameModeController {
 		if(currentStage == STAGE_PINNED) {
 			return (time > 1.5f && pressedA);
 		} else if (currentStage == STAGE_GRAB) {
-			return (grabs > 5 && pressedA);
+			return (grabs >= 5 && pressedA);
 		}else if(currentStage > STAGE_PINNED) {
 			return owl.isDoingVictory();
 		}
