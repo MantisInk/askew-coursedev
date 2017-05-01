@@ -28,12 +28,17 @@ public class WallModel extends PolygonObstacle {
     /** The points that define the convex hull of the wall. Must be an even number (2n) of points representing (x1,y1) ... (xn,yn) */
     private float[] points;
 
-    /**
-     * Creates a new ragdoll with its head at the given position.
-     *
-     * @param x  Initial x position of the ragdoll head
-     * @param y  Initial y position of the ragdoll head
-     */
+//    private static float[] makeAbsolute(float gx, float gy, float[] points) {
+//        float[] newPoints = new float[points.length];
+//        int addMult = 1;
+//        for (int i = 0; i < points.length; i++) {
+//            newPoints[i] = points[i] + addMult * gx + (1-addMult) * gy;
+//            addMult = 1 - addMult;
+//        }
+//        System.out.println(newPoints);
+//        return newPoints;
+//    }
+
     public WallModel(float x, float y, float[] points, boolean thorn) {
         super(points, x, y);
         this.x = x;

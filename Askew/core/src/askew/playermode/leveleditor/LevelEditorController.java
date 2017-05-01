@@ -17,7 +17,6 @@ import askew.MantisAssetManager;
 import askew.entity.BackgroundEntity;
 import askew.entity.Entity;
 import askew.entity.ghost.GhostModel;
-import askew.entity.obstacle.ComplexObstacle;
 import askew.entity.obstacle.Obstacle;
 import askew.entity.owl.OwlModel;
 import askew.entity.sloth.SlothModel;
@@ -29,7 +28,6 @@ import askew.entity.wall.WallModel;
 import askew.playermode.WorldController;
 import askew.playermode.leveleditor.button.*;
 import askew.playermode.leveleditor.button.Button;
-import askew.util.PooledList;
 import askew.util.json.JSONLoaderSaver;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -37,8 +35,8 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
@@ -49,7 +47,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.FileNotFoundException;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.Map;
 
 import static javax.swing.JOptionPane.showInputDialog;
@@ -944,7 +941,7 @@ public class LevelEditorController extends WorldController {
 		editorWindow.setVisible(true);
 	}
 
-	private int generateSwingPropertiesForEntity(JsonObject e, JFrame jPanel, int rowNum) {
+	private void generateSwingPropertiesForEntity(JsonObject e, JFrame jPanel, int rowNum) {
 		for(Map.Entry<String,JsonElement> entry : e.entrySet()) {
 			// Add key
 			String key = entry.getKey();
@@ -953,10 +950,16 @@ public class LevelEditorController extends WorldController {
 			JComponent valueComponent;
 			// Add value based on type
 			JsonElement value = entry.getValue();
+			StringBuilder theArray = new StringBuilder();
 			if (value.isJsonArray()) {
-				// TODO (hard), recurse
-				System.err.println("TODO: JSON Array. Use Henry's click and drag!");
-				continue;
+				boolean newLineTime = false;
+				for (JsonElement x : value.getAsJsonArray()) {
+					theArray.append(x.getAsString());
+					theArray.append(", ");
+					if (newLineTime) theArray.append("\n");
+					newLineTime = !newLineTime;
+				}
+				valueComponent = new JTextArea(theArray.toString());
 			} else if (value.isJsonPrimitive()) {
 				JsonPrimitive primitive = value.getAsJsonPrimitive();
 				if (primitive.isBoolean()) {
@@ -986,7 +989,6 @@ public class LevelEditorController extends WorldController {
 			rowNum++;
 		}
 
-		return rowNum;
 	}
 
 	private void loadLevel(){
@@ -1012,11 +1014,11 @@ public class LevelEditorController extends WorldController {
 		System.out.println("Saving...");
 		LevelModel timeToSave = new LevelModel();
 //		if (!vimMode) {
-			// Grab params from gui
-			JsonObject levelJson = jsonLoaderSaver.gsonToJsonObject(levelModel);
-			grabUpdatedObjectValuesFromGUI(levelJson,editorWindow.getRootPane().getContentPane());
-			timeToSave = jsonLoaderSaver.levelFromJson(levelJson);
-			timeToSave.entities.clear();
+		// Grab params from gui
+		JsonObject levelJson = jsonLoaderSaver.gsonToJsonObject(levelModel);
+		grabUpdatedObjectValuesFromGUI(levelJson,editorWindow.getRootPane().getContentPane());
+		timeToSave = jsonLoaderSaver.levelFromJson(levelJson);
+		timeToSave.entities.clear();
 //		}
 		for (Entity o : objects) {
 			timeToSave.addEntity(o);
@@ -1036,8 +1038,7 @@ public class LevelEditorController extends WorldController {
 
 			JsonElement value = entry.getValue();
 			if (value.isJsonArray()) {
-				// TODO (hard), recurse
-				System.err.println("TODO: JSON Array");
+				entityProp.add(key,findInPanel(key,p));
 			} else if (value.isJsonPrimitive()) {
 				entityProp.add(key,findInPanel(key,p));
 			} else if (value.isJsonObject()) {
@@ -1056,6 +1057,14 @@ public class LevelEditorController extends WorldController {
 					return new JsonPrimitive(((JCheckBox)c).isSelected());
 				} else if (c instanceof JTextField) {
 					return new JsonPrimitive((((JTextField)c).getText()));
+				} else if (c instanceof JTextArea) {
+					String text = ((JTextArea)c).getText();
+					JsonArray jarr = new JsonArray();
+					String[] split = text.split(",");
+					for (String s : split) {
+						jarr.add(Float.parseFloat(s));
+					}
+					return jarr;
 				} else {
 					System.err.println("UNKNOWN FOR " + key);
 					return null;
@@ -1153,9 +1162,21 @@ public class LevelEditorController extends WorldController {
 			// Add value based on type
 			JsonElement value = entry.getValue();
 			if (value.isJsonArray()) {
-				// TODO (hard), recurse
-				System.err.println("TODO: JSON Array. Use Henry's click and drag!");
-				continue;
+				StringBuilder theArray = new StringBuilder();
+				boolean newLineTime = false;
+				for (JsonElement x : value.getAsJsonArray()) {
+					theArray.append(x.getAsString());
+					theArray.append(", ");
+					if (newLineTime) theArray.append(System.lineSeparator());
+					newLineTime = !newLineTime;
+				}
+				String done = theArray.toString();
+				int doneLength = done.length();
+				if (doneLength > 0) {
+					done = done.substring(0,doneLength-2-System.lineSeparator().length());
+				}
+				valueComponent = new JTextArea(done, 40,16);
+				valueComponent.setBounds((3 * BUFFER) + FIELD_TEXT_WIDTH, (rowNum * TEXT_HEIGHT) + ((rowNum + 1) * BUFFER), FIELD_BOX_WIDTH, TEXT_HEIGHT * 16);
 			} else if (value.isJsonPrimitive()) {
 				JsonPrimitive primitive = value.getAsJsonPrimitive();
 				if (primitive.isBoolean()) {
@@ -1168,6 +1189,7 @@ public class LevelEditorController extends WorldController {
 					System.err.println("Unknown primitive type: " + entry);
 					continue;
 				}
+				valueComponent.setBounds((3 * BUFFER) + FIELD_TEXT_WIDTH, (rowNum * TEXT_HEIGHT) + ((rowNum + 1) * BUFFER), FIELD_BOX_WIDTH, TEXT_HEIGHT);
 			} else if (value.isJsonObject()) {
 				System.err.println("Unknown object type: " + entry);
 				continue;
@@ -1177,7 +1199,6 @@ public class LevelEditorController extends WorldController {
 			}
 
 			paramText.setBounds((2 * BUFFER), (rowNum * TEXT_HEIGHT) + ((rowNum + 1) * BUFFER), FIELD_TEXT_WIDTH, TEXT_HEIGHT);
-			valueComponent.setBounds((3 * BUFFER) + FIELD_TEXT_WIDTH, (rowNum * TEXT_HEIGHT) + ((rowNum + 1) * BUFFER), FIELD_BOX_WIDTH, TEXT_HEIGHT);
 
 			// Update panel with key, value
 			jPanel.add(paramText);

@@ -90,6 +90,7 @@ public class JsonEntityFactory {
         float y = instance.get("y").getAsFloat();
         boolean thorn = instance.get("thorn").getAsBoolean();
         List<Float> points = new ArrayList<>();
+        System.out.println(instance.get("points"));
         instance.get("points").getAsJsonArray().forEach(pt->points.add(pt.getAsFloat()));
         Float[] arrayPoints = points.toArray(new Float[points.size()]);
         float[] copy = new float[arrayPoints.length];
