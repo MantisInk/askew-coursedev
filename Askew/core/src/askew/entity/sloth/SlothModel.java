@@ -186,6 +186,8 @@ public class SlothModel extends ComplexObstacle  {
     //private static final float HAND_XOFFSET  = (ARM_WIDTH / 2f) - HAND_WIDTH/2;
     private static final float HAND_XOFFSET  = (ARM_WIDTH / 2f) - HAND_WIDTH * 2 - .07f;
 
+    private static final float ARMSPAN = ARM_XOFFSET*2;
+
 
     /** Texture assets for the body parts */
     private transient TextureRegion[] partTextures;
@@ -1049,27 +1051,26 @@ public class SlothModel extends ComplexObstacle  {
             Vector2 lPos = left.getPosition();
             Vector2 rPos = right.getPosition();
             Vector2 bPos = body.getPosition();
-            Vector2 arrow = lPos.cpy().sub(bPos);
-            float lAngle = (float) Math.toDegrees(lTheta);
-            float rAngle = (float) Math.toDegrees(rTheta);
-            float armspan = 2*ARM_XOFFSET;
-            float diag = armspan*(float)Math.cos(Math.PI/4);
+//            Vector2 arrow = lPos.cpy().sub(bPos);
+//            float lAngle = (float) Math.toDegrees(lTheta);
+//            float rAngle = (float) Math.toDegrees(rTheta);
+            float diag = ARMSPAN*(float)Math.cos(Math.PI/4);
 //            System.out.println("left: "+lAngle+" right: "+rAngle);
             if(isActualLeftGrab() || isActualRightGrab()) {
                 if (isActualLeftGrab()) {
                     if (!isActualRightGrab() || left.getX() < right.getX()) {
                         switch(mode) {
                             case SHIMMY_E:
-                                rPos = new Vector2(lPos.x+armspan,lPos.y);
+                                rPos = new Vector2(lPos.x+ARMSPAN,lPos.y);
                                 break;
                             case SHIMMY_S:
-                                rPos = new Vector2(lPos.x,lPos.y-armspan);
+                                rPos = new Vector2(lPos.x,lPos.y-ARMSPAN);
                                 break;
                             case SHIMMY_W:
-                                rPos = new Vector2(lPos.x-armspan,lPos.y);
+                                rPos = new Vector2(lPos.x-ARMSPAN,lPos.y);
                                 break;
                             case SHIMMY_N:
-                                rPos = new Vector2(lPos.x,lPos.y+armspan);
+                                rPos = new Vector2(lPos.x,lPos.y+ARMSPAN);
                                 break;
                             case SHIMMY_SE:
                                 rPos = new Vector2(lPos.x+diag,lPos.y-diag);
@@ -1089,16 +1090,16 @@ public class SlothModel extends ComplexObstacle  {
                     if (!isActualLeftGrab() || right.getX() < left.getX()) {
                         switch(mode) {
                             case SHIMMY_E:
-                                lPos = new Vector2(rPos.x+armspan,rPos.y);
+                                lPos = new Vector2(rPos.x+ARMSPAN,rPos.y);
                                 break;
                             case SHIMMY_S:
-                                lPos = new Vector2(rPos.x,rPos.y-armspan);
+                                lPos = new Vector2(rPos.x,rPos.y-ARMSPAN);
                                 break;
                             case SHIMMY_W:
-                                lPos = new Vector2(rPos.x-armspan,rPos.y);
+                                lPos = new Vector2(rPos.x-ARMSPAN,rPos.y);
                                 break;
                             case SHIMMY_N:
-                                lPos = new Vector2(rPos.x,rPos.y+armspan);
+                                lPos = new Vector2(rPos.x,rPos.y+ARMSPAN);
                                 break;
                             case SHIMMY_SE:
                                 lPos = new Vector2(rPos.x+diag,rPos.y-diag);
@@ -1117,8 +1118,8 @@ public class SlothModel extends ComplexObstacle  {
 
 //                System.out.println("     left: "+lPos.angle()+" right: "+rPos.angle());
                 canvas.beginDebug(camTrans);
-                canvas.drawLine(body.getPosition().x * drawScale.x, body.getPosition().y * drawScale.y, lPos.x * drawScale.x, lPos.y * drawScale.y, Color.BLUE, Color.BLUE);
-                canvas.drawLine(body.getPosition().x * drawScale.x, body.getPosition().y * drawScale.y, rPos.x * drawScale.x, rPos.y * drawScale.y, Color.RED, Color.RED);
+                canvas.drawLine(bPos.x * drawScale.x, bPos.y * drawScale.y, lPos.x * drawScale.x, lPos.y * drawScale.y, Color.BLUE, Color.BLUE);
+                canvas.drawLine(bPos.x * drawScale.x, bPos.y * drawScale.y, rPos.x * drawScale.x, rPos.y * drawScale.y, Color.RED, Color.RED);
                 canvas.endDebug();
             }
         }
