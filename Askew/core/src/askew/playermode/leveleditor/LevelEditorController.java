@@ -10,10 +10,7 @@
  */
 package askew.playermode.leveleditor;
 
-import askew.GameCanvas;
-import askew.GlobalConfiguration;
-import askew.InputController;
-import askew.MantisAssetManager;
+import askew.*;
 import askew.entity.BackgroundEntity;
 import askew.entity.Entity;
 import askew.entity.ghost.GhostModel;
@@ -488,7 +485,7 @@ public class LevelEditorController extends WorldController {
 			return false;
 		}
 
-		InputController input = InputController.getInstance();
+		InputController input = InputControllerManager.getInstance().getController(0);
 		prevPressedL = pressedL;
 		pressedL = input.isLKeyPressed();
 		if (input.didLeftButtonPress()) {
@@ -513,12 +510,12 @@ public class LevelEditorController extends WorldController {
 		}
 
 		// Allow access to mouse coordinates for multiple inputs
-		mouseX = InputController.getInstance().getCrossHair().x;
-		mouseY = InputController.getInstance().getCrossHair().y;
+		mouseX = InputControllerManager.getInstance().getController(0).getCrossHair().x;
+		mouseY = InputControllerManager.getInstance().getController(0).getCrossHair().y;
 
 
 
-		if(InputController.getInstance().isShiftKeyPressed()) {
+		if(InputControllerManager.getInstance().getController(0).isShiftKeyPressed()) {
 			// Check for pan
 			if (mouseX < GUI_LEFT_BAR_WIDTH / worldScale.x ) {
 				// Pan left
@@ -534,7 +531,7 @@ public class LevelEditorController extends WorldController {
 			if (mouseY > (bounds.getHeight() ) - 1) {
 				adjustedCyCamera += CAMERA_PAN_SPEED/worldScale.y;
 			}
-			if(InputController.getInstance().isSpaceKeyPressed()){
+			if(InputControllerManager.getInstance().getController(0).isSpaceKeyPressed()){
 				adjustedCxCamera = 0;
 				adjustedCyCamera = 0;
 			}
@@ -551,7 +548,7 @@ public class LevelEditorController extends WorldController {
 
 
 		// Left Click
-		if (InputController.getInstance().didLeftClick()) {
+		if (InputControllerManager.getInstance().getController(0).didLeftClick()) {
 			if(!processButtons(buttons.findButton(mouseX * worldScale.x, mouseY * worldScale.y))) {
 
 				if (mouseX * worldScale.x <= GUI_LEFT_BAR_WIDTH) {
@@ -592,7 +589,7 @@ public class LevelEditorController extends WorldController {
 			}
 		}
 
-		if(InputController.getInstance().didLeftDrag()){
+		if(InputControllerManager.getInstance().getController(0).didLeftDrag()){
 			if(mouseX* worldScale.x <= GUI_LEFT_BAR_WIDTH ){
 
 			}else if(mouseY * worldScale.y <= GUI_LOWER_BAR_HEIGHT){
@@ -609,7 +606,7 @@ public class LevelEditorController extends WorldController {
 				}
 			}
 		}
-		if(InputController.getInstance().didLeftRelease()){
+		if(InputControllerManager.getInstance().getController(0).didLeftRelease()){
 			if(mouseX* worldScale.x <= GUI_LEFT_BAR_WIDTH ){
 
 			}else if(mouseY * worldScale.y <= GUI_LOWER_BAR_HEIGHT){
@@ -634,19 +631,19 @@ public class LevelEditorController extends WorldController {
 		}
 
 		// Help
-		if (InputController.getInstance().isHKeyPressed()) {
+		if (InputControllerManager.getInstance().getController(0).isHKeyPressed()) {
 			showHelp = !showHelp;
 			inputRateLimiter = UI_WAIT_LONG;
 		}
 
 		// Grid
-		if (InputController.getInstance().isTKeyPressed()) {
+		if (InputControllerManager.getInstance().getController(0).isTKeyPressed()) {
 			shouldDrawGrid = !shouldDrawGrid;
 			inputRateLimiter = UI_WAIT_LONG;
 		}
 
 		// Background
-		if (InputController.getInstance().isBKeyPressed()) {
+		if (InputControllerManager.getInstance().getController(0).isBKeyPressed()) {
 			levelModel.setBackground(showInputDialog("What texture should the background be set to?"));
 			// TODO: Update the drawn background (after henry implements the engine)
 			background = getMantisAssetManager().get("texture/background/background1.png");

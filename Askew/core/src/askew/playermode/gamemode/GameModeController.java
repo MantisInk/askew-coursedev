@@ -12,6 +12,7 @@ package askew.playermode.gamemode;
 
 import askew.GlobalConfiguration;
 import askew.InputController;
+import askew.InputControllerManager;
 import askew.MantisAssetManager;
 import askew.entity.Entity;
 import askew.entity.obstacle.BoxObstacle;
@@ -254,7 +255,7 @@ public class GameModeController extends WorldController {
 		collisions.clearGrab();
 		Vector2 gravity = new Vector2(world.getGravity() );
 
-		InputController.getInstance().releaseGrabs();
+		InputControllerManager.getInstance().inputControllers().forEach(InputController::releaseGrabs);
 		fallDeathHeight = Float.MAX_VALUE;
 		for(Entity obj : objects) {
 			if( (obj instanceof Obstacle && !(obj instanceof SlothModel)))
@@ -360,7 +361,7 @@ public class GameModeController extends WorldController {
 			return false;
 		}
 
-		InputController input = InputController.getInstance();
+		InputController input = InputControllerManager.getInstance().getController(0);
 
 		if (input.didLeftButtonPress() || input.isLKeyPressed()) {
 			System.out.println("LE");
@@ -420,7 +421,7 @@ public class GameModeController extends WorldController {
 	 * @return whether the player has pressed a button
 	 */
 	public boolean checkReady(){
-		InputController theController = InputController.getInstance();
+		InputController theController = InputControllerManager.getInstance().getController(0);
 
 		if (paused)
 			return false;
@@ -460,17 +461,17 @@ public class GameModeController extends WorldController {
 		}
 
 		//Check for change in grabbing movement
-		if (InputController.getInstance().isOneKeyPressed()) {
+		if (InputControllerManager.getInstance().getController(0).isOneKeyPressed()) {
 			sloth.setMovementMode(0);
 			currentMovement = 0;
 			typeMovement = "Current movement is: "+"0";
 		}
-		if (InputController.getInstance().isTwoKeyPressed()) {
+		if (InputControllerManager.getInstance().getController(0).isTwoKeyPressed()) {
 			sloth.setMovementMode(1);
 			currentMovement = 1;
 			typeMovement = "Current movement is: "+"1";
 		}
-		if (InputController.getInstance().isThreeKeyPressed()) {
+		if (InputControllerManager.getInstance().getController(0).isThreeKeyPressed()) {
 			sloth.setMovementMode(2);
 			currentMovement = 2;
 			typeMovement = "Current movement is: "+"2";
@@ -478,12 +479,12 @@ public class GameModeController extends WorldController {
 		}
 
 		//Check for change in arm movement
-		if (InputController.getInstance().isZKeyPressed()) {
+		if (InputControllerManager.getInstance().getController(0).isZKeyPressed()) {
 			sloth.setControlMode(0);
 			currentControl = 0;
 			typeControl = "Current control is: "+"0";
 		}
-		if (InputController.getInstance().isXKeyPressed()) {
+		if (InputControllerManager.getInstance().getController(0).isXKeyPressed()) {
 			sloth.setControlMode(1);
 			currentControl = 1;
 			typeControl = "Current control is: "+"1";
@@ -494,16 +495,16 @@ public class GameModeController extends WorldController {
 			Body leftCollisionBody = collisions.getLeftBody();
 			Body rightCollisionBody = collisions.getRightBody();
 
-			sloth.setLeftHori(InputController.getInstance().getLeftHorizontal());
-			sloth.setLeftVert(InputController.getInstance().getLeftVertical());
-			sloth.setRightHori(InputController.getInstance().getRightHorizontal());
-			sloth.setRightVert(InputController.getInstance().getRightVertical());
-			sloth.setSafeGrab(InputController.getInstance().isBottomButtonPressed(), leftCollisionBody,
+			sloth.setLeftHori(InputControllerManager.getInstance().getController(0).getLeftHorizontal());
+			sloth.setLeftVert(InputControllerManager.getInstance().getController(0).getLeftVertical());
+			sloth.setRightHori(InputControllerManager.getInstance().getController(0).getRightHorizontal());
+			sloth.setRightVert(InputControllerManager.getInstance().getController(0).getRightVertical());
+			sloth.setSafeGrab(InputControllerManager.getInstance().getController(0).isBottomButtonPressed(), leftCollisionBody,
 					rightCollisionBody, world);
-			sloth.setLeftGrab(InputController.getInstance().getLeftGrab());
-			sloth.setRightGrab(InputController.getInstance().getRightGrab());
-			sloth.setLeftStickPressed(InputController.getInstance().getLeftStickPressed());
-			sloth.setRightStickPressed(InputController.getInstance().getRightStickPressed());
+			sloth.setLeftGrab(InputControllerManager.getInstance().getController(0).getLeftGrab());
+			sloth.setRightGrab(InputControllerManager.getInstance().getController(0).getRightGrab());
+			sloth.setLeftStickPressed(InputControllerManager.getInstance().getController(0).getLeftStickPressed());
+			sloth.setRightStickPressed(InputControllerManager.getInstance().getController(0).getRightStickPressed());
 			currentTime += dt;
 
 			//#TODO Collision states check

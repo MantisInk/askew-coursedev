@@ -12,6 +12,7 @@ package askew.playermode.gamemode;
 
 import askew.GlobalConfiguration;
 import askew.InputController;
+import askew.InputControllerManager;
 import askew.MantisAssetManager;
 import askew.entity.Entity;
 import askew.entity.obstacle.Obstacle;
@@ -260,7 +261,7 @@ public class TutorialModeController extends GameModeController {
 			return false;
 		}
 
-		InputController input = InputController.getInstance();
+		InputController input = InputControllerManager.getInstance().getController(0);
 
 //		if (input.didLeftButtonPress() || input.isLKeyPressed()) {
 //			System.out.println("LE");
@@ -313,7 +314,7 @@ public class TutorialModeController extends GameModeController {
 	 * @return whether the player has pressed a button
 	 */
 	public boolean checkReady(){
-		InputController theController = InputController.getInstance();
+		InputController theController = InputControllerManager.getInstance().getController(0);
 
 		if (paused)
 			return false;
@@ -382,7 +383,7 @@ public class TutorialModeController extends GameModeController {
 	 * @param dt Number of seconds since last animation frame
 	 */
 	public void update(float dt) {
-		InputController input = InputController.getInstance();
+		InputController input = InputControllerManager.getInstance().getController(0);
 
 		//Check for change in grabbing movement
 		if (input.isOneKeyPressed()) {

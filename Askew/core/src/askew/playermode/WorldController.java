@@ -15,10 +15,7 @@ package askew.playermode;/*
  * LibGDX version, 2/6/2015
  */
 
-import askew.GameCanvas;
-import askew.GlobalConfiguration;
-import askew.InputController;
-import askew.MantisAssetManager;
+import askew.*;
 import askew.entity.Entity;
 import askew.entity.obstacle.Obstacle;
 import askew.playermode.gamemode.GameModeController;
@@ -453,7 +450,7 @@ public abstract class WorldController implements Screen {
 	 * @return whether to process the update loop
 	 */
 	public boolean preUpdate(float dt) {
-		InputController input = InputController.getInstance();
+		InputController input = InputControllerManager.getInstance().getController(0);
 
 		input.readInput(bounds, worldScale);
 		if (listener == null) {

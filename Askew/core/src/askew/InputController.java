@@ -31,21 +31,6 @@ public class InputController {
 	private static final float GP_MAX_SPEED  = 10.0f;
 	private static final float GP_THRESHOLD  = 0.01f;
 
-	/** The singleton instance of the input controller */
-	private static InputController theController = null;
-
-	/**
-	 * Return the singleton instance of the input controller
-	 *
-	 * @return the singleton instance of the input controller
-	 */
-	public static InputController getInstance() {
-		if (theController == null) {
-			theController = new InputController();
-		}
-		return theController;
-	}
-
 	@Getter
 	private boolean rightClickPressed;
 	private boolean rightClickPrevious;
@@ -185,7 +170,7 @@ public class InputController {
 	private float momentum;
 
 	/** An X-Box controller (if it is connected) */
-	XBox360Controller xbox;
+	private XBox360Controller xbox;
 
 	/**
 	 * Returns the amount of sideways movement for the left arm.
@@ -361,9 +346,9 @@ public class InputController {
 	 * The input controller attempts to connect to the X-Box controller at device 0,
 	 * if it exists.  Otherwise, it falls back to the keyboard control.
 	 */
-	public InputController() {
+	public InputController(int id) {
 		// If we have a game-pad for id, then use it.
-		xbox = new XBox360Controller(0);
+		xbox = new XBox360Controller(id);
 		crosshair = new Vector2();
 		crosscache = new Vector2();
 	}

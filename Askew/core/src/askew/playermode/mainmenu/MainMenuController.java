@@ -2,6 +2,7 @@ package askew.playermode.mainmenu;
 
 import askew.GlobalConfiguration;
 import askew.InputController;
+import askew.InputControllerManager;
 import askew.MantisAssetManager;
 import askew.playermode.WorldController;
 import askew.util.SoundController;
@@ -88,7 +89,7 @@ public class MainMenuController extends WorldController {
             return false;
         }
 
-        InputController input = InputController.getInstance();
+        InputController input = InputControllerManager.getInstance().getController(0);
 
         if (input.didLeftButtonPress() || nextCon.equals("GM")) {
             System.out.println("GM");
@@ -154,7 +155,7 @@ public class MainMenuController extends WorldController {
 
     @Override
     public void update(float dt) {
-        InputController input = InputController.getInstance();
+        InputController input = InputControllerManager.getInstance().getController(0);
 //        System.out.print("enter "+input.didEnterKeyPress());
 //        System.out.println("button "+input.didBottomButtonPress());
         if(mode == HOME_SCREEN) {
