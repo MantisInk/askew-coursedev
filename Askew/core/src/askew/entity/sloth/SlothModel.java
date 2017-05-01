@@ -117,6 +117,8 @@ public class SlothModel extends ComplexObstacle  {
     private transient boolean rightGrabbing;
     @Getter
     private transient boolean grabbedEntity;
+    @Getter
+    private transient boolean releasedEntity;
     private transient boolean leftCanGrabOrIsGrabbing;
     private transient boolean didSafeGrab;
     private boolean setLastGrabX;
@@ -767,6 +769,7 @@ public class SlothModel extends ComplexObstacle  {
         if (leftGrabJoint != null) {
             if (movementMode != GRAB_TOGGLE || !leftGrabbing) world.destroyJoint(leftGrabJoint);
             leftCanGrabOrIsGrabbing = false;
+            releasedEntity = true;
         }
         leftGrabJoint = null;
     }
@@ -776,6 +779,7 @@ public class SlothModel extends ComplexObstacle  {
         if (rightGrabJoint != null) {
             if (movementMode != GRAB_TOGGLE || !rightGrabbing) world.destroyJoint(rightGrabJoint);
             leftCanGrabOrIsGrabbing = true;
+            releasedEntity = true;
         }
         rightGrabJoint = null;
     }
@@ -949,6 +953,7 @@ public class SlothModel extends ComplexObstacle  {
      * @param b
      */
     public void setOneGrab(boolean b) {
+        releasedEntity = false;
         if (!didSafeGrab) {
             didOneArmCheck = true;
             grabbedEntity = false;
