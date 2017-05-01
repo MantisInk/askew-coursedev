@@ -75,10 +75,12 @@ public class GameModeController extends WorldController {
 	};
 
 	public static final String GRAB_SOUND = "sound/effect/grab.wav";
+	public static final String RELEASE_SOUND = "sound/effect/release.wav";
 	public static final String FALL_MUSIC = "sound/music/fallingtoyourdeath" +
 			".ogg";
 
 	Sound grabSound;
+	Sound releaseSound;
 
 	@Setter
 	protected String loadLevel, DEFAULT_LEVEL;
@@ -145,6 +147,7 @@ public class GameModeController extends WorldController {
 		manager.load(FALL_MUSIC, Sound.class);
 
 		manager.load(GRAB_SOUND, Sound.class);
+		manager.load(RELEASE_SOUND, Sound.class);
 
 		platformAssetState = AssetState.LOADING;
 		jsonLoaderSaver.setManager(manager);
@@ -173,6 +176,7 @@ public class GameModeController extends WorldController {
 		SoundController.getInstance().allocate(manager, FALL_MUSIC);
 
 		grabSound = Gdx.audio.newSound(Gdx.files.internal(GRAB_SOUND));
+		releaseSound = Gdx.audio.newSound(Gdx.files.internal(RELEASE_SOUND));
 
 		pauseTexture = manager.get("texture/background/pause.png", Texture.class);
 		fern = manager.get("texture/background/fern.png");
@@ -559,6 +563,10 @@ public class GameModeController extends WorldController {
 
 			if (sloth.isGrabbedEntity()) {
 				grabSound.play();
+			}
+
+			if (sloth.isReleasedEntity()) {
+				releaseSound.play();
 			}
 
 			// Normal physics
