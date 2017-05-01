@@ -1078,7 +1078,7 @@ public class LevelEditorController extends WorldController {
 					JsonArray jarr = new JsonArray();
 					String[] split = text.split(",");
 					for (String s : split) {
-						jarr.add(Float.parseFloat(s));
+						jarr.add(new JsonPrimitive(Float.parseFloat(s)));
 					}
 					return jarr;
 				} else {
