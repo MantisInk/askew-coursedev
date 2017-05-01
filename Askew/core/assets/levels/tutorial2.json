@@ -1,0 +1,162 @@
+{
+  "levelModelVersion": 1,
+  "goalTimeGold": 30,
+  "goalTimeSilver": 45,
+  "goalTimeBronze": 60,
+  "recordTime": 9999999.0,
+  "title": "Tutorial 3",
+  "background": "texture/background/background1.png",
+  "soundtrack": "TODO",
+  "entities": [
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 18.199993,
+        "y": 9.749994,
+        "width": 20.0,
+        "height": 20.0,
+        "depth": 20.0,
+        "angle": 0.0,
+        "alpha": 1.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/sil4.png"
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": -10.0,
+        "y": 16.499992,
+        "width": 15.0,
+        "height": 10.0,
+        "depth": 12.0,
+        "angle": 0.0,
+        "alpha": 1.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/sil1.png"
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 21.519989,
+        "y": 11.999997,
+        "angle": -90.0,
+        "numLinks": 5.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.owl.OwlModel",
+      "INSTANCE": {
+        "x": 23.599989,
+        "y": 13.019998
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 11.959994,
+        "y": 9.059998,
+        "angle": 0.0,
+        "numLinks": 5.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 12.019994,
+        "y": 9.039998,
+        "angle": -90.0,
+        "numLinks": 5.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 16.979996,
+        "y": 14.019998,
+        "angle": -90.0,
+        "numLinks": 5.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 16.999992,
+        "y": 8.999998,
+        "angle": 0.0,
+        "numLinks": 5.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": -3.0,
+        "y": 14.0,
+        "angle": 270.0,
+        "numLinks": 15.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.sloth.SlothModel",
+      "INSTANCE": {
+        "x": -1.5200005,
+        "y": 13.999996,
+        "lTheta": 0.0,
+        "rTheta": 0.0,
+        "setLastGrabX": false,
+        "lastGrabX": 0.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": -8.999999,
+        "y": 4.999999,
+        "angle": -90.0,
+        "numLinks": 45.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": -5.999999,
+        "y": 6.039999,
+        "angle": 0.0,
+        "numLinks": 9.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": -2.5899997,
+        "y": 12.699991,
+        "width": 2.0,
+        "height": 2.0,
+        "depth": 0.99,
+        "angle": 0.0,
+        "alpha": 1.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/fern.png"
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": -3.3099995,
+        "y": 14.519991,
+        "width": 2.0,
+        "height": 2.0,
+        "depth": 0.99,
+        "angle": 0.0,
+        "alpha": 1.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/fern.png"
+      }
+    }
+  ]
+}
