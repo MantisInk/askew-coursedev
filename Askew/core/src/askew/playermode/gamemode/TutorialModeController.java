@@ -30,7 +30,7 @@ import java.util.Collections;
 /**
  * Gameplay specific controller for the platformer game.
  *
- * You will notice that asset loading is not done with static methods this time.
+ * You will notice that asset loading is not grabbedAll with static methods this time.
  * Instance asset loading makes it easier to process our game modes in a loop, which
  * is much more scalable. However, we still want the assets themselves to be static.
  * This is the purpose of our AssetState variable; it ensures that multiple instances
@@ -57,7 +57,8 @@ public class TutorialModeController extends GameModeController {
 	private boolean pressedA = false;
 	private boolean prevRightGrab;
 	private boolean prevLeftGrab;
-	private int grabs = 0;
+//	private int grabs = 0;
+	private boolean grabbedAll;
 
 	private float time = 0f;
 
@@ -120,7 +121,7 @@ public class TutorialModeController extends GameModeController {
 		trunkGrabbed.clear();
 		super.reset();
 		time = 0;
-		grabs = 0;
+//		grabs = 0;
 
 		joystickTexture = joystickAnimation.getKeyFrame(0);
 		bumperLTexture = bumperLAnimation.getKeyFrame(0);
@@ -198,8 +199,8 @@ public class TutorialModeController extends GameModeController {
 				canvas.draw(joystickTexture, Color.WHITE, joystickTexture.getRegionWidth() / 2, 0, 450, 450, 0, worldScale.x / joystickTexture.getRegionWidth(), worldScale.y / joystickTexture.getRegionHeight());
 			}
 		} else if(currentStage == STAGE_GRAB) {
-			if (grabs < 5) {
-				canvas.drawTextCentered("Try to grab 5x", displayFont, 200f);
+			if (!grabbedAll) {
+				canvas.drawTextCentered("Try to grab all 5 branches", displayFont, 200f);
 			}
 		} else if (currentStage == STAGE_SHIMMY) {
 			canvas.drawTextCentered("Try to shimmy across", displayFont, 200f);
@@ -226,7 +227,7 @@ public class TutorialModeController extends GameModeController {
 //		} else if (currentStage >= GRABBED_RIGHT) {
 		}
 		if((currentStage == STAGE_PINNED && time > 6f) ||
-				(currentStage == STAGE_GRAB && grabs >= 5)) {
+				(currentStage == STAGE_GRAB && grabbedAll)) {
 			canvas.drawTextCentered("Press A to continue", displayFont, 200f);
 		}
 	}
@@ -267,9 +268,14 @@ public class TutorialModeController extends GameModeController {
 					}
 					break;
 				case STAGE_GRAB:
-					if((!prevRightGrab && sloth.isActualRightGrab()) || (!prevLeftGrab && sloth.isActualLeftGrab())) {
-						grabs++;
+//					if((!prevRightGrab && sloth.isActualRightGrab()) || (!prevLeftGrab && sloth.isActualLeftGrab())) {
+//						grabs++;
+//					}
+					grabbedAll = trunkGrabbed.get(0);
+					for (int i = 0; i < trunkGrabbed.size(); i++) {
+						grabbedAll = trunkGrabbed.get(i) && grabbedAll;
 					}
+					break;
 				case STAGE_SHIMMY:
 				case STAGE_FLING:
 //					if(!isPlayerIsReady() || (isPlayerIsReady() && countdown > 0)) {
@@ -290,11 +296,12 @@ public class TutorialModeController extends GameModeController {
 			prevRightGrab = sloth.isActualRightGrab();
 		}
 	}
+
 	public boolean moveToNextStage() {
 		if(currentStage == STAGE_PINNED) {
 			return (time > 1.5f && pressedA);
 		} else if (currentStage == STAGE_GRAB) {
-			return (grabs >= 5 && pressedA);
+			return (grabbedAll && pressedA);
 		}else if(currentStage > STAGE_PINNED) {
 			return owl.isDoingVictory();
 		}
