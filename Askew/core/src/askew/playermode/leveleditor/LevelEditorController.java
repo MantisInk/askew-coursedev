@@ -873,7 +873,6 @@ public class LevelEditorController extends WorldController {
 
 	@Override
 	public void draw(float delta) {
-
 		canvas.clear();
 
 		//draw background
@@ -889,9 +888,15 @@ public class LevelEditorController extends WorldController {
 		pos.set(adjustedCxCamera * worldScale.x ,adjustedCyCamera * worldScale.y);
 		canvas.begin(camTrans);
 		Collections.sort(objects);
-		for(Entity obj : objects) {
-			obj.setDrawScale(worldScale);
-			obj.draw(canvas);
+		int s = objects.size();
+		for (int i = 0; i < s; i++) {
+			if (i < objects.size()) {
+				Entity obj = objects.get(i);
+				if (obj != null) {
+					obj.setDrawScale(worldScale);
+					obj.draw(canvas);
+				}
+			}
 		}
 		canvas.end();
 

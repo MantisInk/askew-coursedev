@@ -20,6 +20,28 @@
         "didOneArmCheck": false,
         "waitingForSafeRelease": false
       }
+    },
+    {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "numLinks": 5.0,
+        "x": 10.5625,
+        "y": -94.10781,
+        "angle": 5.0,
+        "omega": -400.0,
+        "pin": false
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "numLinks": 50.0,
+        "x": 5.159374,
+        "y": -6.784375,
+        "angle": 5.0,
+        "omega": -400.0,
+        "pin": false
+      }
     }
   ]
 }
