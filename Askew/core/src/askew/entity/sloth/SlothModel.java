@@ -1071,11 +1071,11 @@ public class SlothModel extends ComplexObstacle  {
 //            PolygonShape rLine = new PolygonShape();
 //            lLine.setAsBox(2,1, new Vector2(0,0),lAngle);
 //            rLine.setAsBox(2,1, new Vector2(0,0), rAngle);
-            canvas.beginDebug();
+            canvas.beginDebug(camTrans);
 //            canvas.drawPhysics(lLine, Color.BLUE, left.getX(), left.getY(), left.getAngle(), drawScale.x, drawScale.y);
 //            canvas.drawPhysics(rLine, Color.RED, right.getX(), right.getY(), right.getAngle(), drawScale.x, drawScale.y);
-            canvas.drawLine(body.getPosition().x*drawScale.x/2,body.getPosition().y * drawScale.y/4, left.getX()*drawScale.x,left.getY() * drawScale.y,Color.BLUE, Color.BLUE);
-            canvas.drawLine(body.getPosition().x*drawScale.x/2,body.getPosition().y * drawScale.y/4, right.getX()*drawScale.x,right.getY() * drawScale.y,Color.RED, Color.RED);
+            canvas.drawLine(body.getPosition().x*drawScale.x,body.getPosition().y * drawScale.y, left.getX()*drawScale.x,left.getY() * drawScale.y,Color.BLUE, Color.BLUE);
+            canvas.drawLine(body.getPosition().x*drawScale.x,body.getPosition().y * drawScale.y, right.getX()*drawScale.x,right.getY() * drawScale.y,Color.RED, Color.RED);
             canvas.endDebug();
         }
     }
