@@ -4,10 +4,29 @@
   "goalTimeSilver": 45,
   "goalTimeBronze": 60,
   "recordTime": 9999999.0,
+  "maxX": 35.0,
+  "maxY": 3.0,
+  "minX": -1.0,
+  "minY": 0.0,
   "title": "test_save_obstacle",
   "background": "texture/background/purple.png",
   "soundtrack": "TODO",
   "entities": [
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 8.0,
+        "y": -4.0,
+        "width": 15.0,
+        "height": 15.0,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/sil2.png",
+        "color": -1
+      }
+    },
     {
       "CLASSNAME": "askew.entity.sloth.SlothModel",
       "INSTANCE": {
@@ -35,11 +54,44 @@
     {
       "CLASSNAME": "askew.entity.vine.Vine",
       "INSTANCE": {
-        "numLinks": 50.0,
-        "x": 5.159374,
-        "y": -6.784375,
+        "numLinks": 5.0,
+        "x": -5.2909994,
+        "y": -1.144,
         "angle": 5.0,
         "omega": -400.0,
+        "pin": false
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "numLinks": 5.0,
+        "x": 4.0,
+        "y": 3.0,
+        "angle": 5.0,
+        "omega": -400.0,
+        "pin": false
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "numLinks": 5.0,
+        "x": 10.0,
+        "y": 3.0,
+        "angle": 5.0,
+        "omega": -400.0,
+        "pin": false
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "numLinks": 50.0,
+        "x": 6.0,
+        "y": 3.0,
+        "angle": 0.0,
+        "omega": 0.0,
         "pin": false
       }
     }
