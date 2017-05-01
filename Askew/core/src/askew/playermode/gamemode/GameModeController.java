@@ -105,6 +105,10 @@ public class GameModeController extends WorldController {
 	private String selectedTrack;
 	private String lastLevel;
 	private MantisAssetManager manager;
+	private float cameraX;
+	private float cameraY;
+	private float cameraVelocityX;
+	private float cameraVelocityY;
 
 	//For playtesting control schemes
 	private String typeMovement;
@@ -326,6 +330,8 @@ public class GameModeController extends WorldController {
 					collisions.setSloth(sloth);
 					initFlowX = sloth.getX();
 					initFlowY = sloth.getY();
+					cameraX = sloth.getX();
+					cameraY = sloth.getY();
 
 					sloth.setControlMode(currentControl);
 					sloth.setMovementMode(currentMovement);
@@ -611,13 +617,23 @@ public class GameModeController extends WorldController {
 		canvas.draw(background);
 		canvas.end();
 
-		camTrans.setToTranslation(-1 * sloth.getBody().getPosition().x * worldScale.x
-				, -1 * sloth.getBody().getPosition().y * worldScale.y);
+		float slothX = sloth.getBody().getPosition().x;
+		float slothY = sloth.getBody().getPosition().y;
+
+		cameraVelocityX = cameraVelocityX * 0.4f + (slothX - cameraX) * 0.18f;
+		cameraVelocityY = cameraVelocityY * 0.4f + (slothY - cameraY) * 0.18f;
+		cameraX += cameraVelocityX;
+		cameraY +=  cameraVelocityY;
+
+
+		camTrans.setToTranslation(-1 * cameraX * worldScale.x
+				, -1 * cameraY * worldScale.y);
 
 		camTrans.translate(canvas.getWidth()/2,canvas.getHeight()/2);
     
 		canvas.getCampos().set( sloth.getBody().getPosition().x * worldScale.x
 				, sloth.getBody().getPosition().y * worldScale.y);
+
 		canvas.begin(camTrans);
 		//canvas.draw(background, Color.WHITE, .25f*background.getWidth(),.75f * background.getHeight(),initFlowX*worldScale.x,initFlowY*worldScale.y,background.getWidth(), background.getHeight());
 
