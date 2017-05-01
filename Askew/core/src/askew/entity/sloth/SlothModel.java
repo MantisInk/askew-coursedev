@@ -953,7 +953,6 @@ public class SlothModel extends ComplexObstacle  {
      * @param b
      */
     public void setOneGrab(boolean b) {
-        releasedEntity = false;
         if (!didSafeGrab) {
             didOneArmCheck = true;
             grabbedEntity = false;
@@ -978,6 +977,7 @@ public class SlothModel extends ComplexObstacle  {
     public void setSafeGrab(boolean leftButtonPressed, Body leftCollisionBody, Body rightCollisionBody, World world) {
         grabbedEntity = false;
         didSafeGrab = false;
+        releasedEntity = false;
         if (waitingForSafeRelease && leftButtonPressed) {
             return;
         }
@@ -988,6 +988,7 @@ public class SlothModel extends ComplexObstacle  {
                     releaseLeft(world);
                     grab(world, rightCollisionBody, false);
                     didSafeGrab = true;
+                    releasedEntity = true;
                     waitingForSafeRelease = true;
                 }
             } else {
@@ -996,6 +997,7 @@ public class SlothModel extends ComplexObstacle  {
                         releaseRight(world);
                         grab(world, leftCollisionBody, true);
                         didSafeGrab = true;
+                        releasedEntity = true;
                         waitingForSafeRelease = true;
                     }
                 }
