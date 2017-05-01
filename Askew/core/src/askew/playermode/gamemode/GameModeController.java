@@ -190,8 +190,6 @@ public class GameModeController extends WorldController {
 	/** The new heavier gravity for this world (so it is not so floaty) */
 	private static final float  DEFAULT_GRAVITY = -10.7f;
 
-
-
 	// Physics objects for the game
 	/** Reference to the character avatar */
 	protected SlothModel sloth;
@@ -235,6 +233,7 @@ public class GameModeController extends WorldController {
 		} else
 			loadLevel = "level"+lvl;
 	}
+
 	// for use in loading levels that aren't part of the progression
 	public void setLevel(String lvlName) {
 		loadLevel = lvlName;
