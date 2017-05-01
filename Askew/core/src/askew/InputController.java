@@ -303,9 +303,9 @@ public class InputController {
 	 */
 	public boolean didTopDPadPress() { return topDPadPressed && !topDPadPrevious; }
 
-	public boolean didRightDPadPress() { return rightDPadPressed && !rightDPadPrevious; }
+	public boolean didLeftDPadPress() { return rightDPadPressed && !rightDPadPrevious; }
 
-	public boolean didLeftDPadPress() { return leftDPadPressed && !leftDPadPrevious; }
+	public boolean didRightDPadPress() { return leftDPadPressed && !leftDPadPrevious; }
 
 	public boolean didBottomDPadPress() { return bottomDPadPressed && !bottomDPadPrevious; }
 

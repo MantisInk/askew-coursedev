@@ -15,24 +15,14 @@ import askew.InputController;
 import askew.InputControllerManager;
 import askew.MantisAssetManager;
 import askew.entity.Entity;
-import askew.entity.obstacle.Obstacle;
-import askew.entity.owl.OwlModel;
-import askew.entity.sloth.SlothModel;
 import askew.entity.tree.Trunk;
-import askew.entity.wall.WallModel;
-import askew.util.json.JSONLoaderSaver;
+import askew.entity.vine.Vine;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Affine2;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.Fixture;
-import com.badlogic.gdx.utils.ObjectSet;
-import lombok.Getter;
 
-import java.util.Collections;
+import java.util.ArrayList;
 
 /**
  * Gameplay specific controller for the platformer game.
@@ -45,38 +35,15 @@ import java.util.Collections;
  */
 public class TutorialModeController extends GameModeController {
 
-	Affine2 camTrans = new Affine2();
+	private int MAX_TUTORIAL;
 
-	/** Track asset loading from all instances and subclasses */
-	private AssetState platformAssetState = AssetState.EMPTY;
-	private MantisAssetManager manager;
-
-	/** Track asset loading from all instances and subclasses */
-	@Getter
-	private static boolean playerIsReady = false;
-	private boolean paused = false;
-	private boolean prevPaused = false;
-	// fern selection indicator locations for pause menu options
-	private Vector2[] pause_locs = {new Vector2(11f,4.8f), new Vector2(9f,3.9f), new Vector2(11f,3f)};
-
-	private JSONLoaderSaver jsonLoaderSaver;
-	private float initFlowX;
-	private float initFlowY;
-	private int PAUSE_RESUME = 0;
-	private int PAUSE_RESTART = 1;
-	private int PAUSE_MAINMENU = 2;
-	private int pause_mode = PAUSE_RESUME;
-	private Texture pauseTexture;
-	private Texture fern;
-
-	private final int DID_NOTHING = 0;
-	private final int MOVED_LEFT = 1;
-	private final int MOVED_RIGHT = 2;
-	private final int GRABBED_LEFT = 3;
-	private final int GRABBED_RIGHT = 4;
-	private final int SWING_LEFT = 5;
-	private final int REGRABBED_LEFT = 6;
-	private int stepsDone = DID_NOTHING;
+	private final int STAGE_PINNED = 0;
+	private final int STAGE_GRAB = 1;
+	private final int STAGE_SHIMMY = 2;
+	private final int STAGE_FLING = 3;
+	private final int STAGE_VINE = 4;
+	private int currentStage = STAGE_PINNED;
+	private boolean next = false;
 
 	private final float CONTROLLER_DEADZONE = 0.15f;
 
@@ -84,6 +51,15 @@ public class TutorialModeController extends GameModeController {
 	private float rAngle;
 	private boolean cw;
 	private boolean ccw;
+
+	private float countdown = 0.15f;
+
+	private boolean pressedA = false;
+	private boolean prevRightGrab;
+	private boolean prevLeftGrab;
+	private int grabs = 0;
+
+	private float time = 0f;
 
 	private Animation joystickAnimation;
 	private Animation bumperLAnimation;
@@ -97,28 +73,8 @@ public class TutorialModeController extends GameModeController {
 	TextureRegion bumperRTexture;
 	Texture container;
 
-	//For playtesting control schemes
-	private String typeMovement;
-	private int currentMovement;
-	private String typeControl;
-	private int currentControl;
-
-
-	/**
-	 * Preloads the assets for this controller.
-	 *
-	 * To make the game modes more for-loop friendly, we opted for nonstatic loaders
-	 * this time.  However, we still want the assets themselves to be static.  So
-	 * we have an AssetState that determines the current loading state.  If the
-	 * assets are already loaded, this method will do nothing.
-	 *
-	 * @param manager Reference to global asset manager.
-	 */
-	public void preLoadContent(MantisAssetManager manager) {
-		jsonLoaderSaver.setManager(manager);
-		super.preLoadContent(manager);
-		this.manager = manager;
-	}
+	// list of objects for stage of tutorial
+	protected ArrayList<Entity> tutorialEntities = new ArrayList<Entity>();
 
 	/**
 	 * Load the assets for this controller.
@@ -132,47 +88,25 @@ public class TutorialModeController extends GameModeController {
 	 */
 	public void loadContent(MantisAssetManager manager) {
 		super.loadContent(manager);
-		pauseTexture = manager.get("texture/background/pause.png");
-		fern = manager.get("texture/background/fern.png");
 		container = manager.get("texture/tutorial/infoContainer.png");
+		// reset animation frames
+		if(joystickAnimation == null) {
+			joystickAnimation = new Animation(0.15f, manager.getTextureAtlas().findRegions("joy"), Animation.PlayMode.LOOP);
+			bumperLAnimation = new Animation(0.20f, manager.getTextureAtlas().findRegions("bumperL"), Animation.PlayMode.LOOP);
+			bumperRAnimation = new Animation(0.20f, manager.getTextureAtlas().findRegions("bumperR"), Animation.PlayMode.LOOP);
+		}
+		DEFAULT_LEVEL = "tutorial0";
+		loadLevel = DEFAULT_LEVEL;
 	}
 
 	// Physics objects for the game
 	/** Reference to the character avatar */
 
-	/** Mark set to handle more sophisticated collision callbacks */
-	protected ObjectSet<Fixture> sensorFixtures;
-
-	/**
-	 * Creates and initialize a new instance of the platformer game
-	 *
-	 * The game has default gravity and other settings
-	 */
 	public TutorialModeController() {
 		super();
-		setDebug(false);
-		setComplete(false);
-		setFailure(false);
-		collisions = new PhysicsController();
-		world.setContactListener(collisions);
-		sensorFixtures = new ObjectSet<Fixture>();
-		jsonLoaderSaver = new JSONLoaderSaver();
-
-		typeMovement = "Current movement is: "+"0";
-		currentMovement = 0;
-		typeControl = "Current control is: "+"0";
-		currentControl = 0;
-	}
-
-	public void pause(){
-		if (!paused) {
-			paused = true;
-			pause_mode = PAUSE_RESUME;
-		}
-		else {
-			paused = false;
-		}
-		playerIsReady = false;
+		currentStage = 0;
+		tutorialEntities.clear();
+		MAX_TUTORIAL = GlobalConfiguration.getInstance().getAsInt("maxTutorial");
 	}
 
 	/**
@@ -181,17 +115,10 @@ public class TutorialModeController extends GameModeController {
 	 * This method disposes of the world and creates a new one.
 	 */
 	public void reset() {
+		loadLevel = "tutorial"+currentStage;
 		super.reset();
-		paused = false;
-		stepsDone=0;
-		paused = false;
-
-		// reset animation frames
-		if(joystickAnimation == null) {
-			joystickAnimation = new Animation(0.15f, manager.getTextureAtlas().findRegions("joy"), Animation.PlayMode.LOOP);
-			bumperLAnimation = new Animation(0.20f, manager.getTextureAtlas().findRegions("bumperL"), Animation.PlayMode.LOOP);
-			bumperRAnimation = new Animation(0.20f, manager.getTextureAtlas().findRegions("bumperR"), Animation.PlayMode.LOOP);
-		}
+		time = 0;
+		grabs = 0;
 
 		joystickTexture = joystickAnimation.getKeyFrame(0);
 		bumperLTexture = bumperLAnimation.getKeyFrame(0);
@@ -203,46 +130,25 @@ public class TutorialModeController extends GameModeController {
 	 */
 	@Override
 	protected void populateLevel() {
-		//setLoadLevel("level0");
-		//super.populateLevel();
-		//#TODO extend level import to tutorial for le usage
-		System.out.println("populating");
-		float sloth_x = 0;
-		float sloth_y = 0;
+		super.populateLevel();
+		for(Entity e: objects) {
+			if(e instanceof Trunk) {
+				if (currentStage >= STAGE_GRAB) {
+					tutorialEntities.add(e);
+				}
+			} else if (e instanceof Vine) {
+				if (currentStage >= STAGE_VINE) {
+					tutorialEntities.add(e);
+				}
+			} else {
+				tutorialEntities.add(e);
+			}
+		}
 
-		//Create sloth
-		sloth = new SlothModel(sloth_x ,sloth_y);
-		sloth.setTextures(manager);
-		addObject(sloth);
-		sloth.activateSlothPhysics(world);
-		collisions.setSloth(sloth);
-		initFlowX = sloth.getX();
-		initFlowY = sloth.getY();
-
-		sloth.setControlMode(currentControl);
-		sloth.setMovementMode(currentMovement);
-
-		///Create wall
-		float[] points = {-4.0f,0.0f, -4.0f,1.0f, 16.0f,1.0f, 16.0f,0.0f};
-		WallModel platform = new WallModel(sloth_x-2,sloth_y-1.5f,points);
-		platform.setTextures(manager);
-		addObject(platform);
-
-		Trunk branch = new Trunk(sloth_x-1f,sloth_y+1.5f,11,-90.0f);
-		branch.setTextures(manager);
-		branch.setName("long branch");
-		addObject(branch);
-
-		Trunk branch1 = new Trunk(sloth_x-1f,sloth_y+1.5f,3,-90.0f);
-		branch1.setTextures(manager);
-		branch1.setName("short branch");
-		addObject(branch1);
-
-		//Create Ebb TODO Replace owl with Ebb
-		OwlModel ebb = new OwlModel(sloth_x + 10.5f, sloth_y);
-		ebb.setTextures(manager);
-		addObject(ebb);
-
+		if(currentStage == STAGE_PINNED) {
+			sloth.pin(world);
+			sloth.setTutorial();
+		}
 	}
 
 	/**
@@ -261,80 +167,24 @@ public class TutorialModeController extends GameModeController {
 			return false;
 		}
 
+
 		InputController input = InputControllerManager.getInstance().getController(0);
-
-//		if (input.didLeftButtonPress() || input.isLKeyPressed()) {
-//			System.out.println("LE");
-//			listener.exitScreen(this, EXIT_GM_LE);
-//			return false;
-//		} else if (input.didTopButtonPress()) {
-		if (input.didTopButtonPress()) {
-			System.out.println("MM");
-			listener.exitScreen(this, EXIT_GM_MM);
-			return false;
-		}
-
-		if (paused) {
-			//InputController input = InputController.getInstance();
-			if (input.didBottomButtonPress() && pause_mode == PAUSE_RESUME) {
-				paused = false;
-				playerIsReady = false;
-			} else if (input.didBottomButtonPress() && pause_mode == PAUSE_RESTART) {
-				reset();
-			} else if (input.didBottomButtonPress() && pause_mode == PAUSE_MAINMENU) {
-				System.out.println("MM");
-				listener.exitScreen(this, EXIT_GM_MM);
-			}
-
-			if (input.didTopDPadPress() && pause_mode > 0) {
-				pause_mode--;
-			}
-			if (input.didBottomDPadPress() && pause_mode < 2) {
-				pause_mode++;
-			}
-		}
-
-		//Checks to see if player has selected the button on the starting screen
-		if(!playerIsReady){
-			if(checkReady()){
-				playerIsReady = true;
-			}
-			else{
+		if(next) {
+			currentStage++;
+			next = false;
+			if (currentStage < MAX_TUTORIAL) {
+				System.out.println("moving on");
+				listener.exitScreen(this, EXIT_TL_TL);
+				return false;
+			} else {
+				System.out.println("tutorial completed");
+				GlobalConfiguration.getInstance().setCurrentLevel(1);
+				listener.exitScreen(this, EXIT_TL_GM);
 				return false;
 			}
 		}
-
+		pressedA = input.didBottomButtonPress();
 		return true;
-	}
-
-	/**
-	 * Checks to see if the player has pressed any button. This is used to
-	 * indicate that the player is ready to start the level.
-	 *
-	 * @return whether the player has pressed a button
-	 */
-	public boolean checkReady(){
-		InputController theController = InputControllerManager.getInstance().getController(0);
-
-		if (paused)
-			return false;
-
-		//If the player pressed "RB"
-		if(theController.getRightGrab()){
-			return true;
-		}
-		//If the player pressed "LB"
-		else if(theController.getLeftGrab()){
-			return true;
-		}
-
-		return false;
-	}
-
-	public void printHelp(){
-		//Display waiting text if not ready
-		displayFont.setColor(Color.YELLOW);
-		canvas.drawText("Hold RB/LB \n to start!", displayFont, initFlowX * worldScale.x, initFlowY * worldScale.y + 200f);
 	}
 
 	public void drawInstructions() {
@@ -344,31 +194,45 @@ public class TutorialModeController extends GameModeController {
 		bumperRTexture = bumperRAnimation.getKeyFrame(elapseTime, true);
 
 		canvas.draw(container, Color.WHITE, container.getWidth() / 2, 0, 425, 300, 0, worldScale.x * 5 / container.getWidth(), worldScale.y * 5 / container.getHeight());
-		if (stepsDone == DID_NOTHING) {
-			canvas.draw(joystickTexture, Color.WHITE, joystickTexture.getRegionWidth() / 2, 0, 350, 450, 0, worldScale.x / joystickTexture.getRegionWidth(), worldScale.y / joystickTexture.getRegionHeight());
-			canvas.draw(joystickNeutralTexture, Color.WHITE, joystickNeutralTexture.getRegionWidth() / 2, 0, 450, 450, 0, worldScale.x/ joystickNeutralTexture.getRegionWidth(), worldScale.y / joystickNeutralTexture.getRegionHeight());
-		} else if (stepsDone == MOVED_LEFT) {
-			canvas.draw(joystickNeutralTexture, Color.WHITE, joystickNeutralTexture.getRegionWidth() / 2, 0, 350, 450, 0, worldScale.x / joystickNeutralTexture.getRegionWidth(), worldScale.y / joystickNeutralTexture.getRegionHeight());
-			canvas.draw(joystickTexture, Color.WHITE, joystickTexture.getRegionWidth() / 2, 0, 450, 450, 0, worldScale.x / joystickTexture.getRegionWidth(), worldScale.y / joystickTexture.getRegionHeight());
-		} else if (stepsDone == MOVED_RIGHT) {
-			canvas.draw(bumperLTexture, Color.WHITE, bumperLTexture.getRegionWidth() / 2, 0, 400, 400, 0, worldScale.x * 3 / bumperLTexture.getRegionWidth(), worldScale.y * 3 / bumperLTexture.getRegionHeight());
-			canvas.draw(joystickTexture, Color.WHITE, joystickTexture.getRegionWidth() / 2, 0, 350, 450, 0, worldScale.x / joystickTexture.getRegionWidth(), worldScale.y / joystickTexture.getRegionHeight());
-			canvas.draw(joystickNeutralTexture, Color.WHITE, joystickNeutralTexture.getRegionWidth() / 2, 0, 450, 450, 0, worldScale.x/ joystickNeutralTexture.getRegionWidth(), worldScale.y / joystickNeutralTexture.getRegionHeight());
-		} else if (stepsDone == GRABBED_LEFT) {
-			canvas.draw(bumperRTexture, Color.WHITE, bumperRTexture.getRegionWidth() / 2, 0, 400, 400, 0, worldScale.x * 3 / bumperRTexture.getRegionWidth(), worldScale.y * 3 / bumperRTexture.getRegionHeight());
-			canvas.draw(joystickNeutralTexture, Color.WHITE, joystickNeutralTexture.getRegionWidth() / 2, 0, 350, 450, 0, worldScale.x / joystickNeutralTexture.getRegionWidth(), worldScale.y / joystickNeutralTexture.getRegionHeight());
-			canvas.draw(joystickTexture, Color.WHITE, joystickTexture.getRegionWidth() / 2, 0, 450, 450, 0, worldScale.x / joystickTexture.getRegionWidth(), worldScale.y / joystickTexture.getRegionHeight());
-		} else if (stepsDone >= GRABBED_RIGHT) {
-			if(sloth.isRightGrab()) {
+		if(currentStage == STAGE_PINNED) {
+			if((int)(time/3) %2 == 0){
+				canvas.draw(joystickTexture, Color.WHITE, joystickTexture.getRegionWidth() / 2, 0, 350, 450, 0, worldScale.x / joystickTexture.getRegionWidth(), worldScale.y / joystickTexture.getRegionHeight());
+				canvas.draw(joystickNeutralTexture, Color.WHITE, joystickNeutralTexture.getRegionWidth() / 2, 0, 450, 450, 0, worldScale.x / joystickNeutralTexture.getRegionWidth(), worldScale.y / joystickNeutralTexture.getRegionHeight());
+			} else{
+				canvas.draw(joystickNeutralTexture, Color.WHITE, joystickNeutralTexture.getRegionWidth() / 2, 0, 350, 450, 0, worldScale.x / joystickNeutralTexture.getRegionWidth(), worldScale.y / joystickNeutralTexture.getRegionHeight());
+				canvas.draw(joystickTexture, Color.WHITE, joystickTexture.getRegionWidth() / 2, 0, 450, 450, 0, worldScale.x / joystickTexture.getRegionWidth(), worldScale.y / joystickTexture.getRegionHeight());
+			}
+		} else if(currentStage == STAGE_GRAB) {
+			if (grabs < 5) {
+				canvas.drawTextCentered("Try to grab 5x", displayFont, 200f);
+			}
+		} else if (currentStage == STAGE_SHIMMY) {
+			canvas.drawTextCentered("Try to shimmy across", displayFont, 200f);
+		}
+		if (currentStage >= STAGE_GRAB && currentStage < STAGE_VINE) {
+			if(sloth.isActualRightGrab()) {
 				canvas.draw(bumperRTexture, Color.WHITE, bumperLTexture.getRegionWidth() / 2, 0, 400, 400, 0, worldScale.x * 3 / bumperLTexture.getRegionWidth(), worldScale.y * 3 / bumperLTexture.getRegionHeight());
 				canvas.draw(joystickTexture, Color.WHITE, joystickTexture.getRegionWidth() / 2, 0, 350, 450, 0, worldScale.x / joystickTexture.getRegionWidth(), worldScale.y / joystickTexture.getRegionHeight());
 				canvas.draw(joystickNeutralTexture, Color.WHITE, joystickNeutralTexture.getRegionWidth() / 2, 0, 450, 450, 0, worldScale.x/ joystickNeutralTexture.getRegionWidth(), worldScale.y / joystickNeutralTexture.getRegionHeight());
-			}
-			else {
+			} else {
 				canvas.draw(bumperLTexture, Color.WHITE, bumperRTexture.getRegionWidth() / 2, 0, 400, 400, 0, worldScale.x * 3 / bumperRTexture.getRegionWidth(), worldScale.y * 3 / bumperRTexture.getRegionHeight());
 				canvas.draw(joystickNeutralTexture, Color.WHITE, joystickNeutralTexture.getRegionWidth() / 2, 0, 350, 450, 0, worldScale.x / joystickNeutralTexture.getRegionWidth(), worldScale.y / joystickNeutralTexture.getRegionHeight());
 				canvas.draw(joystickTexture, Color.WHITE, joystickTexture.getRegionWidth() / 2, 0, 450, 450, 0, worldScale.x / joystickTexture.getRegionWidth(), worldScale.y / joystickTexture.getRegionHeight());
 			}
+//		} else if (currentStage == MOVED_LEFT) {
+//		} else if (currentStage == MOVED_RIGHT) {
+//			canvas.draw(bumperLTexture, Color.WHITE, bumperLTexture.getRegionWidth() / 2, 0, 400, 400, 0, worldScale.x * 3 / bumperLTexture.getRegionWidth(), worldScale.y * 3 / bumperLTexture.getRegionHeight());
+//			canvas.draw(joystickTexture, Color.WHITE, joystickTexture.getRegionWidth() / 2, 0, 350, 450, 0, worldScale.x / joystickTexture.getRegionWidth(), worldScale.y / joystickTexture.getRegionHeight());
+//			canvas.draw(joystickNeutralTexture, Color.WHITE, joystickNeutralTexture.getRegionWidth() / 2, 0, 450, 450, 0, worldScale.x/ joystickNeutralTexture.getRegionWidth(), worldScale.y / joystickNeutralTexture.getRegionHeight());
+//		} else if (currentStage == GRABBED_LEFT) {
+//			canvas.draw(bumperRTexture, Color.WHITE, bumperRTexture.getRegionWidth() / 2, 0, 400, 400, 0, worldScale.x * 3 / bumperRTexture.getRegionWidth(), worldScale.y * 3 / bumperRTexture.getRegionHeight());
+//			canvas.draw(joystickNeutralTexture, Color.WHITE, joystickNeutralTexture.getRegionWidth() / 2, 0, 350, 450, 0, worldScale.x / joystickNeutralTexture.getRegionWidth(), worldScale.y / joystickNeutralTexture.getRegionHeight());
+//			canvas.draw(joystickTexture, Color.WHITE, joystickTexture.getRegionWidth() / 2, 0, 450, 450, 0, worldScale.x / joystickTexture.getRegionWidth(), worldScale.y / joystickTexture.getRegionHeight());
+//		} else if (currentStage >= GRABBED_RIGHT) {
+		}
+		if((currentStage == STAGE_PINNED && time > 6f) ||
+				(currentStage == STAGE_GRAB && grabs >= 5)) {
+			canvas.drawTextCentered("Press A to continue", displayFont, 200f);
 		}
 	}
 
@@ -383,304 +247,76 @@ public class TutorialModeController extends GameModeController {
 	 * @param dt Number of seconds since last animation frame
 	 */
 	public void update(float dt) {
-		InputController input = InputControllerManager.getInstance().getController(0);
-
-		//Check for change in grabbing movement
-		if (input.isOneKeyPressed()) {
-			sloth.setMovementMode(0);
-			currentMovement = 0;
-			typeMovement = "Current movement is: "+"0";
-		}
-		if (input.isTwoKeyPressed()) {
-			sloth.setMovementMode(1);
-			currentMovement = 1;
-			typeMovement = "Current movement is: "+"1";
-		}
-		if (input.isThreeKeyPressed()) {
-			sloth.setMovementMode(2);
-			currentMovement = 2;
-			typeMovement = "Current movement is: "+"2";
-		}
-
-		//Check for change in arm movement
-		if (input.isZKeyPressed()) {
-			sloth.setControlMode(0);
-			currentControl = 0;
-			typeControl = "Current control is: "+"0";
-		}
-		if (input.isXKeyPressed()) {
-			sloth.setControlMode(1);
-			currentControl = 1;
-			typeControl = "Current control is: "+"1";
-		}
+		super.update(dt);
 		if (!paused) {
+			elapseTime += dt;
+			time = time+dt ;
 			// Process actions in object model
-			sloth.setLeftHori(input.getLeftHorizontal());
-			sloth.setLeftVert(input.getLeftVertical());
-			sloth.setRightHori(input.getRightHorizontal());
-			sloth.setRightVert(input.getRightVertical());
-			sloth.setLeftGrab(input.getLeftGrab());
-			sloth.setRightGrab(input.getRightGrab());
-
 			lAngle = (float) ((sloth.getLeftArm().getAngle()) - 1.5*Math.PI);//+3.14)%3.14);
 			rAngle = (float) ((sloth.getRightArm().getAngle()) - 1.5*Math.PI);//+ 3.14)%3.14);
-			System.out.print(lAngle+" ");
-			System.out.println(rAngle);
-//			float angleL = 0;//(lAngle - prevLAngle);
-//			float angleR = 0;//(rAngle - prevRAngle);
-//			if (Math.abs(angleL) > CONTROLLER_DEADZONE) {
-//				dLAngle += angleL;
-//				prevLAngle = angleL;
-//			}
-//			if (Math.abs(angleR) > CONTROLLER_DEADZONE) {
-//				dRAngle += angleR;
-//				prevRAngle = angleR;
-//			}
+//			System.out.print(lAngle+" ");
+//			System.out.println(rAngle);
 
-			//System.out.println("before case ("+rAngle+","+cw+","+ccw+")");
-			switch (stepsDone){
-				case DID_NOTHING:
-					//System.out.println("during case0 ("+rAngle+","+cw+","+ccw+")");
-					sloth.setRightHori(0);
-					sloth.setRightVert(0);
-					break;
-				case MOVED_LEFT:
-					sloth.setLeftHori(0);
-					sloth.setLeftVert(0);
-					//System.out.println("during case1 ("+rAngle+","+cw+","+ccw+")");
-//					sloth.setLeftGrab(false);
-					break;
-				case MOVED_RIGHT:
-					if (sloth.controlMode == 0)
-						sloth.setRightGrab(false);
-					break;
-				case GRABBED_LEFT:
-					//sloth.setLeftGrab(true);
-					break;
-				case GRABBED_RIGHT:
-					//sloth.setRightGrab(true);
-					//Set right arm to be 0 too?
-					break;
-				case SWING_LEFT:
-					//Let go of left grab
-					//sloth.setRightGrab(true);
-					break;
-				case REGRABBED_LEFT:
-					break;
-				default:
-					System.err.println(stepsDone);
-
-			}
-
-			//#TODO Collision states check
-			setFailure(collisions.isFlowKill());
-
-			Body leftCollisionBody = collisions.getLeftBody();
-			Body rightCollisionBody = collisions.getRightBody();
-
-			if (collisions.isFlowWin()) {
-				System.out.println("VICTORY");
-				setComplete(true);
-			}
-
-
-			// Physics tiem
-			// Gribby grab
-			if (sloth.isLeftGrab()) {
-				sloth.grab(world, leftCollisionBody, true);
-			} else {
-				sloth.releaseLeft(world);
-			}
-
-			if (sloth.isRightGrab()) {
-				sloth.grab(world, rightCollisionBody, false);
-			} else {
-				sloth.releaseRight(world);
-			}
-
-			// Normal physics
-			sloth.doThePhysics();
-
-			// If we use sound, we must remember this.
-			//SoundController.getInstance().update();
-
-			if (isComplete()) {
-				int current = GlobalConfiguration.getInstance().getCurrentLevel();
-				GlobalConfiguration.getInstance().setCurrentLevel(current + 1);
-				System.out.println("GG");
-				listener.exitScreen(this, EXIT_TL_GM);
-			}
-
-			if (isFailure()) {
-				System.out.println("Fail");
-				reset();
-			}
-
-//			boolean didSafe = InputController.getInstance().getRightGrab();
+			// TODO: move sloth movement in slothmodel
 
 			//Increment Steps
-			//System.out.println(stepsDone);
-			if(stepsDone==DID_NOTHING){
-				//Check for left joystick movement
-				if(Math.abs(input.getLeftHorizontal())>CONTROLLER_DEADZONE || Math.abs(input.getLeftVertical())>CONTROLLER_DEADZONE){
-					if(Math.abs(lAngle) > 4*Math.PI) {
-						cw = false;
-						ccw = false;
-						stepsDone++;
-					}
-				}
-			}
-			else if(stepsDone==MOVED_LEFT){
-				//Check for right joystick movement
-				if(Math.abs(input.getRightHorizontal())>CONTROLLER_DEADZONE || Math.abs(input.getRightVertical())>CONTROLLER_DEADZONE){
-//					if(rAngle>(4*Math.PI) || (ccw && rAngle > 0)) {
-//						cw = true;
-//						//sloth.getRightArm().setAngle((float)(-2*Math.PI));
-//					}
-//					if(rAngle<(-4*Math.PI) || (cw && rAngle < 0)) {
-//						ccw = true;
-//						//sloth.getRightArm().setAngle((float)(-2*Math.PI));
-//					}
-//					if(cw && ccw) {
-					if (Math.abs(2*Math.PI+rAngle) > 3*Math.PI) {
-						cw = false;
-						ccw = false;
-						stepsDone++;
-					}
-				}
-			}
-			else if(stepsDone==MOVED_RIGHT){
-				if (currentMovement==1) {
-					if (sloth.isActualRightGrab()) {
-						stepsDone++;
-					}
-				}
+			System.out.println("stage " + currentStage);
+			InputController input =  InputControllerManager.getInstance().getController(0);
 
-				//Check for left grab
-				if(sloth.isActualLeftGrab()){
-					stepsDone++;
-				}
-			}
-			else if(stepsDone==GRABBED_LEFT){
-				if (currentMovement==1) stepsDone++;
-				//Check for right grab
-				else if(sloth.isActualRightGrab()){
-					stepsDone++;
-				}
-			}
-			else if(stepsDone==GRABBED_RIGHT){
-				//Check for left joystick movement
-				if(Math.abs(input.getLeftHorizontal())>CONTROLLER_DEADZONE || Math.abs(input.getLeftVertical())>CONTROLLER_DEADZONE){
-					stepsDone++;
-				}
-			}
-			else if(stepsDone==SWING_LEFT){
-				if (currentMovement==1) {
-					if (sloth.isActualRightGrab()) {
-						stepsDone++;
+			switch(currentStage) {
+				case STAGE_PINNED:
+					if( (int)(time/3) %2 == 0) {
+						sloth.getRightArm().setAngle((float)Math.PI);
+					} else {
+						sloth.getLeftArm().setAngle((float)Math.PI);
 					}
-				}
-				//Check for left again
-				else if(sloth.isActualLeftGrab()){ //TODO Check for left hand crossing right hand and grabbing
-					stepsDone++;
-				}
+					break;
+				case STAGE_GRAB:
+					if((!prevRightGrab && sloth.isActualRightGrab()) || (!prevLeftGrab && sloth.isActualLeftGrab())) {
+						grabs++;
+					}
+				case STAGE_SHIMMY:
+				case STAGE_FLING:
+//					if(!isPlayerIsReady() || (isPlayerIsReady() && countdown > 0)) {
+//						sloth.setLeftGrab(true);
+//						sloth.setRightGrab(true);
+//					} else if (isPlayerIsReady() && countdown > 0) {
+//						countdown -= dt;
+//					}
+					break;
+				case STAGE_VINE:
+					break;
+				default:
+					System.err.println(currentStage);
 			}
-			else if(stepsDone==REGRABBED_LEFT){
-				//End of scripted checks, else if statement left here for sanity's sake
-				//stepsDone++;
-			}
+			if(moveToNextStage())
+				next = true;
+			prevLeftGrab = sloth.isActualLeftGrab();
+			prevRightGrab = sloth.isActualRightGrab();
 		}
-		prevPaused = paused;
+	}
+	public boolean moveToNextStage() {
+		if(currentStage == STAGE_PINNED) {
+			return (time > 1.5f && pressedA);
+		} else if (currentStage == STAGE_GRAB) {
+			return (grabs >= 5 && pressedA);
+		}else if(currentStage > STAGE_PINNED) {
+			return owl.isDoingVictory();
+		}
+		return false;
 	}
 
 	public void draw(float delta){
-		canvas.clear();
-
-		elapseTime+= delta;
-
-		camTrans.setToTranslation(-1 * sloth.getBody().getPosition().x * worldScale.x
-				, -1 * sloth.getBody().getPosition().y * worldScale.y);
-		camTrans.translate(canvas.getWidth()/2,canvas.getHeight()/2);
-
-		canvas.begin();
-		canvas.draw(background);
-		//Draw control schemes
-		canvas.drawTextStandard(typeMovement, 10f, 700f);
-		canvas.drawTextStandard(typeControl,10f,680f);
-		canvas.end();
-
+		super.draw(delta);
 		// draw instructional animations
 		canvas.begin();
 		drawInstructions();
 		canvas.end();
 
-		canvas.begin(camTrans);
-		Collections.sort(objects);
-		for(Entity obj : objects) {
-			if(obj instanceof Trunk){
-				if(stepsDone >= MOVED_LEFT && ((Trunk) obj).getName().equals("short branch")){
-					if(currentControl==1) {
-						obj.setDrawScale(worldScale);
-						obj.draw(canvas);
-					}
-					else if(stepsDone >= MOVED_RIGHT){
-						obj.setDrawScale(worldScale);
-						obj.draw(canvas);
-					}
-				}
-				if(stepsDone > GRABBED_RIGHT && ((Trunk) obj).getName().equals("long branch")){
-					obj.setDrawScale(worldScale);
-					obj.draw(canvas);
-				}
-			}
-			else if(obj instanceof OwlModel){
-				if(stepsDone >= GRABBED_RIGHT){
-					obj.setDrawScale(worldScale);
-					obj.draw(canvas);
-				}
-			}
-			else {
-				obj.setDrawScale(worldScale);
-				obj.draw(canvas);
-			}
-		}
+	}
 
-		if (!playerIsReady && !paused)
-			printHelp();
-		canvas.end();
-		sloth.drawGrab(canvas, camTrans);
-
-		if (debug) {
-			canvas.beginDebug(camTrans);
-			for(Entity obj : objects) {
-				if( obj instanceof  Obstacle){
-					((Obstacle)obj).drawDebug(canvas);
-				}
-
-			}
-			canvas.endDebug();
-			canvas.begin();
-			// text
-			canvas.drawTextStandard("FPS: " + 1f/delta, 10.0f, 100.0f);
-			canvas.end();
-			sloth.drawForces(canvas, camTrans);
-		}
-
-		// draw pause menu stuff over everything
-		if (paused) {
-			canvas.begin();
-			canvas.draw(pauseTexture);
-			canvas.draw(fern, Color.WHITE,fern.getWidth()/2, fern.getHeight()/2,
-					pause_locs[pause_mode].x * worldScale.x, pause_locs[pause_mode].y* worldScale.y,
-					0,worldScale.x/fern.getWidth(),worldScale.y/fern.getHeight());
-			canvas.end();
-		}
-
-		canvas.begin();
-		if (prevPaused && !paused && !playerIsReady)
-			printHelp();
-		canvas.end();
-
+	public void restart() {
+		currentStage = 0;
 	}
 
 }

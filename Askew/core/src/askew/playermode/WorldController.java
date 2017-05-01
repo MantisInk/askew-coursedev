@@ -21,7 +21,6 @@ import askew.entity.obstacle.Obstacle;
 import askew.playermode.gamemode.GameModeController;
 import askew.playermode.gamemode.TutorialModeController;
 import askew.util.FilmStrip;
-import askew.util.PooledList;
 import askew.util.ScreenListener;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
@@ -33,9 +32,8 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
-import java.util.ArrayList;
 
-import java.util.Iterator;
+import java.util.ArrayList;
 
 /**
  * Base class for a world-specific controller.
@@ -71,9 +69,9 @@ public abstract class WorldController implements Screen {
 	protected Array<String> assets;	
 	// Pathnames to shared assets
 	/** Retro font for displaying messages */
-	private static String FONT_FILE = "shared/RetroGame.ttf";
-	private static int FONT_SIZE = 64;
 	protected boolean playingMusic;
+	private static String FONT_FILE = "shared/ReginaFree.ttf";
+	private static int FONT_SIZE = 56;
 
 	/** The font for giving messages to the player */
 	protected BitmapFont displayFont;
@@ -180,8 +178,9 @@ public abstract class WorldController implements Screen {
 	public static final int EXIT_LE_MM = 5;
 	public static final int EXIT_LE_GM = 6;
 	public static final int EXIT_GM_GM = 7;
-	public static final int EXIT_GM_TL = 8;
+	public static final int EXIT_MM_TL = 8;
 	public static final int EXIT_TL_GM = 9;
+	public static final int EXIT_TL_TL = 10;
 
 	/** How many frames after winning/losing do we continue? */
 	public static final int EXIT_COUNT = 120;
@@ -199,7 +198,7 @@ public abstract class WorldController implements Screen {
 	protected static final float DEFAULT_HEIGHT = DEFAULT_WIDTH * (9.f / 16.f);
 	/** The default value of gravity (going down) */
 	protected static final float DEFAULT_GRAVITY = -4.9f;
-	
+
 	/** Reference to the game canvas */
 	protected GameCanvas canvas;
 	/** All the objects in the world. */
@@ -213,7 +212,7 @@ public abstract class WorldController implements Screen {
 	protected Rectangle bounds;
 	/** The world scale */
 	protected Vector2 worldScale;
-	
+
 	/** Whether or not this is an active controller */
 	private boolean active;
 	/** Whether we have completed this level */
@@ -296,7 +295,7 @@ public abstract class WorldController implements Screen {
 		}
 		failed = value;
 	}
-	
+
 	/**
 	 * Returns true if this is the active screen
 	 *
@@ -316,7 +315,7 @@ public abstract class WorldController implements Screen {
 	public GameCanvas getCanvas() {
 		return canvas;
 	}
-	
+
 	/**
 	 * Sets the canvas associated with this controller
 	 *

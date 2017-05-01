@@ -9,9 +9,10 @@
   "flowControlMode": 1,
   "vineDensity": 3.0,
   "fullscreen": false,
-  "defaultLevel": "level0",
+  "defaultLevel": "level1",
   "storeTimeRecords": false,
   "maxLevel": 9,
   "currentLevel": 1,
-  "enableMusic": false
+  "enableMusic": false,
+  "maxTutorial":5
 }

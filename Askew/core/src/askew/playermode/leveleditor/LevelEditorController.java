@@ -11,6 +11,9 @@
 package askew.playermode.leveleditor;
 
 import askew.*;
+import askew.GlobalConfiguration;
+import askew.InputController;
+import askew.MantisAssetManager;
 import askew.entity.BackgroundEntity;
 import askew.entity.Entity;
 import askew.entity.ghost.GhostModel;
@@ -24,8 +27,9 @@ import askew.entity.tree.Trunk;
 import askew.entity.vine.Vine;
 import askew.entity.wall.WallModel;
 import askew.playermode.WorldController;
-import askew.playermode.leveleditor.button.*;
 import askew.playermode.leveleditor.button.Button;
+import askew.playermode.leveleditor.button.ButtonList;
+import askew.playermode.leveleditor.button.ToggleButton;
 import askew.util.json.JSONLoaderSaver;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -35,6 +39,8 @@ import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.google.gson.JsonArray;
+import com.badlogic.gdx.physics.box2d.CircleShape;
+import com.badlogic.gdx.physics.box2d.World;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
@@ -488,14 +494,16 @@ public class LevelEditorController extends WorldController {
 		InputController input = InputControllerManager.getInstance().getController(0);
 		prevPressedL = pressedL;
 		pressedL = input.isLKeyPressed();
-		if (input.didLeftButtonPress()) {
+		if (input.didRightDPadPress()) {
 			System.out.println("GM");
 			listener.exitScreen(this, EXIT_LE_GM);
 			return false;
-		} else if (input.didTopButtonPress()) {
+		} else if (input.didTopDPadPress()) {
 			System.out.println("MM");
 			listener.exitScreen(this, EXIT_LE_MM);
 			return false;
+		}else if (input.didBottomDPadPress()) {
+			reset();
 		}
 
 		return true;
