@@ -47,11 +47,7 @@ public class WallModel extends PolygonObstacle {
     @Override
     public void setTextures(MantisAssetManager manager) {
         TextureRegion wallTextureRegion;
-        if (thorn) {
-            wallTextureRegion = manager.getProcessedTextureMap().get(MantisAssetManager.THORN_TEXTURE);
-        } else {
-            wallTextureRegion = manager.getProcessedTextureMap().get(MantisAssetManager.WALL_TEXTURE);
-        }
+        wallTextureRegion = manager.getProcessedTextureMap().get(MantisAssetManager.WALL_TEXTURE);
         setTexture(wallTextureRegion);
     }
 

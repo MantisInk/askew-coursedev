@@ -223,7 +223,7 @@ public class TutorialModeController extends GameModeController {
 
 		///Create wall
 		float[] points = {-4.0f,0.0f, -4.0f,1.0f, 16.0f,1.0f, 16.0f,0.0f};
-		WallModel platform = new WallModel(sloth_x-2,sloth_y-1.5f,points,false);
+		WallModel platform = new WallModel(sloth_x-2,sloth_y-1.5f,points);
 		platform.setTextures(manager);
 		addObject(platform);
 

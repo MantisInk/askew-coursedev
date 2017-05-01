@@ -20,6 +20,7 @@ import askew.entity.ghost.GhostModel;
 import askew.entity.obstacle.Obstacle;
 import askew.entity.owl.OwlModel;
 import askew.entity.sloth.SlothModel;
+import askew.entity.thorn.ThornModel;
 import askew.entity.tree.PoleVault;
 import askew.entity.tree.StiffBranch;
 import askew.entity.tree.Trunk;
@@ -46,6 +47,7 @@ import lombok.Setter;
 import javax.swing.*;
 import java.awt.*;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
 
@@ -128,7 +130,7 @@ public class LevelEditorController extends WorldController {
 	private boolean snapping = false;
 
 	private ButtonList buttons;
-
+	private boolean didLoad;
 
 
 	private boolean prompting;
@@ -256,6 +258,7 @@ public class LevelEditorController extends WorldController {
 
 		pressedL = false;
 		prevPressedL = false;
+		if (didLoad) makeGuiWindow();
 	}
 
 	/**
@@ -344,7 +347,10 @@ public class LevelEditorController extends WorldController {
 				entity = new OwlModel(x,y);
 				break;
 			case "WallModel":
-				entity = new WallModel(x,y,new float[] {0,0,0f,1f,1f,1f,1f,0f}, false);
+				entity = new WallModel(x,y,new float[] {0,0,0f,1f,1f,1f,1f,0f});
+				break;
+			case "ThornModel":
+				entity = new ThornModel(x,y,1,1,0);
 				break;
 			case "GhostModel":
 				entity = new GhostModel(x,y,x+2,y+2);
@@ -887,6 +893,7 @@ public class LevelEditorController extends WorldController {
 
 	//region JSON Stuff
 	private void makeGuiWindow() {
+		didLoad = true;
 		if (editorWindow != null) {
 			editorWindow.dispose();
 		}
@@ -952,6 +959,7 @@ public class LevelEditorController extends WorldController {
 			JsonElement value = entry.getValue();
 			StringBuilder theArray = new StringBuilder();
 			if (value.isJsonArray()) {
+				if (key.equals("entities")) continue;
 				boolean newLineTime = false;
 				for (JsonElement x : value.getAsJsonArray()) {
 					theArray.append(x.getAsString());
@@ -1012,13 +1020,16 @@ public class LevelEditorController extends WorldController {
 
 	private void saveLevel(){
 		System.out.println("Saving...");
-		LevelModel timeToSave = new LevelModel();
+		LevelModel timeToSave;
 //		if (!vimMode) {
 		// Grab params from gui
 		JsonObject levelJson = jsonLoaderSaver.gsonToJsonObject(levelModel);
 		grabUpdatedObjectValuesFromGUI(levelJson,editorWindow.getRootPane().getContentPane());
 		timeToSave = jsonLoaderSaver.levelFromJson(levelJson);
-		timeToSave.entities.clear();
+		if (timeToSave.entities != null)
+			timeToSave.entities.clear();
+		else
+			timeToSave.entities = new ArrayList<>();
 //		}
 		for (Entity o : objects) {
 			timeToSave.addEntity(o);

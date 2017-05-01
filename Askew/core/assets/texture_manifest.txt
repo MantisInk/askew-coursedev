@@ -56,5 +56,5 @@ texture/tutorial/joystick1.png
 texture/tutorial/joystick2.png
 texture/vine/vin1e.png
 texture/vine/vine.png
-texture/wall/thorn.png
+texture/thorn/thorns.png
 texture/wall/wall.png
