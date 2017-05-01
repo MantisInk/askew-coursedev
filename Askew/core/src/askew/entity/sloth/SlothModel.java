@@ -720,6 +720,66 @@ public class SlothModel extends ComplexObstacle  {
 
     public Body getRightTarget() {return rightTarget;}
 
+    public Body getLeftmostTarget() {
+        if (leftTarget != null && rightTarget != null) {
+            if(leftTarget.getPosition().x < rightTarget.getPosition().x) {
+                return leftTarget;
+            } else {
+                return rightTarget;
+            }
+        }
+        if (rightTarget != null) {
+            return rightTarget;
+        } else {
+            return leftTarget;
+        }
+    }
+
+    public Body getRightmostTarget() {
+        if (leftTarget != null && rightTarget != null) {
+            if(leftTarget.getPosition().x >= rightTarget.getPosition().x) {
+                return leftTarget;
+            } else {
+                return rightTarget;
+            }
+        }
+        if (leftTarget != null) {
+            return leftTarget;
+        } else {
+            return rightTarget;
+        }
+    }
+
+    public Body getTopTarget() {
+        if (leftTarget != null && rightTarget != null) {
+            if(leftTarget.getPosition().y > rightTarget.getPosition().y) {
+                return leftTarget;
+            } else {
+                return rightTarget;
+            }
+        }
+        if (rightTarget != null) {
+            return rightTarget;
+        } else {
+            return leftTarget;
+        }
+    }
+
+    public Body getBottomTarget() {
+        if (leftTarget != null && rightTarget != null) {
+            if(leftTarget.getPosition().y <= rightTarget.getPosition().y) {
+                return leftTarget;
+            } else {
+                return rightTarget;
+            }
+        }
+        if (rightTarget != null) {
+            return rightTarget;
+        } else {
+            return leftTarget;
+        }
+    }
+
     public Obstacle getLeftArm() {
         return bodies.get(PART_LEFT_ARM);
     }
