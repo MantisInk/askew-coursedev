@@ -1078,9 +1078,11 @@ public class SlothModel extends ComplexObstacle  {
             Vector2 lPos = left.getPosition();
             Vector2 rPos = right.getPosition();
             Vector2 bPos = body.getPosition();
+            Vector2 arrow = lPos.cpy().sub(bPos);
             float lAngle = (float) Math.toDegrees(lTheta);
             float rAngle = (float) Math.toDegrees(rTheta);
             float armspan = 2*ARM_XOFFSET;
+            float diag = armspan*(float)Math.cos(Math.PI/4);
 //            System.out.println("left: "+lAngle+" right: "+rAngle);
             if(isActualLeftGrab() || isActualRightGrab()) {
                 if (isActualLeftGrab()) {
@@ -1098,7 +1100,19 @@ public class SlothModel extends ComplexObstacle  {
                             case SHIMMY_N:
                                 rPos = new Vector2(lPos.x,lPos.y+armspan);
                                 break;
+                            case SHIMMY_SE:
+                                rPos = new Vector2(lPos.x+diag,lPos.y-diag);
+                                break;
+                            case SHIMMY_SW:
+                                rPos = new Vector2(lPos.x-diag,lPos.y-diag);
+                                break;
+                            case SHIMMY_NW:
+                                rPos = new Vector2(lPos.x-diag, lPos.y+diag);
+                                break;
+                            case SHIMMY_NE:
+                                rPos = new Vector2(lPos.x+diag, lPos.y+diag);
                         }
+//                        rPos = arrow.setAngle(0).add(bPos);
                     }
                 } else {
                     if (!isActualLeftGrab() || right.getX() < left.getX()) {
@@ -1115,7 +1129,17 @@ public class SlothModel extends ComplexObstacle  {
                             case SHIMMY_N:
                                 lPos = new Vector2(rPos.x,rPos.y+armspan);
                                 break;
-
+                            case SHIMMY_SE:
+                                lPos = new Vector2(rPos.x+diag,rPos.y-diag);
+                                break;
+                            case SHIMMY_SW:
+                                lPos = new Vector2(rPos.x-diag,rPos.y-diag);
+                                break;
+                            case SHIMMY_NW:
+                                lPos = new Vector2(rPos.x-diag, rPos.y+diag);
+                                break;
+                            case SHIMMY_NE:
+                                lPos = new Vector2(rPos.x+diag, rPos.y+diag);
                         }
                     }
                 }
