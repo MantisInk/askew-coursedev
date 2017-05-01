@@ -74,6 +74,9 @@ public class SlothModel extends ComplexObstacle  {
     private transient Fixture sensorFixture1;
     private transient Fixture sensorFixture2;
 
+    private transient Obstacle leftTarget;
+    private transient Obstacle rightTarget;
+
     /** Set damping constant for rotation of Flow's arms */
     private static final float ROTATION_DAMPING = 5f;
 
@@ -759,6 +762,7 @@ public class SlothModel extends ComplexObstacle  {
         } else {
             rightGrabJoint = grabJoint;
         }
+        target.setUserData("grabbed");
 
         joints.add(grabJoint);
         grabbedEntity = true;

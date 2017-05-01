@@ -17,10 +17,11 @@
 package askew.entity.obstacle;
 
 import askew.GameCanvas;
-import com.badlogic.gdx.utils.*;
-import com.badlogic.gdx.math.*;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.badlogic.gdx.utils.Array;
 
 /**
  * Composite model class to support collisions.
@@ -1070,6 +1071,12 @@ public abstract class ComplexObstacle extends Obstacle {
 		// Delegate to components
 		for(Obstacle obj : bodies) {
 			obj.draw(canvas);
+		}
+	}
+
+	public void draw(GameCanvas canvas, Color tint) {
+		for(Obstacle obj : bodies) {
+			((SimpleObstacle)obj).draw(canvas, tint);
 		}
 	}
 
