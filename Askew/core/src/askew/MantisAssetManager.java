@@ -19,7 +19,7 @@ import java.util.Map;
 public class MantisAssetManager extends AssetManager {
 
     public static final String WALL_TEXTURE = "texture/wall/wall.png";
-    public static final String THORN_TEXTURE = "texture/wall/thorn.png";
+    public static final String THORN_TEXTURE = "texture/thorn/thorns.png";
     private boolean loaded;
     private boolean preloaded;
 

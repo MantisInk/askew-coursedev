@@ -5,75 +5,20 @@
   "goalTimeBronze": 60,
   "recordTime": 9999999.0,
   "title": "test_save_obstacle",
-  "background": "texture/background/background1.png",
+  "background": "texture/background/loading.png",
   "soundtrack": "TODO",
   "entities": [
     {
-      "CLASSNAME": "askew.entity.BackgroundEntity",
-      "INSTANCE": {
-        "x": -0.020000458,
-        "y": -0.010000229,
-        "width": 1.0,
-        "height": 1.0,
-        "depth": 1.5,
-        "angle": 0.0,
-        "alpha": 1.0,
-        "scalex": 1.0,
-        "scaley": 1.0,
-        "texturePath": "texture/background/fern.png"
-      }
-    },
-    {
       "CLASSNAME": "askew.entity.sloth.SlothModel",
       "INSTANCE": {
-        "x": 1.1399994,
-        "y": 9.519995,
+        "x": -4.0,
+        "y": 6.0,
         "lTheta": 0.0,
         "rTheta": 0.0,
         "setLastGrabX": false,
-        "lastGrabX": 0.0
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.tree.Trunk",
-      "INSTANCE": {
-        "x": 2.7999992,
-        "y": -1.6199999,
-        "angle": 90.0,
-        "numLinks": 5.0
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.vine.Vine",
-      "INSTANCE": {
-        "numLinks": 5.0,
-        "x": 5.0,
-        "y": 1.0,
-        "angle": 33.0,
-        "omega": -400.0,
-        "pin": false
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.vine.Vine",
-      "INSTANCE": {
-        "numLinks": 5.0,
-        "x": 3.0,
-        "y": 1.0,
-        "angle": 20.0,
-        "omega": -400.0,
-        "pin": false
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.sloth.SlothModel",
-      "INSTANCE": {
-        "x": 3.0,
-        "y": 3.0,
-        "lTheta": 0.0,
-        "rTheta": 0.0,
-        "setLastGrabX": false,
-        "lastGrabX": 0.0
+        "lastGrabX": 0.0,
+        "didOneArmCheck": false,
+        "waitingForSafeRelease": false
       }
     }
   ]

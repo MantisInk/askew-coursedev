@@ -1,5 +1,7 @@
 texture/background/background1.png
 texture/background/fern.png
+texture/background/foreground/fernTile.png
+texture/background/loading.png
 texture/background/menu1.png
 texture/background/menu2.png
 texture/background/menu_background.png
@@ -8,6 +10,8 @@ texture/background/sil1.png
 texture/background/sil2.png
 texture/background/sil3.png
 texture/background/sil4.png
+texture/background/sil5.png
+texture/background/sil6.png
 texture/background/topvine/Topvine_0000_Layer-2.png
 texture/background/topvine/Topvine_0001_Layer-3.png
 texture/background/topvine/Topvine_0002_Layer-4.png
@@ -28,13 +32,12 @@ texture/background/topvine/Topvine_0016_Layer-18.png
 texture/background/topvine/Topvine_0017_Layer-19.png
 texture/background/topvine/Topvine_0018_Layer-20.png
 texture/branch/branch.png
-texture/icon.png
+texture/leveleditor/button.png
 texture/leveleditor/folder.png
 texture/leveleditor/grey.png
 texture/leveleditor/placeholder.png
 texture/leveleditor/up.png
 texture/leveleditor/yellowbox.png
-texture/leveleditor/button.png
 texture/sloth/arm.png
 texture/sloth/backarm.png
 texture/sloth/backarm_moving.png
@@ -48,11 +51,11 @@ texture/tutorial/bumperDownLeft.png
 texture/tutorial/bumperDownRight.png
 texture/tutorial/bumperUpLeft.png
 texture/tutorial/bumperUpRight.png
+texture/tutorial/infoContainer.png
 texture/tutorial/joystick0.png
 texture/tutorial/joystick1.png
 texture/tutorial/joystick2.png
+texture/vine/vin1e.png
 texture/vine/vine.png
-texture/wall/thorn.png
+texture/thorn/thorns.png
 texture/wall/wall.png
-texture/branch/branch.png
-texture/tutorial/infoContainer.png

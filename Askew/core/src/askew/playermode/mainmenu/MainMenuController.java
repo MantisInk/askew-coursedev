@@ -2,6 +2,7 @@ package askew.playermode.mainmenu;
 
 import askew.GlobalConfiguration;
 import askew.InputController;
+import askew.InputControllerManager;
 import askew.MantisAssetManager;
 import askew.playermode.WorldController;
 import askew.util.SoundController;
@@ -105,7 +106,7 @@ public class MainMenuController extends WorldController {
             return false;
         }
 
-        InputController input = InputController.getInstance();
+        InputController input = InputControllerManager.getInstance().getController(0);
 
         if (((input.didRightDPadPress() && mode == HOME_SCREEN) || nextCon.equals("GM"))) {
             System.out.println("GM");
@@ -168,13 +169,15 @@ public class MainMenuController extends WorldController {
         Gdx.input.setCursorCatched(false);
         nextCon = "";
         SoundController instance = SoundController.getInstance();
-        if (instance.isActive("bgmusic")) instance.stop("bgmusic");
-        if (!instance.isActive("menumusic")) instance.play("menumusic", MENU_MUSIC, true);
+        if (playingMusic) {
+            if (instance.isActive("bgmusic")) instance.stop("bgmusic");
+            if (!instance.isActive("menumusic")) instance.play("menumusic", MENU_MUSIC, true);
+        }
     }
 
     @Override
     public void update(float dt) {
-        InputController input = InputController.getInstance();
+        InputController input = InputControllerManager.getInstance().getController(0);
         if(mode == HOME_SCREEN) {
             if(mode!=prevMode) {
                 return;

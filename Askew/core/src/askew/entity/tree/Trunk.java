@@ -169,17 +169,6 @@ public class Trunk extends ComplexObstacle {
 		return true;
 	}
 
-
-	/**
-	 * Destroys the physics Body(s) of this object if applicable,
-	 * removing them from the world.
-	 *
-	 * @param world Box2D world that stores body
-	 */
-	public void deactivatePhysics(World world) {
-		super.deactivatePhysics(world);
-	}
-
 	/**
 	 * Returns the texture for the individual planks
 	 *

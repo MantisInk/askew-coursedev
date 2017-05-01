@@ -4,6 +4,7 @@ import askew.MantisAssetManager;
 import askew.entity.ghost.GhostModel;
 import askew.entity.owl.OwlModel;
 import askew.entity.sloth.SlothModel;
+import askew.entity.thorn.ThornModel;
 import askew.entity.tree.*;
 import askew.entity.vine.Vine;
 import askew.entity.wall.WallModel;
@@ -88,17 +89,30 @@ public class JsonEntityFactory {
         WallModel wall;
         float x = instance.get("x").getAsFloat();
         float y = instance.get("y").getAsFloat();
-        boolean thorn = instance.get("thorn").getAsBoolean();
         List<Float> points = new ArrayList<>();
+        System.out.println(instance.get("points"));
         instance.get("points").getAsJsonArray().forEach(pt->points.add(pt.getAsFloat()));
         Float[] arrayPoints = points.toArray(new Float[points.size()]);
         float[] copy = new float[arrayPoints.length];
         for (int i = 0; i < arrayPoints.length; i++) {
             copy[i] = arrayPoints[i];
         }
-        wall = new WallModel(x, y, copy, thorn);
+        wall = new WallModel(x, y, copy);
         wall.setTextures(manager);
         return wall;
+    }
+
+
+    public static ThornModel createThorn(MantisAssetManager manager, JsonObject instance) {
+        ThornModel thorn;
+        float x = instance.get("x").getAsFloat();
+        float y = instance.get("y").getAsFloat();
+        float width = instance.get("width").getAsFloat();
+        float height = instance.get("height").getAsFloat();
+        float angle = instance.get("angle").getAsFloat();
+        thorn = new ThornModel(x, y, width, height, angle);
+        thorn.setTextures(manager);
+        return thorn;
     }
 
     public static GhostModel createGhost(MantisAssetManager manager, JsonObject instance) {
@@ -120,12 +134,25 @@ public class JsonEntityFactory {
         float height = instance.get("height").getAsFloat();
         float depth = instance.get("depth").getAsFloat();
         float angle = instance.get("angle").getAsFloat();
-        float alpha = instance.get("alpha").getAsFloat();
         float scalex = instance.get("scalex").getAsFloat();
         float scaley = instance.get("scaley").getAsFloat();
+        String colorString = instance.get("color").getAsString();
+        int intColor;
+        try {
+            long color = instance.get("color").getAsLong();
+            intColor = (int) color;
+        } catch (Exception e) {
+            try {
+                long color = Long.decode(colorString);
+                intColor = (int) color;
+            } catch (Exception ee) {
+                long color = Long.valueOf(colorString, 16);
+                intColor = (int) color;
+            }
+        }
         String tex = instance.get("texturePath").getAsString();
 
-        bge = new BackgroundEntity(x,y,width,height,depth,angle,alpha,scalex,scaley,tex);
+        bge = new BackgroundEntity(x,y,width,height,depth,angle,scalex,scaley,tex,intColor);
         bge.setTextures(manager);
         return bge;
     }
