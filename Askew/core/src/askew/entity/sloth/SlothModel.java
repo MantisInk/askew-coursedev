@@ -74,8 +74,8 @@ public class SlothModel extends ComplexObstacle  {
     private transient Fixture sensorFixture1;
     private transient Fixture sensorFixture2;
 
-    private transient Obstacle leftTarget;
-    private transient Obstacle rightTarget;
+    private transient Body leftTarget;
+    private transient Body rightTarget;
 
     /** Set damping constant for rotation of Flow's arms */
     private static final float ROTATION_DAMPING = 5f;
@@ -125,6 +125,7 @@ public class SlothModel extends ComplexObstacle  {
     private boolean setLastGrabX;
     private float lastGrabX;
     private transient boolean dismembered;
+    private transient boolean pinned = false;
     private transient boolean tutorial = false;
 
     /**
@@ -552,14 +553,14 @@ public class SlothModel extends ComplexObstacle  {
         float forceLeft =  calculateTorque(dLTheta,leftAngularVelocity/OMEGA_NORMALIZER); //#MAGIC 20f default, omega normalizer
         float forceRight = calculateTorque(dRTheta,rightAngularVelocity/OMEGA_NORMALIZER);
 
-        if(impulseL > 0 && !tutorial)
+        if(impulseL > 0 && !pinned)
             forceLeft *= .3f;
 
-        if(impulseR > 0 && !tutorial)
+        if(impulseR > 0 && !pinned)
             forceRight *= .3f;
 
-        // if in tutorial, turn off auto-assist
-        if(tutorial) {
+        // if in pinned, turn off auto-assist
+        if(pinned) {
             impulseL = 0;
             impulseR = 0;
             cimpulseL = 0;
@@ -692,6 +693,10 @@ public class SlothModel extends ComplexObstacle  {
 
     public float getRTheta() {return rTheta;}
 
+    public Body getLeftTarget() {return leftTarget;}
+
+    public Body getRightTarget() {return rightTarget;}
+
     public Obstacle getLeftArm() {
         return bodies.get(PART_LEFT_ARM);
     }
@@ -747,10 +752,12 @@ public class SlothModel extends ComplexObstacle  {
         grabJoint = world.createJoint(grabJointDef);
         if (leftHand) {
             leftGrabJoint = grabJoint;
+            leftTarget = target;
         } else {
             rightGrabJoint = grabJoint;
+            rightTarget = target;
         }
-        // set data as grabbed for tutorial to shade grabbed stuff
+        // set data as grabbed for pinned to shade grabbed stuff
         target.setUserData("grabbed");
 
         joints.add(grabJoint);
@@ -763,6 +770,7 @@ public class SlothModel extends ComplexObstacle  {
             leftCanGrabOrIsGrabbing = false;
         }
         leftGrabJoint = null;
+        leftTarget = null;
     }
 
     public void releaseRight(World world) {
@@ -771,6 +779,7 @@ public class SlothModel extends ComplexObstacle  {
             leftCanGrabOrIsGrabbing = true;
         }
         rightGrabJoint = null;
+        rightTarget = null;
     }
 
     public void activateSlothPhysics(World world) {
@@ -932,9 +941,6 @@ public class SlothModel extends ComplexObstacle  {
                 }
             }
         }
-        //Commented out because the vine images disappear when this is used here?
-        //drawForces();
-
     }
 
     /**
@@ -1020,6 +1026,29 @@ public class SlothModel extends ComplexObstacle  {
         joints.add(joint);
     }
 
+    public void setPinned() {pinned = true;}
+
     public void setTutorial() {tutorial = true;}
+
+    public void drawHelpLines(GameCanvas canvas, Affine2 camTrans) {
+        if (tutorial) {
+            Obstacle left = bodies.get(PART_LEFT_HAND);
+            Obstacle right = bodies.get(PART_RIGHT_HAND);
+            Obstacle body = bodies.get(PART_BODY);
+
+//            float lAngle = left.getAngle();
+//            float rAngle = right.getAngle();
+//            PolygonShape lLine = new PolygonShape();
+//            PolygonShape rLine = new PolygonShape();
+//            lLine.setAsBox(2,1, new Vector2(0,0),lAngle);
+//            rLine.setAsBox(2,1, new Vector2(0,0), rAngle);
+            canvas.beginDebug();
+//            canvas.drawPhysics(lLine, Color.BLUE, left.getX(), left.getY(), left.getAngle(), drawScale.x, drawScale.y);
+//            canvas.drawPhysics(rLine, Color.RED, right.getX(), right.getY(), right.getAngle(), drawScale.x, drawScale.y);
+            canvas.drawLine(body.getPosition().x*drawScale.x/2,body.getPosition().y * drawScale.y/4, left.getX()*drawScale.x,left.getY() * drawScale.y,Color.BLUE, Color.BLUE);
+            canvas.drawLine(body.getPosition().x*drawScale.x/2,body.getPosition().y * drawScale.y/4, right.getX()*drawScale.x,right.getY() * drawScale.y,Color.RED, Color.RED);
+            canvas.endDebug();
+        }
+    }
 }
 
