@@ -14,14 +14,17 @@ import askew.GlobalConfiguration;
 import askew.InputController;
 import askew.MantisAssetManager;
 import askew.entity.Entity;
+import askew.entity.obstacle.Obstacle;
 import askew.entity.tree.Trunk;
-import askew.entity.vine.Vine;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * Gameplay specific controller for the platformer game.
@@ -46,10 +49,7 @@ public class TutorialModeController extends GameModeController {
 
 	private final float CONTROLLER_DEADZONE = 0.15f;
 
-	private float lAngle;
-	private float rAngle;
-	private boolean cw;
-	private boolean ccw;
+	private ArrayList<Boolean> trunkGrabbed = new ArrayList<Boolean>();
 
 	private float countdown = 0.15f;
 
@@ -73,7 +73,7 @@ public class TutorialModeController extends GameModeController {
 	Texture container;
 
 	// list of objects for stage of tutorial
-	protected ArrayList<Entity> tutorialEntities = new ArrayList<Entity>();
+	protected ArrayList<Trunk> trunkEntities = new ArrayList<Trunk>();
 
 	/**
 	 * Load the assets for this controller.
@@ -104,7 +104,7 @@ public class TutorialModeController extends GameModeController {
 	public TutorialModeController() {
 		super();
 		currentStage = 0;
-		tutorialEntities.clear();
+		trunkEntities.clear();
 		MAX_TUTORIAL = GlobalConfiguration.getInstance().getAsInt("maxTutorial");
 	}
 
@@ -115,6 +115,8 @@ public class TutorialModeController extends GameModeController {
 	 */
 	public void reset() {
 		loadLevel = "tutorial"+currentStage;
+		trunkEntities.clear();
+		trunkGrabbed.clear();
 		super.reset();
 		time = 0;
 		grabs = 0;
@@ -133,15 +135,8 @@ public class TutorialModeController extends GameModeController {
 		super.populateLevel();
 		for(Entity e: objects) {
 			if(e instanceof Trunk) {
-				if (currentStage >= STAGE_GRAB) {
-					tutorialEntities.add(e);
-				}
-			} else if (e instanceof Vine) {
-				if (currentStage >= STAGE_VINE) {
-					tutorialEntities.add(e);
-				}
-			} else {
-				tutorialEntities.add(e);
+				trunkEntities.add((Trunk)e);
+				trunkGrabbed.add(false);
 			}
 		}
 
@@ -251,8 +246,8 @@ public class TutorialModeController extends GameModeController {
 			elapseTime += dt;
 			time = time+dt ;
 			// Process actions in object model
-			lAngle = (float) ((sloth.getLeftArm().getAngle()) - 1.5*Math.PI);//+3.14)%3.14);
-			rAngle = (float) ((sloth.getRightArm().getAngle()) - 1.5*Math.PI);//+ 3.14)%3.14);
+//			lAngle = (float) ((sloth.getLeftArm().getAngle()) - 1.5*Math.PI);//+3.14)%3.14);
+//			rAngle = (float) ((sloth.getRightArm().getAngle()) - 1.5*Math.PI);//+ 3.14)%3.14);
 //			System.out.print(lAngle+" ");
 //			System.out.println(rAngle);
 
@@ -306,7 +301,101 @@ public class TutorialModeController extends GameModeController {
 	}
 
 	public void draw(float delta){
-		super.draw(delta);
+		// GameMode draw with changes
+		canvas.clear();
+
+		canvas.begin();
+		canvas.draw(background);
+		canvas.end();
+
+		camTrans.setToTranslation(-1 * sloth.getBody().getPosition().x * worldScale.x
+				, -1 * sloth.getBody().getPosition().y * worldScale.y);
+		camTrans.translate(canvas.getWidth()/2,canvas.getHeight()/2);
+		canvas.getCampos().set( sloth.getBody().getPosition().x * worldScale.x
+				, sloth.getBody().getPosition().y * worldScale.y);
+		canvas.begin(camTrans);
+		Collections.sort(objects);
+		for(Entity obj : objects) {
+			obj.setDrawScale(worldScale);
+			if(currentStage == STAGE_GRAB && obj instanceof Trunk) {
+				Trunk trunk = (Trunk) obj;
+				int ind = trunkEntities.indexOf(obj);
+
+				for(Obstacle plank: trunk.getBodies()){
+					if(plank.getBody().getUserData().equals("grabbed")) {
+						trunkGrabbed.set(ind,true);
+					}
+				}
+			} else {
+				obj.draw(canvas);
+			}
+		}
+		for (int i = 0; i <trunkEntities.size(); i++) {
+			if (trunkGrabbed.get(i)) {
+				(trunkEntities.get(i)).draw(canvas, Color.GRAY);
+			} else {
+				trunkEntities.get(i).draw(canvas);
+			}
+		}
+
+		if (!playerIsReady && !paused && coverOpacity <= 0)
+			printHelp();
+		canvas.end();
+		sloth.drawGrab(canvas, camTrans);
+
+		canvas.begin();
+		canvas.drawTextStandard("current time:    "+currentTime, 10f, 70f);
+		canvas.drawTextStandard("record time:     "+recordTime,10f,50f);
+
+		//Draw control schemes
+		canvas.drawTextStandard(typeMovement, 10f, 700f);
+		canvas.drawTextStandard(typeControl,10f,680f);
+		canvas.end();
+
+		if (debug) {
+			canvas.beginDebug(camTrans);
+			for(Entity obj : objects) {
+				if( obj instanceof Obstacle){
+					((Obstacle)obj).drawDebug(canvas);
+				}
+			}
+			canvas.endDebug();
+			canvas.begin();
+			// text
+			canvas.drawTextStandard("FPS: " + 1f/delta, 10.0f, 100.0f);
+			canvas.end();
+			sloth.drawForces(canvas, camTrans);
+		}
+
+		if (coverOpacity > 0) {
+			Gdx.gl.glEnable(GL20.GL_BLEND);
+			displayFont.setColor(Color.WHITE);
+			Color coverColor = new Color(0,0,0,coverOpacity);
+			canvas.drawRectangle(coverColor,0,0,canvas.getWidth(), canvas
+					.getHeight());
+			coverOpacity -= (1/CYCLES_OF_INTRO);
+			Gdx.gl.glDisable(GL20.GL_BLEND);
+			canvas.begin();
+			if (!playerIsReady && !paused)
+				canvas.drawTextCentered(levelModel.getTitle(), displayFont, 0f);
+			canvas.end();
+		}
+
+
+		// draw pause menu stuff over everything
+		if (paused) {
+			canvas.begin();
+			canvas.draw(pauseTexture);
+			canvas.draw(fern, Color.WHITE,fern.getWidth()/2, fern.getHeight()/2,
+					pause_locs[pause_mode].x * canvas.getWidth(), pause_locs[pause_mode].y* canvas.getHeight(),
+					0,2*worldScale.x/fern.getWidth(), 2*worldScale.y/fern.getHeight());
+			canvas.end();
+		}
+
+
+
+		// new draw stuff
+
 		// draw instructional animations
 		canvas.begin();
 		drawInstructions();

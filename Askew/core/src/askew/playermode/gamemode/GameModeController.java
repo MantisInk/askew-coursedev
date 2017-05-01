@@ -58,11 +58,11 @@ public class GameModeController extends WorldController {
 
 	/** Track asset loading from all instances and subclasses */
 	@Getter
-	private static boolean playerIsReady = false;
+	protected static boolean playerIsReady = false;
 	protected boolean paused = false;
-	private boolean prevPaused = false;
+	protected boolean prevPaused = false;
 	// fern selection indicator locations for pause menu options
-	private Vector2[] pause_locs = {
+	protected Vector2[] pause_locs = {
 			new Vector2(0.68f,0.53f),
 			new Vector2(0.55f,0.43f),
 			new Vector2(0.68f,0.33f)};
@@ -81,10 +81,10 @@ public class GameModeController extends WorldController {
 
 	@Setter
 	protected String loadLevel, DEFAULT_LEVEL;
-	private LevelModel levelModel; 				// LevelModel for the level the player is currently on
+	protected LevelModel levelModel; 				// LevelModel for the level the player is currently on
 	private int numLevel, MAX_LEVEL; 	// track int val of lvl #
 
-	private float currentTime, recordTime;	// track current and record time to complete level
+	protected float currentTime, recordTime;	// track current and record time to complete level
 	private boolean storeTimeRecords;
 
 	protected PhysicsController collisions;
@@ -95,21 +95,21 @@ public class GameModeController extends WorldController {
 	private int PAUSE_RESUME = 0;
 	private int PAUSE_RESTART = 1;
 	private int PAUSE_MAINMENU = 2;
-	private int pause_mode = PAUSE_RESUME;
+	protected int pause_mode = PAUSE_RESUME;
 	protected Texture background;
-	private Texture pauseTexture;
-	private Texture fern;
+	protected Texture pauseTexture;
+	protected Texture fern;
 	private static final float NEAR_FALL_DEATH_DISTANCE = 9;
 	private static final float LOWEST_ENTITY_FALL_DEATH_THRESHOLD = 12;
-	private static final float CYCLES_OF_INTRO = 50f;
+	protected static final float CYCLES_OF_INTRO = 50f;
 	private float fallDeathHeight;
 	private String selectedTrack;
 	private String lastLevel;
 
 	//For playtesting control schemes
-	private String typeMovement;
+	protected String typeMovement;
 	private int currentMovement;
-	private String typeControl;
+	protected String typeControl;
 	private int currentControl;
 
 	private int control_three_wait;
@@ -117,7 +117,7 @@ public class GameModeController extends WorldController {
 
 	/** The opacity of the black text covering the screen. Game can start
 	 * when this is zero. */
-	private float coverOpacity;
+	protected float coverOpacity;
 
 	/**
 	 * Preloads the assets for this controller.
