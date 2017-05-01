@@ -75,7 +75,7 @@ public class OwlModel extends BoxObstacle  {
 
     @Override
     public void setTextures(MantisAssetManager manager) {
-        idleAnimation = new Animation(0.25f, manager.getTextureAtlas()
+        idleAnimation = new Animation(0.127f, manager.getTextureAtlas()
                 .findRegions
                 ("idleowl"), Animation.PlayMode.LOOP);
         flyAnimation = new Animation(0.127f, manager.getTextureAtlas().findRegions

@@ -6,6 +6,8 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import lombok.Getter;
+import lombok.Setter;
 
 public class BackgroundEntity extends Entity{
 
@@ -15,10 +17,12 @@ public class BackgroundEntity extends Entity{
     private float height;
     private float depth;
     private float angle; //angle in radians
-    private float alpha;
     private float scalex;
     private float scaley;
     private String texturePath;
+    @Setter
+    @Getter
+    private int color;
 
     private transient TextureRegion texture;
     protected transient Vector2 origin;
@@ -33,26 +37,26 @@ public class BackgroundEntity extends Entity{
     }
 
     public BackgroundEntity(float x, float y){
-        this(x,y,1,1,1.5f,0,1,1,1,"texture/background/fern.png");
+        this(x,y,1,1,1.5f,0,1,1,"texture/background/fern.png",0xFFFFFFFF);
     }
 
     public BackgroundEntity(float x, float y, String path){
-        this(x,y,1,1,1.5f,0,1,1,1,path);
+        this(x,y,1,1,1.5f,0,1,1,path, 0xFFFFFFFF);
     }
 
 
     public BackgroundEntity(float x, float y, float width, float height, float depth,
-                            float angle, float alpha, float scalex, float scaley, String path){
+                            float angle,  float scalex, float scaley, String path, int color){
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
         this.depth = depth;
         this.angle = angle;
-        this.alpha = alpha;
         this.scalex = scalex;
         this.scaley = scaley;
         this.texturePath = path;
+        this.color = color;
 
         drawScale = new Vector2(1,1);
         objectScale = new Vector2(1,1);
@@ -117,12 +121,6 @@ public class BackgroundEntity extends Entity{
         angle = rads;
     }
 
-    public float getAlpha(){return alpha;}
-
-    public void setAlpha(float a){
-        alpha = a;
-    }
-
     public float getWidth(){
         return width;
     }
@@ -177,7 +175,7 @@ public class BackgroundEntity extends Entity{
 
     @Override
     public void draw(GameCanvas canvas) {
-        draw(canvas, new Color(0xffffffff));
+        draw(canvas, new Color(color));
     }
 
     public void draw(GameCanvas canvas, Color tint) {

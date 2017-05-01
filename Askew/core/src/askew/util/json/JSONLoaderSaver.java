@@ -3,15 +3,11 @@ package askew.util.json;
 
 import askew.MantisAssetManager;
 import askew.entity.Entity;
+import askew.entity.EntityWrapper;
 import askew.playermode.leveleditor.LevelModel;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.math.Vector2;
 import com.google.gson.*;
-import askew.entity.obstacle.Obstacle;
-import lombok.Cleanup;
-import lombok.Getter;
 
 import java.io.*;
 import java.util.Optional;

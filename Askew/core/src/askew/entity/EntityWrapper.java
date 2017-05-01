@@ -1,9 +1,6 @@
-package askew.util.json;
+package askew.entity;
 
 import askew.MantisAssetManager;
-import askew.entity.Entity;
-import askew.entity.JsonEntityFactory;
-import com.badlogic.gdx.math.Vector2;
 import com.google.gson.*;
 import lombok.Setter;
 
@@ -59,6 +56,8 @@ public class EntityWrapper implements JsonSerializer<Entity>, JsonDeserializer<E
                 return JsonEntityFactory.createOwl(manager, instance);
             case ".WallModel":
                 return JsonEntityFactory.createWall(manager, instance);
+            case ".ThornModel":
+                return JsonEntityFactory.createThorn(manager, instance);
             case ".GhostModel":
                 return JsonEntityFactory.createGhost(manager, instance);
             case ".BackgroundEntity":
