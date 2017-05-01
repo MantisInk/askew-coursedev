@@ -56,8 +56,10 @@ texture/thorn/thorns.png
 texture/wall/wall.png
 texture/background/BackgroundStuff/purple.png
 texture/background/BackgroundStuff/rusty.png
+texture/background/BackgroundStuff/turquoise.png
 texture/background/foreground/leaf.png
 texture/background/BackgroundStuff/sil1.png
 texture/background/BackgroundStuff/sil2.png
 texture/background/BackgroundStuff/sil3.png
 texture/background/BackgroundStuff/sil4.png
+texture/vine/vine2Tile.png
