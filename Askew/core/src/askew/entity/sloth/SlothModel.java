@@ -77,6 +77,16 @@ public class SlothModel extends ComplexObstacle  {
     private transient Body leftTarget;
     private transient Body rightTarget;
 
+    // help lines for tutorial mode
+    public static final int SHIMMY_E = 0;
+    public static final int SHIMMY_SE = 1;
+    public static final int SHIMMY_S = 2;
+    public static final int SHIMMY_SW = 3;
+    public static final int SHIMMY_W = 4;
+    public static final int SHIMMY_NW = 5;
+    public static final int SHIMMY_N = 6;
+    public static final int SHIMMY_NE = 7;
+
     /** Set damping constant for rotation of Flow's arms */
     private static final float ROTATION_DAMPING = 5f;
 
@@ -1059,7 +1069,7 @@ public class SlothModel extends ComplexObstacle  {
 
     public void setTutorial() {tutorial = true;}
 
-    public void drawHelpLines(GameCanvas canvas, Affine2 camTrans) {
+    public void drawHelpLines(GameCanvas canvas, Affine2 camTrans, int mode) {
         if (tutorial) {
             Obstacle left = bodies.get(PART_LEFT_HAND);
             Obstacle right = bodies.get(PART_RIGHT_HAND);
@@ -1075,11 +1085,38 @@ public class SlothModel extends ComplexObstacle  {
             if(isActualLeftGrab() || isActualRightGrab()) {
                 if (isActualLeftGrab()) {
                     if (!isActualRightGrab() || left.getX() < right.getX()) {
-                        rPos = new Vector2(lPos.x+armspan,lPos.y);
+                        switch(mode) {
+                            case SHIMMY_E:
+                                rPos = new Vector2(lPos.x+armspan,lPos.y);
+                                break;
+                            case SHIMMY_S:
+                                rPos = new Vector2(lPos.x,lPos.y-armspan);
+                                break;
+                            case SHIMMY_W:
+                                rPos = new Vector2(lPos.x-armspan,lPos.y);
+                                break;
+                            case SHIMMY_N:
+                                rPos = new Vector2(lPos.x,lPos.y+armspan);
+                                break;
+                        }
                     }
                 } else {
                     if (!isActualLeftGrab() || right.getX() < left.getX()) {
-                        lPos = new Vector2(rPos.x+armspan,rPos.y);
+                        switch(mode) {
+                            case SHIMMY_E:
+                                lPos = new Vector2(rPos.x+armspan,rPos.y);
+                                break;
+                            case SHIMMY_S:
+                                lPos = new Vector2(rPos.x,rPos.y-armspan);
+                                break;
+                            case SHIMMY_W:
+                                lPos = new Vector2(rPos.x-armspan,rPos.y);
+                                break;
+                            case SHIMMY_N:
+                                lPos = new Vector2(rPos.x,rPos.y+armspan);
+                                break;
+
+                        }
                     }
                 }
 
