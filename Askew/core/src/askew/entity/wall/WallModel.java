@@ -22,35 +22,22 @@ public class WallModel extends PolygonObstacle {
     private float x;
     private float y;
 
-    /** Determines whether this is wall or thorn */
-    private boolean thorn;
-
     /** The points that define the convex hull of the wall. Must be an even number (2n) of points representing (x1,y1) ... (xn,yn) */
     private float[] points;
 
-    public WallModel(float x, float y, float[] points, boolean thorn) {
+    public WallModel(float x, float y, float[] points) {
         super(points, x, y);
         this.x = x;
         this.y = y;
         this.points = points;
-        this.thorn = thorn;
         this.setBodyType(BodyDef.BodyType.StaticBody);
         this.setDensity(0);
         this.setFriction(WALL_FRICTION);
         this.setRestitution(WALL_RESTITUTION);
-        if (thorn) {
-            this.setSensor(true);
-            this.setName("thorns");
-            Filter f = new Filter();
-            f.maskBits = FilterGroup.SLOTH | FilterGroup.HAND;
-            f.categoryBits = FilterGroup.WALL;
-            this.setFilterData(f);
-        } else {
-            Filter f = new Filter();
-            f.maskBits = FilterGroup.SLOTH | FilterGroup.VINE;
-            f.categoryBits = FilterGroup.WALL;
-            this.setFilterData(f);
-        }
+        Filter f = new Filter();
+        f.maskBits = FilterGroup.SLOTH | FilterGroup.VINE;
+        f.categoryBits = FilterGroup.WALL;
+        this.setFilterData(f);
     }
 
     public void setDrawScale(float x, float y) {
