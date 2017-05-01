@@ -15,7 +15,6 @@ import askew.InputController;
 import askew.MantisAssetManager;
 import askew.entity.Entity;
 import askew.entity.obstacle.Obstacle;
-import askew.entity.sloth.SlothModel;
 import askew.entity.tree.Trunk;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -23,9 +22,12 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
 
 import java.util.ArrayList;
 import java.util.Collections;
+
+import static askew.entity.sloth.SlothModel.*;
 
 /**
  * Gameplay specific controller for the platformer game.
@@ -73,6 +75,24 @@ public class TutorialModeController extends GameModeController {
 	protected ArrayList<Trunk> trunkEntities = new ArrayList<Trunk>();
 	private ArrayList<Boolean> trunkGrabbed = new ArrayList<Boolean>();
 
+	// list of setpoints for drawing helplines
+	private int inRangeSetPt = -1;
+	private Vector2[] shimmySetPoints = {
+			new Vector2(12f,14f),
+			new Vector2(12f,9f),
+			new Vector2(17f,9f),
+			new Vector2(17f,14f),
+			new Vector2(21.5f,14f) };
+	private Vector2[] flingSetPoints = {
+			new Vector2(2f,14f),
+			new Vector2(9f,16f),
+			new Vector2(16f, 14f),
+			new Vector2(24f, 14f)  };
+	private Vector2[] vineSetPoints = {};
+	// list of instructions
+	private boolean[] shimmyGrabbed = {false, false, false, false, false};
+	private int[] flingdir = {};
+
 	/**
 	 * Load the assets for this controller.
 	 *
@@ -117,6 +137,7 @@ public class TutorialModeController extends GameModeController {
 		trunkGrabbed.clear();
 		super.reset();
 		time = 0;
+		inRangeSetPt = -1;
 		joystickTexture = joystickAnimation.getKeyFrame(0);
 		bumperLTexture = bumperLAnimation.getKeyFrame(0);
 		bumperRTexture = bumperRAnimation.getKeyFrame(0);
@@ -209,6 +230,13 @@ public class TutorialModeController extends GameModeController {
 					}
 					break;
 				case STAGE_SHIMMY:
+					for (int i = inRangeSetPt; i < shimmySetPoints.length-1; i++) {
+						if (!shimmyGrabbed[i+1]) {
+							shimmyGrabbed[i+1] = checkGrabbedPt(shimmySetPoints[i+1]);
+						}
+						if (inRange(shimmySetPoints[i+1])){inRangeSetPt++;}
+					}
+					break;
 				case STAGE_FLING:
 					break;
 				case STAGE_VINE:
@@ -221,6 +249,16 @@ public class TutorialModeController extends GameModeController {
 			prevLeftGrab = sloth.isActualLeftGrab();
 			prevRightGrab = sloth.isActualRightGrab();
 		}
+	}
+
+	public boolean checkGrabbedPt(Vector2 pt) {
+		// TODO: check if sloth grabbed pt
+		return false;
+	}
+
+	public boolean inRange(Vector2 pt) {
+		// TODO: check if sltoh disth
+		return false;
 	}
 
 	public boolean moveToNextStage() {
@@ -240,10 +278,46 @@ public class TutorialModeController extends GameModeController {
 				break;
 			case STAGE_GRAB:
 				if(!grabbedAll)
-					sloth.drawHelpLines(canvas, camTrans, SlothModel.SHIMMY_S);
+					sloth.drawHelpLines(canvas, camTrans, SHIMMY_S);
 				break;
 			case STAGE_SHIMMY:
-				sloth.drawHelpLines(canvas, camTrans, SlothModel.SHIMMY_E);
+				switch(inRangeSetPt) {
+					case 0:
+						if(!shimmyGrabbed[inRangeSetPt]){
+							sloth.drawHelpLines(canvas, camTrans, SHIMMY_SE);
+						} else {
+							sloth.drawHelpLines(canvas, camTrans, SHIMMY_S);
+						}
+						break;
+					case 1:
+						if(!shimmyGrabbed[inRangeSetPt]){
+							sloth.drawHelpLines(canvas, camTrans, SHIMMY_SE);
+						} else {
+							sloth.drawHelpLines(canvas, camTrans, SHIMMY_E);
+						}
+						break;
+					case 2:
+						if(!shimmyGrabbed[inRangeSetPt]){
+							sloth.drawHelpLines(canvas, camTrans, SHIMMY_NE);
+						} else {
+							sloth.drawHelpLines(canvas, camTrans, SHIMMY_N);
+						}
+						break;
+					case 3:
+						if(!shimmyGrabbed[inRangeSetPt]){
+							sloth.drawHelpLines(canvas, camTrans, SHIMMY_NE);
+						} else {
+							sloth.drawHelpLines(canvas, camTrans, SHIMMY_E);
+						}
+					case 4:
+						if(!shimmyGrabbed[inRangeSetPt]){
+							sloth.drawHelpLines(canvas, camTrans, SHIMMY_SE);
+						} else {
+							sloth.drawHelpLines(canvas, camTrans, SHIMMY_E);
+						}
+					default:
+						sloth.drawHelpLines(canvas, camTrans, SHIMMY_E);
+				}
 				break;
 			case STAGE_FLING:
 				break;
