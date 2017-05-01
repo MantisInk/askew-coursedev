@@ -83,7 +83,7 @@ public class TutorialModeController extends GameModeController {
 			new Vector2(12f,9f),
 			new Vector2(17f,9f),
 			new Vector2(17f,14f),
-			new Vector2(21.5f,14f) };
+			new Vector2(22.5f,14f) };
 	private Vector2[] flingSetPoints = {
 			new Vector2(2f,14f),
 			new Vector2(9f,16f),
@@ -92,6 +92,7 @@ public class TutorialModeController extends GameModeController {
 	private Vector2[] vineSetPoints = {};
 	// list of instructions
 	private boolean[] shimmyGrabbed = {false, false, false, false, false};
+	private int[] shimmyDir = {SHIMMY_S, SHIMMY_E, SHIMMY_N, SHIMMY_E, SHIMMY_SE};
 	private int[] flingdir = {};
 
 	/**
@@ -139,6 +140,9 @@ public class TutorialModeController extends GameModeController {
 		super.reset();
 		time = 0;
 		inRangeSetPt = -1;
+		for(int i = 0; i < shimmyGrabbed.length; i++)
+			shimmyGrabbed[i] = false;
+
 		joystickTexture = joystickAnimation.getKeyFrame(0);
 		bumperLTexture = bumperLAnimation.getKeyFrame(0);
 		bumperRTexture = bumperRAnimation.getKeyFrame(0);
@@ -231,12 +235,19 @@ public class TutorialModeController extends GameModeController {
 					}
 					break;
 				case STAGE_SHIMMY:
-					for (int i = inRangeSetPt; i < shimmySetPoints.length-1; i++) {
-						if (!shimmyGrabbed[i+1]) {
-							shimmyGrabbed[i+1] = checkGrabbedPt(shimmySetPoints[i+1]);
-						}
-						if (inRange(shimmySetPoints[i+1])){inRangeSetPt++;}
+					if(inRangeSetPt+1 >= shimmyDir.length) { break; }
+					if (inRange(shimmySetPoints[inRangeSetPt+1])) {
+						inRangeSetPt++;
 					}
+					if (inRangeSetPt >= 0 && !shimmyGrabbed[inRangeSetPt]) {
+						shimmyGrabbed[inRangeSetPt] = checkGrabbedPt(shimmySetPoints[inRangeSetPt], shimmyDir[inRangeSetPt]);
+					}
+
+
+					for (boolean b : shimmyGrabbed) {
+						System.out.print(b+"  ");
+					}
+					System.out.println();
 					break;
 				case STAGE_FLING:
 					break;
@@ -252,9 +263,49 @@ public class TutorialModeController extends GameModeController {
 		}
 	}
 
-	public boolean checkGrabbedPt(Vector2 pt) {
+	public boolean checkGrabbedPt(Vector2 setpt, int dir) {
 		// TODO: check if sloth grabbed pt
-		return false;
+		Body rTarget, lTarget, tTarget, bTarget;
+		Vector2 rtPos, ltPos, ttPos, btPos;
+		boolean xrange = false;
+		boolean yrange = false;
+		if (dir == SHIMMY_E || dir == SHIMMY_SE || dir == SHIMMY_NE) {
+			rTarget = sloth.getRightmostTarget();
+			if (rTarget == null) { return false; }
+			rtPos = rTarget.getPosition();
+//			System.out.println("E: ("+rtPos.x+","+rtPos.y+")");
+
+			if (rtPos.x-0.03 >= setpt.x) { xrange = true; }
+			if (dir == SHIMMY_E && Math.abs(setpt.y-rtPos.y) <= 0.05) { yrange = true; }
+
+		} else if (dir == SHIMMY_W || dir == SHIMMY_SW || dir == SHIMMY_NW) {
+			lTarget = sloth.getLeftmostTarget();
+			if (lTarget == null) { return false; }
+			ltPos = lTarget.getPosition();
+//			System.out.println("W: ("+ltPos.x+","+ltPos.y+")");
+
+			if (ltPos.x+0.03 <= setpt.x) { xrange = true;}
+			if (dir == SHIMMY_W && Math.abs(setpt.y-ltPos.y) <= 0.05) { yrange = true; }
+
+		} else if (dir == SHIMMY_S || dir == SHIMMY_SE || dir == SHIMMY_SW){
+			bTarget = sloth.getBottomTarget();
+			if (bTarget == null) { return false; }
+			btPos = bTarget.getPosition();
+//			System.out.println("S: ("+btPos.x+","+btPos.y+")");
+
+			if (btPos.y+0.03 <= setpt.y) { yrange = true; }
+			if (dir == SHIMMY_S && Math.abs(setpt.x - btPos.x) <= 0.05) { xrange = true; }
+
+		} else if (dir == SHIMMY_N || dir == SHIMMY_NE || dir == SHIMMY_NW) {
+			tTarget = sloth.getTopTarget();
+			if (tTarget == null) { return false; }
+			ttPos = tTarget.getPosition();
+//			System.out.println("N: ("+ttPos.x+","+ttPos.y+")");
+
+			if (ttPos.y-0.03 >= setpt.y) { yrange = true; }
+			if (dir == SHIMMY_N && Math.abs(setpt.x - ttPos.x) <= 0.05) { xrange = true; }
+		}
+		return xrange && yrange;
 	}
 
 	// checks if next set point is in range for changing arm help
@@ -271,22 +322,22 @@ public class TutorialModeController extends GameModeController {
 			lPos = lTarget.getPosition();
 			rPos = rTarget.getPosition();
 			if(lPos.x < rPos.x) {
-				xrange = Math.abs(setpt.x - lPos.x) <= ARMSPAN+0.05;
-				yrange = Math.abs(setpt.y - lPos.y) <= ARMSPAN+0.05;
+				xrange = Math.abs(setpt.x - lPos.x) <= ARMSPAN+0.03;
+				yrange = Math.abs(setpt.y - lPos.y) <= ARMSPAN+0.03;
 			} else {
-				xrange = Math.abs(setpt.x - rPos.x) <= ARMSPAN+0.05;
-				yrange = Math.abs(setpt.y - rPos.y) <= ARMSPAN+0.05;
+				xrange = Math.abs(setpt.x - rPos.x) <= ARMSPAN+0.03;
+				yrange = Math.abs(setpt.y - rPos.y) <= ARMSPAN+0.03;
 			}
 		}
 		if (lTarget != null) {
 			lPos = lTarget.getPosition();
-			xrange = Math.abs(setpt.x - lPos.x) <= ARMSPAN+0.05;
-			yrange = Math.abs(setpt.y - lPos.y) <= ARMSPAN+0.05;
+			xrange = Math.abs(setpt.x - lPos.x) <= ARMSPAN+0.03;
+			yrange = Math.abs(setpt.y - lPos.y) <= ARMSPAN+0.03;
 		}
 		if (rTarget != null) {
 			rPos = rTarget.getPosition();
-			xrange = Math.abs(setpt.x - rPos.x) <= ARMSPAN+0.05;
-			yrange = Math.abs(setpt.y - rPos.y) <= ARMSPAN+0.05;
+			xrange = Math.abs(setpt.x - rPos.x) <= ARMSPAN+0.03;
+			yrange = Math.abs(setpt.y - rPos.y) <= ARMSPAN+0.03;
 		}
 		return xrange && yrange;
 	}
