@@ -38,7 +38,7 @@ public class SlothModel extends ComplexObstacle  {
     private transient boolean GRABBING_HAND_HAS_TORQUE;
     private transient float OMEGA_NORMALIZER;
 
-    @Setter
+    @Setter @Getter
     public transient int controlMode;
     /** After flying this distance, flow starts to experience some serious
      * air resistance.
@@ -76,6 +76,19 @@ public class SlothModel extends ComplexObstacle  {
     private transient PolygonShape sensorShape;
     private transient Fixture sensorFixture1;
     private transient Fixture sensorFixture2;
+
+    private transient Body leftTarget;
+    private transient Body rightTarget;
+
+    // help lines for tutorial mode
+    public static final int SHIMMY_E = 0;
+    public static final int SHIMMY_SE = 1;
+    public static final int SHIMMY_S = 2;
+    public static final int SHIMMY_SW = 3;
+    public static final int SHIMMY_W = 4;
+    public static final int SHIMMY_NW = 5;
+    public static final int SHIMMY_N = 6;
+    public static final int SHIMMY_NE = 7;
 
     /** Set damping constant for rotation of Flow's arms */
     private static final float ROTATION_DAMPING = 5f;
@@ -129,6 +142,7 @@ public class SlothModel extends ComplexObstacle  {
     private transient boolean setLastGrabX;
     private transient float lastGrabX;
     private transient boolean dismembered;
+    private transient boolean pinned = false;
     private transient boolean didOneArmCheck;
     private transient boolean waitingForSafeRelease;
     private transient boolean tutorial = false;
@@ -180,6 +194,8 @@ public class SlothModel extends ComplexObstacle  {
     private static final float HAND_HEIGHT = 0.1125f;
     //private static final float HAND_XOFFSET  = (ARM_WIDTH / 2f) - HAND_WIDTH/2;
     private static final float HAND_XOFFSET  = (ARM_WIDTH / 2f) - HAND_WIDTH * 2 - .07f;
+
+    public static final float ARMSPAN = ARM_XOFFSET*2;
 
 
     /** Texture assets for the body parts */
@@ -557,14 +573,14 @@ public class SlothModel extends ComplexObstacle  {
         float forceLeft =  calculateTorque(dLTheta,leftAngularVelocity/OMEGA_NORMALIZER); //#MAGIC 20f default, omega normalizer
         float forceRight = calculateTorque(dRTheta,rightAngularVelocity/OMEGA_NORMALIZER);
 
-        if(impulseL > 0 && !tutorial)
+        if(impulseL > 0 && !pinned)
             forceLeft *= .3f;
 
-        if(impulseR > 0 && !tutorial)
+        if(impulseR > 0 && !pinned)
             forceRight *= .3f;
 
-        // if in tutorial, turn off auto-assist
-        if(tutorial) {
+        // if in pinned, turn off auto-assist
+        if(pinned) {
             impulseL = 0;
             impulseR = 0;
             cimpulseL = 0;
@@ -704,6 +720,70 @@ public class SlothModel extends ComplexObstacle  {
 
     public float getRTheta() {return rTheta;}
 
+    public Body getLeftTarget() {return leftTarget;}
+
+    public Body getRightTarget() {return rightTarget;}
+
+    public Body getLeftmostTarget() {
+        if (leftTarget != null && rightTarget != null) {
+            if(leftTarget.getPosition().x < rightTarget.getPosition().x) {
+                return leftTarget;
+            } else {
+                return rightTarget;
+            }
+        }
+        if (rightTarget != null) {
+            return rightTarget;
+        } else {
+            return leftTarget;
+        }
+    }
+
+    public Body getRightmostTarget() {
+        if (leftTarget != null && rightTarget != null) {
+            if(leftTarget.getPosition().x >= rightTarget.getPosition().x) {
+                return leftTarget;
+            } else {
+                return rightTarget;
+            }
+        }
+        if (leftTarget != null) {
+            return leftTarget;
+        } else {
+            return rightTarget;
+        }
+    }
+
+    public Body getTopTarget() {
+        if (leftTarget != null && rightTarget != null) {
+            if(leftTarget.getPosition().y > rightTarget.getPosition().y) {
+                return leftTarget;
+            } else {
+                return rightTarget;
+            }
+        }
+        if (rightTarget != null) {
+            return rightTarget;
+        } else {
+            return leftTarget;
+        }
+    }
+
+    public Body getBottomTarget() {
+        if (leftTarget != null && rightTarget != null) {
+            if(leftTarget.getPosition().y <= rightTarget.getPosition().y) {
+                return leftTarget;
+            } else {
+                return rightTarget;
+            }
+        }
+        if (rightTarget != null) {
+            return rightTarget;
+        } else {
+            return leftTarget;
+        }
+    }
+
     public Obstacle getLeftArm() {
         return bodies.get(PART_LEFT_ARM);
     }
@@ -760,9 +840,13 @@ public class SlothModel extends ComplexObstacle  {
         grabJoint = world.createJoint(grabJointDef);
         if (leftHand) {
             leftGrabJoint = grabJoint;
+            leftTarget = target;
         } else {
             rightGrabJoint = grabJoint;
+            rightTarget = target;
         }
+        // set data as grabbed for pinned to shade grabbed stuff
+        target.setUserData("grabbed");
 
         joints.add(grabJoint);
         grabbedEntity = true;
@@ -776,6 +860,7 @@ public class SlothModel extends ComplexObstacle  {
             releasedEntity = true;
         }
         leftGrabJoint = null;
+        leftTarget = null;
     }
 
     public void releaseRight(World world) {
@@ -786,6 +871,7 @@ public class SlothModel extends ComplexObstacle  {
             releasedEntity = true;
         }
         rightGrabJoint = null;
+        rightTarget = null;
     }
 
     public void activateSlothPhysics(World world) {
@@ -1058,6 +1144,91 @@ public class SlothModel extends ComplexObstacle  {
         joints.add(joint);
     }
 
+    public void setPinned() {pinned = true;}
+
     public void setTutorial() {tutorial = true;}
+
+    public void drawHelpLines(GameCanvas canvas, Affine2 camTrans, int mode) {
+        if (tutorial) {
+            Obstacle left = bodies.get(PART_LEFT_HAND);
+            Obstacle right = bodies.get(PART_RIGHT_HAND);
+            Obstacle body = bodies.get(PART_BODY);
+
+            Vector2 lPos = left.getPosition();
+            Vector2 rPos = right.getPosition();
+            Vector2 bPos = body.getPosition();
+//            Vector2 arrow = lPos.cpy().sub(bPos);
+//            float lAngle = (float) Math.toDegrees(lTheta);
+//            float rAngle = (float) Math.toDegrees(rTheta);
+            float diag = ARMSPAN*(float)Math.cos(Math.PI/4);
+//            System.out.println("left: "+lAngle+" right: "+rAngle);
+            if(isActualLeftGrab() || isActualRightGrab()) {
+                if (isActualLeftGrab()) {
+                    if (!isActualRightGrab() || left.getX() < right.getX()) {
+                        switch(mode) {
+                            case SHIMMY_E:
+                                rPos = new Vector2(lPos.x+ARMSPAN,lPos.y);
+                                break;
+                            case SHIMMY_S:
+                                rPos = new Vector2(lPos.x,lPos.y-ARMSPAN);
+                                break;
+                            case SHIMMY_W:
+                                rPos = new Vector2(lPos.x-ARMSPAN,lPos.y);
+                                break;
+                            case SHIMMY_N:
+                                rPos = new Vector2(lPos.x,lPos.y+ARMSPAN);
+                                break;
+                            case SHIMMY_SE:
+                                rPos = new Vector2(lPos.x+diag,lPos.y-diag);
+                                break;
+                            case SHIMMY_SW:
+                                rPos = new Vector2(lPos.x-diag,lPos.y-diag);
+                                break;
+                            case SHIMMY_NW:
+                                rPos = new Vector2(lPos.x-diag, lPos.y+diag);
+                                break;
+                            case SHIMMY_NE:
+                                rPos = new Vector2(lPos.x+diag, lPos.y+diag);
+                        }
+//                        rPos = arrow.setAngle(0).add(bPos);
+                    }
+                } else {
+                    if (!isActualLeftGrab() || right.getX() < left.getX()) {
+                        switch(mode) {
+                            case SHIMMY_E:
+                                lPos = new Vector2(rPos.x+ARMSPAN,rPos.y);
+                                break;
+                            case SHIMMY_S:
+                                lPos = new Vector2(rPos.x,rPos.y-ARMSPAN);
+                                break;
+                            case SHIMMY_W:
+                                lPos = new Vector2(rPos.x-ARMSPAN,rPos.y);
+                                break;
+                            case SHIMMY_N:
+                                lPos = new Vector2(rPos.x,rPos.y+ARMSPAN);
+                                break;
+                            case SHIMMY_SE:
+                                lPos = new Vector2(rPos.x+diag,rPos.y-diag);
+                                break;
+                            case SHIMMY_SW:
+                                lPos = new Vector2(rPos.x-diag,rPos.y-diag);
+                                break;
+                            case SHIMMY_NW:
+                                lPos = new Vector2(rPos.x-diag, rPos.y+diag);
+                                break;
+                            case SHIMMY_NE:
+                                lPos = new Vector2(rPos.x+diag, rPos.y+diag);
+                        }
+                    }
+                }
+
+//                System.out.println("     left: "+lPos.angle()+" right: "+rPos.angle());
+                canvas.beginDebug(camTrans);
+                canvas.drawLine(bPos.x * drawScale.x, bPos.y * drawScale.y, lPos.x * drawScale.x, lPos.y * drawScale.y, Color.BLUE, Color.BLUE);
+                canvas.drawLine(bPos.x * drawScale.x, bPos.y * drawScale.y, rPos.x * drawScale.x, rPos.y * drawScale.y, Color.RED, Color.RED);
+                canvas.endDebug();
+            }
+        }
+    }
 }
 

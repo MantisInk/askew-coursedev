@@ -15,19 +15,26 @@ import askew.InputController;
 import askew.InputControllerManager;
 import askew.MantisAssetManager;
 import askew.entity.Entity;
+import askew.entity.obstacle.Obstacle;
 import askew.entity.tree.Trunk;
-import askew.entity.vine.Vine;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
 
 import java.util.ArrayList;
+import java.util.Collections;
+
+import static askew.entity.sloth.SlothModel.*;
 
 /**
  * Gameplay specific controller for the platformer game.
  *
- * You will notice that asset loading is not done with static methods this time.
+ * You will notice that asset loading is not grabbedAll with static methods this time.
  * Instance asset loading makes it easier to process our game modes in a loop, which
  * is much more scalable. However, we still want the assets themselves to be static.
  * This is the purpose of our AssetState variable; it ensures that multiple instances
@@ -47,17 +54,10 @@ public class TutorialModeController extends GameModeController {
 
 	private final float CONTROLLER_DEADZONE = 0.15f;
 
-	private float lAngle;
-	private float rAngle;
-	private boolean cw;
-	private boolean ccw;
-
-	private float countdown = 0.15f;
-
 	private boolean pressedA = false;
 	private boolean prevRightGrab;
 	private boolean prevLeftGrab;
-	private int grabs = 0;
+	private boolean grabbedAll;
 
 	private float time = 0f;
 
@@ -74,7 +74,28 @@ public class TutorialModeController extends GameModeController {
 	Texture container;
 
 	// list of objects for stage of tutorial
-	protected ArrayList<Entity> tutorialEntities = new ArrayList<Entity>();
+	protected ArrayList<Trunk> trunkEntities = new ArrayList<Trunk>();
+	private ArrayList<Boolean> trunkGrabbed = new ArrayList<Boolean>();
+
+	// list of setpoints for drawing helplines
+	private int inRangeSetPt = -1;
+	private Vector2[] shimmySetPoints = {
+			new Vector2(12f,14f),
+			new Vector2(12f,9f),
+			new Vector2(17f,9f),
+			new Vector2(17f,14f),
+			new Vector2(22.5f,14f) };
+	private Vector2[] flingSetPoints = {
+			new Vector2(2f,14f),
+			new Vector2(9f,16f),
+			new Vector2(16f, 14f),
+			new Vector2(24f, 14f)  };
+	private Vector2[] vineSetPoints = {};
+	// list of instructions
+	private boolean[] shimmyGrabbed = {false, false, false, false, false};
+	private int[] shimmyDir = {SHIMMY_S, SHIMMY_E, SHIMMY_N, SHIMMY_E, SHIMMY_SE};
+	private boolean[] flingGrabbed = {false, false, false, false};
+	private int[] flingDir = {SHIMMY_NE, SHIMMY_SE, SHIMMY_E, SHIMMY_SE};
 
 	/**
 	 * Load the assets for this controller.
@@ -105,7 +126,7 @@ public class TutorialModeController extends GameModeController {
 	public TutorialModeController() {
 		super();
 		currentStage = 0;
-		tutorialEntities.clear();
+		trunkEntities.clear();
 		MAX_TUTORIAL = GlobalConfiguration.getInstance().getAsInt("maxTutorial");
 	}
 
@@ -116,9 +137,13 @@ public class TutorialModeController extends GameModeController {
 	 */
 	public void reset() {
 		loadLevel = "tutorial"+currentStage;
+		trunkEntities.clear();
+		trunkGrabbed.clear();
 		super.reset();
 		time = 0;
-		grabs = 0;
+		inRangeSetPt = -1;
+		for(int i = 0; i < shimmyGrabbed.length; i++)
+			shimmyGrabbed[i] = false;
 
 		joystickTexture = joystickAnimation.getKeyFrame(0);
 		bumperLTexture = bumperLAnimation.getKeyFrame(0);
@@ -133,22 +158,16 @@ public class TutorialModeController extends GameModeController {
 		super.populateLevel();
 		for(Entity e: objects) {
 			if(e instanceof Trunk) {
-				if (currentStage >= STAGE_GRAB) {
-					tutorialEntities.add(e);
-				}
-			} else if (e instanceof Vine) {
-				if (currentStage >= STAGE_VINE) {
-					tutorialEntities.add(e);
-				}
-			} else {
-				tutorialEntities.add(e);
+				trunkEntities.add((Trunk)e);
+				trunkGrabbed.add(false);
 			}
 		}
 
 		if(currentStage == STAGE_PINNED) {
 			sloth.pin(world);
-			sloth.setTutorial();
+			sloth.setPinned();
 		}
+
 	}
 
 	/**
@@ -187,6 +206,224 @@ public class TutorialModeController extends GameModeController {
 		return true;
 	}
 
+	/**
+	 * The core gameplay loop of this world.
+	 *
+	 * This method contains the specific update code for this mini-game. It does
+	 * not handle collisions, as those are managed by the parent class askew.playermode.WorldController.
+	 * This method is called after input is read, but before collisions are resolved.
+	 * The very last thing that it should do is apply forces to the appropriate objects.
+	 *
+	 * @param dt Number of seconds since last animation frame
+	 */
+	public void update(float dt) {
+		super.update(dt);
+		if (!paused) {
+			elapseTime += dt;
+			time = time+dt ;
+			// TODO: move sloth movement in slothmodel
+			switch(currentStage) {
+				case STAGE_PINNED:
+					if( (int)(time/3) %2 == 0) {
+						sloth.getRightArm().setAngle((float)Math.PI);
+					} else {
+						sloth.getLeftArm().setAngle((float)Math.PI);
+					}
+					break;
+				case STAGE_GRAB:
+					grabbedAll = trunkGrabbed.get(0);
+					for (int i = 0; i < trunkGrabbed.size(); i++) {
+						grabbedAll = trunkGrabbed.get(i) && grabbedAll;
+					}
+					break;
+				case STAGE_SHIMMY:
+					if(inRangeSetPt+1 >= shimmyDir.length) { break; }
+					if (inRange(shimmySetPoints[inRangeSetPt+1])) {
+						inRangeSetPt++;
+					}
+					if (inRangeSetPt >= 0 && !shimmyGrabbed[inRangeSetPt]) {
+						shimmyGrabbed[inRangeSetPt] = checkGrabbedPt(shimmySetPoints[inRangeSetPt], shimmyDir[inRangeSetPt]);
+					}
+					break;
+				case STAGE_FLING:
+					if(inRangeSetPt+1 >= flingDir.length) { break; }
+					if (inRange(flingSetPoints[inRangeSetPt+1])) {
+						inRangeSetPt++;
+					}
+					if (inRangeSetPt >= 0 && !flingGrabbed[inRangeSetPt]) {
+						flingGrabbed[inRangeSetPt] = checkGrabbedPt(flingSetPoints[inRangeSetPt], flingDir[inRangeSetPt]);
+					}
+					for(boolean b : flingGrabbed) {
+						System.out.print(b+" ");
+					}
+					System.out.println();
+					break;
+				case STAGE_VINE:
+					break;
+				default:
+					System.err.println(currentStage);
+			}
+			if(moveToNextStage())
+				next = true;
+			prevLeftGrab = sloth.isActualLeftGrab();
+			prevRightGrab = sloth.isActualRightGrab();
+		}
+	}
+
+	public boolean checkGrabbedPt(Vector2 setpt, int dir) {
+		// TODO: check if sloth grabbed pt
+		Body rTarget, lTarget, tTarget, bTarget;
+		Vector2 rtPos, ltPos, ttPos, btPos;
+		boolean xrange = false;
+		boolean yrange = false;
+		if (dir == SHIMMY_E || dir == SHIMMY_SE || dir == SHIMMY_NE) {
+			rTarget = sloth.getRightmostTarget();
+			if (rTarget == null) { return false; }
+			rtPos = rTarget.getPosition();
+//			System.out.println("E: ("+rtPos.x+","+rtPos.y+")");
+
+			if (rtPos.x-0.03 >= setpt.x) { xrange = true; }
+			if (dir == SHIMMY_E && Math.abs(setpt.y-rtPos.y) <= 0.05) { yrange = true; }
+
+		} else if (dir == SHIMMY_W || dir == SHIMMY_SW || dir == SHIMMY_NW) {
+			lTarget = sloth.getLeftmostTarget();
+			if (lTarget == null) { return false; }
+			ltPos = lTarget.getPosition();
+//			System.out.println("W: ("+ltPos.x+","+ltPos.y+")");
+
+			if (ltPos.x+0.03 <= setpt.x) { xrange = true;}
+			if (dir == SHIMMY_W && Math.abs(setpt.y-ltPos.y) <= 0.05) { yrange = true; }
+
+		} else if (dir == SHIMMY_S || dir == SHIMMY_SE || dir == SHIMMY_SW){
+			bTarget = sloth.getBottomTarget();
+			if (bTarget == null) { return false; }
+			btPos = bTarget.getPosition();
+//			System.out.println("S: ("+btPos.x+","+btPos.y+")");
+
+			if (btPos.y+0.03 <= setpt.y) { yrange = true; }
+			if (dir == SHIMMY_S && Math.abs(setpt.x - btPos.x) <= 0.05) { xrange = true; }
+
+		} else if (dir == SHIMMY_N || dir == SHIMMY_NE || dir == SHIMMY_NW) {
+			tTarget = sloth.getTopTarget();
+			if (tTarget == null) { return false; }
+			ttPos = tTarget.getPosition();
+//			System.out.println("N: ("+ttPos.x+","+ttPos.y+")");
+
+			if (ttPos.y-0.03 >= setpt.y) { yrange = true; }
+			if (dir == SHIMMY_N && Math.abs(setpt.x - ttPos.x) <= 0.05) { xrange = true; }
+		}
+		return xrange && yrange;
+	}
+
+	// checks if next set point is in range for changing arm help
+	public boolean inRange(Vector2 setpt) {
+		Body lTarget = sloth.getLeftTarget();
+		Body rTarget = sloth.getRightTarget();
+		if (lTarget == null && rTarget == null) {
+			return false;
+		}
+		Vector2 lPos, rPos;
+		boolean xrange = false;
+		boolean yrange = false;
+		if (lTarget != null && rTarget != null) {
+			lPos = lTarget.getPosition();
+			rPos = rTarget.getPosition();
+			if(lPos.x < rPos.x) {
+				xrange = Math.abs(setpt.x - lPos.x) <= ARMSPAN;
+				yrange = Math.abs(setpt.y - lPos.y) <= ARMSPAN;
+			} else {
+				xrange = Math.abs(setpt.x - rPos.x) <= ARMSPAN;
+				yrange = Math.abs(setpt.y - rPos.y) <= ARMSPAN;
+			}
+		}
+		if (lTarget != null) {
+			lPos = lTarget.getPosition();
+			xrange = Math.abs(setpt.x - lPos.x) <= ARMSPAN;
+			yrange = Math.abs(setpt.y - lPos.y) <= ARMSPAN;
+		}
+		if (rTarget != null) {
+			rPos = rTarget.getPosition();
+			xrange = Math.abs(setpt.x - rPos.x) <= ARMSPAN;
+			yrange = Math.abs(setpt.y - rPos.y) <= ARMSPAN;
+		}
+		return xrange && yrange;
+	}
+
+	public boolean moveToNextStage() {
+		if(currentStage == STAGE_PINNED) {
+			return (time > 1.5f && pressedA);
+		} else if (currentStage == STAGE_GRAB) {
+			return (grabbedAll && pressedA);
+		}else if(currentStage > STAGE_PINNED) {
+			return owl.isDoingVictory();
+		}
+		return false;
+	}
+
+	public void drawHelpLines() {
+		switch (currentStage) {
+			case STAGE_PINNED:
+				break;
+			case STAGE_GRAB:
+				if(!grabbedAll)
+					sloth.drawHelpLines(canvas, camTrans, SHIMMY_S);
+				break;
+			case STAGE_SHIMMY:
+				switch(inRangeSetPt) {
+					case 0:
+						if(!shimmyGrabbed[inRangeSetPt]){
+							sloth.drawHelpLines(canvas, camTrans, SHIMMY_SE);
+						} else {
+							sloth.drawHelpLines(canvas, camTrans, SHIMMY_S);
+						}
+						break;
+					case 1:
+						if(!shimmyGrabbed[inRangeSetPt]){
+							sloth.drawHelpLines(canvas, camTrans, SHIMMY_SE);
+						} else {
+							sloth.drawHelpLines(canvas, camTrans, SHIMMY_E);
+						}
+						break;
+					case 2:
+						if(!shimmyGrabbed[inRangeSetPt]){
+							sloth.drawHelpLines(canvas, camTrans, SHIMMY_NE);
+						} else {
+							sloth.drawHelpLines(canvas, camTrans, SHIMMY_N);
+						}
+						break;
+					case 3:
+						if(!shimmyGrabbed[inRangeSetPt]){
+							sloth.drawHelpLines(canvas, camTrans, SHIMMY_NE);
+						} else {
+							sloth.drawHelpLines(canvas, camTrans, SHIMMY_E);
+						}
+						break;
+					case 4:
+						if(!shimmyGrabbed[inRangeSetPt]){
+							sloth.drawHelpLines(canvas, camTrans, SHIMMY_SE);
+						} else {
+							sloth.drawHelpLines(canvas, camTrans, SHIMMY_E);
+						}
+						break;
+					default:
+						sloth.drawHelpLines(canvas, camTrans, SHIMMY_E);
+				}
+				break;
+			case STAGE_FLING:
+				switch(inRangeSetPt) {
+					case 0:
+					case 1:
+					case 3:
+					default:
+						sloth.drawHelpLines(canvas, camTrans, SHIMMY_E);
+				}
+				break;
+			case STAGE_VINE:
+				break;
+		}
+
+	}
+
 	public void drawInstructions() {
 		joystickNeutralTexture = joystickAnimation.getKeyFrame(0);
 		joystickTexture = joystickAnimation.getKeyFrame(elapseTime, true);
@@ -203,8 +440,8 @@ public class TutorialModeController extends GameModeController {
 				canvas.draw(joystickTexture, Color.WHITE, joystickTexture.getRegionWidth() / 2, 0, 450, 450, 0, worldScale.x / joystickTexture.getRegionWidth(), worldScale.y / joystickTexture.getRegionHeight());
 			}
 		} else if(currentStage == STAGE_GRAB) {
-			if (grabs < 5) {
-				canvas.drawTextCentered("Try to grab 5x", displayFont, 200f);
+			if (!grabbedAll) {
+				canvas.drawTextCentered("Try to grab all 5 branches", displayFont, 200f);
 			}
 		} else if (currentStage == STAGE_SHIMMY) {
 			canvas.drawTextCentered("Try to shimmy across", displayFont, 200f);
@@ -231,91 +468,121 @@ public class TutorialModeController extends GameModeController {
 //		} else if (currentStage >= GRABBED_RIGHT) {
 		}
 		if((currentStage == STAGE_PINNED && time > 6f) ||
-				(currentStage == STAGE_GRAB && grabs >= 5)) {
+				(currentStage == STAGE_GRAB && grabbedAll)) {
 			canvas.drawTextCentered("Press A to continue", displayFont, 200f);
 		}
 	}
 
-	/**
-	 * The core gameplay loop of this world.
-	 *
-	 * This method contains the specific update code for this mini-game. It does
-	 * not handle collisions, as those are managed by the parent class askew.playermode.WorldController.
-	 * This method is called after input is read, but before collisions are resolved.
-	 * The very last thing that it should do is apply forces to the appropriate objects.
-	 *
-	 * @param dt Number of seconds since last animation frame
-	 */
-	public void update(float dt) {
-		super.update(dt);
-		if (!paused) {
-			elapseTime += dt;
-			time = time+dt ;
-			// Process actions in object model
-			lAngle = (float) ((sloth.getLeftArm().getAngle()) - 1.5*Math.PI);//+3.14)%3.14);
-			rAngle = (float) ((sloth.getRightArm().getAngle()) - 1.5*Math.PI);//+ 3.14)%3.14);
-//			System.out.print(lAngle+" ");
-//			System.out.println(rAngle);
-
-			// TODO: move sloth movement in slothmodel
-
-			//Increment Steps
-			System.out.println("stage " + currentStage);
-			InputController input =  InputControllerManager.getInstance().getController(0);
-
-			switch(currentStage) {
-				case STAGE_PINNED:
-					if( (int)(time/3) %2 == 0) {
-						sloth.getRightArm().setAngle((float)Math.PI);
-					} else {
-						sloth.getLeftArm().setAngle((float)Math.PI);
-					}
-					break;
-				case STAGE_GRAB:
-					if((!prevRightGrab && sloth.isActualRightGrab()) || (!prevLeftGrab && sloth.isActualLeftGrab())) {
-						grabs++;
-					}
-				case STAGE_SHIMMY:
-				case STAGE_FLING:
-//					if(!isPlayerIsReady() || (isPlayerIsReady() && countdown > 0)) {
-//						sloth.setLeftGrab(true);
-//						sloth.setRightGrab(true);
-//					} else if (isPlayerIsReady() && countdown > 0) {
-//						countdown -= dt;
-//					}
-					break;
-				case STAGE_VINE:
-					break;
-				default:
-					System.err.println(currentStage);
-			}
-			if(moveToNextStage())
-				next = true;
-			prevLeftGrab = sloth.isActualLeftGrab();
-			prevRightGrab = sloth.isActualRightGrab();
-		}
-	}
-	public boolean moveToNextStage() {
-		if(currentStage == STAGE_PINNED) {
-			return (time > 1.5f && pressedA);
-		} else if (currentStage == STAGE_GRAB) {
-			return (grabs >= 5 && pressedA);
-		}else if(currentStage > STAGE_PINNED) {
-			return owl.isDoingVictory();
-		}
-		return false;
-	}
-
 	public void draw(float delta){
-		super.draw(delta);
+		// GameMode draw with changes
+		canvas.clear();
+
+		canvas.begin();
+		canvas.draw(background);
+		canvas.end();
+
+		System.out.println("stage " + currentStage);
+		InputController input =  InputControllerManager.getInstance().getController(0);
+
+		camTrans.setToTranslation(-1 * sloth.getBody().getPosition().x * worldScale.x
+				, -1 * sloth.getBody().getPosition().y * worldScale.y);
+		camTrans.translate(canvas.getWidth()/2,canvas.getHeight()/2);
+		canvas.getCampos().set( sloth.getBody().getPosition().x * worldScale.x
+				, sloth.getBody().getPosition().y * worldScale.y);
+		canvas.begin(camTrans);
+		Collections.sort(objects);
+		sloth.setTutorial();
+		for(Entity obj : objects) {
+			obj.setDrawScale(worldScale);
+			// if stage 2, tint trunks if already grabbed
+			if(currentStage == STAGE_GRAB && obj instanceof Trunk) {
+				Trunk trunk = (Trunk) obj;
+				int ind = trunkEntities.indexOf(obj);
+
+				for(Obstacle plank: trunk.getBodies()){
+					if(plank.getBody().getUserData().equals("grabbed")) {
+						trunkGrabbed.set(ind,true);
+					}
+				}
+			} else {
+				obj.draw(canvas);
+			}
+		}
+		// trunk tinting done here
+		for (int i = 0; i <trunkEntities.size(); i++) {
+			if (trunkGrabbed.get(i)) {
+				(trunkEntities.get(i)).draw(canvas, Color.GRAY);
+			} else {
+				trunkEntities.get(i).draw(canvas);
+			}
+		}
+
+		if (!playerIsReady && !paused && coverOpacity <= 0)
+			printHelp();
+		canvas.end();
+		sloth.drawGrab(canvas, camTrans);
+
+		drawHelpLines();
+
+		canvas.begin();
+		canvas.drawTextStandard("current time:    "+currentTime, 10f, 70f);
+		canvas.drawTextStandard("record time:     "+recordTime,10f,50f);
+
+		//Draw control schemes
+		canvas.drawTextStandard(typeMovement, 10f, 700f);
+		canvas.drawTextStandard(typeControl,10f,680f);
+		canvas.end();
+
+//		sloth.drawHelpLines();
+
+		if (debug) {
+			canvas.beginDebug(camTrans);
+			for(Entity obj : objects) {
+				if( obj instanceof Obstacle){
+					((Obstacle)obj).drawDebug(canvas);
+				}
+			}
+			canvas.endDebug();
+			canvas.begin();
+			// text
+			canvas.drawTextStandard("FPS: " + 1f/delta, 10.0f, 100.0f);
+			canvas.end();
+			sloth.drawForces(canvas, camTrans);
+		}
+
 		// draw instructional animations
 		canvas.begin();
 		drawInstructions();
 		canvas.end();
 
+		if (coverOpacity > 0) {
+			Gdx.gl.glEnable(GL20.GL_BLEND);
+			displayFont.setColor(Color.WHITE);
+			Color coverColor = new Color(0,0,0,coverOpacity);
+			canvas.drawRectangle(coverColor,0,0,canvas.getWidth(), canvas
+					.getHeight());
+			coverOpacity -= (1/CYCLES_OF_INTRO);
+			Gdx.gl.glDisable(GL20.GL_BLEND);
+			canvas.begin();
+			if (!playerIsReady && !paused)
+				canvas.drawTextCentered(levelModel.getTitle(), displayFont, 0f);
+			canvas.end();
+		}
+
+		// draw pause menu stuff over everything
+		if (paused) {
+			canvas.begin();
+			canvas.draw(pauseTexture);
+			canvas.draw(fern, Color.WHITE,fern.getWidth()/2, fern.getHeight()/2,
+					pause_locs[pause_mode].x * canvas.getWidth(), pause_locs[pause_mode].y* canvas.getHeight(),
+					0,2*worldScale.x/fern.getWidth(), 2*worldScale.y/fern.getHeight());
+			canvas.end();
+		}
+
 	}
 
 	public void restart() {
+		//change back to 0
 		currentStage = 0;
 	}
 
