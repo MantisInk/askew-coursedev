@@ -27,6 +27,7 @@ import askew.entity.tree.Trunk;
 import askew.entity.vine.Vine;
 import askew.entity.wall.WallModel;
 import askew.playermode.WorldController;
+import askew.playermode.gamemode.GameModeController;
 import askew.playermode.leveleditor.button.Button;
 import askew.playermode.leveleditor.button.ButtonList;
 import askew.playermode.leveleditor.button.ToggleButton;
@@ -131,6 +132,7 @@ public class LevelEditorController extends WorldController {
 	private boolean dragging = false;
 	private boolean creating = false;
 	private boolean snapping = false;
+	private GameModeController gmc;
 
 	private ButtonList buttons;
 	private boolean didLoad;
@@ -212,7 +214,7 @@ public class LevelEditorController extends WorldController {
 	 *
 	 * The game has default gravity and other settings
 	 */
-	public LevelEditorController() {
+	public LevelEditorController(GameModeController gmc) {
 //		super(36,18,0); I want this scale but for the sake of alpha:
 		super(DEFAULT_WIDTH,DEFAULT_HEIGHT,0);
 		jsonLoaderSaver = new JSONLoaderSaver();
@@ -225,6 +227,7 @@ public class LevelEditorController extends WorldController {
 		oneScale = new Vector2(1,1);
 		pressedL = false;
 		prevPressedL = false;
+		this.gmc = gmc;
 	}
 
 	public void setLevel(String levelName) {
@@ -657,6 +660,13 @@ public class LevelEditorController extends WorldController {
 			background = getMantisAssetManager().get("texture/background/background1.png");
 
 		}
+
+		// Playtest
+		if (InputControllerManager.getInstance().getController(0).isEKeyPressed()) {
+			gmc.setLevel(currentLevel);
+			saveLevel();
+			listener.exitScreen(this, EXIT_LE_GM);
+		}
 	}
 
 	@Override
@@ -702,6 +712,31 @@ public class LevelEditorController extends WorldController {
 			gridLineRenderer.setColor(Color.FOREST);
 			gridLineRenderer.line(0, i,canvas.getWidth(),i);
 		}
+		gridLineRenderer.end();
+		gridLineRenderer.begin(ShapeRenderer.ShapeType.Line);
+
+		// While we're at it, just draw the level bounds.
+		gridLineRenderer.setColor(Color.RED);
+		Gdx.gl.glLineWidth(4);
+		float minPixelsX = levelModel.getMinX() * worldScale.x - cxCamera *
+				worldScale.x;
+		float minPixelsY = levelModel.getMinY() * worldScale.y - cyCamera *
+				worldScale.y;
+		float maxPixelsX = levelModel.getMaxX() * worldScale.x - cxCamera *
+				worldScale.x;
+		float maxPixelsY = levelModel.getMaxY() * worldScale.y - cyCamera *
+				worldScale.y;
+
+		// left line
+		gridLineRenderer.line(minPixelsX, maxPixelsY,minPixelsX,minPixelsY);
+		// top line
+		gridLineRenderer.line(minPixelsX, maxPixelsY,maxPixelsX,maxPixelsY);
+		// right line
+		gridLineRenderer.line(maxPixelsX, maxPixelsY,maxPixelsX,minPixelsY);
+		// bottom line
+		gridLineRenderer.line(minPixelsX, minPixelsY,maxPixelsX,minPixelsY);
+
+
 		gridLineRenderer.end();
 		canvas.end();
 	}
@@ -863,7 +898,6 @@ public class LevelEditorController extends WorldController {
 
 	@Override
 	public void draw(float delta) {
-
 		canvas.clear();
 
 		//draw background
@@ -879,9 +913,15 @@ public class LevelEditorController extends WorldController {
 		pos.set(adjustedCxCamera * worldScale.x ,adjustedCyCamera * worldScale.y);
 		canvas.begin(camTrans);
 		Collections.sort(objects);
-		for(Entity obj : objects) {
-			obj.setDrawScale(worldScale);
-			obj.draw(canvas);
+		int s = objects.size();
+		for (int i = 0; i < s; i++) {
+			if (i < objects.size()) {
+				Entity obj = objects.get(i);
+				if (obj != null) {
+					obj.setDrawScale(worldScale);
+					obj.draw(canvas);
+				}
+			}
 		}
 		canvas.end();
 
@@ -906,7 +946,7 @@ public class LevelEditorController extends WorldController {
 		//Prevent multiple windows from being created
 		//Window Settings
 		editorWindow = new JFrame();
-		GridLayout gridLayout = new GridLayout(12,2);
+		GridLayout gridLayout = new GridLayout(18,2);
 		gridLayout.setVgap(2);
 		gridLayout.setHgap(10);
 
@@ -1004,15 +1044,6 @@ public class LevelEditorController extends WorldController {
 
 	}
 
-	private void loadLevel(){
-		if (!loadingLevelPrompt) {
-			loadingLevelPrompt = true;
-			loadLevel(showInputDialog("What level do you want to load?"));
-			loadingLevelPrompt = false;
-		}
-		inputRateLimiter = UI_WAIT_LONG;
-	}
-
 	private void loadLevel(String toLoad){
 		currentLevel = toLoad;
 		try {
@@ -1029,14 +1060,19 @@ public class LevelEditorController extends WorldController {
 //		if (!vimMode) {
 		// Grab params from gui
 		JsonObject levelJson = jsonLoaderSaver.gsonToJsonObject(levelModel);
-		grabUpdatedObjectValuesFromGUI(levelJson,editorWindow.getRootPane().getContentPane());
+		if (editorWindow != null)
+			grabUpdatedObjectValuesFromGUI(levelJson,editorWindow.getRootPane().getContentPane());
+
 		timeToSave = jsonLoaderSaver.levelFromJson(levelJson);
+
 		if (timeToSave.entities != null)
 			timeToSave.entities.clear();
 		else
 			timeToSave.entities = new ArrayList<>();
-//		}
-		for (Entity o : objects) {
+
+		// copy to avoid concurrent modification
+		ArrayList<Entity> copy = new ArrayList<>(objects);
+		for (Entity o : copy) {
 			timeToSave.addEntity(o);
 		}
 		if (jsonLoaderSaver.saveLevel(timeToSave, currentLevel)) {
@@ -1259,6 +1295,4 @@ public class LevelEditorController extends WorldController {
 			mainFrame.setVisible(true);
 		}
 	}
-	//endregion
-
 }

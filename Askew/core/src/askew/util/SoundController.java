@@ -93,7 +93,7 @@ public class SoundController {
 	/** The default sound length limit */
 	private static final int DEFAULT_LIMIT = 128900;
 	/** The default limit on sounds per frame */
-	private static final int DEFAULT_FRAME = 2;
+	private static final int DEFAULT_FRAME = 4;
 	
 	/** The singleton Sound controller instance */
 	private static SoundController controller;
@@ -307,7 +307,7 @@ public class SoundController {
 			if (!snd.loop && snd.lifespan > cooldown) {
 				// This is a workaround for the OS X sound bug
 				//snd.sound.stop(snd.id);
-				snd.sound.setVolume(snd.id, 0.0f); 
+				snd.sound.setVolume(snd.id, 0.0f);
 			} else {
 				return true;
 			}
@@ -366,6 +366,12 @@ public class SoundController {
 		ActiveSound activeSound = actives.get(key);
 		if (activeSound == null) return;
 		activeSound.sound.setVolume(activeSound.id,volume);
+	}
+
+	public void setPitch(String key, float pitch) {
+		ActiveSound activeSound = actives.get(key);
+		if (activeSound == null) return;
+		activeSound.sound.setPitch(activeSound.id,pitch);
 	}
 	
 	/**

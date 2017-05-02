@@ -15,7 +15,6 @@ import askew.InputController;
 import askew.InputControllerManager;
 import askew.MantisAssetManager;
 import askew.entity.Entity;
-import askew.entity.obstacle.BoxObstacle;
 import askew.entity.obstacle.Obstacle;
 import askew.entity.owl.OwlModel;
 import askew.entity.sloth.SlothModel;
@@ -75,10 +74,14 @@ public class GameModeController extends WorldController {
 	};
 
 	public static final String GRAB_SOUND = "sound/effect/grab.wav";
+	public static final String RELEASE_SOUND = "sound/effect/release.wav";
+	public static final String ARM_SOUND = "sound/effect/arm.wav";
+	public static final String WIND_SOUND = "sound/effect/wind.wav";
 	public static final String FALL_MUSIC = "sound/music/fallingtoyourdeath" +
 			".ogg";
 
 	Sound grabSound;
+	Sound releaseSound;
 
 	@Setter
 	protected String loadLevel, DEFAULT_LEVEL;
@@ -117,6 +120,7 @@ public class GameModeController extends WorldController {
 	private int currentMovement;
 	private String typeControl;
 	private int currentControl;
+	private float windVolume;
 
 	private int control_three_wait;
 	private int UI_WAIT = 5;
@@ -143,8 +147,12 @@ public class GameModeController extends WorldController {
 			manager.load(soundName, Sound.class);
 		}
 		manager.load(FALL_MUSIC, Sound.class);
+		manager.load(ARM_SOUND, Sound.class);
+		manager.load(WIND_SOUND, Sound.class);
 
 		manager.load(GRAB_SOUND, Sound.class);
+		manager.load(RELEASE_SOUND, Sound.class);
+
 
 		platformAssetState = AssetState.LOADING;
 		jsonLoaderSaver.setManager(manager);
@@ -170,9 +178,13 @@ public class GameModeController extends WorldController {
 		for (String soundName : GAMEPLAY_MUSIC) {
 			SoundController.getInstance().allocate(manager, soundName);
 		}
+
 		SoundController.getInstance().allocate(manager, FALL_MUSIC);
+		SoundController.getInstance().allocate(manager, ARM_SOUND);
+		SoundController.getInstance().allocate(manager, WIND_SOUND);
 
 		grabSound = Gdx.audio.newSound(Gdx.files.internal(GRAB_SOUND));
+		releaseSound = Gdx.audio.newSound(Gdx.files.internal(RELEASE_SOUND));
 
 		pauseTexture = manager.get("texture/background/pause.png", Texture.class);
 		fern = manager.get("texture/background/fern.png");
@@ -184,9 +196,7 @@ public class GameModeController extends WorldController {
 
 	// Physics constants for initialization
 	/** The new heavier gravity for this world (so it is not so floaty) */
-	private static final float  DEFAULT_GRAVITY = -10.7f;
-
-
+	private static final float  DEFAULT_GRAVITY = -15.7f;
 
 	// Physics objects for the game
 	/** Reference to the character avatar */
@@ -231,6 +241,7 @@ public class GameModeController extends WorldController {
 		} else
 			loadLevel = "level"+lvl;
 	}
+
 	// for use in loading levels that aren't part of the progression
 	public void setLevel(String lvlName) {
 		loadLevel = lvlName;
@@ -256,13 +267,13 @@ public class GameModeController extends WorldController {
 	public void reset() {
 		Gdx.input.setCursorCatched(true);
 		coverOpacity = 2f; // start at 2 for 1 second of full black
+		this.windVolume = 0;
 		playerIsReady = false;
 		paused = false;
 		collisions.clearGrab();
 		Vector2 gravity = new Vector2(world.getGravity() );
 
 		InputControllerManager.getInstance().inputControllers().forEach(InputController::releaseGrabs);
-		fallDeathHeight = Float.MAX_VALUE;
 
 		for(Entity obj : objects) {
 			if( (obj instanceof Obstacle && !(obj instanceof SlothModel)))
@@ -282,14 +293,16 @@ public class GameModeController extends WorldController {
 		setFailure(false);
 		populateLevel();
 		// set death height
-		fallDeathHeight = Float.MAX_VALUE;
-		for(Entity obj: objects) {
-			float potentialFallDeath = obj.getY() -
-					LOWEST_ENTITY_FALL_DEATH_THRESHOLD;
-			if (potentialFallDeath < fallDeathHeight) {
-				fallDeathHeight = potentialFallDeath;
-			}
-		}
+//		fallDeathHeight = Float.MAX_VALUE;
+//		for(Entity obj: objects) {
+//			float potentialFallDeath = obj.getY() -
+//					LOWEST_ENTITY_FALL_DEATH_THRESHOLD;
+//			if (potentialFallDeath < fallDeathHeight) {
+//				fallDeathHeight = potentialFallDeath;
+//			}
+//		}
+		fallDeathHeight = levelModel.getMinY() -
+				LOWEST_ENTITY_FALL_DEATH_THRESHOLD;
 
 		// Setup sound
 		SoundController instance = SoundController.getInstance();
@@ -307,6 +320,22 @@ public class GameModeController extends WorldController {
 			instance.setVolume("fallmusic",0);
 		} else {
 			instance.setVolume("fallmusic",0);
+		}
+
+		if (!instance.isActive("armmusic")) {
+			instance.play("armmusic",
+					ARM_SOUND, true);
+			instance.setVolume("armmusic",0);
+		} else {
+			instance.setVolume("armmusic",0);
+		}
+
+		if (!instance.isActive("windmusic")) {
+			instance.play("windmusic",
+					WIND_SOUND, true);
+			instance.setVolume("windmusic",0);
+		} else {
+			instance.setVolume("windmusic",0);
 		}
 	}
 
@@ -561,11 +590,12 @@ public class GameModeController extends WorldController {
 				grabSound.play();
 			}
 
+			if (sloth.isReleasedEntity()) {
+				releaseSound.play();
+			}
+
 			// Normal physics
 			sloth.doThePhysics();
-
-			// If we use sound, we must remember this.
-			SoundController.getInstance().update();
 
 			// Check if flow is falling
 			float slothY = sloth.getBody().getPosition().y;
@@ -593,6 +623,22 @@ public class GameModeController extends WorldController {
 				}
 			}
 
+			// Play arm sound based on arm power
+//			float slothPower = sloth.getPower();
+//			SoundController.getInstance().setVolume("armmusic", slothPower * 0.2f);
+//			SoundController.getInstance().setPitch("armmusic", 0.9f + slothPower * 0.9f);
+
+			// Play wind sound based on flow speed
+			float slothSpeed = sloth.getMainBody().getLinearVelocity().len();
+			float windVolume = slothSpeed / 24f;
+			this.windVolume += (windVolume - this.windVolume) * 0.04f;
+			if (this.windVolume > 1) this.windVolume = 1;
+			SoundController.getInstance().setVolume("windmusic", this.windVolume);
+			SoundController.getInstance().setPitch("windmusic", 1.0f + this.windVolume * 0.9f);
+
+			// If we use sound, we must remember this.
+			SoundController.getInstance().update();
+
 			if (isComplete()) {
 				float record = currentTime;
 				if (record < levelModel.getRecordTime() && storeTimeRecords) {
@@ -612,7 +658,6 @@ public class GameModeController extends WorldController {
 					if (sloth.dismember(world))
 						grabSound.play();
 				}
-//				reset();
 			}
 		}
 	}
@@ -632,13 +677,31 @@ public class GameModeController extends WorldController {
 		cameraX += cameraVelocityX;
 		cameraY +=  cameraVelocityY;
 
+		// Check for camera in bounds
+		// Y Checks
+		if (cameraY - bounds.height /2f < levelModel.getMinY()) {
+			cameraY = levelModel.getMinY() + bounds.height/2f ;
+		}
+
+		if (cameraY + bounds.height / 2f > levelModel.getMaxY()) {
+			cameraY = levelModel.getMaxY() - bounds.height/2f;
+		}
+
+		// X Checks
+		if (cameraX - bounds.width/2 < levelModel.getMinX()) {
+			cameraX = levelModel.getMinX() + bounds.width / 2f;
+		}
+
+		if (cameraX + bounds.width/2f > levelModel.getMaxX()) {
+			cameraX = levelModel.getMaxX() - bounds.width / 2f;
+		}
 
 		camTrans.setToTranslation(-1 * cameraX * worldScale.x
 				, -1 * cameraY * worldScale.y);
 
 		camTrans.translate(canvas.getWidth()/2,canvas.getHeight()/2);
-		canvas.getCampos().set( sloth.getBody().getPosition().x * worldScale.x
-				, sloth.getBody().getPosition().y * worldScale.y);
+		canvas.getCampos().set( cameraX * worldScale.x
+				, cameraY * worldScale.y);
 
 		canvas.begin(camTrans);
 		Collections.sort(objects);
