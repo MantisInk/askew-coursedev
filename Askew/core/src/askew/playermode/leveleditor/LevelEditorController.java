@@ -10,6 +10,7 @@
  */
 package askew.playermode.leveleditor;
 
+import askew.*;
 import askew.GlobalConfiguration;
 import askew.InputController;
 import askew.MantisAssetManager;
@@ -19,12 +20,14 @@ import askew.entity.ghost.GhostModel;
 import askew.entity.obstacle.Obstacle;
 import askew.entity.owl.OwlModel;
 import askew.entity.sloth.SlothModel;
+import askew.entity.thorn.ThornModel;
 import askew.entity.tree.PoleVault;
 import askew.entity.tree.StiffBranch;
 import askew.entity.tree.Trunk;
 import askew.entity.vine.Vine;
 import askew.entity.wall.WallModel;
 import askew.playermode.WorldController;
+import askew.playermode.gamemode.GameModeController;
 import askew.playermode.leveleditor.button.Button;
 import askew.playermode.leveleditor.button.ButtonList;
 import askew.playermode.leveleditor.button.ToggleButton;
@@ -35,6 +38,8 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.*;
+import com.google.gson.JsonArray;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.google.gson.JsonElement;
@@ -46,6 +51,7 @@ import lombok.Setter;
 import javax.swing.*;
 import java.awt.*;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
 
@@ -126,9 +132,10 @@ public class LevelEditorController extends WorldController {
 	private boolean dragging = false;
 	private boolean creating = false;
 	private boolean snapping = false;
+	private GameModeController gmc;
 
 	private ButtonList buttons;
-
+	private boolean didLoad;
 
 
 	private boolean prompting;
@@ -170,6 +177,13 @@ public class LevelEditorController extends WorldController {
 		setMantisAssetManager(manager);
 	}
 
+	@Override
+	public void setCanvas(GameCanvas canvas) {
+		this.canvas = canvas;
+		this.worldScale.x = 1.0f * (float)canvas.getWidth()/(float)bounds.getWidth();
+		this.worldScale.y = 1.0f * (float)canvas.getHeight()/(float)bounds.getHeight();
+	}
+
 	/**
 	 * Load the assets for this controller.
 	 *
@@ -200,7 +214,7 @@ public class LevelEditorController extends WorldController {
 	 *
 	 * The game has default gravity and other settings
 	 */
-	public LevelEditorController() {
+	public LevelEditorController(GameModeController gmc) {
 //		super(36,18,0); I want this scale but for the sake of alpha:
 		super(DEFAULT_WIDTH,DEFAULT_HEIGHT,0);
 		jsonLoaderSaver = new JSONLoaderSaver();
@@ -213,6 +227,7 @@ public class LevelEditorController extends WorldController {
 		oneScale = new Vector2(1,1);
 		pressedL = false;
 		prevPressedL = false;
+		this.gmc = gmc;
 	}
 
 	public void setLevel(String levelName) {
@@ -249,7 +264,7 @@ public class LevelEditorController extends WorldController {
 
 		pressedL = false;
 		prevPressedL = false;
-
+		if (didLoad) makeGuiWindow();
 	}
 
 	/**
@@ -258,6 +273,7 @@ public class LevelEditorController extends WorldController {
 	private void populateLevel() {
 		try {
 			levelModel = jsonLoaderSaver.loadLevel(currentLevel);
+			background = mantisAssetManager.get(levelModel.getBackground(), Texture.class);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -337,7 +353,10 @@ public class LevelEditorController extends WorldController {
 				entity = new OwlModel(x,y);
 				break;
 			case "WallModel":
-				entity = new WallModel(x,y,new float[] {0,0,0f,1f,1f,1f,1f,0f}, false);
+				entity = new WallModel(x,y,new float[] {0,0,0f,1f,1f,1f,1f,0f});
+				break;
+			case "ThornModel":
+				entity = new ThornModel(x,y,1,1,0);
 				break;
 			case "GhostModel":
 				entity = new GhostModel(x,y,x+2,y+2);
@@ -475,7 +494,7 @@ public class LevelEditorController extends WorldController {
 			return false;
 		}
 
-		InputController input = InputController.getInstance();
+		InputController input = InputControllerManager.getInstance().getController(0);
 		prevPressedL = pressedL;
 		pressedL = input.isLKeyPressed();
 		if (input.didRightDPadPress()) {
@@ -502,12 +521,12 @@ public class LevelEditorController extends WorldController {
 		}
 
 		// Allow access to mouse coordinates for multiple inputs
-		mouseX = InputController.getInstance().getCrossHair().x;
-		mouseY = InputController.getInstance().getCrossHair().y;
+		mouseX = InputControllerManager.getInstance().getController(0).getCrossHair().x;
+		mouseY = InputControllerManager.getInstance().getController(0).getCrossHair().y;
 
 
 
-		if(InputController.getInstance().isShiftKeyPressed()) {
+		if(InputControllerManager.getInstance().getController(0).isShiftKeyPressed()) {
 			// Check for pan
 			if (mouseX < GUI_LEFT_BAR_WIDTH / worldScale.x ) {
 				// Pan left
@@ -523,7 +542,7 @@ public class LevelEditorController extends WorldController {
 			if (mouseY > (bounds.getHeight() ) - 1) {
 				adjustedCyCamera += CAMERA_PAN_SPEED/worldScale.y;
 			}
-			if(InputController.getInstance().isSpaceKeyPressed()){
+			if(InputControllerManager.getInstance().getController(0).isSpaceKeyPressed()){
 				adjustedCxCamera = 0;
 				adjustedCyCamera = 0;
 			}
@@ -540,7 +559,7 @@ public class LevelEditorController extends WorldController {
 
 
 		// Left Click
-		if (InputController.getInstance().didLeftClick()) {
+		if (InputControllerManager.getInstance().getController(0).didLeftClick()) {
 			if(!processButtons(buttons.findButton(mouseX * worldScale.x, mouseY * worldScale.y))) {
 
 				if (mouseX * worldScale.x <= GUI_LEFT_BAR_WIDTH) {
@@ -581,7 +600,7 @@ public class LevelEditorController extends WorldController {
 			}
 		}
 
-		if(InputController.getInstance().didLeftDrag()){
+		if(InputControllerManager.getInstance().getController(0).didLeftDrag()){
 			if(mouseX* worldScale.x <= GUI_LEFT_BAR_WIDTH ){
 
 			}else if(mouseY * worldScale.y <= GUI_LOWER_BAR_HEIGHT){
@@ -598,7 +617,7 @@ public class LevelEditorController extends WorldController {
 				}
 			}
 		}
-		if(InputController.getInstance().didLeftRelease()){
+		if(InputControllerManager.getInstance().getController(0).didLeftRelease()){
 			if(mouseX* worldScale.x <= GUI_LEFT_BAR_WIDTH ){
 
 			}else if(mouseY * worldScale.y <= GUI_LOWER_BAR_HEIGHT){
@@ -623,23 +642,30 @@ public class LevelEditorController extends WorldController {
 		}
 
 		// Help
-		if (InputController.getInstance().isHKeyPressed()) {
+		if (InputControllerManager.getInstance().getController(0).isHKeyPressed()) {
 			showHelp = !showHelp;
 			inputRateLimiter = UI_WAIT_LONG;
 		}
 
 		// Grid
-		if (InputController.getInstance().isTKeyPressed()) {
+		if (InputControllerManager.getInstance().getController(0).isTKeyPressed()) {
 			shouldDrawGrid = !shouldDrawGrid;
 			inputRateLimiter = UI_WAIT_LONG;
 		}
 
 		// Background
-		if (InputController.getInstance().isBKeyPressed()) {
+		if (InputControllerManager.getInstance().getController(0).isBKeyPressed()) {
 			levelModel.setBackground(showInputDialog("What texture should the background be set to?"));
 			// TODO: Update the drawn background (after henry implements the engine)
 			background = getMantisAssetManager().get("texture/background/background1.png");
 
+		}
+
+		// Playtest
+		if (InputControllerManager.getInstance().getController(0).isEKeyPressed()) {
+			gmc.setLevel(currentLevel);
+			saveLevel();
+			listener.exitScreen(this, EXIT_LE_GM);
 		}
 	}
 
@@ -686,6 +712,31 @@ public class LevelEditorController extends WorldController {
 			gridLineRenderer.setColor(Color.FOREST);
 			gridLineRenderer.line(0, i,canvas.getWidth(),i);
 		}
+		gridLineRenderer.end();
+		gridLineRenderer.begin(ShapeRenderer.ShapeType.Line);
+
+		// While we're at it, just draw the level bounds.
+		gridLineRenderer.setColor(Color.RED);
+		Gdx.gl.glLineWidth(4);
+		float minPixelsX = levelModel.getMinX() * worldScale.x - cxCamera *
+				worldScale.x;
+		float minPixelsY = levelModel.getMinY() * worldScale.y - cyCamera *
+				worldScale.y;
+		float maxPixelsX = levelModel.getMaxX() * worldScale.x - cxCamera *
+				worldScale.x;
+		float maxPixelsY = levelModel.getMaxY() * worldScale.y - cyCamera *
+				worldScale.y;
+
+		// left line
+		gridLineRenderer.line(minPixelsX, maxPixelsY,minPixelsX,minPixelsY);
+		// top line
+		gridLineRenderer.line(minPixelsX, maxPixelsY,maxPixelsX,maxPixelsY);
+		// right line
+		gridLineRenderer.line(maxPixelsX, maxPixelsY,maxPixelsX,minPixelsY);
+		// bottom line
+		gridLineRenderer.line(minPixelsX, minPixelsY,maxPixelsX,minPixelsY);
+
+
 		gridLineRenderer.end();
 		canvas.end();
 	}
@@ -847,7 +898,6 @@ public class LevelEditorController extends WorldController {
 
 	@Override
 	public void draw(float delta) {
-
 		canvas.clear();
 
 		//draw background
@@ -863,9 +913,15 @@ public class LevelEditorController extends WorldController {
 		pos.set(adjustedCxCamera * worldScale.x ,adjustedCyCamera * worldScale.y);
 		canvas.begin(camTrans);
 		Collections.sort(objects);
-		for(Entity obj : objects) {
-			obj.setDrawScale(worldScale);
-			obj.draw(canvas);
+		int s = objects.size();
+		for (int i = 0; i < s; i++) {
+			if (i < objects.size()) {
+				Entity obj = objects.get(i);
+				if (obj != null) {
+					obj.setDrawScale(worldScale);
+					obj.draw(canvas);
+				}
+			}
 		}
 		canvas.end();
 
@@ -882,6 +938,7 @@ public class LevelEditorController extends WorldController {
 
 	//region JSON Stuff
 	private void makeGuiWindow() {
+		didLoad = true;
 		if (editorWindow != null) {
 			editorWindow.dispose();
 		}
@@ -889,7 +946,7 @@ public class LevelEditorController extends WorldController {
 		//Prevent multiple windows from being created
 		//Window Settings
 		editorWindow = new JFrame();
-		GridLayout gridLayout = new GridLayout(12,2);
+		GridLayout gridLayout = new GridLayout(18,2);
 		gridLayout.setVgap(2);
 		gridLayout.setHgap(10);
 
@@ -936,7 +993,7 @@ public class LevelEditorController extends WorldController {
 		editorWindow.setVisible(true);
 	}
 
-	private int generateSwingPropertiesForEntity(JsonObject e, JFrame jPanel, int rowNum) {
+	private void generateSwingPropertiesForEntity(JsonObject e, JFrame jPanel, int rowNum) {
 		for(Map.Entry<String,JsonElement> entry : e.entrySet()) {
 			// Add key
 			String key = entry.getKey();
@@ -945,10 +1002,17 @@ public class LevelEditorController extends WorldController {
 			JComponent valueComponent;
 			// Add value based on type
 			JsonElement value = entry.getValue();
+			StringBuilder theArray = new StringBuilder();
 			if (value.isJsonArray()) {
-				// TODO (hard), recurse
-				System.err.println("TODO: JSON Array. Use Henry's click and drag!");
-				continue;
+				if (key.equals("entities")) continue;
+				boolean newLineTime = false;
+				for (JsonElement x : value.getAsJsonArray()) {
+					theArray.append(x.getAsString());
+					theArray.append(", ");
+					if (newLineTime) theArray.append("\n");
+					newLineTime = !newLineTime;
+				}
+				valueComponent = new JTextArea(theArray.toString());
 			} else if (value.isJsonPrimitive()) {
 				JsonPrimitive primitive = value.getAsJsonPrimitive();
 				if (primitive.isBoolean()) {
@@ -978,16 +1042,6 @@ public class LevelEditorController extends WorldController {
 			rowNum++;
 		}
 
-		return rowNum;
-	}
-
-	private void loadLevel(){
-		if (!loadingLevelPrompt) {
-			loadingLevelPrompt = true;
-			loadLevel(showInputDialog("What level do you want to load?"));
-			loadingLevelPrompt = false;
-		}
-		inputRateLimiter = UI_WAIT_LONG;
 	}
 
 	private void loadLevel(String toLoad){
@@ -1002,15 +1056,23 @@ public class LevelEditorController extends WorldController {
 
 	private void saveLevel(){
 		System.out.println("Saving...");
-		LevelModel timeToSave = new LevelModel();
+		LevelModel timeToSave;
 //		if (!vimMode) {
-			// Grab params from gui
-			JsonObject levelJson = jsonLoaderSaver.gsonToJsonObject(levelModel);
+		// Grab params from gui
+		JsonObject levelJson = jsonLoaderSaver.gsonToJsonObject(levelModel);
+		if (editorWindow != null)
 			grabUpdatedObjectValuesFromGUI(levelJson,editorWindow.getRootPane().getContentPane());
-			timeToSave = jsonLoaderSaver.levelFromJson(levelJson);
+
+		timeToSave = jsonLoaderSaver.levelFromJson(levelJson);
+
+		if (timeToSave.entities != null)
 			timeToSave.entities.clear();
-//		}
-		for (Entity o : objects) {
+		else
+			timeToSave.entities = new ArrayList<>();
+
+		// copy to avoid concurrent modification
+		ArrayList<Entity> copy = new ArrayList<>(objects);
+		for (Entity o : copy) {
 			timeToSave.addEntity(o);
 		}
 		if (jsonLoaderSaver.saveLevel(timeToSave, currentLevel)) {
@@ -1028,8 +1090,7 @@ public class LevelEditorController extends WorldController {
 
 			JsonElement value = entry.getValue();
 			if (value.isJsonArray()) {
-				// TODO (hard), recurse
-				System.err.println("TODO: JSON Array");
+				entityProp.add(key,findInPanel(key,p));
 			} else if (value.isJsonPrimitive()) {
 				entityProp.add(key,findInPanel(key,p));
 			} else if (value.isJsonObject()) {
@@ -1048,6 +1109,14 @@ public class LevelEditorController extends WorldController {
 					return new JsonPrimitive(((JCheckBox)c).isSelected());
 				} else if (c instanceof JTextField) {
 					return new JsonPrimitive((((JTextField)c).getText()));
+				} else if (c instanceof JTextArea) {
+					String text = ((JTextArea)c).getText();
+					JsonArray jarr = new JsonArray();
+					String[] split = text.split(",");
+					for (String s : split) {
+						jarr.add(new JsonPrimitive(Float.parseFloat(s)));
+					}
+					return jarr;
 				} else {
 					System.err.println("UNKNOWN FOR " + key);
 					return null;
@@ -1145,9 +1214,21 @@ public class LevelEditorController extends WorldController {
 			// Add value based on type
 			JsonElement value = entry.getValue();
 			if (value.isJsonArray()) {
-				// TODO (hard), recurse
-				System.err.println("TODO: JSON Array. Use Henry's click and drag!");
-				continue;
+				StringBuilder theArray = new StringBuilder();
+				boolean newLineTime = false;
+				for (JsonElement x : value.getAsJsonArray()) {
+					theArray.append(x.getAsString());
+					theArray.append(", ");
+					if (newLineTime) theArray.append(System.lineSeparator());
+					newLineTime = !newLineTime;
+				}
+				String done = theArray.toString();
+				int doneLength = done.length();
+				if (doneLength > 0) {
+					done = done.substring(0,doneLength-2-System.lineSeparator().length());
+				}
+				valueComponent = new JTextArea(done, 40,16);
+				valueComponent.setBounds((3 * BUFFER) + FIELD_TEXT_WIDTH, (rowNum * TEXT_HEIGHT) + ((rowNum + 1) * BUFFER), FIELD_BOX_WIDTH, TEXT_HEIGHT * 16);
 			} else if (value.isJsonPrimitive()) {
 				JsonPrimitive primitive = value.getAsJsonPrimitive();
 				if (primitive.isBoolean()) {
@@ -1160,6 +1241,7 @@ public class LevelEditorController extends WorldController {
 					System.err.println("Unknown primitive type: " + entry);
 					continue;
 				}
+				valueComponent.setBounds((3 * BUFFER) + FIELD_TEXT_WIDTH, (rowNum * TEXT_HEIGHT) + ((rowNum + 1) * BUFFER), FIELD_BOX_WIDTH, TEXT_HEIGHT);
 			} else if (value.isJsonObject()) {
 				System.err.println("Unknown object type: " + entry);
 				continue;
@@ -1169,7 +1251,6 @@ public class LevelEditorController extends WorldController {
 			}
 
 			paramText.setBounds((2 * BUFFER), (rowNum * TEXT_HEIGHT) + ((rowNum + 1) * BUFFER), FIELD_TEXT_WIDTH, TEXT_HEIGHT);
-			valueComponent.setBounds((3 * BUFFER) + FIELD_TEXT_WIDTH, (rowNum * TEXT_HEIGHT) + ((rowNum + 1) * BUFFER), FIELD_BOX_WIDTH, TEXT_HEIGHT);
 
 			// Update panel with key, value
 			jPanel.add(paramText);
@@ -1214,6 +1295,4 @@ public class LevelEditorController extends WorldController {
 			mainFrame.setVisible(true);
 		}
 	}
-	//endregion
-
 }

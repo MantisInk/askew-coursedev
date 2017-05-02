@@ -2,6 +2,7 @@ package askew.playermode.mainmenu;
 
 import askew.GlobalConfiguration;
 import askew.InputController;
+import askew.InputControllerManager;
 import askew.MantisAssetManager;
 import askew.playermode.WorldController;
 import askew.util.SoundController;
@@ -70,13 +71,13 @@ public class MainMenuController extends WorldController {
     private boolean grab = false;           // false means hold to grab
     private String[] settings_text = {"Control Scheme", "One Arm", "Two Arm", "Grab Scheme", "Hold to Grab", "Release to Grab", "Main Menu"};
     private Vector2[] settings_text_locs = {
-            new Vector2(0.4f, 0.54f),   new Vector2(0.45f, 0.54f), new Vector2(0.65f, 0.54f),
-            new Vector2(0.4f, 0.44f),   new Vector2(0.45f, 0.44f), new Vector2(0.65f, 0.44f),
+            new Vector2(0.4f, 0.54f),   new Vector2(0.45f, 0.54f), new Vector2(0.7f, 0.54f),
+            new Vector2(0.4f, 0.44f),   new Vector2(0.45f, 0.44f), new Vector2(0.7f, 0.44f),
             new Vector2(0.4f, 0.34f)
     };
     private Vector2[] settings_button_locs = {
-            new Vector2(0.43f, 0.53f), new Vector2(0.63f, 0.53f),
-            new Vector2(0.43f, 0.43f), new Vector2(0.63f, 0.43f),
+            new Vector2(0.43f, 0.53f), new Vector2(0.68f, 0.53f),
+            new Vector2(0.43f, 0.43f), new Vector2(0.68f, 0.43f),
             new Vector2(0.43f, 0.33f)
     };
 
@@ -112,12 +113,13 @@ public class MainMenuController extends WorldController {
 
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(fontFile);
         FreeTypeFontGenerator.FreeTypeFontParameter param = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        param.size = 56;
+        int textscale = 1;
+        param.size = 56*textscale;
         regina = generator.generateFont(param);
-        param.size = 32;
+        param.size = 32*textscale;
         param.color = Color.GREEN;
         regina1 = generator.generateFont(param);
-        param.size = 44;
+        param.size = 44*textscale;
         param.shadowColor = Color.BLACK;
         param.shadowOffsetX = 1;
         param.shadowOffsetY = 1;
@@ -147,7 +149,7 @@ public class MainMenuController extends WorldController {
             return false;
         }
 
-        InputController input = InputController.getInstance();
+        InputController input = InputControllerManager.getInstance().getController(0);
 
         if (((input.didRightDPadPress() && mode == HOME_SCREEN) || nextCon.equals("GM"))) {
             System.out.println("GM");
@@ -250,13 +252,15 @@ public class MainMenuController extends WorldController {
         Gdx.input.setCursorCatched(false);
         nextCon = "";
         SoundController instance = SoundController.getInstance();
-        if (instance.isActive("bgmusic")) instance.stop("bgmusic");
-        if (!instance.isActive("menumusic")) instance.play("menumusic", MENU_MUSIC, true);
+        if (playingMusic) {
+            if (instance.isActive("bgmusic")) instance.stop("bgmusic");
+            if (!instance.isActive("menumusic")) instance.play("menumusic", MENU_MUSIC, true);
+        }
     }
 
     @Override
     public void update(float dt) {
-        InputController input = InputController.getInstance();
+        InputController input = InputControllerManager.getInstance().getController(0);
         if(mode == HOME_SCREEN) {
             if(mode!=prevMode) {
                 return;

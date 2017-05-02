@@ -21,7 +21,8 @@ import lombok.Setter;
 public class OwlModel extends BoxObstacle  {
 
     public static final String OWL_TEXTURE = "texture/owl/owl.png";
-    public static final float OWL_WIDTH = 2.2f;
+    public static final float OWL_DRAW_WIDTH = 2.2f;
+    public static final float OWL_WIDTH = 1.3f;
     public static final float VICTORY_SPEED = 0.15f;
     private static final float VICTORY_DISTANCE = 13f;
 
@@ -75,7 +76,7 @@ public class OwlModel extends BoxObstacle  {
 
     @Override
     public void setTextures(MantisAssetManager manager) {
-        idleAnimation = new Animation(0.25f, manager.getTextureAtlas()
+        idleAnimation = new Animation(0.127f, manager.getTextureAtlas()
                 .findRegions
                 ("idleowl"), Animation.PlayMode.LOOP);
         flyAnimation = new Animation(0.127f, manager.getTextureAtlas().findRegions
@@ -85,7 +86,7 @@ public class OwlModel extends BoxObstacle  {
         owlTextureRegion = idleAnimation.getKeyFrame(0);
         setTexture(owlTextureRegion);
         // aspect ratio scaling
-        this.owlHeight = getWidth() * ( owlTextureRegion.getRegionHeight() / owlTextureRegion.getRegionWidth());
+        this.owlHeight = OWL_DRAW_WIDTH * ( owlTextureRegion.getRegionHeight() / owlTextureRegion.getRegionWidth());
         if (flyAnimation.getKeyFrames().length == 0)
             System.err.println("did not find anim");
     }
@@ -106,11 +107,11 @@ public class OwlModel extends BoxObstacle  {
         }
 
         setTexture(drawFrame);
-        this.owlHeight = getWidth() * ( drawFrame.getRegionHeight() / drawFrame.getRegionWidth());
+        this.owlHeight = OWL_DRAW_WIDTH * (drawFrame.getRegionHeight() / drawFrame.getRegionWidth());
 
         canvas.draw(drawFrame,Color.WHITE,origin.x,origin.y,getPosition().x*drawScale.x,getPosition().y*drawScale.y,getAngle(),
-               (1.0f/drawFrame.getRegionWidth()) *   getWidth() * getDrawScale().x * objectScale.x,
-               (1.0f/drawFrame.getRegionHeight()  * getHeight()* getDrawScale().y * objectScale.y));
+               (1.0f/drawFrame.getRegionWidth()) *   OWL_DRAW_WIDTH * getDrawScale().x * objectScale.x,
+               (1.0f/drawFrame.getRegionHeight()  * owlHeight * getDrawScale().y * objectScale.y));
     }
 
     public float doVictory() {

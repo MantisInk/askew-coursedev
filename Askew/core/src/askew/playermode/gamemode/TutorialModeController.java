@@ -12,6 +12,7 @@ package askew.playermode.gamemode;
 
 import askew.GlobalConfiguration;
 import askew.InputController;
+import askew.InputControllerManager;
 import askew.MantisAssetManager;
 import askew.entity.Entity;
 import askew.entity.obstacle.Obstacle;
@@ -154,7 +155,6 @@ public class TutorialModeController extends GameModeController {
 	 */
 	@Override
 	protected void populateLevel() {
-		System.out.println(loadLevel);
 		super.populateLevel();
 		for(Entity e: objects) {
 			if(e instanceof Trunk) {
@@ -186,7 +186,8 @@ public class TutorialModeController extends GameModeController {
 			return false;
 		}
 
-		InputController input = InputController.getInstance();
+
+		InputController input = InputControllerManager.getInstance().getController(0);
 		if(next) {
 			currentStage++;
 			next = false;
@@ -479,6 +480,9 @@ public class TutorialModeController extends GameModeController {
 		canvas.begin();
 		canvas.draw(background);
 		canvas.end();
+
+		System.out.println("stage " + currentStage);
+		InputController input =  InputControllerManager.getInstance().getController(0);
 
 		camTrans.setToTranslation(-1 * sloth.getBody().getPosition().x * worldScale.x
 				, -1 * sloth.getBody().getPosition().y * worldScale.y);

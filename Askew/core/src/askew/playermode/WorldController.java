@@ -15,10 +15,7 @@ package askew.playermode;/*
  * LibGDX version, 2/6/2015
  */
 
-import askew.GameCanvas;
-import askew.GlobalConfiguration;
-import askew.InputController;
-import askew.MantisAssetManager;
+import askew.*;
 import askew.entity.Entity;
 import askew.entity.obstacle.Obstacle;
 import askew.playermode.gamemode.GameModeController;
@@ -72,6 +69,7 @@ public abstract class WorldController implements Screen {
 	protected Array<String> assets;	
 	// Pathnames to shared assets
 	/** Retro font for displaying messages */
+	protected boolean playingMusic;
 	private static String FONT_FILE = "shared/ReginaFree.ttf";
 	private static int FONT_SIZE = 56;
 
@@ -195,9 +193,9 @@ public abstract class WorldController implements Screen {
 	public static final int WORLD_POSIT = 2;
 	
 	/** Width of the game world in Box2d units */
-	protected static final float DEFAULT_WIDTH  = 32.0f;
+	protected static final float DEFAULT_WIDTH  = 16.0f * 1.0f;
 	/** Height of the game world in Box2d units */
-	protected static final float DEFAULT_HEIGHT = 18.0f;
+	protected static final float DEFAULT_HEIGHT = DEFAULT_WIDTH * (9.f / 16.f);
 	/** The default value of gravity (going down) */
 	protected static final float DEFAULT_GRAVITY = -4.9f;
 
@@ -328,9 +326,8 @@ public abstract class WorldController implements Screen {
 	 */
 	public void setCanvas(GameCanvas canvas) {
 		this.canvas = canvas;
-		this.worldScale.x = 1.3f * (float)canvas.getWidth()/(float)bounds.getWidth();
-		this.worldScale.y = 1.3f * (float)canvas.getHeight()/(float)bounds.getHeight();
-		//System.out.println("SETCANVAS SET SCALE");
+		this.worldScale.x = 1.0f * (float)canvas.getWidth()/bounds.getWidth();
+		this.worldScale.y = 1.0f * (float)canvas.getHeight()/bounds.getHeight();
 	}
 	
 	/**
@@ -382,6 +379,7 @@ public abstract class WorldController implements Screen {
 		debug  = false;
 		active = false;
 		countdown = -1;
+		playingMusic = GlobalConfiguration.getInstance().getAsBoolean("enableMusic");
 		//System.out.println("SETTING SCALE IN CONSTRUCTOR");
 	}
 	
@@ -451,7 +449,7 @@ public abstract class WorldController implements Screen {
 	 * @return whether to process the update loop
 	 */
 	public boolean preUpdate(float dt) {
-		InputController input = InputController.getInstance();
+		InputController input = InputControllerManager.getInstance().getController(0);
 
 		input.readInput(bounds, worldScale);
 		if (listener == null) {

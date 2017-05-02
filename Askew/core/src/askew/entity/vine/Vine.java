@@ -155,7 +155,6 @@ public class Vine extends ComplexObstacle {
 		rebuild();
 	}
 
-
 	/**
 	 * Creates the joints for this object.
 	 *

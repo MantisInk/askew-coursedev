@@ -12,9 +12,9 @@ package askew.playermode.gamemode;
 
 import askew.GlobalConfiguration;
 import askew.InputController;
+import askew.InputControllerManager;
 import askew.MantisAssetManager;
 import askew.entity.Entity;
-import askew.entity.obstacle.BoxObstacle;
 import askew.entity.obstacle.Obstacle;
 import askew.entity.owl.OwlModel;
 import askew.entity.sloth.SlothModel;
@@ -79,10 +79,14 @@ public class GameModeController extends WorldController {
 	};
 
 	public static final String GRAB_SOUND = "sound/effect/grab.wav";
+	public static final String RELEASE_SOUND = "sound/effect/release.wav";
+	public static final String ARM_SOUND = "sound/effect/arm.wav";
+	public static final String WIND_SOUND = "sound/effect/wind.wav";
 	public static final String FALL_MUSIC = "sound/music/fallingtoyourdeath" +
 			".ogg";
 
 	Sound grabSound;
+	Sound releaseSound;
 
 	@Setter
 	protected String loadLevel, DEFAULT_LEVEL;
@@ -115,12 +119,18 @@ public class GameModeController extends WorldController {
 	private float fallDeathHeight;
 	private String selectedTrack;
 	private String lastLevel;
+	private MantisAssetManager manager;
+	private float cameraX;
+	private float cameraY;
+	private float cameraVelocityX;
+	private float cameraVelocityY;
 
 	//For playtesting control schemes
 	protected String typeMovement;
 	private int currentMovement;
 	protected String typeControl;
 	private int currentControl;
+	private float windVolume;
 
 	private int control_three_wait;
 	private int UI_WAIT = 5;
@@ -147,11 +157,16 @@ public class GameModeController extends WorldController {
 			manager.load(soundName, Sound.class);
 		}
 		manager.load(FALL_MUSIC, Sound.class);
+		manager.load(ARM_SOUND, Sound.class);
+		manager.load(WIND_SOUND, Sound.class);
 
 		manager.load(GRAB_SOUND, Sound.class);
+		manager.load(RELEASE_SOUND, Sound.class);
+
 
 		platformAssetState = AssetState.LOADING;
 		jsonLoaderSaver.setManager(manager);
+		this.manager = manager;
 		super.preLoadContent(manager);
 	}
 
@@ -173,11 +188,14 @@ public class GameModeController extends WorldController {
 		for (String soundName : GAMEPLAY_MUSIC) {
 			SoundController.getInstance().allocate(manager, soundName);
 		}
+
 		SoundController.getInstance().allocate(manager, FALL_MUSIC);
+		SoundController.getInstance().allocate(manager, ARM_SOUND);
+		SoundController.getInstance().allocate(manager, WIND_SOUND);
 
 		grabSound = Gdx.audio.newSound(Gdx.files.internal(GRAB_SOUND));
+		releaseSound = Gdx.audio.newSound(Gdx.files.internal(RELEASE_SOUND));
 
-		background = manager.get("texture/background/background1.png", Texture.class);
 		pauseTexture = manager.get("texture/background/pause.png", Texture.class);
 		victoryTexture = manager.get("texture/background/victory.png", Texture.class);
 		fern = manager.get("texture/background/fern.png");
@@ -189,18 +207,12 @@ public class GameModeController extends WorldController {
 
 	// Physics constants for initialization
 	/** The new heavier gravity for this world (so it is not so floaty) */
-	private static final float  DEFAULT_GRAVITY = -10.7f;
-
-
+	private static final float  DEFAULT_GRAVITY = -15.7f;
 
 	// Physics objects for the game
 	/** Reference to the character avatar */
-
 	protected SlothModel sloth;
 	protected static OwlModel owl;
-
-	/** Reference to the goalDoor (for collision detection) */
-	private BoxObstacle goalDoor;
 
 	/** Mark set to handle more sophisticated collision callbacks */
 	protected ObjectSet<Fixture> sensorFixtures;
@@ -240,6 +252,7 @@ public class GameModeController extends WorldController {
 		} else
 			loadLevel = "level"+lvl;
 	}
+
 	// for use in loading levels that aren't part of the progression
 	public void setLevel(String lvlName) {
 		loadLevel = lvlName;
@@ -265,12 +278,13 @@ public class GameModeController extends WorldController {
 	public void reset() {
 		Gdx.input.setCursorCatched(true);
 		coverOpacity = 2f; // start at 2 for 1 second of full black
+		this.windVolume = 0;
 		playerIsReady = false;
 		paused = false;
 		collisions.clearGrab();
 		Vector2 gravity = new Vector2(world.getGravity() );
 
-		InputController.getInstance().releaseGrabs();
+		InputControllerManager.getInstance().inputControllers().forEach(InputController::releaseGrabs);
 
 		for(Entity obj : objects) {
 			if( (obj instanceof Obstacle && !(obj instanceof SlothModel)))
@@ -296,22 +310,25 @@ public class GameModeController extends WorldController {
 //		System.out.println("control "+currentControl+" movement "+currentMovement);
 		populateLevel();
 		// set death height
-		fallDeathHeight = Float.MAX_VALUE;
-		for(Entity obj: objects) {
-			float potentialFallDeath = obj.getY() -
-					LOWEST_ENTITY_FALL_DEATH_THRESHOLD;
-			if (potentialFallDeath < fallDeathHeight) {
-				fallDeathHeight = potentialFallDeath;
-			}
-		}
+//		fallDeathHeight = Float.MAX_VALUE;
+//		for(Entity obj: objects) {
+//			float potentialFallDeath = obj.getY() -
+//					LOWEST_ENTITY_FALL_DEATH_THRESHOLD;
+//			if (potentialFallDeath < fallDeathHeight) {
+//				fallDeathHeight = potentialFallDeath;
+//			}
+//		}
+		fallDeathHeight = levelModel.getMinY() -
+				LOWEST_ENTITY_FALL_DEATH_THRESHOLD;
 
 		// Setup sound
 		SoundController instance = SoundController.getInstance();
-		if (instance.isActive("menumusic")) instance.stop("menumusic");
-		if (instance.isActive("bgmusic")) instance.stop("bgmusic");
-		if (selectedTrack != null) {
-			instance.play("bgmusic", selectedTrack, true);
-
+		if (playingMusic) {
+			if (instance.isActive("menumusic")) instance.stop("menumusic");
+			if (instance.isActive("bgmusic")) instance.stop("bgmusic");
+			if (selectedTrack != null) {
+				instance.play("bgmusic", selectedTrack, true);
+			}
 		}
 
 		if (!instance.isActive("fallmusic")) {
@@ -320,6 +337,22 @@ public class GameModeController extends WorldController {
 			instance.setVolume("fallmusic",0);
 		} else {
 			instance.setVolume("fallmusic",0);
+		}
+
+		if (!instance.isActive("armmusic")) {
+			instance.play("armmusic",
+					ARM_SOUND, true);
+			instance.setVolume("armmusic",0);
+		} else {
+			instance.setVolume("armmusic",0);
+		}
+
+		if (!instance.isActive("windmusic")) {
+			instance.play("windmusic",
+					WIND_SOUND, true);
+			instance.setVolume("windmusic",0);
+		} else {
+			instance.setVolume("windmusic",0);
 		}
 	}
 
@@ -334,7 +367,7 @@ public class GameModeController extends WorldController {
 		lastLevel = loadLevel;
 		try {
 			levelModel = jsonLoaderSaver.loadLevel(loadLevel);
-			System.out.println(levelModel.getTitle());
+			background = manager.get(levelModel.getBackground(), Texture.class);
 			recordTime = levelModel.getRecordTime();
 			if (levelModel == null) {
 				levelModel = new LevelModel();
@@ -350,6 +383,8 @@ public class GameModeController extends WorldController {
 					collisions.setSloth(sloth);
 					initFlowX = sloth.getX();
 					initFlowY = sloth.getY();
+					cameraX = sloth.getX();
+					cameraY = sloth.getY();
 
 					sloth.setControlMode(currentControl);
 					sloth.setMovementMode(currentMovement);
@@ -385,7 +420,7 @@ public class GameModeController extends WorldController {
 			return false;
 		}
 
-		InputController input = InputController.getInstance();
+		InputController input = InputControllerManager.getInstance().getController(0);
 
 		if ((input.didLeftDPadPress() || input.isLKeyPressed()) && !paused && !victory) {
 			System.out.println("LE");
@@ -469,7 +504,7 @@ public class GameModeController extends WorldController {
 	 * @return whether the player has pressed a button
 	 */
 	public boolean checkReady(){
-		InputController theController = InputController.getInstance();
+		InputController theController = InputControllerManager.getInstance().getController(0);
 
 		if (paused)
 			return false;
@@ -509,17 +544,17 @@ public class GameModeController extends WorldController {
 		}
 
 		//Check for change in grabbing movement
-		if (InputController.getInstance().isOneKeyPressed()) {
+		if (InputControllerManager.getInstance().getController(0).isOneKeyPressed()) {
 			sloth.setMovementMode(0);
 			currentMovement = 0;
 			typeMovement = "Current movement is: "+"0";
 		}
-		if (InputController.getInstance().isTwoKeyPressed()) {
+		if (InputControllerManager.getInstance().getController(0).isTwoKeyPressed()) {
 			sloth.setMovementMode(1);
 			currentMovement = 1;
 			typeMovement = "Current movement is: "+"1";
 		}
-		if (InputController.getInstance().isThreeKeyPressed()) {
+		if (InputControllerManager.getInstance().getController(0).isThreeKeyPressed()) {
 			sloth.setMovementMode(2);
 			currentMovement = 2;
 			typeMovement = "Current movement is: "+"2";
@@ -527,12 +562,12 @@ public class GameModeController extends WorldController {
 		}
 
 		//Check for change in arm movement
-		if (InputController.getInstance().isZKeyPressed()) {
+		if (InputControllerManager.getInstance().getController(0).isZKeyPressed()) {
 			sloth.setControlMode(0);
 			currentControl = 0;
 			typeControl = "Current control is: "+"0";
 		}
-		if (InputController.getInstance().isXKeyPressed()) {
+		if (InputControllerManager.getInstance().getController(0).isXKeyPressed()) {
 			sloth.setControlMode(1);
 			currentControl = 1;
 			typeControl = "Current control is: "+"1";
@@ -543,27 +578,16 @@ public class GameModeController extends WorldController {
 			Body leftCollisionBody = collisions.getLeftBody();
 			Body rightCollisionBody = collisions.getRightBody();
 
-			// TODO: move to slothmodel
-			sloth.setLeftHori(InputController.getInstance().getLeftHorizontal());
-			sloth.setLeftVert(InputController.getInstance().getLeftVertical());
-			sloth.setRightHori(InputController.getInstance().getRightHorizontal());
-			sloth.setRightVert(InputController.getInstance().getRightVertical());
-			boolean didSafe = InputController.getInstance()
-					.isBottomButtonPressed();
-			if (sloth.controlMode == 0) {
-				// TODO: Make more elegant - trevor
-				sloth.setLeftGrab(InputController.getInstance().getLeftGrab());
-				sloth.setRightGrab(InputController.getInstance().getRightGrab());
-			} else {
-				if (!didSafe) {
-					sloth.setOneGrab(InputController.getInstance()
-							.getRightGrab());
-				}
-				sloth.setSafeGrab(didSafe, leftCollisionBody,
-						rightCollisionBody, world);
-			}
-			sloth.setLeftStickPressed(InputController.getInstance().getLeftStickPressed());
-			sloth.setRightStickPressed(InputController.getInstance().getRightStickPressed());
+			sloth.setLeftHori(InputControllerManager.getInstance().getController(0).getLeftHorizontal());
+			sloth.setLeftVert(InputControllerManager.getInstance().getController(0).getLeftVertical());
+			sloth.setRightHori(InputControllerManager.getInstance().getController(0).getRightHorizontal());
+			sloth.setRightVert(InputControllerManager.getInstance().getController(0).getRightVertical());
+			sloth.setLeftGrab(InputControllerManager.getInstance().getController(0).getLeftGrab());
+			sloth.setRightGrab(InputControllerManager.getInstance().getController(0).getRightGrab());
+			sloth.setSafeGrab(InputControllerManager.getInstance().getController(0).isBottomButtonPressed(), leftCollisionBody, rightCollisionBody, world);
+			sloth.setOneGrab(InputControllerManager.getInstance().getController(0).getRightGrab());
+			sloth.setLeftStickPressed(InputControllerManager.getInstance().getController(0).getLeftStickPressed());
+			sloth.setRightStickPressed(InputControllerManager.getInstance().getController(0).getRightStickPressed());
 			currentTime += dt;
 
 			//#TODO Collision states check
@@ -590,18 +614,16 @@ public class GameModeController extends WorldController {
 			} else {
 				// Physics tiem
 				// Gribby grab
-				if (sloth.controlMode == 0 || !didSafe) {
-					if (sloth.isLeftGrab()) {
-						sloth.grab(world, leftCollisionBody, true);
-					} else {
-						sloth.releaseLeft(world);
-					}
+				if (sloth.isLeftGrab()) {
+					sloth.grab(world, leftCollisionBody, true);
+				} else {
+					sloth.releaseLeft(world);
+				}
 
-					if (sloth.isRightGrab()) {
-						sloth.grab(world, rightCollisionBody, false);
-					} else {
-						sloth.releaseRight(world);
-					}
+				if (sloth.isRightGrab()) {
+					sloth.grab(world, rightCollisionBody, false);
+				} else {
+					sloth.releaseRight(world);
 				}
 			}
 
@@ -609,11 +631,12 @@ public class GameModeController extends WorldController {
 				grabSound.play();
 			}
 
+			if (sloth.isReleasedEntity()) {
+				releaseSound.play();
+			}
+
 			// Normal physics
 			sloth.doThePhysics();
-
-			// If we use sound, we must remember this.
-			SoundController.getInstance().update();
 
 			// Check if flow is falling
 			float slothY = sloth.getBody().getPosition().y;
@@ -627,17 +650,35 @@ public class GameModeController extends WorldController {
 					if (coverOpacity > 1) coverOpacity = 1;
 					SoundController.getInstance().setVolume("fallmusic", 1 -
 							normalizedDistanceFromDeath);
+					if (playingMusic)
 					SoundController.getInstance().setVolume("bgmusic",
 							normalizedDistanceFromDeath);
 				}
 			} else {
 				SoundController.getInstance().setVolume("fallmusic", 0);
+				if (playingMusic)
 				SoundController.getInstance().setVolume("bgmusic",
 						1);
 				if ((playerIsReady || paused) && (collisions.isFlowKill() || !collisions.isFlowWin())) {
 					coverOpacity = 0;
 				}
 			}
+
+			// Play arm sound based on arm power
+//			float slothPower = sloth.getPower();
+//			SoundController.getInstance().setVolume("armmusic", slothPower * 0.2f);
+//			SoundController.getInstance().setPitch("armmusic", 0.9f + slothPower * 0.9f);
+
+			// Play wind sound based on flow speed
+			float slothSpeed = sloth.getMainBody().getLinearVelocity().len();
+			float windVolume = slothSpeed / 20f;
+			this.windVolume += (windVolume - this.windVolume) * 0.04f;
+			if (this.windVolume > 1) this.windVolume = 1;
+			SoundController.getInstance().setVolume("windmusic", this.windVolume);
+			SoundController.getInstance().setPitch("windmusic", 1.0f + this.windVolume * 0.9f);
+
+			// If we use sound, we must remember this.
+			SoundController.getInstance().update();
 
 			if (isComplete()) {
 				victory = true;
@@ -656,7 +697,6 @@ public class GameModeController extends WorldController {
 					if (sloth.dismember(world))
 						grabSound.play();
 				}
-//				reset();
 			}
 		}
 	}
@@ -668,11 +708,40 @@ public class GameModeController extends WorldController {
 		canvas.draw(background);
 		canvas.end();
 
-		camTrans.setToTranslation(-1 * sloth.getBody().getPosition().x * worldScale.x
-				, -1 * sloth.getBody().getPosition().y * worldScale.y);
+		float slothX = sloth.getBody().getPosition().x;
+		float slothY = sloth.getBody().getPosition().y;
+
+		cameraVelocityX = cameraVelocityX * 0.4f + (slothX - cameraX) * 0.18f;
+		cameraVelocityY = cameraVelocityY * 0.4f + (slothY - cameraY) * 0.18f;
+		cameraX += cameraVelocityX;
+		cameraY +=  cameraVelocityY;
+
+		// Check for camera in bounds
+		// Y Checks
+		if (cameraY - bounds.height /2f < levelModel.getMinY()) {
+			cameraY = levelModel.getMinY() + bounds.height/2f ;
+		}
+
+		if (cameraY + bounds.height / 2f > levelModel.getMaxY()) {
+			cameraY = levelModel.getMaxY() - bounds.height/2f;
+		}
+
+		// X Checks
+		if (cameraX - bounds.width/2 < levelModel.getMinX()) {
+			cameraX = levelModel.getMinX() + bounds.width / 2f;
+		}
+
+		if (cameraX + bounds.width/2f > levelModel.getMaxX()) {
+			cameraX = levelModel.getMaxX() - bounds.width / 2f;
+		}
+
+		camTrans.setToTranslation(-1 * cameraX * worldScale.x
+				, -1 * cameraY * worldScale.y);
+
 		camTrans.translate(canvas.getWidth()/2,canvas.getHeight()/2);
-		canvas.getCampos().set( sloth.getBody().getPosition().x * worldScale.x
-				, sloth.getBody().getPosition().y * worldScale.y);
+		canvas.getCampos().set( cameraX * worldScale.x
+				, cameraY * worldScale.y);
+
 		canvas.begin(camTrans);
 		Collections.sort(objects);
 		for(Entity obj : objects) {
