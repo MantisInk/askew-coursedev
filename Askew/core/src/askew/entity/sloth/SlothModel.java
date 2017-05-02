@@ -667,6 +667,7 @@ public class SlothModel extends ComplexObstacle  {
 
     public void setLeftGrab(boolean leftGrab) {
         if (controlMode == CONTROLS_ONE_ARM && !didOneArmCheck) return;
+        if (controlMode != CONTROLS_ONE_ARM) releasedEntity = false;
         if (movementMode == GRAB_ORIGINAL)
             this.leftGrab = leftGrab;
         else if (movementMode == GRAB_REVERSE)
@@ -981,13 +982,13 @@ public class SlothModel extends ComplexObstacle  {
                 }
 
                 // different textures for flow's arms if controlling
-                if (body_ind == 1) {
+                if (body_ind == PART_RIGHT_ARM) {
                     if (rightHori >= 0.15 || rightHori <= -0.15 || rightVert >= 0.15 || rightVert <= -0.15)
                         part.setTexture(partTextures[6]);
                     else
                         part.setTexture(partTextures[1]);
                 }
-                if (body_ind == 2) {
+                if (body_ind == PART_LEFT_ARM) {
                     if (leftHori >= 0.15 || leftHori <= -0.15 || leftVert >= 0.15 || leftVert <= -0.15)
                         part.setTexture(partTextures[7]);
                     else
@@ -995,9 +996,8 @@ public class SlothModel extends ComplexObstacle  {
                 }
 
                 //If the body parts are from the right limb
-                if (body_ind == 3 || body_ind == 4) continue;
-//                Color LARA_COLOR = new Color(0,255,255,1);
-                if (body_ind == 1) {
+                if (body_ind == PART_LEFT_HAND || body_ind == PART_RIGHT_HAND) continue;
+                if (body_ind == PART_RIGHT_ARM) {
                     // right limb
                     if (controlMode == CONTROLS_ONE_ARM) {
                         if ( (leftCanGrabOrIsGrabbing && isActualLeftGrab())
@@ -1009,9 +1009,7 @@ public class SlothModel extends ComplexObstacle  {
                     } else {
                         part.draw(canvas, Color.WHITE);
                     }
-                }
-                //If the body parts are from the left limb
-                else if (body_ind == 2) {
+                } else if (body_ind == PART_LEFT_ARM) {
                     // left limb
                     if (controlMode == CONTROLS_ONE_ARM) {
                         if ( (leftCanGrabOrIsGrabbing && !isActualLeftGrab())
@@ -1036,6 +1034,7 @@ public class SlothModel extends ComplexObstacle  {
      * @param b
      */
     public void setOneGrab(boolean b) {
+        if (controlMode != CONTROLS_ONE_ARM) return;
         if (!didSafeGrab) {
             didOneArmCheck = true;
             grabbedEntity = false;
@@ -1058,6 +1057,7 @@ public class SlothModel extends ComplexObstacle  {
      * @param world
      */
     public void setSafeGrab(boolean leftButtonPressed, Body leftCollisionBody, Body rightCollisionBody, World world) {
+        if (controlMode != CONTROLS_ONE_ARM) return;
         grabbedEntity = false;
         didSafeGrab = false;
         releasedEntity = false;
