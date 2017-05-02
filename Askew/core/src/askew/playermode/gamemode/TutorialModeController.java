@@ -94,7 +94,8 @@ public class TutorialModeController extends GameModeController {
 	// list of instructions
 	private boolean[] shimmyGrabbed = {false, false, false, false, false};
 	private int[] shimmyDir = {SHIMMY_S, SHIMMY_E, SHIMMY_N, SHIMMY_E, SHIMMY_SE};
-	private int[] flingdir = {};
+	private boolean[] flingGrabbed = {false, false, false, false};
+	private int[] flingDir = {SHIMMY_NE, SHIMMY_SE, SHIMMY_E, SHIMMY_SE};
 
 	/**
 	 * Load the assets for this controller.
@@ -248,14 +249,19 @@ public class TutorialModeController extends GameModeController {
 					if (inRangeSetPt >= 0 && !shimmyGrabbed[inRangeSetPt]) {
 						shimmyGrabbed[inRangeSetPt] = checkGrabbedPt(shimmySetPoints[inRangeSetPt], shimmyDir[inRangeSetPt]);
 					}
-
-
-					for (boolean b : shimmyGrabbed) {
-						System.out.print(b+"  ");
-					}
-					System.out.println();
 					break;
 				case STAGE_FLING:
+					if(inRangeSetPt+1 >= flingDir.length) { break; }
+					if (inRange(flingSetPoints[inRangeSetPt+1])) {
+						inRangeSetPt++;
+					}
+					if (inRangeSetPt >= 0 && !flingGrabbed[inRangeSetPt]) {
+						flingGrabbed[inRangeSetPt] = checkGrabbedPt(flingSetPoints[inRangeSetPt], flingDir[inRangeSetPt]);
+					}
+					for(boolean b : flingGrabbed) {
+						System.out.print(b+" ");
+					}
+					System.out.println();
 					break;
 				case STAGE_VINE:
 					break;
@@ -328,22 +334,22 @@ public class TutorialModeController extends GameModeController {
 			lPos = lTarget.getPosition();
 			rPos = rTarget.getPosition();
 			if(lPos.x < rPos.x) {
-				xrange = Math.abs(setpt.x - lPos.x) <= ARMSPAN+0.03;
-				yrange = Math.abs(setpt.y - lPos.y) <= ARMSPAN+0.03;
+				xrange = Math.abs(setpt.x - lPos.x) <= ARMSPAN;
+				yrange = Math.abs(setpt.y - lPos.y) <= ARMSPAN;
 			} else {
-				xrange = Math.abs(setpt.x - rPos.x) <= ARMSPAN+0.03;
-				yrange = Math.abs(setpt.y - rPos.y) <= ARMSPAN+0.03;
+				xrange = Math.abs(setpt.x - rPos.x) <= ARMSPAN;
+				yrange = Math.abs(setpt.y - rPos.y) <= ARMSPAN;
 			}
 		}
 		if (lTarget != null) {
 			lPos = lTarget.getPosition();
-			xrange = Math.abs(setpt.x - lPos.x) <= ARMSPAN+0.03;
-			yrange = Math.abs(setpt.y - lPos.y) <= ARMSPAN+0.03;
+			xrange = Math.abs(setpt.x - lPos.x) <= ARMSPAN;
+			yrange = Math.abs(setpt.y - lPos.y) <= ARMSPAN;
 		}
 		if (rTarget != null) {
 			rPos = rTarget.getPosition();
-			xrange = Math.abs(setpt.x - rPos.x) <= ARMSPAN+0.03;
-			yrange = Math.abs(setpt.y - rPos.y) <= ARMSPAN+0.03;
+			xrange = Math.abs(setpt.x - rPos.x) <= ARMSPAN;
+			yrange = Math.abs(setpt.y - rPos.y) <= ARMSPAN;
 		}
 		return xrange && yrange;
 	}
@@ -409,6 +415,13 @@ public class TutorialModeController extends GameModeController {
 				}
 				break;
 			case STAGE_FLING:
+				switch(inRangeSetPt) {
+					case 0:
+					case 1:
+					case 3:
+					default:
+						sloth.drawHelpLines(canvas, camTrans, SHIMMY_E);
+				}
 				break;
 			case STAGE_VINE:
 				break;
