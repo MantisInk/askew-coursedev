@@ -31,6 +31,8 @@ Playing as Flow, you must swing from vine to vine to reach the owl, the goal! Re
 
 **We now have keyboard support! The PC controls use a one-arm variant control scheme. We recommend using a mouse if you can**
 
+Note: To activate this control scheme for this release, you must hit X after clicking on the first level, in order to switch to the one-arm mode.
+
 - _**Arrow Keys**_: swing active arm in the respective direction
 - _**Left click**_: grab (_holding the bumper_) or release (_letting go of the bumper_) 
 - _**Right click**_: _(while already grabbing/holding left click)_ safe transfer of active arm (if the active hand is over a grabbable object, Flow grabs it, releases the opposite hand, and safely switches the active arm)
