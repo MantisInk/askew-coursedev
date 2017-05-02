@@ -75,7 +75,11 @@ public class MainMenuController extends WorldController {
             new Vector2(0.4f, 0.44f),   new Vector2(0.45f, 0.44f), new Vector2(0.65f, 0.44f),
             new Vector2(0.4f, 0.34f)
     };
-    private Vector2[] settings_button_locs = {new Vector2(0.43f, 0.53f), new Vector2(0.43f, 0.43f), new Vector2(0.43f, 0.33f)};
+    private Vector2[] settings_button_locs = {
+            new Vector2(0.43f, 0.53f), new Vector2(0.63f, 0.53f),
+            new Vector2(0.43f, 0.43f), new Vector2(0.63f, 0.43f),
+            new Vector2(0.43f, 0.33f)
+    };
 
     private static final String FERN_TEXTURE = "texture/background/fern.png";
     private static final String MENU_BACKGROUND1_TEXTURE = "texture/background/menu1.png";
@@ -217,9 +221,26 @@ public class MainMenuController extends WorldController {
                 canvas.drawText(settings_text[5], regina2, settings_text_locs[5].x*canvas.getWidth(), settings_text_locs[5].y*canvas.getHeight());
                 canvas.drawText(settings_text[4], regina1, settings_text_locs[4].x*canvas.getWidth(), settings_text_locs[4].y*canvas.getHeight());
             }
-            canvas.draw(fern, Color.WHITE, fern.getWidth()/2, fern.getHeight()/2,
-                    settings_button_locs[settings_button].x*canvas.getWidth(), settings_button_locs[settings_button].y*canvas.getHeight(),
-                    0, worldScale.x/fern.getWidth(), worldScale.y/fern.getHeight());
+            int swtch;
+            switch(settings_button) {
+                case 0:
+                    swtch = (control) ? 1 : 0;
+                    canvas.draw(fern, Color.WHITE, fern.getWidth() / 2, fern.getHeight() / 2,
+                            settings_button_locs[swtch].x * canvas.getWidth(), settings_button_locs[swtch].y * canvas.getHeight(),
+                            0, worldScale.x / fern.getWidth(), worldScale.y / fern.getHeight());
+                    break;
+                case 1:
+                    swtch = (grab) ? 2 : 3;
+                    canvas.draw(fern, Color.WHITE, fern.getWidth() / 2, fern.getHeight() / 2,
+                            settings_button_locs[swtch].x * canvas.getWidth(), settings_button_locs[swtch].y * canvas.getHeight(),
+                            0, worldScale.x / fern.getWidth(), worldScale.y / fern.getHeight());
+                    break;
+                default:
+                    swtch = 4;
+                    canvas.draw(fern, Color.WHITE, fern.getWidth() / 2, fern.getHeight() / 2,
+                            settings_button_locs[swtch].x * canvas.getWidth(), settings_button_locs[swtch].y * canvas.getHeight(),
+                            0, worldScale.x / fern.getWidth(), worldScale.y / fern.getHeight());
+            }
         }
         canvas.end();
     }
