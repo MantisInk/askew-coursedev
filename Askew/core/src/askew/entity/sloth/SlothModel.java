@@ -8,6 +8,7 @@ package askew.entity.sloth;
 
 import askew.GameCanvas;
 import askew.GlobalConfiguration;
+import askew.InputControllerManager;
 import askew.MantisAssetManager;
 import askew.entity.FilterGroup;
 import askew.entity.obstacle.*;
@@ -219,6 +220,7 @@ public class SlothModel extends ComplexObstacle  {
         this.movementMode = GlobalConfiguration.getInstance().getAsInt("flowMovementMode");
         this.controlMode = GlobalConfiguration.getInstance().getAsInt
                 ("flowControlMode");
+        if (!InputControllerManager.getInstance().getController(0).getXbox().isConnected()) controlMode = CONTROLS_ONE_ARM;
         this.rightGrabbing = false;
         this.leftGrabbing =  true;
     }
@@ -673,12 +675,7 @@ public class SlothModel extends ComplexObstacle  {
         else if (movementMode == GRAB_REVERSE)
             this.leftGrab = !leftGrab;
         else if (movementMode == GRAB_TOGGLE && leftGrab) {
-            if (!leftGrabbing) {
-                leftGrabbing = (controlMode == CONTROLS_ORIGINAL);
-            }
-            else {
-                leftGrabbing = false;
-            }
+            leftGrabbing = !leftGrabbing && (controlMode == CONTROLS_ORIGINAL);
             this.leftGrab = leftGrabbing;
         }
         didOneArmCheck = false;
