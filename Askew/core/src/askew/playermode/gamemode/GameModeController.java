@@ -76,6 +76,7 @@ public class GameModeController extends WorldController {
 	public static final String GRAB_SOUND = "sound/effect/grab.wav";
 	public static final String RELEASE_SOUND = "sound/effect/release.wav";
 	public static final String ARM_SOUND = "sound/effect/arm.wav";
+	public static final String WIND_SOUND = "sound/effect/wind.wav";
 	public static final String FALL_MUSIC = "sound/music/fallingtoyourdeath" +
 			".ogg";
 
@@ -119,7 +120,7 @@ public class GameModeController extends WorldController {
 	private int currentMovement;
 	private String typeControl;
 	private int currentControl;
-	private float slothArmVolume;
+	private float windVolume;
 
 	private int control_three_wait;
 	private int UI_WAIT = 5;
@@ -147,6 +148,7 @@ public class GameModeController extends WorldController {
 		}
 		manager.load(FALL_MUSIC, Sound.class);
 		manager.load(ARM_SOUND, Sound.class);
+		manager.load(WIND_SOUND, Sound.class);
 
 		manager.load(GRAB_SOUND, Sound.class);
 		manager.load(RELEASE_SOUND, Sound.class);
@@ -179,6 +181,7 @@ public class GameModeController extends WorldController {
 
 		SoundController.getInstance().allocate(manager, FALL_MUSIC);
 		SoundController.getInstance().allocate(manager, ARM_SOUND);
+		SoundController.getInstance().allocate(manager, WIND_SOUND);
 
 		grabSound = Gdx.audio.newSound(Gdx.files.internal(GRAB_SOUND));
 		releaseSound = Gdx.audio.newSound(Gdx.files.internal(RELEASE_SOUND));
@@ -264,6 +267,7 @@ public class GameModeController extends WorldController {
 	public void reset() {
 		Gdx.input.setCursorCatched(true);
 		coverOpacity = 2f; // start at 2 for 1 second of full black
+		this.windVolume = 0;
 		playerIsReady = false;
 		paused = false;
 		collisions.clearGrab();
@@ -324,6 +328,14 @@ public class GameModeController extends WorldController {
 			instance.setVolume("armmusic",0);
 		} else {
 			instance.setVolume("armmusic",0);
+		}
+
+		if (!instance.isActive("windmusic")) {
+			instance.play("windmusic",
+					WIND_SOUND, true);
+			instance.setVolume("windmusic",0);
+		} else {
+			instance.setVolume("windmusic",0);
 		}
 	}
 
@@ -613,8 +625,16 @@ public class GameModeController extends WorldController {
 
 			// Play arm sound based on arm power
 			float slothPower = sloth.getPower();
-			SoundController.getInstance().setVolume("armmusic", slothPower * 0.4f);
+			SoundController.getInstance().setVolume("armmusic", slothPower * 0.2f);
 			SoundController.getInstance().setPitch("armmusic", 0.9f + slothPower * 0.9f);
+
+			// Play wind sound based on flow speed
+			float slothSpeed = sloth.getMainBody().getLinearVelocity().len();
+			float windVolume = slothSpeed / 28f;
+			this.windVolume += (windVolume - this.windVolume) * 0.04f;
+			if (this.windVolume > 1) this.windVolume = 1;
+			SoundController.getInstance().setVolume("windmusic", this.windVolume);
+			SoundController.getInstance().setPitch("windmusic", 1.0f + this.windVolume * 0.9f);
 
 			// If we use sound, we must remember this.
 			SoundController.getInstance().update();
