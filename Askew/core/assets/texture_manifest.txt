@@ -4,6 +4,7 @@ texture/background/menu1.png
 texture/background/menu2.png
 texture/background/menu_background.png
 texture/background/pause.png
+texture/background/victory.png
 texture/background/sil1.png
 texture/background/sil2.png
 texture/background/sil3.png

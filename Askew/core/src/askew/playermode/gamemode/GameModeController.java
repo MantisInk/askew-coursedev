@@ -61,11 +61,16 @@ public class GameModeController extends WorldController {
 	protected static boolean playerIsReady = false;
 	protected boolean paused = false;
 	protected boolean prevPaused = false;
+	private boolean victory = false;
 	// fern selection indicator locations for pause menu options
 	protected Vector2[] pause_locs = {
 			new Vector2(0.68f,0.53f),
 			new Vector2(0.55f,0.43f),
 			new Vector2(0.68f,0.33f)};
+	protected Vector2[] victory_locs = {
+			new Vector2(0.08f,0.53f),
+			new Vector2(0.22f,0.43f),
+			new Vector2(0.12f,0.33f)};
 
 	public static final String[] GAMEPLAY_MUSIC = new String[] {
 			"sound/music/askew.ogg",
@@ -96,8 +101,13 @@ public class GameModeController extends WorldController {
 	private int PAUSE_RESTART = 1;
 	private int PAUSE_MAINMENU = 2;
 	protected int pause_mode = PAUSE_RESUME;
+	private int VICTORY_NEXT = 0;
+	private int VICTORY_RESTART = 1;
+	private int VICTORY_MAINMENU = 2;
+	private int victory_mode = VICTORY_NEXT;
 	protected Texture background;
 	protected Texture pauseTexture;
+	protected Texture victoryTexture;
 	protected Texture fern;
 	private static final float NEAR_FALL_DEATH_DISTANCE = 9;
 	private static final float LOWEST_ENTITY_FALL_DEATH_THRESHOLD = 12;
@@ -169,6 +179,7 @@ public class GameModeController extends WorldController {
 
 		background = manager.get("texture/background/background1.png", Texture.class);
 		pauseTexture = manager.get("texture/background/pause.png", Texture.class);
+		victoryTexture = manager.get("texture/background/victory.png", Texture.class);
 		fern = manager.get("texture/background/fern.png");
 
 		super.loadContent(manager);
@@ -277,6 +288,9 @@ public class GameModeController extends WorldController {
 		world.setContactListener(collisions);
 		setComplete(false);
 		setFailure(false);
+		victory = false;
+		pause_mode = PAUSE_RESUME;
+		victory_mode = VICTORY_NEXT;
 		currentControl = GlobalConfiguration.getInstance().getAsInt("flowControlMode");
 		currentMovement = GlobalConfiguration.getInstance().getAsInt("flowMovementMode");
 //		System.out.println("control "+currentControl+" movement "+currentMovement);
@@ -373,17 +387,41 @@ public class GameModeController extends WorldController {
 
 		InputController input = InputController.getInstance();
 
-		if ((input.didLeftDPadPress() || input.isLKeyPressed()) && !paused) {
+		if ((input.didLeftDPadPress() || input.isLKeyPressed()) && !paused && !victory) {
 			System.out.println("LE");
 			listener.exitScreen(this, EXIT_GM_LE);
 			return false;
-		} else if ((input.didTopDPadPress()) && !paused) {
+		} else if ((input.didTopDPadPress()) && !paused && !victory) {
 			System.out.println("MM");
 			listener.exitScreen(this, EXIT_GM_MM);
 			return false;
-		} else if (input.didBottomDPadPress() && !paused) {
+		} else if (input.didBottomDPadPress() && !paused && !victory) {
 			System.out.println("reset");
 			reset();
+		}
+
+		if (victory) {
+			paused = false;
+			if (input.didBottomButtonPress() && victory_mode == VICTORY_NEXT) {
+				playerIsReady = false;
+				int current = GlobalConfiguration.getInstance().getCurrentLevel();
+				GlobalConfiguration.getInstance().setCurrentLevel(current + 1);
+				System.out.println("GG");
+				setLevel();
+				listener.exitScreen(this, EXIT_GM_GM);
+			} else if (input.didBottomButtonPress() && victory_mode == VICTORY_RESTART) {
+				reset();
+			} else if (input.didBottomButtonPress() && victory_mode == VICTORY_MAINMENU) {
+				System.out.println("MM");
+				listener.exitScreen(this, EXIT_GM_MM);
+			}
+
+			if ((input.didTopDPadPress() || input.didUpArrowPress()) && victory_mode > 0) {
+				victory_mode--;
+			}
+			if ((input.didBottomDPadPress() || input.didDownArrowPress()) && victory_mode < 2) {
+				victory_mode++;
+			}
 		}
 
 		if (paused) {
@@ -602,19 +640,17 @@ public class GameModeController extends WorldController {
 			}
 
 			if (isComplete()) {
+				victory = true;
+				playerIsReady = false;
 				float record = currentTime;
 				if (record < levelModel.getRecordTime() && storeTimeRecords) {
 					levelModel.setRecordTime(record);
-					if (jsonLoaderSaver.saveLevel(levelModel, loadLevel))
+					if (jsonLoaderSaver.saveLevel(levelModel, loadLevel)) {
 						System.out.println("New record time for this level!");
+					}
 				}
-				int current = GlobalConfiguration.getInstance().getCurrentLevel();
-				GlobalConfiguration.getInstance().setCurrentLevel(current + 1);
-				System.out.println("GG");
-				setLevel();
-				listener.exitScreen(this, EXIT_GM_GM);
+				return;
 			}
-
 			if (isFailure()) {
 				if (sloth != null) {
 					if (sloth.dismember(world))
@@ -682,14 +718,22 @@ public class GameModeController extends WorldController {
 			coverOpacity -= (1/CYCLES_OF_INTRO);
 			Gdx.gl.glDisable(GL20.GL_BLEND);
 			canvas.begin();
-			if (!playerIsReady && !paused)
+			if (!playerIsReady && !paused && !victory)
 				canvas.drawTextCentered(levelModel.getTitle(), displayFont, 0f);
 			canvas.end();
 		}
 
+		if (victory) {
+			canvas.begin();
+			canvas.draw(victoryTexture);
+			canvas.draw(fern, Color.WHITE,fern.getWidth()/2, fern.getHeight()/2,
+					victory_locs[victory_mode].x * canvas.getWidth(), victory_locs[victory_mode].y* canvas.getHeight(),
+					0,2*worldScale.x/fern.getWidth(), 2*worldScale.y/fern.getHeight());
+			canvas.end();
+		}
 
 		// draw pause menu stuff over everything
-		if (paused) {
+		if (paused && !victory) {
 			canvas.begin();
 			canvas.draw(pauseTexture);
 			canvas.draw(fern, Color.WHITE,fern.getWidth()/2, fern.getHeight()/2,
