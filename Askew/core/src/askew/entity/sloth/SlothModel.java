@@ -617,7 +617,7 @@ public class SlothModel extends ComplexObstacle  {
                     .applyTorque(rTorque, true);
 
         float torquePower = (float) Math.sqrt(lTorque * lTorque + rTorque * rTorque);
-        this.power += (torquePower / 22f - power) * 0.15f;
+        this.power += (torquePower / 22f - power) * 0.10f;
         if (this.power > 1) this.power = 1;
 
         flowFacingState = (int)bodies.get(PART_BODY).getBody().getLinearVelocity().x;
