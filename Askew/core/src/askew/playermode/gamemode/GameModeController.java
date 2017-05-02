@@ -80,6 +80,7 @@ public class GameModeController extends WorldController {
 
 	public static final String GRAB_SOUND = "sound/effect/grab.wav";
 	public static final String RELEASE_SOUND = "sound/effect/release.wav";
+	public static final String ARM_SOUND = "sound/effect/arm.wav";
 	public static final String FALL_MUSIC = "sound/music/fallingtoyourdeath" +
 			".ogg";
 
@@ -128,6 +129,7 @@ public class GameModeController extends WorldController {
 	private int currentMovement;
 	protected String typeControl;
 	private int currentControl;
+	private float slothArmVolume;
 
 	private int control_three_wait;
 	private int UI_WAIT = 5;
@@ -154,9 +156,11 @@ public class GameModeController extends WorldController {
 			manager.load(soundName, Sound.class);
 		}
 		manager.load(FALL_MUSIC, Sound.class);
+		manager.load(ARM_SOUND, Sound.class);
 
 		manager.load(GRAB_SOUND, Sound.class);
 		manager.load(RELEASE_SOUND, Sound.class);
+
 
 		platformAssetState = AssetState.LOADING;
 		jsonLoaderSaver.setManager(manager);
@@ -182,7 +186,9 @@ public class GameModeController extends WorldController {
 		for (String soundName : GAMEPLAY_MUSIC) {
 			SoundController.getInstance().allocate(manager, soundName);
 		}
+
 		SoundController.getInstance().allocate(manager, FALL_MUSIC);
+		SoundController.getInstance().allocate(manager, ARM_SOUND);
 
 		grabSound = Gdx.audio.newSound(Gdx.files.internal(GRAB_SOUND));
 		releaseSound = Gdx.audio.newSound(Gdx.files.internal(RELEASE_SOUND));
@@ -327,6 +333,14 @@ public class GameModeController extends WorldController {
 			instance.setVolume("fallmusic",0);
 		} else {
 			instance.setVolume("fallmusic",0);
+		}
+
+		if (!instance.isActive("armmusic")) {
+			instance.play("armmusic",
+					ARM_SOUND, true);
+			instance.setVolume("armmusic",0);
+		} else {
+			instance.setVolume("armmusic",0);
 		}
 	}
 
@@ -612,9 +626,6 @@ public class GameModeController extends WorldController {
 			// Normal physics
 			sloth.doThePhysics();
 
-			// If we use sound, we must remember this.
-			SoundController.getInstance().update();
-
 			// Check if flow is falling
 			float slothY = sloth.getBody().getPosition().y;
 			if (slothY < fallDeathHeight + NEAR_FALL_DEATH_DISTANCE) {
@@ -641,6 +652,14 @@ public class GameModeController extends WorldController {
 				}
 			}
 
+			// Play arm sound based on arm power
+			float slothPower = sloth.getPower();
+			SoundController.getInstance().setVolume("armmusic", slothPower * 0.4f);
+			SoundController.getInstance().setPitch("armmusic", 0.9f + slothPower * 0.9f);
+
+			// If we use sound, we must remember this.
+			SoundController.getInstance().update();
+
 			if (isComplete()) {
 				victory = true;
 				playerIsReady = false;
@@ -658,7 +677,6 @@ public class GameModeController extends WorldController {
 					if (sloth.dismember(world))
 						grabSound.play();
 				}
-//				reset();
 			}
 		}
 	}

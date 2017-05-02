@@ -126,6 +126,8 @@ public class SlothModel extends ComplexObstacle  {
     private transient boolean leftStickPressed;
     private transient boolean rightStickPressed;
     private transient float flowFacingState;
+    @Getter
+    private transient float power;
 
     @Setter
     private transient int movementMode;
@@ -614,6 +616,10 @@ public class SlothModel extends ComplexObstacle  {
                     .getBody()
                     .applyTorque(rTorque, true);
 
+        float torquePower = (float) Math.sqrt(lTorque * lTorque + rTorque * rTorque);
+        this.power += (torquePower / 22f - power) * 0.15f;
+        if (this.power > 1) this.power = 1;
+
         flowFacingState = (int)bodies.get(PART_BODY).getBody().getLinearVelocity().x;
     }
 
@@ -996,14 +1002,13 @@ public class SlothModel extends ComplexObstacle  {
 
                 //If the body parts are from the right limb
                 if (body_ind == PART_LEFT_HAND || body_ind == PART_RIGHT_HAND) continue;
-                System.out.println("LEFT" + getLeftHori() + "VERT" + getLeftVert());
                 if (body_ind == PART_RIGHT_ARM) {
-                    float rightPower = (float) Math.sqrt(getRightVert() * getRightVert() + getRightHori() * getRightHori());
-                    drawArm(canvas, part, (leftCanGrabOrIsGrabbing && isActualLeftGrab()) || (!leftCanGrabOrIsGrabbing && !isActualRightGrab()), rightPower);
+//                    float rightPower = (float) Math.sqrt(getRightVert() * getRightVert() + getRightHori() * getRightHori());
+                    drawArm(canvas, part, (leftCanGrabOrIsGrabbing && isActualLeftGrab()) || (!leftCanGrabOrIsGrabbing && !isActualRightGrab()));
                 } else if (body_ind == PART_LEFT_ARM) {
                     // left limb
-                    float leftPower = (float) Math.sqrt(getLeftVert() * getLeftVert() + getLeftHori() * getLeftHori());
-                    drawArm(canvas, part, (leftCanGrabOrIsGrabbing && !isActualLeftGrab()) || (!leftCanGrabOrIsGrabbing && isActualRightGrab()), leftPower);
+//                    float leftPower = (float) Math.sqrt(getLeftVert() * getLeftVert() + getLeftHori() * getLeftHori());
+                    drawArm(canvas, part, (leftCanGrabOrIsGrabbing && !isActualLeftGrab()) || (!leftCanGrabOrIsGrabbing && isActualRightGrab()));
                 }
                 //If the body parts are not limbs
                 else {
@@ -1013,12 +1018,13 @@ public class SlothModel extends ComplexObstacle  {
         }
     }
 
-    private void drawArm(GameCanvas canvas, BoxObstacle part, boolean active, float power) {
+    private void drawArm(GameCanvas canvas, BoxObstacle part, boolean active) {
         if (controlMode == CONTROLS_ONE_ARM) {
             if (active) {
                 part.draw(canvas, Color.WHITE);
                 // draw power halo
-                power = (float) (power / (Math.sqrt(2)));
+                power = this.power;
+
                 Color tint = new Color(0,0,power,power / 2.5f);
                 Vector2 origin = part.getOrigin();
                 TextureRegion texture = partTextures[PART_POWER_GLOW];
