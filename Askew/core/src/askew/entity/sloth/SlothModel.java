@@ -14,6 +14,7 @@ import askew.entity.FilterGroup;
 import askew.entity.obstacle.*;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Affine2;
@@ -61,11 +62,12 @@ public class SlothModel extends ComplexObstacle  {
     private static final int PART_LEFT_HAND = 3;
     private static final int PART_RIGHT_HAND = 4;
     private static final int PART_HEAD = 5;
+    private static final int PART_POWER_GLOW = 8;
 
     private static final float PI = (float)Math.PI;
 
     /** The number of DISTINCT body parts */
-    private static final int BODY_TEXTURE_COUNT = 8;
+    private static final int BODY_TEXTURE_COUNT = 9;
 
     private transient RevoluteJointDef leftGrabJointDef;
     private transient RevoluteJointDef rightGrabJointDef;
@@ -839,6 +841,7 @@ public class SlothModel extends ComplexObstacle  {
         Texture managedFlowFarLeft = manager.get("texture/sloth/farleftflow.png");
         Texture managedFrontArmMoving = manager.get("texture/sloth/frontarm_moving.png");
         Texture managedBackArmMoving = manager.get("texture/sloth/backarm_moving.png");
+        Texture managedPowerGlow = manager.get("texture/sloth/power_glow.png");
         partTextures[0] = new TextureRegion(managedHand);
         partTextures[1] = new TextureRegion(managedFrontArm);
         partTextures[3] = new TextureRegion(managedBackArm);
@@ -847,6 +850,7 @@ public class SlothModel extends ComplexObstacle  {
         partTextures[5] = new TextureRegion(managedFlowFarLeft);
         partTextures[6] = new TextureRegion(managedFrontArmMoving);
         partTextures[7] = new TextureRegion(managedBackArmMoving);
+        partTextures[8] = new TextureRegion(managedPowerGlow);
 
         if (bodies.size == 0) {
             init();
@@ -906,12 +910,13 @@ public class SlothModel extends ComplexObstacle  {
 
                 //If the body parts are from the right limb
                 if (body_ind == PART_LEFT_HAND || body_ind == PART_RIGHT_HAND) continue;
+                System.out.println("LEFT" + getLeftHori() + "VERT" + getLeftVert());
                 if (body_ind == PART_RIGHT_ARM) {
-                    float rightPower = (float) Math.sqrt(getRightVert() * getRightVert() + getRightHori() + getRightHori());
+                    float rightPower = (float) Math.sqrt(getRightVert() * getRightVert() + getRightHori() * getRightHori());
                     drawArm(canvas, part, (leftCanGrabOrIsGrabbing && isActualLeftGrab()) || (!leftCanGrabOrIsGrabbing && !isActualRightGrab()), rightPower);
                 } else if (body_ind == PART_LEFT_ARM) {
                     // left limb
-                    float leftPower = (float) Math.sqrt(getLeftVert() * getLeftVert() + getLeftHori() + getLeftHori());
+                    float leftPower = (float) Math.sqrt(getLeftVert() * getLeftVert() + getLeftHori() * getLeftHori());
                     drawArm(canvas, part, (leftCanGrabOrIsGrabbing && !isActualLeftGrab()) || (!leftCanGrabOrIsGrabbing && isActualRightGrab()), leftPower);
                 }
                 //If the body parts are not limbs
@@ -926,6 +931,20 @@ public class SlothModel extends ComplexObstacle  {
         if (controlMode == CONTROLS_ONE_ARM) {
             if (active) {
                 part.draw(canvas, Color.WHITE);
+                // draw power halo
+                power = (float) (power / (Math.sqrt(2)));
+                Color tint = new Color(0,0,power,power / 2.5f);
+                Vector2 origin = part.getOrigin();
+                TextureRegion texture = partTextures[PART_POWER_GLOW];
+                Gdx.gl.glEnable(GL20.GL_BLEND);
+                Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+                if (texture != null) {
+                    float stretch = power * 1.5f;
+                    canvas.draw(texture,tint,origin.x,origin.y,part.getX()*drawScale.x,part.getY()*drawScale.y,part.getAngle(),
+                            (1.0f/texture.getRegionWidth()) * part.getWidth() * part.getDrawScale().x * part.getObjectScale().x * customScale.x*stretch,
+                            (1.0f/texture.getRegionHeight()  * part.getHeight()* part.getDrawScale().y * part.getObjectScale().y * customScale.y*stretch));
+                }
+                Gdx.gl.glDisable(GL20.GL_BLEND);
 
             } else {
                 part.draw(canvas, Color.BLACK);

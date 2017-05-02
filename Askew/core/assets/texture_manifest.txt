@@ -61,3 +61,4 @@ texture/wall/wall.png
 texture/background/purple.png
 texture/background/rusty.png
 texture/background/foreground/leaf.png
+texture/sloth/power_glow.png
