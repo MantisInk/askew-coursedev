@@ -170,6 +170,7 @@ public class InputController {
 	private float momentum;
 
 	/** An X-Box controller (if it is connected) */
+	@Getter
 	private XBox360Controller xbox;
 
 	/**
