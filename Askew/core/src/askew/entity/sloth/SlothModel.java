@@ -273,8 +273,6 @@ public class SlothModel extends ComplexObstacle  {
      */
     public void setDrawScale(float x, float y) {
         super.setDrawScale(x,y);
-
-
     }
 
     /**
@@ -909,28 +907,12 @@ public class SlothModel extends ComplexObstacle  {
                 //If the body parts are from the right limb
                 if (body_ind == PART_LEFT_HAND || body_ind == PART_RIGHT_HAND) continue;
                 if (body_ind == PART_RIGHT_ARM) {
-                    // right limb
-                    if (controlMode == CONTROLS_ONE_ARM) {
-                        if ( (leftCanGrabOrIsGrabbing && isActualLeftGrab())
-                                || (!leftCanGrabOrIsGrabbing &&
-                                !isActualRightGrab()))
-                            part.draw(canvas, Color
-                                .WHITE);
-                        else part.draw(canvas, Color.BLACK);
-                    } else {
-                        part.draw(canvas, Color.WHITE);
-                    }
+                    float rightPower = (float) Math.sqrt(getRightVert() * getRightVert() + getRightHori() + getRightHori());
+                    drawArm(canvas, part, (leftCanGrabOrIsGrabbing && isActualLeftGrab()) || (!leftCanGrabOrIsGrabbing && !isActualRightGrab()), rightPower);
                 } else if (body_ind == PART_LEFT_ARM) {
                     // left limb
-                    if (controlMode == CONTROLS_ONE_ARM) {
-                        if ( (leftCanGrabOrIsGrabbing && !isActualLeftGrab())
-                                || (!leftCanGrabOrIsGrabbing && isActualRightGrab()))
-                            part.draw(canvas,
-                                Color.WHITE);
-                        else part.draw(canvas, Color.BLACK);
-                    } else {
-                        part.draw(canvas, Color.WHITE);
-                    }
+                    float leftPower = (float) Math.sqrt(getLeftVert() * getLeftVert() + getLeftHori() + getLeftHori());
+                    drawArm(canvas, part, (leftCanGrabOrIsGrabbing && !isActualLeftGrab()) || (!leftCanGrabOrIsGrabbing && isActualRightGrab()), leftPower);
                 }
                 //If the body parts are not limbs
                 else {
@@ -938,9 +920,19 @@ public class SlothModel extends ComplexObstacle  {
                 }
             }
         }
-        //Commented out because the vine images disappear when this is used here?
-        //drawForces();
+    }
 
+    private void drawArm(GameCanvas canvas, BoxObstacle part, boolean active, float power) {
+        if (controlMode == CONTROLS_ONE_ARM) {
+            if (active) {
+                part.draw(canvas, Color.WHITE);
+
+            } else {
+                part.draw(canvas, Color.BLACK);
+            }
+        } else {
+            part.draw(canvas, Color.WHITE);
+        }
     }
 
     /**
