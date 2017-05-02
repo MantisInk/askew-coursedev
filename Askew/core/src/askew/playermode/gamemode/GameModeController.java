@@ -671,7 +671,7 @@ public class GameModeController extends WorldController {
 
 			// Play wind sound based on flow speed
 			float slothSpeed = sloth.getMainBody().getLinearVelocity().len();
-			float windVolume = slothSpeed / 28f;
+			float windVolume = slothSpeed / 24f;
 			this.windVolume += (windVolume - this.windVolume) * 0.04f;
 			if (this.windVolume > 1) this.windVolume = 1;
 			SoundController.getInstance().setVolume("windmusic", this.windVolume);
