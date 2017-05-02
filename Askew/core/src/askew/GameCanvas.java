@@ -422,6 +422,17 @@ public class GameCanvas {
     	spriteBatch.setColor(Color.WHITE);
 		spriteBatch.draw(image, x,  y);
 	}
+	public void draw(Texture image, Color tint, float x, float y) {
+		if (active != DrawPass.STANDARD) {
+			Gdx.app.error("askew.GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
+			return;
+		}
+
+		// Unlike Lab 1, we can shortcut without a master drawing method
+		spriteBatch.setColor(tint);
+		spriteBatch.draw(image, x,  y);
+		spriteBatch.setColor(Color.WHITE);
+	}
 
 	/**
 	 * Draws the tinted texture at the given position.

@@ -8,11 +8,13 @@ package askew.entity.sloth;
 
 import askew.GameCanvas;
 import askew.GlobalConfiguration;
+import askew.InputControllerManager;
 import askew.MantisAssetManager;
 import askew.entity.FilterGroup;
 import askew.entity.obstacle.*;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Affine2;
@@ -36,7 +38,7 @@ public class SlothModel extends ComplexObstacle  {
     private transient boolean GRABBING_HAND_HAS_TORQUE;
     private transient float OMEGA_NORMALIZER;
 
-    @Setter
+    @Setter @Getter
     public transient int controlMode;
     /** After flying this distance, flow starts to experience some serious
      * air resistance.
@@ -60,11 +62,12 @@ public class SlothModel extends ComplexObstacle  {
     private static final int PART_LEFT_HAND = 3;
     private static final int PART_RIGHT_HAND = 4;
     private static final int PART_HEAD = 5;
+    private static final int PART_POWER_GLOW = 8;
 
     private static final float PI = (float)Math.PI;
 
     /** The number of DISTINCT body parts */
-    private static final int BODY_TEXTURE_COUNT = 8;
+    private static final int BODY_TEXTURE_COUNT = 9;
 
     private transient RevoluteJointDef leftGrabJointDef;
     private transient RevoluteJointDef rightGrabJointDef;
@@ -73,6 +76,19 @@ public class SlothModel extends ComplexObstacle  {
     private transient PolygonShape sensorShape;
     private transient Fixture sensorFixture1;
     private transient Fixture sensorFixture2;
+
+    private transient Body leftTarget;
+    private transient Body rightTarget;
+
+    // help lines for tutorial mode
+    public static final int SHIMMY_E = 0;
+    public static final int SHIMMY_SE = 1;
+    public static final int SHIMMY_S = 2;
+    public static final int SHIMMY_SW = 3;
+    public static final int SHIMMY_W = 4;
+    public static final int SHIMMY_NW = 5;
+    public static final int SHIMMY_N = 6;
+    public static final int SHIMMY_NE = 7;
 
     /** Set damping constant for rotation of Flow's arms */
     private static final float ROTATION_DAMPING = 5f;
@@ -110,6 +126,8 @@ public class SlothModel extends ComplexObstacle  {
     private transient boolean leftStickPressed;
     private transient boolean rightStickPressed;
     private transient float flowFacingState;
+    @Getter
+    private transient float power;
 
     @Setter
     private transient int movementMode;
@@ -117,13 +135,16 @@ public class SlothModel extends ComplexObstacle  {
     private transient boolean rightGrabbing;
     @Getter
     private transient boolean grabbedEntity;
+    @Getter
+    private transient boolean releasedEntity;
     private transient boolean leftCanGrabOrIsGrabbing;
     private transient boolean didSafeGrab;
-    private boolean setLastGrabX;
-    private float lastGrabX;
+    private transient boolean setLastGrabX;
+    private transient float lastGrabX;
     private transient boolean dismembered;
-    private boolean didOneArmCheck;
-    private boolean waitingForSafeRelease;
+    private transient boolean pinned = false;
+    private transient boolean didOneArmCheck;
+    private transient boolean waitingForSafeRelease;
     private transient boolean tutorial = false;
 
     /**
@@ -174,6 +195,8 @@ public class SlothModel extends ComplexObstacle  {
     //private static final float HAND_XOFFSET  = (ARM_WIDTH / 2f) - HAND_WIDTH/2;
     private static final float HAND_XOFFSET  = (ARM_WIDTH / 2f) - HAND_WIDTH * 2 - .07f;
 
+    public static final float ARMSPAN = ARM_XOFFSET*2;
+
 
     /** Texture assets for the body parts */
     private transient TextureRegion[] partTextures;
@@ -201,6 +224,7 @@ public class SlothModel extends ComplexObstacle  {
         this.movementMode = GlobalConfiguration.getInstance().getAsInt("flowMovementMode");
         this.controlMode = GlobalConfiguration.getInstance().getAsInt
                 ("flowControlMode");
+        if (!InputControllerManager.getInstance().getController(0).getXbox().isConnected()) controlMode = CONTROLS_ONE_ARM;
         this.rightGrabbing = false;
         this.leftGrabbing =  true;
     }
@@ -269,8 +293,6 @@ public class SlothModel extends ComplexObstacle  {
      */
     public void setDrawScale(float x, float y) {
         super.setDrawScale(x,y);
-
-
     }
 
     /**
@@ -551,14 +573,14 @@ public class SlothModel extends ComplexObstacle  {
         float forceLeft =  calculateTorque(dLTheta,leftAngularVelocity/OMEGA_NORMALIZER); //#MAGIC 20f default, omega normalizer
         float forceRight = calculateTorque(dRTheta,rightAngularVelocity/OMEGA_NORMALIZER);
 
-        if(impulseL > 0 && !tutorial)
+        if(impulseL > 0 && !pinned)
             forceLeft *= .3f;
 
-        if(impulseR > 0 && !tutorial)
+        if(impulseR > 0 && !pinned)
             forceRight *= .3f;
 
-        // if in tutorial, turn off auto-assist
-        if(tutorial) {
+        // if in pinned, turn off auto-assist
+        if(pinned) {
             impulseL = 0;
             impulseR = 0;
             cimpulseL = 0;
@@ -593,6 +615,10 @@ public class SlothModel extends ComplexObstacle  {
             rightArm
                     .getBody()
                     .applyTorque(rTorque, true);
+
+        float torquePower = (float) Math.sqrt(lTorque * lTorque + rTorque * rTorque);
+        this.power += (torquePower / 22f - power) * 0.10f;
+        if (this.power > 1) this.power = 1;
 
         flowFacingState = (int)bodies.get(PART_BODY).getBody().getLinearVelocity().x;
     }
@@ -649,17 +675,13 @@ public class SlothModel extends ComplexObstacle  {
 
     public void setLeftGrab(boolean leftGrab) {
         if (controlMode == CONTROLS_ONE_ARM && !didOneArmCheck) return;
+        if (controlMode != CONTROLS_ONE_ARM) releasedEntity = false;
         if (movementMode == GRAB_ORIGINAL)
             this.leftGrab = leftGrab;
         else if (movementMode == GRAB_REVERSE)
             this.leftGrab = !leftGrab;
         else if (movementMode == GRAB_TOGGLE && leftGrab) {
-            if (!leftGrabbing) {
-                leftGrabbing = (controlMode == CONTROLS_ORIGINAL);
-            }
-            else {
-                leftGrabbing = false;
-            }
+            leftGrabbing = !leftGrabbing && (controlMode == CONTROLS_ORIGINAL);
             this.leftGrab = leftGrabbing;
         }
         didOneArmCheck = false;
@@ -697,6 +719,70 @@ public class SlothModel extends ComplexObstacle  {
     public float getLTheta() { return lTheta;}
 
     public float getRTheta() {return rTheta;}
+
+    public Body getLeftTarget() {return leftTarget;}
+
+    public Body getRightTarget() {return rightTarget;}
+
+    public Body getLeftmostTarget() {
+        if (leftTarget != null && rightTarget != null) {
+            if(leftTarget.getPosition().x < rightTarget.getPosition().x) {
+                return leftTarget;
+            } else {
+                return rightTarget;
+            }
+        }
+        if (rightTarget != null) {
+            return rightTarget;
+        } else {
+            return leftTarget;
+        }
+    }
+
+    public Body getRightmostTarget() {
+        if (leftTarget != null && rightTarget != null) {
+            if(leftTarget.getPosition().x >= rightTarget.getPosition().x) {
+                return leftTarget;
+            } else {
+                return rightTarget;
+            }
+        }
+        if (leftTarget != null) {
+            return leftTarget;
+        } else {
+            return rightTarget;
+        }
+    }
+
+    public Body getTopTarget() {
+        if (leftTarget != null && rightTarget != null) {
+            if(leftTarget.getPosition().y > rightTarget.getPosition().y) {
+                return leftTarget;
+            } else {
+                return rightTarget;
+            }
+        }
+        if (rightTarget != null) {
+            return rightTarget;
+        } else {
+            return leftTarget;
+        }
+    }
+
+    public Body getBottomTarget() {
+        if (leftTarget != null && rightTarget != null) {
+            if(leftTarget.getPosition().y <= rightTarget.getPosition().y) {
+                return leftTarget;
+            } else {
+                return rightTarget;
+            }
+        }
+        if (rightTarget != null) {
+            return rightTarget;
+        } else {
+            return leftTarget;
+        }
+    }
 
     public Obstacle getLeftArm() {
         return bodies.get(PART_LEFT_ARM);
@@ -754,9 +840,13 @@ public class SlothModel extends ComplexObstacle  {
         grabJoint = world.createJoint(grabJointDef);
         if (leftHand) {
             leftGrabJoint = grabJoint;
+            leftTarget = target;
         } else {
             rightGrabJoint = grabJoint;
+            rightTarget = target;
         }
+        // set data as grabbed for pinned to shade grabbed stuff
+        target.setUserData("grabbed");
 
         joints.add(grabJoint);
         grabbedEntity = true;
@@ -767,8 +857,10 @@ public class SlothModel extends ComplexObstacle  {
         if (leftGrabJoint != null) {
             if (movementMode != GRAB_TOGGLE || !leftGrabbing) world.destroyJoint(leftGrabJoint);
             leftCanGrabOrIsGrabbing = false;
+            releasedEntity = true;
         }
         leftGrabJoint = null;
+        leftTarget = null;
     }
 
     public void releaseRight(World world) {
@@ -776,8 +868,10 @@ public class SlothModel extends ComplexObstacle  {
         if (rightGrabJoint != null) {
             if (movementMode != GRAB_TOGGLE || !rightGrabbing) world.destroyJoint(rightGrabJoint);
             leftCanGrabOrIsGrabbing = true;
+            releasedEntity = true;
         }
         rightGrabJoint = null;
+        rightTarget = null;
     }
 
     public void activateSlothPhysics(World world) {
@@ -839,6 +933,7 @@ public class SlothModel extends ComplexObstacle  {
         Texture managedFlowFarLeft = manager.get("texture/sloth/farleftflow.png");
         Texture managedFrontArmMoving = manager.get("texture/sloth/frontarm_moving.png");
         Texture managedBackArmMoving = manager.get("texture/sloth/backarm_moving.png");
+        Texture managedPowerGlow = manager.get("texture/sloth/power_glow.png");
         partTextures[0] = new TextureRegion(managedHand);
         partTextures[1] = new TextureRegion(managedFrontArm);
         partTextures[3] = new TextureRegion(managedBackArm);
@@ -847,6 +942,7 @@ public class SlothModel extends ComplexObstacle  {
         partTextures[5] = new TextureRegion(managedFlowFarLeft);
         partTextures[6] = new TextureRegion(managedFrontArmMoving);
         partTextures[7] = new TextureRegion(managedBackArmMoving);
+        partTextures[8] = new TextureRegion(managedPowerGlow);
 
         if (bodies.size == 0) {
             init();
@@ -891,13 +987,13 @@ public class SlothModel extends ComplexObstacle  {
                 }
 
                 // different textures for flow's arms if controlling
-                if (body_ind == 1) {
+                if (body_ind == PART_RIGHT_ARM) {
                     if (rightHori >= 0.15 || rightHori <= -0.15 || rightVert >= 0.15 || rightVert <= -0.15)
                         part.setTexture(partTextures[6]);
                     else
                         part.setTexture(partTextures[1]);
                 }
-                if (body_ind == 2) {
+                if (body_ind == PART_LEFT_ARM) {
                     if (leftHori >= 0.15 || leftHori <= -0.15 || leftVert >= 0.15 || leftVert <= -0.15)
                         part.setTexture(partTextures[7]);
                     else
@@ -905,33 +1001,14 @@ public class SlothModel extends ComplexObstacle  {
                 }
 
                 //If the body parts are from the right limb
-                if (body_ind == 3 || body_ind == 4) continue;
-//                Color LARA_COLOR = new Color(0,255,255,1);
-                if (body_ind == 1 || body_ind == 4) {
-                    // right limb
-                    if (controlMode == CONTROLS_ONE_ARM) {
-                        if ( (leftCanGrabOrIsGrabbing && isActualLeftGrab())
-                                || (!leftCanGrabOrIsGrabbing &&
-                                !isActualRightGrab()))
-                            part.draw(canvas, Color
-                                .WHITE);
-                        else part.draw(canvas, Color.BLACK);
-                    } else {
-                        part.draw(canvas, Color.WHITE);
-                    }
-                }
-                //If the body parts are from the left limb
-                else if (body_ind == 2 || body_ind == 3) {
+                if (body_ind == PART_LEFT_HAND || body_ind == PART_RIGHT_HAND) continue;
+                if (body_ind == PART_RIGHT_ARM) {
+//                    float rightPower = (float) Math.sqrt(getRightVert() * getRightVert() + getRightHori() * getRightHori());
+                    drawArm(canvas, part, (leftCanGrabOrIsGrabbing && isActualLeftGrab()) || (!leftCanGrabOrIsGrabbing && !isActualRightGrab()));
+                } else if (body_ind == PART_LEFT_ARM) {
                     // left limb
-                    if (controlMode == CONTROLS_ONE_ARM) {
-                        if ( (leftCanGrabOrIsGrabbing && !isActualLeftGrab())
-                                || (!leftCanGrabOrIsGrabbing && isActualRightGrab()))
-                            part.draw(canvas,
-                                Color.WHITE);
-                        else part.draw(canvas, Color.BLACK);
-                    } else {
-                        part.draw(canvas, Color.WHITE);
-                    }
+//                    float leftPower = (float) Math.sqrt(getLeftVert() * getLeftVert() + getLeftHori() * getLeftHori());
+                    drawArm(canvas, part, (leftCanGrabOrIsGrabbing && !isActualLeftGrab()) || (!leftCanGrabOrIsGrabbing && isActualRightGrab()));
                 }
                 //If the body parts are not limbs
                 else {
@@ -939,9 +1016,34 @@ public class SlothModel extends ComplexObstacle  {
                 }
             }
         }
-        //Commented out because the vine images disappear when this is used here?
-        //drawForces();
+    }
 
+    private void drawArm(GameCanvas canvas, BoxObstacle part, boolean active) {
+        if (controlMode == CONTROLS_ONE_ARM) {
+            if (active) {
+                part.draw(canvas, Color.WHITE);
+                // draw power halo
+                power = this.power;
+
+                Color tint = new Color(0,0,power,power / 2.5f);
+                Vector2 origin = part.getOrigin();
+                TextureRegion texture = partTextures[PART_POWER_GLOW];
+                Gdx.gl.glEnable(GL20.GL_BLEND);
+                Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+                if (texture != null) {
+                    float stretch = power * 1.5f;
+                    canvas.draw(texture,tint,origin.x,origin.y,part.getX()*drawScale.x,part.getY()*drawScale.y,part.getAngle(),
+                            (1.0f/texture.getRegionWidth()) * part.getWidth() * part.getDrawScale().x * part.getObjectScale().x * customScale.x*stretch,
+                            (1.0f/texture.getRegionHeight()  * part.getHeight()* part.getDrawScale().y * part.getObjectScale().y * customScale.y*stretch));
+                }
+                Gdx.gl.glDisable(GL20.GL_BLEND);
+
+            } else {
+                part.draw(canvas, Color.BLACK);
+            }
+        } else {
+            part.draw(canvas, Color.WHITE);
+        }
     }
 
     /**
@@ -949,6 +1051,7 @@ public class SlothModel extends ComplexObstacle  {
      * @param b
      */
     public void setOneGrab(boolean b) {
+        if (controlMode != CONTROLS_ONE_ARM) return;
         if (!didSafeGrab) {
             didOneArmCheck = true;
             grabbedEntity = false;
@@ -971,8 +1074,10 @@ public class SlothModel extends ComplexObstacle  {
      * @param world
      */
     public void setSafeGrab(boolean leftButtonPressed, Body leftCollisionBody, Body rightCollisionBody, World world) {
+        if (controlMode != CONTROLS_ONE_ARM) return;
         grabbedEntity = false;
         didSafeGrab = false;
+        releasedEntity = false;
         if (waitingForSafeRelease && leftButtonPressed) {
             return;
         }
@@ -983,6 +1088,7 @@ public class SlothModel extends ComplexObstacle  {
                     releaseLeft(world);
                     grab(world, rightCollisionBody, false);
                     didSafeGrab = true;
+                    releasedEntity = true;
                     waitingForSafeRelease = true;
                 }
             } else {
@@ -991,6 +1097,7 @@ public class SlothModel extends ComplexObstacle  {
                         releaseRight(world);
                         grab(world, leftCollisionBody, true);
                         didSafeGrab = true;
+                        releasedEntity = true;
                         waitingForSafeRelease = true;
                     }
                 }
@@ -1037,6 +1144,91 @@ public class SlothModel extends ComplexObstacle  {
         joints.add(joint);
     }
 
+    public void setPinned() {pinned = true;}
+
     public void setTutorial() {tutorial = true;}
+
+    public void drawHelpLines(GameCanvas canvas, Affine2 camTrans, int mode) {
+        if (tutorial) {
+            Obstacle left = bodies.get(PART_LEFT_HAND);
+            Obstacle right = bodies.get(PART_RIGHT_HAND);
+            Obstacle body = bodies.get(PART_BODY);
+
+            Vector2 lPos = left.getPosition();
+            Vector2 rPos = right.getPosition();
+            Vector2 bPos = body.getPosition();
+//            Vector2 arrow = lPos.cpy().sub(bPos);
+//            float lAngle = (float) Math.toDegrees(lTheta);
+//            float rAngle = (float) Math.toDegrees(rTheta);
+            float diag = ARMSPAN*(float)Math.cos(Math.PI/4);
+//            System.out.println("left: "+lAngle+" right: "+rAngle);
+            if(isActualLeftGrab() || isActualRightGrab()) {
+                if (isActualLeftGrab()) {
+                    if (!isActualRightGrab() || left.getX() < right.getX()) {
+                        switch(mode) {
+                            case SHIMMY_E:
+                                rPos = new Vector2(lPos.x+ARMSPAN,lPos.y);
+                                break;
+                            case SHIMMY_S:
+                                rPos = new Vector2(lPos.x,lPos.y-ARMSPAN);
+                                break;
+                            case SHIMMY_W:
+                                rPos = new Vector2(lPos.x-ARMSPAN,lPos.y);
+                                break;
+                            case SHIMMY_N:
+                                rPos = new Vector2(lPos.x,lPos.y+ARMSPAN);
+                                break;
+                            case SHIMMY_SE:
+                                rPos = new Vector2(lPos.x+diag,lPos.y-diag);
+                                break;
+                            case SHIMMY_SW:
+                                rPos = new Vector2(lPos.x-diag,lPos.y-diag);
+                                break;
+                            case SHIMMY_NW:
+                                rPos = new Vector2(lPos.x-diag, lPos.y+diag);
+                                break;
+                            case SHIMMY_NE:
+                                rPos = new Vector2(lPos.x+diag, lPos.y+diag);
+                        }
+//                        rPos = arrow.setAngle(0).add(bPos);
+                    }
+                } else {
+                    if (!isActualLeftGrab() || right.getX() < left.getX()) {
+                        switch(mode) {
+                            case SHIMMY_E:
+                                lPos = new Vector2(rPos.x+ARMSPAN,rPos.y);
+                                break;
+                            case SHIMMY_S:
+                                lPos = new Vector2(rPos.x,rPos.y-ARMSPAN);
+                                break;
+                            case SHIMMY_W:
+                                lPos = new Vector2(rPos.x-ARMSPAN,rPos.y);
+                                break;
+                            case SHIMMY_N:
+                                lPos = new Vector2(rPos.x,rPos.y+ARMSPAN);
+                                break;
+                            case SHIMMY_SE:
+                                lPos = new Vector2(rPos.x+diag,rPos.y-diag);
+                                break;
+                            case SHIMMY_SW:
+                                lPos = new Vector2(rPos.x-diag,rPos.y-diag);
+                                break;
+                            case SHIMMY_NW:
+                                lPos = new Vector2(rPos.x-diag, rPos.y+diag);
+                                break;
+                            case SHIMMY_NE:
+                                lPos = new Vector2(rPos.x+diag, rPos.y+diag);
+                        }
+                    }
+                }
+
+//                System.out.println("     left: "+lPos.angle()+" right: "+rPos.angle());
+                canvas.beginDebug(camTrans);
+                canvas.drawLine(bPos.x * drawScale.x, bPos.y * drawScale.y, lPos.x * drawScale.x, lPos.y * drawScale.y, Color.BLUE, Color.BLUE);
+                canvas.drawLine(bPos.x * drawScale.x, bPos.y * drawScale.y, rPos.x * drawScale.x, rPos.y * drawScale.y, Color.RED, Color.RED);
+                canvas.endDebug();
+            }
+        }
+    }
 }
 

@@ -170,6 +170,7 @@ public class InputController {
 	private float momentum;
 
 	/** An X-Box controller (if it is connected) */
+	@Getter
 	private XBox360Controller xbox;
 
 	/**
@@ -547,6 +548,7 @@ public class InputController {
 		rShiftKeyPressed = Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT) && !rShiftKeyPressed;
 		upKeyPressed = Gdx.input.isKeyPressed(Input.Keys.UP);
 		downKeyPressed = Gdx.input.isKeyPressed(Input.Keys.DOWN);
+		rightDPadPressed |= Gdx.input.isKeyPressed(Input.Keys.P);
 
 		crosshair.set(Gdx.input.getX(), Gdx.input.getY());
 		crosshair.scl(1/scale.x,-1/scale.y);

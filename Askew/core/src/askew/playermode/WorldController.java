@@ -193,7 +193,7 @@ public abstract class WorldController implements Screen {
 	public static final int WORLD_POSIT = 2;
 	
 	/** Width of the game world in Box2d units */
-	protected static final float DEFAULT_WIDTH  = 16.0f * 1.3f;
+	protected static final float DEFAULT_WIDTH  = 16.0f * 1.0f;
 	/** Height of the game world in Box2d units */
 	protected static final float DEFAULT_HEIGHT = DEFAULT_WIDTH * (9.f / 16.f);
 	/** The default value of gravity (going down) */
@@ -326,8 +326,8 @@ public abstract class WorldController implements Screen {
 	 */
 	public void setCanvas(GameCanvas canvas) {
 		this.canvas = canvas;
-		this.worldScale.x = 1.0f * (float)canvas.getWidth()/(float)bounds.getWidth();
-		this.worldScale.y = 1.0f * (float)canvas.getHeight()/(float)bounds.getHeight();
+		this.worldScale.x = 1.0f * (float)canvas.getWidth()/bounds.getWidth();
+		this.worldScale.y = 1.0f * (float)canvas.getHeight()/bounds.getHeight();
 	}
 	
 	/**
