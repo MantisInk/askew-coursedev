@@ -121,11 +121,11 @@ public class SlothModel extends ComplexObstacle  {
     private transient boolean releasedEntity;
     private transient boolean leftCanGrabOrIsGrabbing;
     private transient boolean didSafeGrab;
-    private boolean setLastGrabX;
-    private float lastGrabX;
+    private transient boolean setLastGrabX;
+    private transient float lastGrabX;
     private transient boolean dismembered;
-    private boolean didOneArmCheck;
-    private boolean waitingForSafeRelease;
+    private transient boolean didOneArmCheck;
+    private transient boolean waitingForSafeRelease;
     private transient boolean tutorial = false;
 
     /**
@@ -911,7 +911,7 @@ public class SlothModel extends ComplexObstacle  {
                 //If the body parts are from the right limb
                 if (body_ind == 3 || body_ind == 4) continue;
 //                Color LARA_COLOR = new Color(0,255,255,1);
-                if (body_ind == 1 || body_ind == 4) {
+                if (body_ind == 1) {
                     // right limb
                     if (controlMode == CONTROLS_ONE_ARM) {
                         if ( (leftCanGrabOrIsGrabbing && isActualLeftGrab())
@@ -925,7 +925,7 @@ public class SlothModel extends ComplexObstacle  {
                     }
                 }
                 //If the body parts are from the left limb
-                else if (body_ind == 2 || body_ind == 3) {
+                else if (body_ind == 2) {
                     // left limb
                     if (controlMode == CONTROLS_ONE_ARM) {
                         if ( (leftCanGrabOrIsGrabbing && !isActualLeftGrab())

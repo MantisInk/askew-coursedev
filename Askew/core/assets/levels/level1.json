@@ -4,6 +4,10 @@
   "goalTimeSilver": 45,
   "goalTimeBronze": 60,
   "recordTime": 9999999.0,
+  "maxX": 18.0,
+  "maxY": 20.0,
+  "minX": -4.0,
+  "minY": 6.0,
   "title": "level1",
   "background": "texture/background/background1.png",
   "soundtrack": "TODO",
@@ -32,7 +36,9 @@
         "lTheta": 0.0,
         "rTheta": 0.0,
         "setLastGrabX": false,
-        "lastGrabX": 0.0
+        "lastGrabX": 0.0,
+        "didOneArmCheck": false,
+        "waitingForSafeRelease": false
       }
     },
     {
@@ -49,7 +55,6 @@
       "INSTANCE": {
         "x": -4.0,
         "y": 10.9,
-        "thorn": false,
         "points": [
           0.0,
           0.0,
@@ -67,7 +72,6 @@
       "INSTANCE": {
         "x": -3.0,
         "y": 10.9,
-        "thorn": false,
         "points": [
           0.0,
           0.0,
