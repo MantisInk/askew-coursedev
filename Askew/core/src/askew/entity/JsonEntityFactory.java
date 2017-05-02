@@ -5,7 +5,9 @@ import askew.entity.ghost.GhostModel;
 import askew.entity.owl.OwlModel;
 import askew.entity.sloth.SlothModel;
 import askew.entity.thorn.ThornModel;
-import askew.entity.tree.*;
+import askew.entity.tree.PoleVault;
+import askew.entity.tree.StiffBranch;
+import askew.entity.tree.Trunk;
 import askew.entity.vine.Vine;
 import askew.entity.wall.WallModel;
 import com.badlogic.gdx.graphics.Texture;
@@ -136,7 +138,11 @@ public class JsonEntityFactory {
         float angle = instance.get("angle").getAsFloat();
         float scalex = instance.get("scalex").getAsFloat();
         float scaley = instance.get("scaley").getAsFloat();
-        String colorString = instance.get("color").getAsString();
+        String colorString;
+        try {colorString = instance.get("color").getAsString();}
+        catch(NullPointerException e){
+            colorString = "0xffffffff";
+        }
         int intColor;
         try {
             long color = instance.get("color").getAsLong();
