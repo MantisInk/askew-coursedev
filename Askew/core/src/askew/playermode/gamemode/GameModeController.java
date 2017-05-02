@@ -624,9 +624,9 @@ public class GameModeController extends WorldController {
 			}
 
 			// Play arm sound based on arm power
-			float slothPower = sloth.getPower();
-			SoundController.getInstance().setVolume("armmusic", slothPower * 0.2f);
-			SoundController.getInstance().setPitch("armmusic", 0.9f + slothPower * 0.9f);
+//			float slothPower = sloth.getPower();
+//			SoundController.getInstance().setVolume("armmusic", slothPower * 0.2f);
+//			SoundController.getInstance().setPitch("armmusic", 0.9f + slothPower * 0.9f);
 
 			// Play wind sound based on flow speed
 			float slothSpeed = sloth.getMainBody().getLinearVelocity().len();
