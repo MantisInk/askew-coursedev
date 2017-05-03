@@ -166,7 +166,7 @@ public class BackgroundEntity extends Entity{
         Texture tex = manager.get(texturePath);
         texture = new TextureRegion(tex);
         origin.set(texture.getRegionWidth()/2.0f, texture.getRegionHeight()/2.0f);
-        aspectRatio = texture.getRegionWidth()/texture.getRegionHeight();
+        aspectRatio =(float)tex.getWidth()/(float)tex.getHeight();
     }
 
     @Override
