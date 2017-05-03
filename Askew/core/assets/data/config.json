@@ -7,7 +7,7 @@
   "flowCanMoveGrabbingHand": true,
   "flowMovementMode": 0,
   "flowControlMode": 1,
-  "vineDensity": 3.0,
+  "vineDensity": 5.0,
   "fullscreen": false,
   "defaultLevel": "level1",
   "storeTimeRecords": false,
