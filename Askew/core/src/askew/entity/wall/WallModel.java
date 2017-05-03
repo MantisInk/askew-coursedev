@@ -65,7 +65,7 @@ public class WallModel extends PolygonObstacle {
             canvas.draw(region, Color.WHITE,0,0,getX()*drawScale.x,getY()*drawScale.y,getAngle(),1,1);
         }
 
-        // TODO: Still need to set scaling on y
+        // TODO: Still need to set scaling on y, determines how thick
         for (int i = 0; i < points.length; i += 2) {
             float x1 = points[i];
             float y1 = points[i+1];
@@ -76,7 +76,7 @@ public class WallModel extends PolygonObstacle {
                     + (drawScale.x * drawScale.x *(x2 - x1) * (x2 - x1))));
             canvas.draw(edgeTextureRegion, Color.WHITE, 0, edgeTextureRegion.getRegionHeight()/2,
                     (getX()+x1) * drawScale.x,(getY()+y1) * drawScale.y,
-                    (float)Math.atan2(y2-y1,x2-x1), 1,1);
+                    (float)Math.atan2(y2-y1,x2-x1), 1,40f/edgeTextureRegion.getRegionHeight());
         }
 
         // Draw corners
