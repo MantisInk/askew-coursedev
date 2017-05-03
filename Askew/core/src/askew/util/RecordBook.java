@@ -11,6 +11,7 @@ public class RecordBook {
 
     private static final String CONFIG_PATH = "levels/records.json";
     private static RecordBook instance;
+    private final float DEFAULT_COMPLETION_TIME = 9999999.0f;
 
     private JsonObject dataBlob;
 
@@ -30,6 +31,10 @@ public class RecordBook {
 
     private RecordBook() {
         dataBlob = new JsonObject();
+    }
+
+    public void addLevel(String lvlname) {
+        dataBlob.addProperty(lvlname, DEFAULT_COMPLETION_TIME);
     }
 
     public float getRecord(String lvlname) {
