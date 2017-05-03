@@ -9,7 +9,7 @@
   "minX": -1.0,
   "minY": 0.0,
   "title": "test_save_obstacle",
-  "background": "texture/background/purple.png",
+  "background": "texture/background/background1.png",
   "soundtrack": "TODO",
   "entities": [
     {
@@ -24,6 +24,21 @@
         "scalex": 1.0,
         "scaley": 1.0,
         "texturePath": "texture/background/sil2.png",
+        "color": -1
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": -1.6624999,
+        "y": -1.59375,
+        "width": 1.0,
+        "height": 1.0,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/foreground/fernTile.png",
         "color": -1
       }
     },

@@ -26,6 +26,7 @@ public class BackgroundEntity extends Entity{
 
     private transient TextureRegion texture;
     protected transient Vector2 origin;
+    protected transient float aspectRatio;
 
     protected transient  Vector2 positionCache = new Vector2();
     private transient Vector2 sizeCache = new Vector2();
@@ -165,7 +166,7 @@ public class BackgroundEntity extends Entity{
         Texture tex = manager.get(texturePath);
         texture = new TextureRegion(tex);
         origin.set(texture.getRegionWidth()/2.0f, texture.getRegionHeight()/2.0f);
-
+        aspectRatio = texture.getRegionWidth()/texture.getRegionHeight();
     }
 
     @Override
@@ -181,7 +182,7 @@ public class BackgroundEntity extends Entity{
     public void draw(GameCanvas canvas, Color tint) {
         if (texture != null) {
             canvas.drawBackgroundEntity(texture,tint,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y, getDepth(), getAngle(),
-                    (1.0f/texture.getRegionWidth()) *   getWidth() * getDrawScale().x * objectScale.x,
+                    (1.0f/texture.getRegionWidth()) *   getWidth() * getDrawScale().x * objectScale.x * aspectRatio,
                     (1.0f/texture.getRegionHeight()  * getHeight()* getDrawScale().y * objectScale.y), 1);
         }
     }
