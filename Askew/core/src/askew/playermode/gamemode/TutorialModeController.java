@@ -251,9 +251,13 @@ public class TutorialModeController extends GameModeController {
 					if (inRange(shimmySetPoints[inRangeSetPt+1])) {
 						inRangeSetPt++;
 					}
+					System.out.println(inRangeSetPt);
 					if (inRangeSetPt >= 0 && !shimmyGrabbed[inRangeSetPt]) {
 						shimmyGrabbed[inRangeSetPt] = checkGrabbedPt(shimmySetPoints[inRangeSetPt], shimmyDir[inRangeSetPt]);
 					}
+//					if (!shimmyGrabbed[inRangeSetPt+1]) {
+//						shimmyGrabbed[inRangeSetPt+1] = checkGrabbedPt(shimmySetPoints[inRangeSetPt+1], shimmyDir[inRangeSetPt+1]);
+//					}
 					break;
 				case STAGE_FLING:
 					if(inRangeSetPt+1 >= flingDir.length) { break; }
@@ -282,6 +286,7 @@ public class TutorialModeController extends GameModeController {
 
 	public boolean checkGrabbedPt(Vector2 setpt, int dir) {
 		// TODO: check if sloth grabbed pt
+//		System.out.print("setpt: ("+setpt.x+","+setpt.y+")   ");
 		Body rTarget, lTarget, tTarget, bTarget;
 		Vector2 rtPos, ltPos, ttPos, btPos;
 		boolean xrange = false;
@@ -292,7 +297,7 @@ public class TutorialModeController extends GameModeController {
 			rtPos = rTarget.getPosition();
 //			System.out.println("E: ("+rtPos.x+","+rtPos.y+")");
 
-			if (rtPos.x-0.03 >= setpt.x) { xrange = true; }
+			if (rtPos.x-0.05 >= setpt.x) { xrange = true; }
 			if (dir == SHIMMY_E && Math.abs(setpt.y-rtPos.y) <= 0.05) { yrange = true; }
 
 		} else if (dir == SHIMMY_W || dir == SHIMMY_SW || dir == SHIMMY_NW) {
@@ -301,7 +306,7 @@ public class TutorialModeController extends GameModeController {
 			ltPos = lTarget.getPosition();
 //			System.out.println("W: ("+ltPos.x+","+ltPos.y+")");
 
-			if (ltPos.x+0.03 <= setpt.x) { xrange = true;}
+			if (ltPos.x+0.05 <= setpt.x) { xrange = true;}
 			if (dir == SHIMMY_W && Math.abs(setpt.y-ltPos.y) <= 0.05) { yrange = true; }
 
 		} else if (dir == SHIMMY_S || dir == SHIMMY_SE || dir == SHIMMY_SW){
@@ -310,7 +315,7 @@ public class TutorialModeController extends GameModeController {
 			btPos = bTarget.getPosition();
 //			System.out.println("S: ("+btPos.x+","+btPos.y+")");
 
-			if (btPos.y+0.03 <= setpt.y) { yrange = true; }
+			if (btPos.y+0.05 <= setpt.y) { yrange = true; }
 			if (dir == SHIMMY_S && Math.abs(setpt.x - btPos.x) <= 0.05) { xrange = true; }
 
 		} else if (dir == SHIMMY_N || dir == SHIMMY_NE || dir == SHIMMY_NW) {
@@ -319,22 +324,25 @@ public class TutorialModeController extends GameModeController {
 			ttPos = tTarget.getPosition();
 //			System.out.println("N: ("+ttPos.x+","+ttPos.y+")");
 
-			if (ttPos.y-0.03 >= setpt.y) { yrange = true; }
+			if (ttPos.y-0.05 >= setpt.y) { yrange = true; }
 			if (dir == SHIMMY_N && Math.abs(setpt.x - ttPos.x) <= 0.05) { xrange = true; }
 		}
+
 		return xrange && yrange;
 	}
 
 	// checks if next set point is in range for changing arm help
 	public boolean inRange(Vector2 setpt) {
+		System.out.print("setpt: ("+setpt.x+","+setpt.y+")   ");
 		Body lTarget = sloth.getLeftTarget();
 		Body rTarget = sloth.getRightTarget();
 		Body lHand = sloth.getLeftHand();
 		Body rHand = sloth.getRightHand();
 
-		Vector2 bPos = sloth.getMainBody().getPosition();
+//		Vector2 bPos = sloth.getMainBody().getPosition();
 		Vector2 lhPos = lHand.getPosition();
 		Vector2 rhPos = rHand.getPosition();
+		Vector2 grabPos = new Vector2();
 
 		if (lTarget == null && rTarget == null) {
 			return false;
@@ -354,15 +362,17 @@ public class TutorialModeController extends GameModeController {
 				tAngle = (setpt.cpy().sub(rPos).angle()+360)%360;
 				aAngle = (lhPos.cpy().sub(rhPos).angle()+360) %360;
 
-				xrange = Math.abs(setpt.x - lPos.x) <= ARMSPAN;
-				yrange = Math.abs(setpt.y - lPos.y) <= ARMSPAN;
+				xrange = Math.abs(setpt.x - lPos.x) <= ARMSPAN+0.04f;
+				yrange = Math.abs(setpt.y - lPos.y) <= ARMSPAN+0.04f;
+				grabPos = lPos;
 			} else {
 				// move lh
 				tAngle = (setpt.cpy().sub(lPos).angle()+360)%360;
 				aAngle = (rhPos.cpy().sub(lhPos).angle()+360) %360;
 
-				xrange = Math.abs(setpt.x - rPos.x) <= ARMSPAN;
-				yrange = Math.abs(setpt.y - rPos.y) <= ARMSPAN;
+				xrange = Math.abs(setpt.x - rPos.x) <= ARMSPAN+0.04f;
+				yrange = Math.abs(setpt.y - rPos.y) <= ARMSPAN+0.04f;
+				grabPos = rPos;
 			}
 		}
 		if (lTarget != null) {
@@ -371,8 +381,9 @@ public class TutorialModeController extends GameModeController {
 			tAngle = (setpt.cpy().sub(lPos).angle()+360)%360;
 			aAngle = (rhPos.cpy().sub(lhPos).angle()+360) %360;
 
-			xrange = Math.abs(setpt.x - lPos.x) <= ARMSPAN;
-			yrange = Math.abs(setpt.y - lPos.y) <= ARMSPAN;
+			xrange = Math.abs(setpt.x - lPos.x) <= ARMSPAN+0.04f;
+			yrange = Math.abs(setpt.y - lPos.y) <= ARMSPAN+0.04f;
+			grabPos = lPos;
 		}
 		if (rTarget != null) {
 			// move rh
@@ -380,12 +391,13 @@ public class TutorialModeController extends GameModeController {
 			tAngle = (setpt.cpy().sub(rPos).angle()+360)%360;
 			aAngle = (lhPos.cpy().sub(rhPos).angle()+360) %360;
 
-			xrange = Math.abs(setpt.x - rPos.x) <= ARMSPAN;
-			yrange = Math.abs(setpt.y - rPos.y) <= ARMSPAN;
+			xrange = Math.abs(setpt.x - rPos.x) <= ARMSPAN+0.04f;
+			yrange = Math.abs(setpt.y - rPos.y) <= ARMSPAN+0.04f;
+			grabPos = rPos;
 		}
 
 		diff = (((aAngle - tAngle)%360)+360)%360;
-		System.out.println("aAngle "+aAngle+" tAngle "+tAngle+"  diff "+diff);
+//		System.out.println("aAngle "+aAngle+" tAngle "+tAngle+"  diff "+diff);
 		if (30 < diff && diff < 180) {
 			targetLine = MINUS30;
 		} else if (180 <= diff && diff < 330) {
@@ -393,9 +405,20 @@ public class TutorialModeController extends GameModeController {
 		} else {
 			targetLine = NEUTRAL;
 		}
-		System.out.println("target "+targetLine);
+//		System.out.println("target "+targetLine);
+		System.out.print("grabpt: ("+grabPos.x+","+grabPos.y+")   ");
+		checkCloseToCorner(setpt,grabPos);
 
 		return xrange && yrange;
+	}
+
+	public void checkCloseToCorner(Vector2 setpt, Vector2 grabpt) {
+		float xrange = (float) Math.abs(setpt.x - grabpt.x);
+		float yrange = (float) Math.abs(setpt.y - grabpt.y);
+		if(xrange < 0.08 && yrange < 0.08) {
+			shimmyGrabbed[inRangeSetPt+1] = true;
+			System.out.println("true");
+		}
 	}
 
 	public boolean moveToNextStage() {
