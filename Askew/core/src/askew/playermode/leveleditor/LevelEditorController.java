@@ -132,6 +132,7 @@ public class LevelEditorController extends WorldController {
 	private boolean dragging = false;
 	private boolean creating = false;
 	private boolean snapping = false;
+	private boolean movefar = false;
 	private GameModeController gmc;
 
 	private ButtonList buttons;
@@ -299,19 +300,23 @@ public class LevelEditorController extends WorldController {
 				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
 				"LEOptions", 0, "snapping"));
 
-		buttons.add(new Button(GUI_LEFT_BAR_MARGIN, 9 * GUI_LEFT_BAR_MARGIN,
+		buttons.add(new ToggleButton(GUI_LEFT_BAR_MARGIN, 7 * GUI_LEFT_BAR_MARGIN,
 				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
-				"Entity", 0, "edit"));
+				"LEOptions", 1, "move far"));
 
 		buttons.add(new Button(GUI_LEFT_BAR_MARGIN, 11 * GUI_LEFT_BAR_MARGIN,
 				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
-				"Entity", 1, "delete"));
+				"Entity", 0, "edit"));
 
 		buttons.add(new Button(GUI_LEFT_BAR_MARGIN, 13 * GUI_LEFT_BAR_MARGIN,
 				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
-				"Entity", 2, "copy"));
+				"Entity", 1, "delete"));
 
 		buttons.add(new Button(GUI_LEFT_BAR_MARGIN, 15 * GUI_LEFT_BAR_MARGIN,
+				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
+				"Entity", 2, "copy"));
+
+		buttons.add(new Button(GUI_LEFT_BAR_MARGIN, 17 * GUI_LEFT_BAR_MARGIN,
 				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
 				"Entity", 3, "deselect"));
 
@@ -392,7 +397,13 @@ public class LevelEditorController extends WorldController {
 		Vector2 mouse = new Vector2(adjustedMouseX, adjustedMouseY);
 		float minDistance = Float.MAX_VALUE;
 		for (Entity e : objects) {
-			float curDist = e.getPosition().dst(mouse);
+			Vector2 pos = e.getPosition();
+			if(selected instanceof BackgroundEntity){
+				if(movefar){
+					pos = getModifiedPosition(selected);
+				}
+			}
+			float curDist = pos.dst(mouse);
 			if (curDist < minDistance) {
 				found = e;
 				minDistance = curDist;
@@ -432,6 +443,11 @@ public class LevelEditorController extends WorldController {
 							ToggleButton t = ((ToggleButton)b);
 							t.setOn(!t.isOn());
 							snapping = t.isOn();
+							break;
+						case("move far"):
+							t = ((ToggleButton)b);
+							t.setOn(!t.isOn());
+							movefar = t.isOn();
 							break;
 						default:
 							break;
@@ -607,10 +623,15 @@ public class LevelEditorController extends WorldController {
 
 			}else{
 
+
 				dragging = true;
 				if(selected != null){
-
 					selected.setPosition(adjustedMouseX, adjustedMouseY);
+					if(selected instanceof BackgroundEntity){
+						if(movefar){
+							setModifiedPosition(selected, adjustedMouseX, adjustedMouseY);
+						}
+					}
 					selected.setTextures(getMantisAssetManager());
 				}else{
 
@@ -628,6 +649,11 @@ public class LevelEditorController extends WorldController {
 						dragging = false;
 						if (selected != null) {
 							selected.setPosition(adjustedMouseX, adjustedMouseY);
+							if(selected instanceof BackgroundEntity){
+								if(movefar){
+									setModifiedPosition(selected, adjustedMouseX, adjustedMouseY);
+								}
+							}
 							selected.setTextures(getMantisAssetManager());
 						}
 						if (creating) {
@@ -809,11 +835,18 @@ public class LevelEditorController extends WorldController {
 	}
 
 	private void drawEntityMenu(){
+		int numChildren = entityTree.current.children.size();
+
 		float margin = 18f;
 		float startx = GUI_LEFT_BAR_WIDTH + margin;
 		float starty = GUI_LOWER_BAR_HEIGHT - margin;
 		float sizex = 64f;
 		float sizey = 64f;
+
+		float oneUnit = sizex + margin;
+		float totalWidth = canvas.getWidth() - GUI_LEFT_BAR_WIDTH;
+		float widthMinusArrows = totalWidth - margin * 2;
+
 
 		float mousex = mouseX * worldScale.x;
 		float mousey = mouseY * worldScale.y;
@@ -841,7 +874,6 @@ public class LevelEditorController extends WorldController {
 			}
 			canvas.draw(tex ,Color.WHITE,0,0,x ,y,0,sizex /tex.getWidth(), sizey/tex.getHeight());
 			canvas.drawTextStandard(entityTree.current.children.get(i).name, x, y - 10f);
-
 
 		}
 
@@ -1294,4 +1326,5 @@ public class LevelEditorController extends WorldController {
 			mainFrame.setVisible(true);
 		}
 	}
+	//endregion
 }
