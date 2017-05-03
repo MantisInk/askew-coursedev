@@ -14,11 +14,9 @@
  */
 package askew.entity.tree;
 
-import askew.MantisAssetManager;
 import askew.entity.FilterGroup;
-import askew.entity.obstacle.*;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import askew.entity.obstacle.BoxObstacle;
+import askew.entity.obstacle.WheelObstacle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Filter;
@@ -32,29 +30,20 @@ import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
  * Note that this class returns to static loading.  That is because there are
  * no other subclasses that we might loop through.
  */
-public class PoleVault extends ComplexObstacle {
-
-	private transient int nLinks;
-	private static final String TRUNK_NAME = "trunk";			/** The debug name for the entire obstacle */
-	private static final String PLANK_NAME = "driftwood";		/** The debug name for each plank */
-	private static final String TRUNK_PIN_NAME = "pin";			/** The debug name for each anchor pin */
-	private static final float TRUNK_PIN_RADIUS = 0.1f;			/** The radius of each anchor pin */
-	private static final float BASIC_DENSITY = 13f;				/** The density of each plank in the bridge */
-
-	private transient WheelObstacle start = null;							/** pin the bottom of the pole vault */
-
-	/** The spacing between each link */
-	protected transient Vector2 dimension;						/** The size of the entire bridge */
-									/** starting coords of bottom anchor and length for branch */
-	protected float linksize;									/** The length of each link */
-
-	public transient Vector2 final_norm = null;					/** coords for starting branch off this trunk */
+public class PoleVault extends TreeParent {
 
 	public transient static final float DAMPING_ROTATION = 5f;	/** Set damping constant for joint rotation in vines */
+	private static final String TRUNK_PIN_NAME = "pin";			/** The debug name for each anchor pin */
+	private static final float TRUNK_PIN_RADIUS = 0.1f;			/** The radius of each anchor pin */
+	private transient WheelObstacle start = null;							/** pin the bottom of the pole vault */
+
+	/** starting coords of bottom anchor and length for branch */
+	protected transient Vector2 dimension;						/** The size of the entire bridge */
+	protected float linksize;									/** The length of each link */
+	public transient Vector2 final_norm = null;					/** coords for starting branch off this trunk */
 	protected transient Vector2 planksize;						/** The size of a single plank */
 	// TODO: Fix this from being public (refactor artifact) ?
 	private transient float spacing = 0.0f;						/** The spacing between each link */
-
 	protected float numLinks;									// param for json constructor
 
 	private float x,y,angle;
@@ -68,52 +57,28 @@ public class PoleVault extends ComplexObstacle {
 	 * @param x  		The x position of the left anchor
 	 * @param y  		The y position of the left anchor
 	 * @param length	The length of the trunk
-	 * @param lwidth	The plank thickness
-	 * @param lheight	The plank length
 	 *
 	 *
 	 */
-	public PoleVault(float x, float y, float length, float lwidth, float lheight, Vector2 scale) {
-		this(x, y, x, y+length, lwidth, lheight, 0f);
-		numLinks = length;
-		this.x = x;
-		this.y = y;
-		this.angle = 0f;
-		this.linksize = lheight;
-		this.setObjectScale(scale);
-	}
-
-	public PoleVault(float x, float y, float length, float lwidth, float lheight, Vector2 scale, float angle) {
-		this(x, y, x, y+length, lwidth, lheight,angle);
-		numLinks = length;
-		this.x = x;
-		this.y = y;
-		this.angle = angle;
-		this.linksize = lheight;
-		this.setObjectScale(scale);
-	}
-
-	/**
-	 * Creates a new tree trunk with the given anchors and other params.
-	 *
-	 * @param x0  		The x position of the left anchor
-	 * @param y0  		The y position of the left anchor
-	 * @param x1  		The x position of the right anchor
-	 * @param y1  		The y position of the right anchor
-	 * @param lwidth	The plank thickness
-	 * @param lheight	The plank length
-	 */
-	public PoleVault(float x0, float y0, float x1, float y1, float lwidth, float lheight, float angle) {
-		super(x0,y0);
-		this.angle = angle;
-		this.x = x0;	this.y = y0;	this.linksize = lheight;
+	public PoleVault(float x, float y, float length, Vector2 scale, float angle) {
+		super(x,y);
 		setName(TRUNK_NAME);
+		numLinks = length;
+		this.x = x;
+		this.y = y;
+		this.angle = angle;
+		this.linksize = lheight;
+		this.setObjectScale(scale);
+		setPosition(x,y);
+		build();
+	}
 
+	public void build(){
 		planksize = new Vector2(lwidth,linksize);
 		linksize = planksize.y;
 
 		// Compute the bridge length
-		dimension = new Vector2(x1-x0,y1-y0);
+		dimension = new Vector2(0,numLinks);
 		float length = dimension.len();
 		Vector2 norm = new Vector2(dimension);
 		norm.nor();
@@ -137,7 +102,7 @@ public class PoleVault extends ComplexObstacle {
 			float t = ii*(linksize+spacing) + linksize/2.0f;
 			pos.set(norm);
 			pos.scl(t);
-			pos.add(x0,y0);
+			pos.add(x,y);
 			BoxObstacle plank = new BoxObstacle(pos.x, pos.y, planksize.x, planksize.y);
 			plank.setName(PLANK_NAME+ii);
 			plank.setDensity(BASIC_DENSITY);
@@ -152,13 +117,6 @@ public class PoleVault extends ComplexObstacle {
 		}
 		final_norm = new Vector2(pos);
 		final_norm.add(0,linksize/2);
-	}
-	public void build(){}
-	public void rebuild(){}
-	public void rebuild(float x , float y){
-		this.x = x;
-		this.y = y;
-		rebuild();
 	}
 
 	/**
@@ -219,34 +177,10 @@ public class PoleVault extends ComplexObstacle {
 
 	public float getLinksize() {return linksize;}
 
-	/**
-	 * Destroys the physics Body(s) of this object if applicable,
-	 * removing them from the world.
-	 *
-	 * @param world Box2D world that stores body
-	 */
-	public void deactivatePhysics(World world) {
-		super.deactivatePhysics(world);
-	}
-
-	/**
-	 * Returns the texture for the individual planks
-	 *
-	 * @return the texture for the individual planks
-	 */
-	public TextureRegion getTexture() {
-		if (bodies.size == 0) {
-			return null;
-		}
-		return ((SimpleObstacle) bodies.get(0)).getTexture();
-	}
-
-	@Override
-	public void setTextures(MantisAssetManager manager) {
-		Texture managedTexture = manager.get("texture/branch/branch.png", Texture.class);
-		TextureRegion regionTexture = new TextureRegion(managedTexture);
-		for(Obstacle body : bodies) {
-			((SimpleObstacle)body).setTexture(regionTexture);
-		}
+	public void setPosition(float x, float y){
+		super.setPosition(x,y);
+		this.x = x;
+		this.y = y;
+//		rebuild();
 	}
 }
