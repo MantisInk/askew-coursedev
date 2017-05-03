@@ -66,7 +66,7 @@ public class WallModel extends PolygonObstacle {
         // Draw corners
         for (int i = 0; i < points.length; i+=2) {
             //TextureRegion region, Color tint, float ox, float oy,float x, float y, float angle, float sx, float sy)
-            canvas.draw(circleTextureRegion,Color.WHITE,circleTextureRegion.getRegionWidth()/2f,circleTextureRegion.getRegionHeight()/2f,(getX()+points[i])*drawScale.x,(getY()+points[i+1])*drawScale.y,0,edgeWidth/edgeTextureRegion.getRegionHeight(),edgeWidth/edgeTextureRegion.getRegionHeight());
+            canvas.draw(circleTextureRegion,Color.WHITE,circleTextureRegion.getRegionWidth()/2f,circleTextureRegion.getRegionHeight()/2f,(getX()+points[i])*drawScale.x,(getY()+points[i+1])*drawScale.y,0,edgeWidth/edgeTextureRegion.getRegionHeight()/2,edgeWidth/edgeTextureRegion.getRegionHeight()/2);
         }
 
         // Base draw
@@ -83,7 +83,7 @@ public class WallModel extends PolygonObstacle {
 
             edgeTextureRegion.setRegionWidth((int)Math.sqrt((drawScale.y * drawScale.y * (y2 - y1) * (y2 - y1))
                     + (drawScale.x * drawScale.x *(x2 - x1) * (x2 - x1))));
-            canvas.draw(edgeTextureRegion, Color.LIGHT_GRAY, 0, 0,
+            canvas.draw(edgeTextureRegion, Color.LIGHT_GRAY, 0, edgeTextureRegion.getRegionHeight()/2,
                     (getX()+x1) * drawScale.x,(getY()+y1) * drawScale.y,
                     (float)Math.atan2(y2-y1,x2-x1), 1,edgeWidth/edgeTextureRegion.getRegionHeight());
         }
