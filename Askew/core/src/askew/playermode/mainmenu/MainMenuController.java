@@ -139,8 +139,8 @@ public class MainMenuController extends WorldController {
         leftLeft = false;
         leftRight = false;
         MAX_LEVEL = GlobalConfiguration.getInstance().getAsInt("maxLevel");
-        control = (GlobalConfiguration.getInstance().getAsInt("flowControlMode") == 1) ? false : true;
-        grab = (GlobalConfiguration.getInstance().getAsInt("flowMovementMode") == 0) ? false : true;
+        control = GlobalConfiguration.getInstance().getAsInt("flowControlMode") != 1;
+        grab = GlobalConfiguration.getInstance().getAsInt("flowMovementMode") != 1;
     }
 
     @Override
