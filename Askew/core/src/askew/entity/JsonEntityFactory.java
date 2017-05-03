@@ -54,8 +54,7 @@ public class JsonEntityFactory {
         float y = instance.get("y").getAsFloat();
         float angle = instance.get("angle").getAsFloat();
         float numlinks = instance.get("numLinks").getAsFloat();
-        float linksize = instance.get("linksize").getAsFloat();
-        poleVault = new PoleVault(x, y, numlinks, 0.25f, linksize, new Vector2(1,1), angle);
+        poleVault = new PoleVault(x, y, numlinks, new Vector2(1,1), angle);
         poleVault.setTextures(manager);
         return poleVault;
     }
@@ -71,9 +70,9 @@ public class JsonEntityFactory {
         StiffBranch branch;
         float x = instance.get("x").getAsFloat();
         float y = instance.get("y").getAsFloat();
-        float stiff = instance.get("stiffLen").getAsFloat();
+        float stiff = instance.get("numLinks").getAsFloat();
         float angle = instance.get("angle").getAsFloat();
-        branch = new StiffBranch(x, y, stiff, 0.25f, 1f,new Vector2(1,1), angle);
+        branch = new StiffBranch(x, y, stiff, new Vector2(1,1), angle);
         branch.setTextures(manager);
         return branch;
     }

@@ -11,9 +11,6 @@
 package askew.playermode.leveleditor;
 
 import askew.*;
-import askew.GlobalConfiguration;
-import askew.InputController;
-import askew.MantisAssetManager;
 import askew.entity.BackgroundEntity;
 import askew.entity.Entity;
 import askew.entity.ghost.GhostModel;
@@ -31,6 +28,7 @@ import askew.playermode.gamemode.GameModeController;
 import askew.playermode.leveleditor.button.Button;
 import askew.playermode.leveleditor.button.ButtonList;
 import askew.playermode.leveleditor.button.ToggleButton;
+import askew.util.RecordBook;
 import askew.util.json.JSONLoaderSaver;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -38,10 +36,9 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.*;
-import com.google.gson.JsonArray;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.World;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
@@ -351,10 +348,10 @@ public class LevelEditorController extends WorldController {
 				entity = new Trunk(x,y, 5.0f, 0);
 				break;
 			case "PoleVault":
-				entity = new PoleVault(x,y, 5.0f, 0.25f, 1.0f, oneScale, 0);
+				entity = new PoleVault(x,y, 5.0f, oneScale, 0);
 				break;
 			case "StiffBranch":
-				entity = new StiffBranch(x,y, 3.0f, 0.25f, 1.0f,oneScale);
+				entity = new StiffBranch(x,y, 3.0f,oneScale, 0);
 				break;
 			case "OwlModel":
 				entity = new OwlModel(x,y);
@@ -1104,6 +1101,7 @@ public class LevelEditorController extends WorldController {
 			timeToSave.addEntity(o);
 		}
 		if (jsonLoaderSaver.saveLevel(timeToSave, currentLevel)) {
+			RecordBook.getInstance().resetRecord(currentLevel);
 			System.out.println("Saved!");
 		} else {
 			System.err.println("ERROR IN SAVE");

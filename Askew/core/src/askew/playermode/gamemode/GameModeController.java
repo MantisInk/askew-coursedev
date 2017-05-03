@@ -20,6 +20,7 @@ import askew.entity.owl.OwlModel;
 import askew.entity.sloth.SlothModel;
 import askew.playermode.WorldController;
 import askew.playermode.leveleditor.LevelModel;
+import askew.util.RecordBook;
 import askew.util.SoundController;
 import askew.util.json.JSONLoaderSaver;
 import com.badlogic.gdx.Gdx;
@@ -95,6 +96,7 @@ public class GameModeController extends WorldController {
 
 	protected float currentTime, recordTime;	// track current and record time to complete level
 	private boolean storeTimeRecords;
+	private RecordBook records = RecordBook.getInstance();
 
 	protected PhysicsController collisions;
 
@@ -369,7 +371,7 @@ public class GameModeController extends WorldController {
 		try {
 			levelModel = jsonLoaderSaver.loadLevel(loadLevel);
 			background = manager.get(levelModel.getBackground(), Texture.class);
-			recordTime = levelModel.getRecordTime();
+			recordTime = records.getRecord(loadLevel);
 			if (levelModel == null) {
 				levelModel = new LevelModel();
 			}
@@ -685,9 +687,8 @@ public class GameModeController extends WorldController {
 				victory = true;
 				playerIsReady = false;
 				float record = currentTime;
-				if (record < levelModel.getRecordTime() && storeTimeRecords) {
-					levelModel.setRecordTime(record);
-					if (jsonLoaderSaver.saveLevel(levelModel, loadLevel)) {
+				if (record < records.getRecord(loadLevel) && storeTimeRecords) {
+					if (records.setRecord(loadLevel, record)) {
 						System.out.println("New record time for this level!");
 					}
 				}
