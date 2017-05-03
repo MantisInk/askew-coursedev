@@ -70,7 +70,7 @@ public class JsonEntityFactory {
         StiffBranch branch;
         float x = instance.get("x").getAsFloat();
         float y = instance.get("y").getAsFloat();
-        float stiff = instance.get("stiffLen").getAsFloat();
+        float stiff = instance.get("numLinks").getAsFloat();
         float angle = instance.get("angle").getAsFloat();
         branch = new StiffBranch(x, y, stiff, new Vector2(1,1), angle);
         branch.setTextures(manager);
