@@ -172,6 +172,10 @@ public class InputController {
 	/** An X-Box controller (if it is connected) */
 	@Getter
 	private XBox360Controller xbox;
+	@Getter
+	private boolean altKeyPressed;
+	@Getter
+	private boolean dotKeyPressed;
 
 	/**
 	 * Returns the amount of sideways movement for the left arm.
@@ -523,6 +527,8 @@ public class InputController {
 		eKeyPressed = Gdx.input.isKeyPressed(Input.Keys.E) && !eKeyPrevious;
 		gKeyPressed = Gdx.input.isKeyPressed(Input.Keys.G) && !gKeyPrevious;
 		hKeyPressed = Gdx.input.isKeyPressed(Input.Keys.H) && !hKeyPrevious;
+		altKeyPressed = Gdx.input.isKeyPressed(Input.Keys.ALT_LEFT);
+		dotKeyPressed = Gdx.input.isKeyPressed(Input.Keys.PERIOD);
 
 		//Keypresses for toggling control schemes
 		oneKeyPressed = Gdx.input.isKeyPressed(Input.Keys.NUM_1);
@@ -545,7 +551,7 @@ public class InputController {
 		spaceKeyPressed = Gdx.input.isKeyPressed(Input.Keys.SPACE);
 
 		lShiftKeyPressed = Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) && !lShiftKeyPressed;
-		rShiftKeyPressed = Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT) && !rShiftKeyPressed;
+		rShiftKeyPressed = Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT);
 		upKeyPressed = Gdx.input.isKeyPressed(Input.Keys.UP);
 		downKeyPressed = Gdx.input.isKeyPressed(Input.Keys.DOWN);
 		rightDPadPressed |= Gdx.input.isKeyPressed(Input.Keys.P);

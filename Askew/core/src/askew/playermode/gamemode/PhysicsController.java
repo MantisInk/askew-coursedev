@@ -68,7 +68,7 @@ public class PhysicsController implements ContactListener {
         try {
             if(!(body1.getUserData() instanceof Obstacle) || !(body2.getUserData() instanceof Obstacle))
                 return;
-
+          
             Obstacle bd1 = (Obstacle)body1.getUserData();
             Obstacle bd2 = (Obstacle)body2.getUserData();
 
@@ -105,7 +105,6 @@ public class PhysicsController implements ContactListener {
                 }
 
                 if (other.getName() != null && (other.getName().equals("thorns") || other.getName().equals("ghost") )) {
-                    System.out.println("GG TODO KILL FLOW");
                     isFlowKill = true;
                 }
 
