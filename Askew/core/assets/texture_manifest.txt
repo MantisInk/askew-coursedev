@@ -39,6 +39,7 @@ texture/leveleditor/grey.png
 texture/leveleditor/placeholder.png
 texture/leveleditor/up.png
 texture/leveleditor/yellowbox.png
+texture/leveleditor/emleft.png
 texture/sloth/arm.png
 texture/sloth/backarm.png
 texture/sloth/backarm_moving.png
