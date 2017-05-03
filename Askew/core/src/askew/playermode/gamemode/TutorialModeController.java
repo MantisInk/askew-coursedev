@@ -79,6 +79,10 @@ public class TutorialModeController extends GameModeController {
 
 	// list of setpoints for drawing helplines
 	private int inRangeSetPt = -1;
+	private final int MINUS30 = -1;
+	private final int NEUTRAL = 0;
+	private final int PLUS30 = 1;
+	private int targetLine = PLUS30;
 	private Vector2[] shimmySetPoints = {
 			new Vector2(12f,14f),
 			new Vector2(12f,9f),
@@ -142,6 +146,7 @@ public class TutorialModeController extends GameModeController {
 		super.reset();
 		time = 0;
 		inRangeSetPt = -1;
+		targetLine = NEUTRAL;
 		for(int i = 0; i < shimmyGrabbed.length; i++)
 			shimmyGrabbed[i] = false;
 
@@ -319,33 +324,72 @@ public class TutorialModeController extends GameModeController {
 	public boolean inRange(Vector2 setpt) {
 		Body lTarget = sloth.getLeftTarget();
 		Body rTarget = sloth.getRightTarget();
+		Body lHand = sloth.getLeftHand();
+		Body rHand = sloth.getRightHand();
+
+		Vector2 bPos = sloth.getMainBody().getPosition();
+		Vector2 lhPos = lHand.getPosition();
+		Vector2 rhPos = rHand.getPosition();
+
 		if (lTarget == null && rTarget == null) {
 			return false;
 		}
 		Vector2 lPos, rPos;
 		boolean xrange = false;
 		boolean yrange = false;
+		float tAngle = 0f;
+		float aAngle = 0f;
+		float diff;
 		if (lTarget != null && rTarget != null) {
+			// if both hands grabbing
 			lPos = lTarget.getPosition();
 			rPos = rTarget.getPosition();
-			if(lPos.x < rPos.x) {
+			if(lPos.x > rPos.x) {
+				// move rh
+				tAngle = (setpt.cpy().sub(rPos).angle()+360)%360;
+				aAngle = (lhPos.cpy().sub(rhPos).angle()+360) %360;
+
 				xrange = Math.abs(setpt.x - lPos.x) <= ARMSPAN;
 				yrange = Math.abs(setpt.y - lPos.y) <= ARMSPAN;
 			} else {
+				// move lh
+				tAngle = (setpt.cpy().sub(lPos).angle()+360)%360;
+				aAngle = (rhPos.cpy().sub(lhPos).angle()+360) %360;
+
 				xrange = Math.abs(setpt.x - rPos.x) <= ARMSPAN;
 				yrange = Math.abs(setpt.y - rPos.y) <= ARMSPAN;
 			}
 		}
 		if (lTarget != null) {
+			// move lh
 			lPos = lTarget.getPosition();
+			tAngle = (setpt.cpy().sub(lPos).angle()+360)%360;
+			aAngle = (rhPos.cpy().sub(lhPos).angle()+360) %360;
+
 			xrange = Math.abs(setpt.x - lPos.x) <= ARMSPAN;
 			yrange = Math.abs(setpt.y - lPos.y) <= ARMSPAN;
 		}
 		if (rTarget != null) {
+			// move rh
 			rPos = rTarget.getPosition();
+			tAngle = (setpt.cpy().sub(rPos).angle()+360)%360;
+			aAngle = (lhPos.cpy().sub(rhPos).angle()+360) %360;
+
 			xrange = Math.abs(setpt.x - rPos.x) <= ARMSPAN;
 			yrange = Math.abs(setpt.y - rPos.y) <= ARMSPAN;
 		}
+
+		diff = (((aAngle - tAngle)%360)+360)%360;
+		System.out.println("aAngle "+aAngle+" tAngle "+tAngle+"  diff "+diff);
+		if (30 < diff && diff < 180) {
+			targetLine = MINUS30;
+		} else if (180 <= diff && diff < 330) {
+			targetLine = PLUS30;
+		} else {
+			targetLine = NEUTRAL;
+		}
+		System.out.println("target "+targetLine);
+
 		return xrange && yrange;
 	}
 
@@ -369,44 +413,55 @@ public class TutorialModeController extends GameModeController {
 					sloth.drawHelpLines(canvas, camTrans, SHIMMY_S);
 				break;
 			case STAGE_SHIMMY:
-				switch(inRangeSetPt) {
-					case 0:
-						if(!shimmyGrabbed[inRangeSetPt]){
-							sloth.drawHelpLines(canvas, camTrans, SHIMMY_SE);
-						} else {
-							sloth.drawHelpLines(canvas, camTrans, SHIMMY_S);
+				switch (targetLine) {
+					case PLUS30:
+						sloth.drawHelpLines(canvas, camTrans, PLUS_30);
+						break;
+					case MINUS30:
+						sloth.drawHelpLines(canvas, camTrans, MINUS_30);
+						break;
+					case NEUTRAL: {
+						switch (inRangeSetPt) {
+							case 0:
+								if (!shimmyGrabbed[inRangeSetPt]) {
+									sloth.drawHelpLines(canvas, camTrans, SHIMMY_SE);
+								} else {
+									sloth.drawHelpLines(canvas, camTrans, SHIMMY_S);
+								}
+								break;
+							case 1:
+								if (!shimmyGrabbed[inRangeSetPt]) {
+									sloth.drawHelpLines(canvas, camTrans, SHIMMY_SE);
+								} else {
+									sloth.drawHelpLines(canvas, camTrans, SHIMMY_E);
+								}
+								break;
+							case 2:
+								if (!shimmyGrabbed[inRangeSetPt]) {
+									sloth.drawHelpLines(canvas, camTrans, SHIMMY_NE);
+								} else {
+									sloth.drawHelpLines(canvas, camTrans, SHIMMY_N);
+								}
+								break;
+							case 3:
+								if (!shimmyGrabbed[inRangeSetPt]) {
+									sloth.drawHelpLines(canvas, camTrans, SHIMMY_NE);
+								} else {
+									sloth.drawHelpLines(canvas, camTrans, SHIMMY_E);
+								}
+								break;
+							case 4:
+								if (!shimmyGrabbed[inRangeSetPt]) {
+									sloth.drawHelpLines(canvas, camTrans, SHIMMY_SE);
+								} else {
+									sloth.drawHelpLines(canvas, camTrans, SHIMMY_E);
+								}
+								break;
+							default:
+								sloth.drawHelpLines(canvas, camTrans, SHIMMY_E);
 						}
 						break;
-					case 1:
-						if(!shimmyGrabbed[inRangeSetPt]){
-							sloth.drawHelpLines(canvas, camTrans, SHIMMY_SE);
-						} else {
-							sloth.drawHelpLines(canvas, camTrans, SHIMMY_E);
-						}
-						break;
-					case 2:
-						if(!shimmyGrabbed[inRangeSetPt]){
-							sloth.drawHelpLines(canvas, camTrans, SHIMMY_NE);
-						} else {
-							sloth.drawHelpLines(canvas, camTrans, SHIMMY_N);
-						}
-						break;
-					case 3:
-						if(!shimmyGrabbed[inRangeSetPt]){
-							sloth.drawHelpLines(canvas, camTrans, SHIMMY_NE);
-						} else {
-							sloth.drawHelpLines(canvas, camTrans, SHIMMY_E);
-						}
-						break;
-					case 4:
-						if(!shimmyGrabbed[inRangeSetPt]){
-							sloth.drawHelpLines(canvas, camTrans, SHIMMY_SE);
-						} else {
-							sloth.drawHelpLines(canvas, camTrans, SHIMMY_E);
-						}
-						break;
-					default:
-						sloth.drawHelpLines(canvas, camTrans, SHIMMY_E);
+					}
 				}
 				break;
 			case STAGE_FLING:
@@ -552,9 +607,9 @@ public class TutorialModeController extends GameModeController {
 		}
 
 		// draw instructional animations
-		canvas.begin();
-		drawInstructions();
-		canvas.end();
+//		canvas.begin();
+//		drawInstructions();
+//		canvas.end();
 
 		if (coverOpacity > 0) {
 			Gdx.gl.glEnable(GL20.GL_BLEND);
@@ -584,7 +639,7 @@ public class TutorialModeController extends GameModeController {
 
 	public void restart() {
 		//change back to 0
-		currentStage = 0;
+		currentStage = 2;
 	}
 
 }
