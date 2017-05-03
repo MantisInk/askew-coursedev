@@ -491,6 +491,7 @@ public class TutorialModeController extends GameModeController {
 		camTrans.translate(canvas.getWidth()/2,canvas.getHeight()/2);
 		canvas.getCampos().set( sloth.getBody().getPosition().x * worldScale.x
 				, sloth.getBody().getPosition().y * worldScale.y);
+
 		canvas.begin(camTrans);
 		Collections.sort(objects);
 		sloth.setTutorial();
