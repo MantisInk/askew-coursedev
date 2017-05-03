@@ -89,6 +89,8 @@ public class SlothModel extends ComplexObstacle  {
     public static final int SHIMMY_NW = 5;
     public static final int SHIMMY_N = 6;
     public static final int SHIMMY_NE = 7;
+    public static final int PLUS_30 = 8;
+    public static final int MINUS_30 = 9;
 
     /** Set damping constant for rotation of Flow's arms */
     private static final float ROTATION_DAMPING = 5f;
@@ -720,6 +722,10 @@ public class SlothModel extends ComplexObstacle  {
 
     public float getRTheta() {return rTheta;}
 
+    public Body getLeftHand() {return bodies.get(PART_LEFT_HAND).getBody();}
+
+    public Body getRightHand() {return bodies.get(PART_RIGHT_HAND).getBody();}
+
     public Body getLeftTarget() {return leftTarget;}
 
     public Body getRightTarget() {return rightTarget;}
@@ -1189,6 +1195,13 @@ public class SlothModel extends ComplexObstacle  {
                                 break;
                             case SHIMMY_NE:
                                 rPos = new Vector2(lPos.x+diag, lPos.y+diag);
+                                break;
+                            case PLUS_30:
+                                rPos = (rPos.cpy().sub(bPos)).rotate(30).add(bPos);
+                                break;
+                            case MINUS_30:
+                                rPos = (rPos.cpy().sub(bPos)).rotate(-30).add(bPos);
+                                break;
                         }
 //                        rPos = arrow.setAngle(0).add(bPos);
                     }
@@ -1218,10 +1231,17 @@ public class SlothModel extends ComplexObstacle  {
                                 break;
                             case SHIMMY_NE:
                                 lPos = new Vector2(rPos.x+diag, rPos.y+diag);
+                            case PLUS_30:
+                                lPos = (lPos.cpy().sub(bPos)).rotate(30).add(bPos);
+                                break;
+                            case MINUS_30:
+                                lPos = (lPos.cpy().sub(bPos)).rotate(-30).add(bPos);
+                                break;
                         }
                     }
                 }
-
+//                lPos = (lPos.cpy().sub(bPos)).rotate(30).add(bPos);
+//                rPos = (rPos.cpy().sub(bPos)).rotate(30).add(bPos);
 //                System.out.println("     left: "+lPos.angle()+" right: "+rPos.angle());
                 canvas.beginDebug(camTrans);
                 canvas.drawLine(bPos.x * drawScale.x, bPos.y * drawScale.y, lPos.x * drawScale.x, lPos.y * drawScale.y, Color.BLUE, Color.BLUE);
