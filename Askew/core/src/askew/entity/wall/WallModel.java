@@ -21,6 +21,7 @@ public class WallModel extends PolygonObstacle {
     public static final float WALL_FRICTION = 1.0f;
     public static final float WALL_RESTITUTION = 0.1f;
     TextureRegion circleTextureRegion;
+    TextureRegion edgeTextureRegion;
 
     // Instance variables
     private float x;
@@ -52,6 +53,7 @@ public class WallModel extends PolygonObstacle {
     public void setTextures(MantisAssetManager manager) {
         TextureRegion wallTextureRegion;
         wallTextureRegion = manager.getProcessedTextureMap().get(MantisAssetManager.WALL_TEXTURE);
+        edgeTextureRegion = manager.getProcessedTextureMap().get(MantisAssetManager.EDGE_TEXTURE);
         circleTextureRegion = new TextureRegion(manager.get("texture/wall/corner.png",Texture.class));
         setTexture(wallTextureRegion);
     }
@@ -64,6 +66,13 @@ public class WallModel extends PolygonObstacle {
         }
 
         // TODO: Draw edge texture
+        for (int i = 0; i < points.length; i += 2) {
+            float x1 = points[i];
+            float y1 = points[i+1];
+            float x2 = points[(i+2)%points.length];
+            float y2 = points[(i+3)%points.length];
+            canvas.draw(edgeTextureRegion,)
+        }
 
         // Draw corners
         for (int i = 0; i < points.length; i+=2) {
