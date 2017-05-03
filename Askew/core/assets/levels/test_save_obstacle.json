@@ -15,6 +15,21 @@
     {
       "CLASSNAME": "askew.entity.BackgroundEntity",
       "INSTANCE": {
+        "x": -194.99988,
+        "y": 407.8125,
+        "width": 5.0,
+        "height": 5.0,
+        "depth": 200.0,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/foreground/fernTile.png",
+        "color": -1
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
         "x": 8.0,
         "y": -4.0,
         "width": 15.0,
@@ -28,25 +43,10 @@
       }
     },
     {
-      "CLASSNAME": "askew.entity.BackgroundEntity",
-      "INSTANCE": {
-        "x": -1.6624999,
-        "y": -1.59375,
-        "width": 1.0,
-        "height": 1.0,
-        "depth": 1.5,
-        "angle": 0.0,
-        "scalex": 1.0,
-        "scaley": 1.0,
-        "texturePath": "texture/background/foreground/fernTile.png",
-        "color": -1
-      }
-    },
-    {
       "CLASSNAME": "askew.entity.sloth.SlothModel",
       "INSTANCE": {
-        "x": 3.0874996,
-        "y": 1.2390628,
+        "x": 2.5250006,
+        "y": 1.828125,
         "lTheta": 0.0,
         "rTheta": 0.0
       }
