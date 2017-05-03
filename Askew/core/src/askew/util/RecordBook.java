@@ -46,6 +46,16 @@ public class RecordBook {
         }
     }
 
+    public void resetRecord(String lvlname) {
+        try {
+            dataBlob.remove(lvlname);
+            dataBlob.addProperty(lvlname, DEFAULT_COMPLETION_TIME);
+        } catch (NullPointerException e) {
+            System.err.print("Level record doesn't exist!");
+            dataBlob.addProperty(lvlname, DEFAULT_COMPLETION_TIME);
+        }
+    }
+
     public boolean setRecord(String lvlname, float record) {
         try {
             dataBlob.remove(lvlname);

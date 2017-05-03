@@ -28,6 +28,7 @@ import askew.playermode.gamemode.GameModeController;
 import askew.playermode.leveleditor.button.Button;
 import askew.playermode.leveleditor.button.ButtonList;
 import askew.playermode.leveleditor.button.ToggleButton;
+import askew.util.RecordBook;
 import askew.util.json.JSONLoaderSaver;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -1072,6 +1073,7 @@ public class LevelEditorController extends WorldController {
 			timeToSave.addEntity(o);
 		}
 		if (jsonLoaderSaver.saveLevel(timeToSave, currentLevel)) {
+			RecordBook.getInstance().resetRecord(currentLevel);
 			System.out.println("Saved!");
 		} else {
 			System.err.println("ERROR IN SAVE");
