@@ -71,7 +71,6 @@ public class WallModel extends PolygonObstacle {
             float y1 = points[i+1];
             float x2 = points[(i+2)%points.length];
             float y2 = points[(i+3)%points.length];
-            canvas.draw(edgeTextureRegion,)
         }
 
         // Draw corners
