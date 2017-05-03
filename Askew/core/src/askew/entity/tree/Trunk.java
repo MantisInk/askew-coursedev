@@ -33,12 +33,6 @@ import lombok.Setter;
  */
 public class Trunk extends TreeParent{
 
-	private static final String TRUNK_NAME = "trunk";			/** The debug name for the entire obstacle */
-	private static final String PLANK_NAME = "driftwood";		/** The debug name for each plank */
-	private static final float BASIC_DENSITY = 13f;				/** The density of each plank in the bridge */
-	private static final float lwidth = .25f;
-	private static final float lheight = 1.0f;
-
 	/** The spacing between each link */
 	protected transient Vector2 dimension;						/** The size of the entire bridge */
 

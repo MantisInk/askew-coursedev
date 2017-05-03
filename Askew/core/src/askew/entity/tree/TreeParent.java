@@ -31,7 +31,7 @@ import com.badlogic.gdx.physics.box2d.World;
  */
 public abstract class TreeParent extends ComplexObstacle {
 
-	private static final String TRUNK_NAME = "trunk";			/** The debug name for the entire obstacle */
+	protected static final String TRUNK_NAME = "trunk";			/** The debug name for the entire obstacle */
 	protected static final String PLANK_NAME = "driftwood";		/** The debug name for each plank */
 	protected static final float BASIC_DENSITY = 13f;				/** The density of each plank in the bridge */
 	protected static final float lwidth = .25f;
@@ -60,7 +60,7 @@ public abstract class TreeParent extends ComplexObstacle {
 
 
 	public TreeParent(float x, float y) {
-		setName(TRUNK_NAME);
+//		setName(TRUNK_NAME);
 //		numLinks = length;
 //		this.x = x;
 //		this.y = y;
