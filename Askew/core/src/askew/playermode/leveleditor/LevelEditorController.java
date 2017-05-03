@@ -136,6 +136,7 @@ public class LevelEditorController extends WorldController {
 
 	private ButtonList buttons;
 	private boolean didLoad;
+	private boolean released;
 
 
 	private boolean prompting;
@@ -264,6 +265,7 @@ public class LevelEditorController extends WorldController {
 
 		pressedL = false;
 		prevPressedL = false;
+		released = true;
 		if (didLoad) makeGuiWindow();
 	}
 
@@ -605,19 +607,55 @@ public class LevelEditorController extends WorldController {
 
 			}else if(mouseY * worldScale.y <= GUI_LOWER_BAR_HEIGHT){
 
-			}else{
-
+			} else {
 				dragging = true;
 				if(selected != null){
-
 					selected.setPosition(adjustedMouseX, adjustedMouseY);
 					selected.setTextures(getMantisAssetManager());
 				}else{
+					// find nearest wall, custom entity query
+					float dist = Float.MAX_VALUE;
+					WallModel wm = null;
+					float bdx = 0;
+					float bdy = 0;
+					for (Entity e : objects) {
+						if (e instanceof WallModel) {
+							WallModel eWall = (WallModel) e;
+							float dx = (eWall.getModelX() - adjustedMouseX);
+							float dy = (eWall.getModelY() - adjustedMouseY);
+							float newDst = (float) Math.sqrt(dx*dx + dy*dy);
+							if (newDst < dist) {
+								dist = newDst;
+								wm = eWall;
+								bdx = dx;
+								bdy = dy;
+							}
+						}
+					}
 
+					bdx = -bdx;
+					bdy = -bdy;
+					if (wm != null && released) {
+						if (InputControllerManager.getInstance().getController(0).isAltKeyPressed()) {
+							// pinch move
+							wm.pinchMove(bdx,bdy);
+//							released = false;
+						} else if (InputControllerManager.getInstance().getController(0).isDotKeyPressed()) {
+							// delete
+							wm.pinchDelete(bdx,bdy);
+							released = false;
+
+						} else if (InputControllerManager.getInstance().getController(0).isRShiftKeyPressed()) {
+							// pinch create
+							wm.pinchCreate(bdx,bdy);
+							released = false;
+						}
+					}
 				}
 			}
 		}
 		if(InputControllerManager.getInstance().getController(0).didLeftRelease()){
+			released= true;
 			if(mouseX* worldScale.x <= GUI_LEFT_BAR_WIDTH ){
 
 			}else if(mouseY * worldScale.y <= GUI_LOWER_BAR_HEIGHT){
