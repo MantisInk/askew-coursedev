@@ -22,8 +22,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
-import lombok.Getter;
-import lombok.Setter;
 
 /**
  * A tree trunk with planks connected by weld joints.
@@ -42,14 +40,14 @@ public abstract class TreeParent extends ComplexObstacle {
 	/** The spacing between each link */
 	protected transient Vector2 dimension;						/** The size of the entire bridge */
 
-	@Getter @Setter
-	protected float x;
-	@Getter @Setter
-	protected float y;
-	@Getter @Setter
-	protected float angle;
-	@Getter @Setter
-	protected float numLinks;									// param for json constructor
+//	@Getter @Setter
+//	private transient float x;
+//	@Getter @Setter
+//	private transient float y;
+//	@Getter @Setter
+//	private transient float angle;
+//	@Getter @Setter
+//	private transient float numLinks;									// param for json constructor
 
 
 	public transient Vector2 final_norm = null;					/** coords for starting branch off this trunk */
@@ -61,14 +59,14 @@ public abstract class TreeParent extends ComplexObstacle {
 
 
 
-	public TreeParent(float x, float y, float length, float angle) {
+	public TreeParent(float x, float y) {
 		setName(TRUNK_NAME);
-		numLinks = length;
-		this.x = x;
-		this.y = y;
-		this.angle = angle;
-		setPosition(x,y);
-		build();
+//		numLinks = length;
+//		this.x = x;
+//		this.y = y;
+//		this.angle = angle;
+//		setPosition(x,y);
+//		build();
 	}
 
 	public abstract void build();
@@ -76,12 +74,6 @@ public abstract class TreeParent extends ComplexObstacle {
 	public void rebuild(){
 		bodies.clear();
 		build();
-	}
-
-	public void setPosition(float x, float y){
-		super.setPosition(x,y);
-		this.x = x;
-		this.y = y;
 	}
 
 	/**

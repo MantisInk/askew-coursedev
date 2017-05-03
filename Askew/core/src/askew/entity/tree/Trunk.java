@@ -14,15 +14,14 @@
  */
 package askew.entity.tree;
 
-import askew.MantisAssetManager;
 import askew.entity.FilterGroup;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.math.*;
-import com.badlogic.gdx.graphics.g2d.*;
-import com.badlogic.gdx.physics.box2d.*;
-import com.badlogic.gdx.physics.box2d.joints.*;
-
-import askew.entity.obstacle.*;
+import askew.entity.obstacle.BoxObstacle;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.Filter;
+import com.badlogic.gdx.physics.box2d.Joint;
+import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -32,7 +31,7 @@ import lombok.Setter;
  * Note that this class returns to static loading.  That is because there are
  * no other subclasses that we might loop through.
  */
-public class Trunk extends ComplexObstacle {
+public class Trunk extends TreeParent{
 
 	private static final String TRUNK_NAME = "trunk";			/** The debug name for the entire obstacle */
 	private static final String PLANK_NAME = "driftwood";		/** The debug name for each plank */
@@ -60,9 +59,8 @@ public class Trunk extends ComplexObstacle {
 	private transient float spacing = 0.0f;						/** The spacing between each link */
 
 
-
-
 	public Trunk(float x, float y, float length, float angle) {
+		super(x,y);
 		setName(TRUNK_NAME);
 		numLinks = length;
 		this.x = x;
@@ -115,19 +113,6 @@ public class Trunk extends ComplexObstacle {
 		}
 		final_norm = new Vector2(pos);
 		final_norm.add(0,lheight/2);
-
-
-	}
-	public void rebuild(){
-		bodies.clear();
-		build();
-	}
-
-	public void setPosition(float x, float y){
-		super.setPosition(x,y);
-		this.x = x;
-		this.y = y;
-		rebuild();
 	}
 
 	/**
@@ -169,24 +154,9 @@ public class Trunk extends ComplexObstacle {
 		return true;
 	}
 
-	/**
-	 * Returns the texture for the individual planks
-	 *
-	 * @return the texture for the individual planks
-	 */
-	public TextureRegion getTexture() {
-		if (bodies.size == 0) {
-			return null;
-		}
-		return ((BoxObstacle) bodies.get(0)).getTexture();
-	}
-
-	@Override
-	public void setTextures(MantisAssetManager manager) {
-		Texture managedTexture = manager.get("texture/branch/branch.png", Texture.class);
-		TextureRegion regionTexture = new TextureRegion(managedTexture);
-		for(Obstacle body : bodies) {
-			((BoxObstacle)body).setTexture(regionTexture);
-		}
+	public void setPosition(float x, float y){
+		super.setPosition(x,y);
+		this.x = x;
+		this.y = y;
 	}
 }
