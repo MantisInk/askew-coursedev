@@ -27,6 +27,7 @@ import askew.playermode.WorldController;
 import askew.playermode.gamemode.GameModeController;
 import askew.playermode.leveleditor.button.Button;
 import askew.playermode.leveleditor.button.ButtonList;
+import askew.playermode.leveleditor.button.MenuArrowButton;
 import askew.playermode.leveleditor.button.ToggleButton;
 import askew.util.RecordBook;
 import askew.util.json.JSONLoaderSaver;
@@ -299,7 +300,7 @@ public class LevelEditorController extends WorldController {
 		buttons.add(new Button(GUI_LEFT_BAR_MARGIN, 3 * GUI_LEFT_BAR_MARGIN,
 				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
 				"JSON", 1, "globalconfig"));
-		
+
 		buttons.add(new ToggleButton(GUI_LEFT_BAR_MARGIN, 5 * GUI_LEFT_BAR_MARGIN,
 				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
 				"LEOptions", 0, "snapping"));
@@ -323,6 +324,10 @@ public class LevelEditorController extends WorldController {
 		buttons.add(new Button(GUI_LEFT_BAR_MARGIN, 19 * GUI_LEFT_BAR_MARGIN,
 				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
 				"Entity", 4, "deselect"));
+
+		buttons.add(new MenuArrowButton(GUI_LEFT_BAR_WIDTH, 0,
+				32f, GUI_LOWER_BAR_HEIGHT,
+				"EntityMenu", 0, "LEFT", 0,true));
 
 	}
 
@@ -872,7 +877,7 @@ public class LevelEditorController extends WorldController {
 		int numChildren = entityTree.current.children.size();
 
 		float margin = 18f;
-		float startx = GUI_LEFT_BAR_WIDTH + margin;
+		float startx = GUI_LEFT_BAR_WIDTH + margin + 32;
 		float starty = GUI_LOWER_BAR_HEIGHT - margin;
 		float sizex = 64f;
 		float sizey = 64f;
