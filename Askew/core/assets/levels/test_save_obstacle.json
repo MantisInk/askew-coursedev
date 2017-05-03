@@ -90,6 +90,15 @@
         "omega": 0.0,
         "pin": false
       }
+    },
+    {
+      "CLASSNAME": "askew.entity.thorn.ThornModel",
+      "INSTANCE": {
+        "x": 3.0,
+        "y": -5.0,
+        "width": 5.0,
+        "angle": 45.0
+      }
     }
   ]
 }
