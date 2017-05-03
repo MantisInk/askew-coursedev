@@ -214,7 +214,7 @@ public class LevelEditorController extends WorldController {
 	public LevelEditorController(GameModeController gmc) {
 //		super(36,18,0); I want this scale but for the sake of alpha:
 		super(DEFAULT_WIDTH,DEFAULT_HEIGHT,0);
-		jsonLoaderSaver = new JSONLoaderSaver();
+		jsonLoaderSaver = new JSONLoaderSaver(false);
 		entityTree = new EntityTree();
 		buttons = new ButtonList();
 		currentLevel = "test_save_obstacle";
