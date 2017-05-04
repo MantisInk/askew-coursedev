@@ -100,10 +100,10 @@ public class TutorialModeController extends GameModeController {
 			new Vector2(16f, 14f),
 			new Vector2(24f, 14f)  };
 	private Vector2[] flingLandPoints0 = {
-			new Vector2(6.5f, 16f),
-			new Vector2(12.5f, 14f),
-			new Vector2(21.5f, 14f),
-			new Vector2(26f, 17f)
+			new Vector2(-2f, 12f),
+			new Vector2(5f, 14f),
+			new Vector2(13f, 12f),
+			new Vector2(19f, 11.5f)
 	};
 	private Vector2[] flingLandPointsf = {
 			new Vector2(6.5f, 16f),
@@ -165,8 +165,11 @@ public class TutorialModeController extends GameModeController {
 		inRangeSetPt = -1;
 		targetLine = NEUTRAL;
 		angleDiff = 0f;
+		swing = false;
 		for(int i = 0; i < shimmyGrabbed.length; i++)
 			shimmyGrabbed[i] = false;
+		for(int i = 0; i < flingGrabbed.length; i++)
+			flingGrabbed[i] = false;
 
 		joystickTexture = joystickAnimation.getKeyFrame(0);
 		bumperLTexture = bumperLAnimation.getKeyFrame(0);
@@ -285,7 +288,16 @@ public class TutorialModeController extends GameModeController {
 					}
 					System.out.println(inRangeSetPt);
 					if (inRangeSetPt < flingGrabbed.length-1 && !flingGrabbed[inRangeSetPt+1]) {
-						flingGrabbed[inRangeSetPt+1] = inRange(flingLandPoints0[inRangeSetPt+1]);
+						inRange(flingLandPoints0[inRangeSetPt+1]);
+						if(!setUpToFling()) {
+							swing = readyToFling();
+						}
+						if (!swing) {
+							flingGrabbed[inRangeSetPt + 1] = inRange(flingLandPointsf[inRangeSetPt + 1]);
+							if (flingGrabbed[inRangeSetPt + 1]) {
+								swing = false;
+							}
+						}
 //						System.out.println(flingGrabbed[inRangeSetPt+1]);
 					}
 					break;
@@ -416,8 +428,8 @@ public class TutorialModeController extends GameModeController {
 			targetLine = PLUS30;
 		} else {
 			targetLine = NEUTRAL;
-			angleDiff = diff;
 		}
+		angleDiff = diff;
 		checkCloseToCorner(setpt,grabPos);
 		return xrange && yrange;
 	}
@@ -429,6 +441,16 @@ public class TutorialModeController extends GameModeController {
 			shimmyGrabbed[inRangeSetPt+1] = true;
 			System.out.println("true");
 		}
+	}
+
+	public boolean setUpToFling() {
+		System.out.println(angleDiff);
+		return angleDiff < 0.05f;
+	}
+
+	public boolean readyToFling() {
+		System.out.println(sloth.getMainBody().getAngularVelocity());
+		return sloth.getMainBody().getAngularVelocity() > 100;
 	}
 
 	public boolean moveToNextStage() {
@@ -630,7 +652,7 @@ public class TutorialModeController extends GameModeController {
 
 	public void restart() {
 		//change back to 0
-		currentStage = 0;
+		currentStage = 3;
 	}
 
 }
