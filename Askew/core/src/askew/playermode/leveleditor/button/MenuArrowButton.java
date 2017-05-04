@@ -33,7 +33,6 @@ public class MenuArrowButton extends Button{
             }
 
             canvas.draw(textureRegion, Color.WHITE,0,0, x, y, width, height);
-            canvas.drawTextStandard(name, x + 10 ,y + height);
         }
     }
 

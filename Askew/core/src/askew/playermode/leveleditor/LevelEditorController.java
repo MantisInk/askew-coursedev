@@ -120,6 +120,7 @@ public class LevelEditorController extends WorldController {
 	public static final float GUI_LOWER_BAR_HEIGHT = 200.f;
 	public static final float GUI_LEFT_BAR_WIDTH = 200.f;
 	public static final float GUI_LEFT_BAR_MARGIN = 16f;
+	public static final float GUI_EMARROW_WIDTH = 32f;
 
 	public float MAX_SNAP_DISTANCE = 1f;
 	public float CAMERA_PAN_SPEED = 20f;
@@ -132,6 +133,10 @@ public class LevelEditorController extends WorldController {
 	private boolean creating = false;
 	private boolean snapping = false;
 	private boolean movefar = false;
+	private int entitiesPerPage;
+
+	private int entityMenuPage = 0;
+
 	private GameModeController gmc;
 
 	private ButtonList buttons;
@@ -326,8 +331,12 @@ public class LevelEditorController extends WorldController {
 				"Entity", 4, "deselect"));
 
 		buttons.add(new MenuArrowButton(GUI_LEFT_BAR_WIDTH, 0,
-				32f, GUI_LOWER_BAR_HEIGHT,
-				"EntityMenu", 0, "LEFT", 0,true));
+				GUI_EMARROW_WIDTH, GUI_LOWER_BAR_HEIGHT,
+				"EntityMenu", 0, "left", 0,true));
+
+		buttons.add(new MenuArrowButton(canvas.getWidth()-GUI_EMARROW_WIDTH, 0,
+				GUI_EMARROW_WIDTH, GUI_LOWER_BAR_HEIGHT,
+				"EntityMenu", 0, "right", 0,false));
 
 	}
 
@@ -393,6 +402,20 @@ public class LevelEditorController extends WorldController {
 						default:
 							break;
 					}
+				case("EntityMenu"):
+					switch (b.getName()){
+						case("left"):
+							entityMenuPage--;
+							entityMenuPage = entityMenuPage % ((int)(entityTree.current.children.size()/entitiesPerPage)+1);
+							break;
+						case("right"):
+							entityMenuPage++;
+							entityMenuPage = entityMenuPage % ((int)(entityTree.current.children.size()/entitiesPerPage)+1);
+							break;
+						default:
+							break;
+					}
+					break;
 				default:
 					break;
 			}
@@ -597,6 +620,7 @@ public class LevelEditorController extends WorldController {
 					if (button == -2) {
 						//do nothing
 					} else if (button == -1) {
+						entityMenuPage = 0;
 						if (entityTree.current.parent != null) {
 							entityTree.upFolder();
 							creating = false;
@@ -604,6 +628,7 @@ public class LevelEditorController extends WorldController {
 						}
 					} else {
 						if (!entityTree.current.children.get(button).isLeaf) {
+							entityMenuPage = 0;
 							entityTree.setCurrent(entityTree.current.children.get(button));
 							creating = false;
 							selected = null;
@@ -692,13 +717,13 @@ public class LevelEditorController extends WorldController {
 				if(selected != null){
 					if(dragging) {
 						dragging = false;
-						if (selected != null) {
-							selected.setPosition(adjustedMouseX, adjustedMouseY);
-							if(movefar){
-								selected.setModifiedPosition( adjustedMouseX, adjustedMouseY, adjustedCxCamera, adjustedCyCamera);
-							}
-							selected.setTextures(getMantisAssetManager());
+
+						selected.setPosition(adjustedMouseX, adjustedMouseY);
+						if(movefar){
+							selected.setModifiedPosition( adjustedMouseX, adjustedMouseY, adjustedCxCamera, adjustedCyCamera);
 						}
+						selected.setTextures(getMantisAssetManager());
+
 						if (creating) {
 							promptTemplate(selected);
 						}
@@ -851,7 +876,7 @@ public class LevelEditorController extends WorldController {
 
 	private int getEntityMenuButton(float mousex, float mousey){
 		float margin = 18f;
-		float startx = GUI_LEFT_BAR_WIDTH + margin;
+		float startx = GUI_LEFT_BAR_WIDTH + margin + GUI_EMARROW_WIDTH;
 		float starty = GUI_LOWER_BAR_HEIGHT - margin;
 		float sizex = 64f;
 		float sizey = 64f;
@@ -860,11 +885,19 @@ public class LevelEditorController extends WorldController {
 			return -1;
 		}
 
-		for(int i = 0; i < entityTree.current.children.size(); i++) {
-			float x = startx + ((i + 1) * (sizex + margin));
-			float y = starty - sizey;
+		float x;
+		float y;
+		for(int i = 0; i < entitiesPerPage; i++) {
+			if(i < (entitiesPerPage/2)+1) {
+				x = startx + ((i + 1) * (sizex + margin));
+				y = starty - sizey;
+			}
+			else{
+				x = startx + ((i - (entitiesPerPage/2)+1) * (sizex + margin));
+				y = starty - sizey - margin - sizey;
+			}
 			if (inBounds(mousex, mousey, x, y, sizex, sizey)) {
-				return i;
+				return i  + entitiesPerPage * entityMenuPage;
 			}
 
 		}
@@ -877,42 +910,64 @@ public class LevelEditorController extends WorldController {
 		int numChildren = entityTree.current.children.size();
 
 		float margin = 18f;
-		float startx = GUI_LEFT_BAR_WIDTH + margin + 32;
+		float startx = GUI_LEFT_BAR_WIDTH + margin + GUI_EMARROW_WIDTH;
 		float starty = GUI_LOWER_BAR_HEIGHT - margin;
 		float sizex = 64f;
 		float sizey = 64f;
 
 		float oneUnit = sizex + margin;
-		float totalWidth = canvas.getWidth() - GUI_LEFT_BAR_WIDTH;
-		float widthMinusArrows = totalWidth - margin * 2;
+		float totalWidth = canvas.getWidth() - GUI_LEFT_BAR_WIDTH - (2*GUI_EMARROW_WIDTH);
+
+		int entitiesPerRow = (int)(totalWidth/oneUnit);
+		entitiesPerPage = 2 * entitiesPerRow -1;
 
 
 		float mousex = mouseX * worldScale.x;
 		float mousey = mouseY * worldScale.y;
 
-		Texture tex = upFolder;
+		Texture tex;
+		float x = 0;
+		float y = 0;
+		String name;
 
-		if(entityTree.current.parent == null){
-			tex = placeholder;
-		}
-		if(inBounds(mousex,mousey,startx,starty-sizey,sizex,sizey)){
-			canvas.draw(yellowbox ,Color.WHITE,0,0,startx - 3f ,starty - sizey -3f ,0,(sizex+6f) /yellowbox.getWidth(), (sizey + 6f)/yellowbox.getHeight());
-		}
-		canvas.draw(tex ,Color.WHITE,0,tex.getHeight(),startx ,starty,0,sizex /tex.getWidth(), sizey/tex.getHeight());
+		for(int i = 0;  i <= entitiesPerPage; i++){
 
-		for(int i = 0; i < entityTree.current.children.size(); i++){
-
-			tex = entityTree.current.children.get(i).texture;
-			if (!entityTree.current.children.get(i).isLeaf){
-				tex = folder;
+			if (i == 0) {
+				x = startx;
+				y = starty - sizey;
+				tex = upFolder;
+				name = "Up Folder";
+				if (entityTree.current.parent == null) {
+					tex = placeholder;
+					name = "";
+				}
 			}
-			float x = startx + ((i + 1) * (sizex + margin));
-			float y = starty - sizey;
-			if(inBounds(mousex,mousey,x,y,sizex,sizey)){
-				canvas.draw(yellowbox ,Color.WHITE,0,0,x - 3f ,y-3f ,0,(sizex+6f) /yellowbox.getWidth(), (sizey + 6f)/yellowbox.getHeight());
+			else {
+				if (i < entitiesPerRow) {
+					x = startx + (i * (sizex + margin));
+					y = starty - sizey;
+
+
+				} else {
+
+					x = startx + ((i - entitiesPerRow) * (sizex + margin));
+					y = starty - sizey - margin - sizey;
+				}
+				if (i + entitiesPerPage * entityMenuPage - 1 >= entityTree.current.children.size() || i + entitiesPerPage * entityMenuPage - 1 < 0) {
+					break;
+				}
+				tex = entityTree.current.children.get(i + entitiesPerPage * entityMenuPage - 1).texture;
+				name = entityTree.current.children.get(i + entitiesPerPage * entityMenuPage - 1).name;
+				if (!entityTree.current.children.get(i + entitiesPerPage * entityMenuPage - 1).isLeaf) {
+					tex = folder;
+				}
+
 			}
-			canvas.draw(tex ,Color.WHITE,0,0,x ,y,0,sizex /tex.getWidth(), sizey/tex.getHeight());
-			canvas.drawTextStandard(entityTree.current.children.get(i).name, x, y - 10f);
+			if (inBounds(mousex, mousey, x, y, sizex, sizey)) {
+				canvas.draw(yellowbox, Color.WHITE, 0, 0, x - 3f, y - 3f, 0, (sizex + 6f) / yellowbox.getWidth(), (sizey + 6f) / yellowbox.getHeight());
+			}
+			canvas.draw(tex, Color.WHITE, 0, 0, x, y, 0, sizex / tex.getWidth(), sizey / tex.getHeight());
+			canvas.drawTextStandard(name, x, y - 5f);
 
 		}
 
