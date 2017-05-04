@@ -127,12 +127,15 @@ public class LevelEditorController extends WorldController {
 
 	private EntityTree entityTree;
 	private Entity selected;
-	private Entity copy;
+	private Entity temporary;
 	private Button manip;
 	private boolean dragging = false;
 	private boolean creating = false;
 	private boolean snapping = false;
 	private boolean movefar = false;
+	private boolean dragmode = false;
+	private boolean prevclick = false;
+	private boolean currentclick = false;
 	private int entitiesPerPage;
 
 	private int entityMenuPage = 0;
@@ -314,6 +317,10 @@ public class LevelEditorController extends WorldController {
 				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
 				"LEOptions", 1, "move far"));
 
+		buttons.add(new ToggleButton(GUI_LEFT_BAR_MARGIN, 9 * GUI_LEFT_BAR_MARGIN,
+				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
+				"LEOptions", 2, "drag mode"));
+
 		buttons.add(new Button(GUI_LEFT_BAR_MARGIN, 11 * GUI_LEFT_BAR_MARGIN,
 				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
 				"Entity", 0, "edit"));
@@ -367,6 +374,12 @@ public class LevelEditorController extends WorldController {
 							t.setOn(!t.isOn());
 							movefar = t.isOn();
 							break;
+						case("drag mode"):
+							t = ((ToggleButton)b);
+							t.setOn(!t.isOn());
+							dragmode = t.isOn();
+							break;
+
 						default:
 							break;
 					}
@@ -643,9 +656,16 @@ public class LevelEditorController extends WorldController {
 				} else {
 					creating = false;
 					dragging = false;
-					selected = entityQuery();
-					if (selected != null) {
-						//createXY(creationOptions[entityIndex], adjustedMouseX,adjustedMouseY);
+					if (dragmode) {
+						if (entityQuery() != selected) {
+							selected = null;
+						}
+						if (selected == null) {
+							temporary = entityQuery();
+						}
+					} else {
+
+						selected = entityQuery();
 					}
 				}
 
@@ -729,6 +749,8 @@ public class LevelEditorController extends WorldController {
 						}
 					}
 				}else {
+					selected = temporary;
+					temporary = null;
 
 				}
 			}
