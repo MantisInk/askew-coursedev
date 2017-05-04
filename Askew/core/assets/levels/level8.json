@@ -30,7 +30,7 @@
       "CLASSNAME": "askew.entity.tree.StiffBranch",
       "INSTANCE": {
         "angle": -30.0,
-        "stiffLen": 5.0,
+        "numLinks": 5.0,
         "x": 0.8,
         "y": 8.0
       }
@@ -49,7 +49,7 @@
       "CLASSNAME": "askew.entity.tree.StiffBranch",
       "INSTANCE": {
         "angle": 30.0,
-        "stiffLen": 4.0,
+        "numLinks": 4.0,
         "x": 1.2,
         "y": 12.0
       }
@@ -161,7 +161,6 @@
       "INSTANCE": {
         "x": 1.0,
         "y": 2.0,
-        "stiffLen": 3.0,
         "angle": 0.0,
         "linksize": 1.0,
         "numLinks": 12.0
