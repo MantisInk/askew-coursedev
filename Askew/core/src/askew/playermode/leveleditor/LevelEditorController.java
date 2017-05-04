@@ -462,7 +462,7 @@ public class LevelEditorController extends WorldController {
 				entity = new OwlModel(x,y);
 				break;
 			case "WallModel":
-				entity = new WallModel(x,y,new float[] {0,0,0f,1f,1f,1f,1f,0f});
+				entity = new WallModel(x,y,new float[] {0,0,0f,1f,1f,1f,1f,0f}, 0xFFFFFFFF);
 				break;
 			case "ThornModel":
 				entity = new ThornModel(x,y,1,0);
