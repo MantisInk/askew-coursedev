@@ -3,12 +3,9 @@ package askew.entity.thorn;
 import askew.GameCanvas;
 import askew.MantisAssetManager;
 import askew.entity.FilterGroup;
-import askew.entity.obstacle.BoxObstacle;
-import com.badlogic.gdx.Gdx;
+import askew.entity.obstacle.PolygonObstacle;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Filter;
 import lombok.Getter;
@@ -17,7 +14,7 @@ import lombok.Setter;
 /**
  * Stab stab stab.
  */
-public class ThornModel extends BoxObstacle  {
+public class ThornModel extends PolygonObstacle {
 
     //JSON
     @Getter @Setter
@@ -25,8 +22,37 @@ public class ThornModel extends BoxObstacle  {
     @Getter @Setter
     private float y;
     private float width;
-    private float height;
     private float angle;
+
+    public static final float EPSILON = 0.2f;
+
+    private static float[] xywhaToPoints(float width, float angle) {
+        float[] points = new float[8];
+        angle = (float) Math.toRadians(angle);
+        // origin is x,y, rotate everything else. Height is always 1.
+        points[0] = 0;
+        points[1] = 0;
+        points[2] = 0;
+        points[3] = 1;
+        points[4] = width;
+        points[5] = 1;
+        points[6] = width;
+        points[7] = 0;
+//        float lx = (float) -(Math.sin(angle));
+//        float ly = (float) (Math.cos(angle));
+//        points[2] = lx;
+//        points[3] = ly;
+//        points[4] = lx + width * (float)(Math.cos(angle));
+//        points[5] = ly + width * (float)(Math.sin(angle));
+//        points[6] = width * (float)(Math.cos(angle));
+//        points[7] = width * (float)(Math.sin(angle));
+//        if (Math.abs(points[6] / width) < EPSILON) {
+//            points[4] = lx;
+//            points[6] = 0;
+//        }
+
+        return points;
+    }
 
     /**
      * Creates a new ragdoll with its head at the given position.
@@ -34,12 +60,11 @@ public class ThornModel extends BoxObstacle  {
      * @param x  Initial x position of the ragdoll head
      * @param y  Initial y position of the ragdoll head
      */
-    public ThornModel(float x, float y, float width, float height, float angle) {
-        super(x,y - height, width, height);
+    public ThornModel(float x, float y, float width, float angle) {
+        super(xywhaToPoints(width,angle),x,y);
         this.x = x;
         this.y = y;
         this.width = width;
-        this.height = height;
         this.angle = angle;
         this.setBodyType(BodyDef.BodyType.StaticBody);
         this.setDensity(0);
@@ -50,7 +75,7 @@ public class ThornModel extends BoxObstacle  {
         f.maskBits = FilterGroup.SLOTH;
         f.categoryBits = FilterGroup.WALL;
         this.setFilterData(f);
-        this.setName("thorn");
+        this.setName("thorns");
         this.setAngle((float)Math.toRadians(angle));
     }
 
@@ -67,5 +92,6 @@ public class ThornModel extends BoxObstacle  {
         wallTextureRegion = manager.getProcessedTextureMap().get(MantisAssetManager.THORN_TEXTURE);
         setTexture(wallTextureRegion);
     }
+
 }
 

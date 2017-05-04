@@ -30,7 +30,7 @@ public class SlothModel extends ComplexObstacle  {
     /** Constants for tuning sloth behaviour */
     private static final float HAND_DENSITY = 10.0f;
     private transient float ARM_DENSITY;
-    private static final float BODY_DENSITY = .7f;
+    private static final float BODY_MASS = 0.5903138f;
     private transient float TORQUE;
     private static final boolean BODY_FIXED_ROTATION = true;
     private static final boolean HANDS_FIXED_ROTATION = true;
@@ -183,7 +183,7 @@ public class SlothModel extends ComplexObstacle  {
 
     private static final float HAND_YOFFSET    = 0;
 
-    private static final float BODY_HEIGHT = 1.8f;
+    private static final float BODY_HEIGHT = 1.4f;
     private static final float BODY_WIDTH = 1.8f * (489f / 835f);
 
     private static final float ARM_WIDTH = 1.75f;
@@ -250,7 +250,7 @@ public class SlothModel extends ComplexObstacle  {
         BoxObstacle part;
 
         // Body
-        part = makePart(PART_BODY, PART_NONE, x, y,BODY_WIDTH,BODY_HEIGHT, BODY_DENSITY,true);
+        part = makePart(PART_BODY, PART_NONE, x, y,BODY_WIDTH,BODY_HEIGHT, 0,true);
         part.setFixedRotation(BODY_FIXED_ROTATION);
         part.setGravityScale(GRAVITY_SCALE);
         part.setLinearDamping(0.08f); // small amount to balance linear gimp
@@ -340,6 +340,7 @@ public class SlothModel extends ComplexObstacle  {
             f.categoryBits = FilterGroup.ARM;
             body.setFilterData(f);
         }
+
         body.setDrawScale(drawScale);
         body.setTexture(texture);
         body.setDensity(density);
@@ -910,6 +911,7 @@ public class SlothModel extends ComplexObstacle  {
         grabPointR = world.createBody(bd);
         grabPointL.setTransform(-5f, -5f, 0f);
         grabPointR.setTransform(-5f, -5f, 0f);
+        bodies.get(0).setMass(BODY_MASS);
     }
 
     public float getTorqueForce(float torque, float r, float theta){
@@ -1009,11 +1011,9 @@ public class SlothModel extends ComplexObstacle  {
                 //If the body parts are from the right limb
                 if (body_ind == PART_LEFT_HAND || body_ind == PART_RIGHT_HAND) continue;
                 if (body_ind == PART_RIGHT_ARM) {
-//                    float rightPower = (float) Math.sqrt(getRightVert() * getRightVert() + getRightHori() * getRightHori());
                     drawArm(canvas, part, (leftCanGrabOrIsGrabbing && isActualLeftGrab()) || (!leftCanGrabOrIsGrabbing && !isActualRightGrab()));
                 } else if (body_ind == PART_LEFT_ARM) {
                     // left limb
-//                    float leftPower = (float) Math.sqrt(getLeftVert() * getLeftVert() + getLeftHori() * getLeftHori());
                     drawArm(canvas, part, (leftCanGrabOrIsGrabbing && !isActualLeftGrab()) || (!leftCanGrabOrIsGrabbing && isActualRightGrab()));
                 }
                 //If the body parts are not limbs

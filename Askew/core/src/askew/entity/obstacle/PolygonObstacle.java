@@ -166,7 +166,7 @@ public class PolygonObstacle extends SimpleObstacle {
 	/**
 	 * Initializes the bounding box (and drawing scale) for this polygon
 	 */
-	private void initBounds() {
+	protected void initBounds() {
 		float minx = vertices[0];
 		float maxx = vertices[0];
 		float miny = vertices[1];
@@ -197,7 +197,7 @@ public class PolygonObstacle extends SimpleObstacle {
 	 *
 	 * @param points   The polygon vertices
 	 */
-	private void initShapes(float[] points) {
+	protected void initShapes(float[] points) {
 		// Triangulate
 		ShortArray array = TRIANGULATOR.computeTriangles(points);
 		trimColinear(points,array);

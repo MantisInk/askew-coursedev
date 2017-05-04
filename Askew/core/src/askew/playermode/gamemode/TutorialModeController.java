@@ -658,7 +658,7 @@ public class TutorialModeController extends GameModeController {
 
 	public void restart() {
 		//change back to 0
-		currentStage = 2;
+		currentStage = 0;
 	}
 
 }
