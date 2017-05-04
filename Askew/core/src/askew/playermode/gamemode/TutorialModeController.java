@@ -44,11 +44,11 @@ public class TutorialModeController extends GameModeController {
 
 	private int MAX_TUTORIAL;
 
-	private final int STAGE_PINNED = 0;
-	private final int STAGE_GRAB = 1;
-	private final int STAGE_SHIMMY = 2;
-	private final int STAGE_FLING = 3;
-	private final int STAGE_VINE = 4;
+	private final int STAGE_PINNED = 1;
+	private final int STAGE_GRAB = 2;
+	private final int STAGE_SHIMMY = 3;
+	private final int STAGE_FLING = 4;
+	private final int STAGE_VINE = 5;
 	private int currentStage = STAGE_PINNED;
 	private boolean next = false;
 
@@ -652,7 +652,7 @@ public class TutorialModeController extends GameModeController {
 
 	public void restart() {
 		//change back to 0
-		currentStage = 3;
+		currentStage = 1;
 	}
 
 }
