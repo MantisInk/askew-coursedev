@@ -77,6 +77,7 @@ public class TutorialModeController extends GameModeController {
 	protected ArrayList<Trunk> trunkEntities = new ArrayList<Trunk>();
 	private ArrayList<Boolean> trunkGrabbed = new ArrayList<Boolean>();
 
+	private float[] inRangeAllowance = {0.02f, 0.02f, 0.02f, ARMSPAN*3/4, 0.02f};
 	// list of setpoints for drawing helplines
 	private int inRangeSetPt = -1;
 	private final int MINUS30 = -1;
@@ -96,6 +97,12 @@ public class TutorialModeController extends GameModeController {
 			new Vector2(9f,16f),
 			new Vector2(16f, 14f),
 			new Vector2(24f, 14f)  };
+	private Vector2[] flingLandPoints = {
+			new Vector2(6.5f, 16f),
+			new Vector2(12.5f, 14f),
+			new Vector2(21.5f, 14f),
+			new Vector2(26f, 17f)
+	};
 	private Vector2[] vineSetPoints = {};
 	// list of instructions
 	private boolean[] shimmyGrabbed = {false, false, false, false, false};
@@ -255,27 +262,29 @@ public class TutorialModeController extends GameModeController {
 					}
 					break;
 				case STAGE_SHIMMY:
-					if(inRangeSetPt+1 >= shimmyDir.length) { break; }
+					if(inRangeSetPt+1 >= shimmySetPoints.length) { break; }
 					if (inRange(shimmySetPoints[inRangeSetPt+1])) {
 						inRangeSetPt++;
 					}
-//					System.out.println(inRangeSetPt);
 					if (inRangeSetPt >= 0 && !shimmyGrabbed[inRangeSetPt]) {
 						shimmyGrabbed[inRangeSetPt] = checkGrabbedPt(shimmySetPoints[inRangeSetPt], shimmyDir[inRangeSetPt]);
 					}
 					break;
 				case STAGE_FLING:
-					if(inRangeSetPt+1 >= flingDir.length) { break; }
-					if (inRange(flingSetPoints[inRangeSetPt+1])) {
+					if(inRangeSetPt+1 >= flingSetPoints.length) {
+						angleDiff = 0f;
+						targetLine = NEUTRAL;
+						break;
+					}
+					System.out.println(inRange(flingSetPoints[inRangeSetPt+1]));
+					if (inRange(flingSetPoints[inRangeSetPt+1]) && flingGrabbed[inRangeSetPt+1]) {
 						inRangeSetPt++;
 					}
-					if (inRangeSetPt >= 0 && !flingGrabbed[inRangeSetPt]) {
-						flingGrabbed[inRangeSetPt] = checkGrabbedPt(flingSetPoints[inRangeSetPt], flingDir[inRangeSetPt]);
+					System.out.println(inRangeSetPt);
+					if (inRangeSetPt < flingGrabbed.length-1 && !flingGrabbed[inRangeSetPt+1]) {
+						flingGrabbed[inRangeSetPt+1] = inRange(flingLandPoints[inRangeSetPt+1]);
+//						System.out.println(flingGrabbed[inRangeSetPt+1]);
 					}
-					for(boolean b : flingGrabbed) {
-						System.out.print(b+" ");
-					}
-					System.out.println();
 					break;
 				case STAGE_VINE:
 					break;
@@ -290,7 +299,6 @@ public class TutorialModeController extends GameModeController {
 	}
 
 	public boolean checkGrabbedPt(Vector2 setpt, int dir) {
-		// TODO: check if sloth grabbed pt
 //		System.out.print("setpt: ("+setpt.x+","+setpt.y+")   ");
 		Body rTarget, lTarget, tTarget, bTarget;
 		Vector2 rtPos, ltPos, ttPos, btPos;
@@ -332,7 +340,6 @@ public class TutorialModeController extends GameModeController {
 			if (ttPos.y-0.05 >= setpt.y) { yrange = true; }
 			if (dir == SHIMMY_N && Math.abs(setpt.x - ttPos.x) <= 0.05) { xrange = true; }
 		}
-
 		return xrange && yrange;
 	}
 
@@ -365,16 +372,16 @@ public class TutorialModeController extends GameModeController {
 				tAngle = (setpt.cpy().sub(rPos).angle()+360)%360;
 				aAngle = (lhPos.cpy().sub(rhPos).angle()+360) %360;
 
-				xrange = Math.abs(setpt.x - lPos.x) <= ARMSPAN+0.02f;
-				yrange = Math.abs(setpt.y - lPos.y) <= ARMSPAN+0.02f;
+				xrange = Math.abs(setpt.x - lPos.x) <= ARMSPAN+inRangeAllowance[currentStage];
+				yrange = Math.abs(setpt.y - lPos.y) <= ARMSPAN+inRangeAllowance[currentStage];
 				grabPos = lPos;
 			} else {
 				// move lh
 				tAngle = (setpt.cpy().sub(lPos).angle()+360)%360;
 				aAngle = (rhPos.cpy().sub(lhPos).angle()+360) %360;
 
-				xrange = Math.abs(setpt.x - rPos.x) <= ARMSPAN+0.02f;
-				yrange = Math.abs(setpt.y - rPos.y) <= ARMSPAN+0.02f;
+				xrange = Math.abs(setpt.x - rPos.x) <= ARMSPAN+inRangeAllowance[currentStage];
+				yrange = Math.abs(setpt.y - rPos.y) <= ARMSPAN+inRangeAllowance[currentStage];
 				grabPos = rPos;
 			}
 		}
@@ -384,8 +391,8 @@ public class TutorialModeController extends GameModeController {
 			tAngle = (setpt.cpy().sub(lPos).angle()+360)%360;
 			aAngle = (rhPos.cpy().sub(lhPos).angle()+360) %360;
 
-			xrange = Math.abs(setpt.x - lPos.x) <= ARMSPAN+0.02f;
-			yrange = Math.abs(setpt.y - lPos.y) <= ARMSPAN+0.02f;
+			xrange = Math.abs(setpt.x - lPos.x) <= ARMSPAN+inRangeAllowance[currentStage];
+			yrange = Math.abs(setpt.y - lPos.y) <= ARMSPAN+inRangeAllowance[currentStage];
 			grabPos = lPos;
 		}
 		if (rTarget != null) {
@@ -394,8 +401,8 @@ public class TutorialModeController extends GameModeController {
 			tAngle = (setpt.cpy().sub(rPos).angle()+360)%360;
 			aAngle = (lhPos.cpy().sub(rhPos).angle()+360) %360;
 
-			xrange = Math.abs(setpt.x - rPos.x) <= ARMSPAN+0.02f;
-			yrange = Math.abs(setpt.y - rPos.y) <= ARMSPAN+0.02f;
+			xrange = Math.abs(setpt.x - rPos.x) <= ARMSPAN+inRangeAllowance[currentStage];
+			yrange = Math.abs(setpt.y - rPos.y) <= ARMSPAN+inRangeAllowance[currentStage];
 			grabPos = rPos;
 		}
 
@@ -441,7 +448,8 @@ public class TutorialModeController extends GameModeController {
 					sloth.drawHelpLines(canvas, camTrans, SHIMMY_S, 0f);
 				break;
 			case STAGE_SHIMMY:
-				switch (targetLine) {
+			case STAGE_FLING:
+				switch(targetLine) {
 					case PLUS30:
 						sloth.drawHelpLines(canvas, camTrans, PLUS_30, 0f);
 						break;
@@ -451,15 +459,6 @@ public class TutorialModeController extends GameModeController {
 					case NEUTRAL:
 						sloth.drawHelpLines(canvas, camTrans, DEFAULT, angleDiff);
 						break;
-				}
-				break;
-			case STAGE_FLING:
-				switch(inRangeSetPt) {
-					case 0:
-					case 1:
-					case 3:
-					default:
-						sloth.drawHelpLines(canvas, camTrans, SHIMMY_E, 0f);
 				}
 				break;
 			case STAGE_VINE:
