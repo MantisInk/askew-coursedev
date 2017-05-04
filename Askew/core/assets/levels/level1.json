@@ -4,144 +4,200 @@
   "goalTimeSilver": 45,
   "goalTimeBronze": 60,
   "recordTime": 9999999.0,
-  "maxX": 35.0,
-  "maxY": 10.0,
-  "minX": -1.0,
-  "minY": 0.0,
-  "title": "test_save_obstacle",
-  "background": "texture/background/BackgroundStuff/purple.png",
+  "maxX": 27.0,
+  "maxY": 26.0,
+  "minX": -12.0,
+  "minY": 6.0,
+  "title": "The First One",
+  "background": "texture/background/background1.png",
   "soundtrack": "TODO",
   "entities": [
     {
       "CLASSNAME": "askew.entity.BackgroundEntity",
       "INSTANCE": {
-        "x": 12.1875,
-        "y": 3.4375,
-        "width": 15.0,
-        "height": 15.0,
-        "depth": 18.0,
-        "angle": 45.0,
+        "x": 0.35000038,
+        "y": 15.761719,
+        "width": 25.0,
+        "height": 25.0,
+        "depth": 15.0,
+        "angle": 0.0,
         "scalex": 1.0,
         "scaley": 1.0,
         "texturePath": "texture/background/BackgroundStuff/sil2.png",
-        "color": 755012448
+        "color": -1
       }
     },
     {
       "CLASSNAME": "askew.entity.BackgroundEntity",
       "INSTANCE": {
-        "x": -28.45,
-        "y": 6.0,
-        "width": 10.0,
-        "height": 10.0,
-        "depth": 10.0,
-        "angle": 0.0,
-        "scalex": 1.0,
-        "scaley": 1.0,
-        "texturePath": "texture/background/BackgroundStuff/sil1.png",
-        "color": 788569087
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.BackgroundEntity",
-      "INSTANCE": {
-        "x": 15.325,
-        "y": 9.3125,
-        "width": 20.0,
-        "height": 20.0,
-        "depth": 6.0,
-        "angle": 0.0,
-        "scalex": 1.0,
-        "scaley": 1.0,
-        "texturePath": "texture/background/BackgroundStuff/cloud1.png",
-        "color": -160
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.BackgroundEntity",
-      "INSTANCE": {
-        "x": 19.1,
-        "y": 5.7625,
-        "width": 10.0,
-        "height": 10.0,
+        "x": 16.0,
+        "y": 12.0,
+        "width": 25.0,
+        "height": 25.0,
         "depth": 5.0,
         "angle": 0.0,
         "scalex": 1.0,
         "scaley": 1.0,
-        "texturePath": "texture/background/BackgroundStuff/sil3.png",
-        "color": 755012607
+        "texturePath": "texture/background/BackgroundStuff/sil4.png",
+        "color": -16711681
       }
     },
     {
-      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "CLASSNAME": "askew.entity.owl.OwlModel",
       "INSTANCE": {
-        "x": 8.1125,
-        "y": 0.1500001,
-        "width": 2.0,
-        "height": 2.0,
-        "depth": 1.0,
-        "angle": 0.0,
-        "scalex": 1.0,
-        "scaley": 1.0,
-        "texturePath": "texture/background/foreground/leaf.png",
-        "color": -137
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.BackgroundEntity",
-      "INSTANCE": {
-        "x": 8.925,
-        "y": 0.0625,
-        "width": 2.0,
-        "height": 2.0,
-        "depth": 1.0,
-        "angle": 0.0,
-        "scalex": 1.0,
-        "scaley": 1.0,
-        "texturePath": "texture/background/foreground/leaf.png",
-        "color": -128
+        "x": 22.181252,
+        "y": 10.755467
       }
     },
     {
       "CLASSNAME": "askew.entity.sloth.SlothModel",
       "INSTANCE": {
-        "x": 10.625,
-        "y": 3.1125002,
+        "x": -7.0,
+        "y": 14.0,
         "lTheta": 0.0,
         "rTheta": 0.0
       }
     },
     {
-      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "CLASSNAME": "askew.entity.tree.Trunk",
       "INSTANCE": {
-        "x": 7.3625,
-        "y": 0.19999981,
-        "width": 2.0,
-        "height": 2.0,
-        "depth": 1.0,
-        "angle": 0.0,
-        "scalex": 1.0,
-        "scaley": 1.0,
-        "texturePath": "texture/background/foreground/leaf.png",
-        "color": -160
+        "x": 24.180002,
+        "y": 9.795702,
+        "angle": 90.0,
+        "numLinks": 7.0
       }
     },
     {
       "CLASSNAME": "askew.entity.tree.Trunk",
       "INSTANCE": {
-        "x": 16.775002,
-        "y": 4.3999996,
-        "angle": 90.0,
-        "numLinks": 5.0
+        "x": 13.0,
+        "y": 14.0,
+        "angle": 225.0,
+        "numLinks": 6.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.wall.WallModel",
+      "INSTANCE": {
+        "x": 24.0,
+        "y": 6.0,
+        "points": [
+          0.0,
+          0.0,
+          0.0,
+          25.0,
+          3.0,
+          250.0,
+          3.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.wall.WallModel",
+      "INSTANCE": {
+        "x": 12.0,
+        "y": 2.0,
+        "points": [
+          0.0,
+          0.0,
+          0.0,
+          8.0,
+          1.0,
+          8.0,
+          1.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.wall.WallModel",
+      "INSTANCE": {
+        "x": 12.0,
+        "y": 10.0,
+        "points": [
+          0.0,
+          0.0,
+          0.5,
+          1.0,
+          1.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.wall.WallModel",
+      "INSTANCE": {
+        "x": 17.0,
+        "y": 13.0,
+        "points": [
+          0.0,
+          0.0,
+          0.0,
+          25.0,
+          7.0,
+          250.0,
+          7.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.wall.WallModel",
+      "INSTANCE": {
+        "x": 12.0,
+        "y": 19.0,
+        "points": [
+          0.0,
+          0.0,
+          5.0,
+          0.0,
+          5.0,
+          -5.0
+        ]
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.wall.WallModel",
+      "INSTANCE": {
+        "x": 12.0,
+        "y": 15.0,
+        "points": [
+          0.0,
+          0.0,
+          0.0,
+          50.0,
+          5.0,
+          50.0,
+          5.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.wall.WallModel",
+      "INSTANCE": {
+        "x": -12.0,
+        "y": 6.0,
+        "points": [
+          0.0,
+          0.0,
+          0.0,
+          100.0,
+          3.0,
+          100.0,
+          3.0,
+          0.0
+        ]
       }
     },
     {
       "CLASSNAME": "askew.entity.tree.Trunk",
       "INSTANCE": {
-        "x": 12.075001,
-        "y": 2.4375,
-        "angle": 90.0,
-        "numLinks": 3.0
+        "x": -9.0,
+        "y": 14.0,
+        "angle": 270.0,
+        "numLinks": 22.0
       }
     }
   ]
