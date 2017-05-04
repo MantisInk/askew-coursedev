@@ -150,15 +150,15 @@ public class MainMenuController extends WorldController {
 
         InputController input = InputControllerManager.getInstance().getController(0);
 
-        if (((input.didRightDPadPress() && mode == HOME_SCREEN) || nextCon.equals("GM"))) {
+        if (((input.didRightDPadPress() && mode == HOME_SCREEN && prevMode == mode) || nextCon.equals("GM"))) {
             System.out.println("GM");
             listener.exitScreen(this, EXIT_MM_GM);
             return false;
-        } else if (input.didLeftDPadPress() && mode == HOME_SCREEN) {
+        } else if (input.didLeftDPadPress() && mode == HOME_SCREEN  && prevMode == mode) {
             System.out.println("LE");
             listener.exitScreen(this, EXIT_MM_LE);
             return false;
-        } else if (nextCon.equals("TL")){
+        } else if (nextCon.equals("TL")  && prevMode == mode){
             listener.exitScreen(this, EXIT_MM_TL);
             return false;
         } else if (input.didBottomDPadPress()) {

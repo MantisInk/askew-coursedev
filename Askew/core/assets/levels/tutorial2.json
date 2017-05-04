@@ -4,7 +4,7 @@
   "goalTimeSilver": 45,
   "goalTimeBronze": 60,
   "recordTime": 9999999.0,
-  "title": "Tutorial 3",
+  "title": "Tutorial 2",
   "background": "texture/background/background1.png",
   "soundtrack": "TODO",
   "entities": [
@@ -39,71 +39,10 @@
       }
     },
     {
-      "CLASSNAME": "askew.entity.tree.Trunk",
-      "INSTANCE": {
-        "x": 21.519989,
-        "y": 11.999997,
-        "angle": -90.0,
-        "numLinks": 5.0
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.owl.OwlModel",
-      "INSTANCE": {
-        "x": 23.599989,
-        "y": 13.019998
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.tree.Trunk",
-      "INSTANCE": {
-        "x": 11.959994,
-        "y": 9.059998,
-        "angle": 0.0,
-        "numLinks": 5.0
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.tree.Trunk",
-      "INSTANCE": {
-        "x": 12.019994,
-        "y": 9.039998,
-        "angle": -90.0,
-        "numLinks": 5.0
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.tree.Trunk",
-      "INSTANCE": {
-        "x": 16.979996,
-        "y": 14.019998,
-        "angle": -90.0,
-        "numLinks": 5.0
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.tree.Trunk",
-      "INSTANCE": {
-        "x": 16.999992,
-        "y": 8.999998,
-        "angle": 0.0,
-        "numLinks": 5.0
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.tree.Trunk",
-      "INSTANCE": {
-        "x": -3.0,
-        "y": 14.0,
-        "angle": 270.0,
-        "numLinks": 15.0
-      }
-    },
-    {
       "CLASSNAME": "askew.entity.sloth.SlothModel",
       "INSTANCE": {
-        "x": -1.5200005,
-        "y": 13.999996,
+        "x": -1.8600006,
+        "y": 14.039996,
         "lTheta": 0.0,
         "rTheta": 0.0,
         "setLastGrabX": false,
@@ -111,21 +50,55 @@
       }
     },
     {
-      "CLASSNAME": "askew.entity.tree.Trunk",
+      "CLASSNAME": "askew.entity.owl.OwlModel",
       "INSTANCE": {
-        "x": -8.999999,
-        "y": 4.999999,
-        "angle": -90.0,
-        "numLinks": 45.0
+        "x": 22.399992,
+        "y": 18.699997
       }
     },
     {
       "CLASSNAME": "askew.entity.tree.Trunk",
       "INSTANCE": {
-        "x": -5.999999,
-        "y": 6.039999,
-        "angle": 0.0,
-        "numLinks": 9.0
+        "x": -3.96,
+        "y": 14.019997,
+        "angle": -90.0,
+        "numLinks": 4.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": -3.9800005,
+        "y": 11.739997,
+        "angle": -90.0,
+        "numLinks": 4.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": -3.9800005,
+        "y": 9.399997,
+        "angle": -90.0,
+        "numLinks": 4.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": -3.9800005,
+        "y": 7.0199966,
+        "angle": -90.0,
+        "numLinks": 4.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": -3.9800005,
+        "y": 4.720001,
+        "angle": -90.0,
+        "numLinks": 4.0
       }
     },
     {
