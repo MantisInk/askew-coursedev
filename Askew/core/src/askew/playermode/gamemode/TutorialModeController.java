@@ -252,9 +252,6 @@ public class TutorialModeController extends GameModeController {
 					if (inRangeSetPt >= 0 && !shimmyGrabbed[inRangeSetPt]) {
 						shimmyGrabbed[inRangeSetPt] = checkGrabbedPt(shimmySetPoints[inRangeSetPt], shimmyDir[inRangeSetPt]);
 					}
-//					if (!shimmyGrabbed[inRangeSetPt+1]) {
-//						shimmyGrabbed[inRangeSetPt+1] = checkGrabbedPt(shimmySetPoints[inRangeSetPt+1], shimmyDir[inRangeSetPt+1]);
-//					}
 					break;
 				case STAGE_FLING:
 					if(inRangeSetPt+1 >= flingDir.length) { break; }
@@ -330,13 +327,11 @@ public class TutorialModeController extends GameModeController {
 
 	// checks if next set point is in range for changing arm help
 	public boolean inRange(Vector2 setpt) {
-//		System.out.print("setpt: ("+setpt.x+","+setpt.y+")   ");
 		Body lTarget = sloth.getLeftTarget();
 		Body rTarget = sloth.getRightTarget();
 		Body lHand = sloth.getLeftHand();
 		Body rHand = sloth.getRightHand();
 
-//		Vector2 bPos = sloth.getMainBody().getPosition();
 		Vector2 lhPos = lHand.getPosition();
 		Vector2 rhPos = rHand.getPosition();
 		Vector2 grabPos = new Vector2();
@@ -394,7 +389,6 @@ public class TutorialModeController extends GameModeController {
 		}
 
 		diff = (((aAngle - tAngle)%360)+360)%360;
-//		System.out.println("aAngle "+aAngle+" tAngle "+tAngle+"  diff "+diff);
 		if (30 < diff && diff < 180) {
 			targetLine = MINUS30;
 		} else if (180 <= diff && diff < 330) {
@@ -403,12 +397,7 @@ public class TutorialModeController extends GameModeController {
 			targetLine = NEUTRAL;
 			angleDiff = diff;
 		}
-
-
-//		System.out.println("target "+targetLine);
-//		System.out.print("grabpt: ("+grabPos.x+","+grabPos.y+")   ");
 		checkCloseToCorner(setpt,grabPos);
-
 		return xrange && yrange;
 	}
 
