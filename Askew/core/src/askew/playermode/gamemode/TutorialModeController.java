@@ -282,13 +282,14 @@ public class TutorialModeController extends GameModeController {
 						targetLine = NEUTRAL;
 						break;
 					}
-					System.out.println(inRange(flingSetPoints[inRangeSetPt+1]));
+					System.out.println("fling setpoint in range "+inRange(flingSetPoints[inRangeSetPt+1]));
 					if (inRange(flingSetPoints[inRangeSetPt+1]) && flingGrabbed[inRangeSetPt+1]) {
 						inRangeSetPt++;
 					}
-					System.out.println(inRangeSetPt);
+					System.out.println("progression "+inRangeSetPt);
 					if (inRangeSetPt < flingGrabbed.length-1 && !flingGrabbed[inRangeSetPt+1]) {
 						inRange(flingLandPoints0[inRangeSetPt+1]);
+						System.out.println("targetLINE "+targetLine);
 						if(!setUpToFling()) {
 							swing = readyToFling();
 						}
@@ -439,18 +440,17 @@ public class TutorialModeController extends GameModeController {
 		float yrange = (float) Math.abs(setpt.y - grabpt.y);
 		if(xrange < 0.08 && yrange < 0.08) {
 			shimmyGrabbed[inRangeSetPt+1] = true;
-			System.out.println("true");
 		}
 	}
 
 	public boolean setUpToFling() {
-		System.out.println(angleDiff);
+		System.out.println("anglediff: "+angleDiff);
 		return angleDiff < 0.05f;
 	}
 
 	public boolean readyToFling() {
-		System.out.println(sloth.getMainBody().getAngularVelocity());
-		return sloth.getMainBody().getAngularVelocity() > 100;
+		System.out.println("RH omega "+sloth.getRightHand().getAngularVelocity());
+		return sloth.getRightHand().getAngularVelocity() > 400;
 	}
 
 	public boolean moveToNextStage() {
