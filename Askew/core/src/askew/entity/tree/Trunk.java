@@ -152,6 +152,6 @@ public class Trunk extends TreeParent{
 		super.setPosition(x,y);
 		this.x = x;
 		this.y = y;
-//		rebuild();
+		rebuild();
 	}
 }

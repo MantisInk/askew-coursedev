@@ -233,7 +233,7 @@ public class GameModeController extends WorldController {
 		MAX_LEVEL = GlobalConfiguration.getInstance().getAsInt("maxLevel");
 		loadLevel = DEFAULT_LEVEL;
 		storeTimeRecords = GlobalConfiguration.getInstance().getAsBoolean("storeTimeRecords");
-		jsonLoaderSaver = new JSONLoaderSaver();
+		jsonLoaderSaver = new JSONLoaderSaver(false);
 
 		// TODO: kill later
 		typeMovement = "Current movement is: "+"0";

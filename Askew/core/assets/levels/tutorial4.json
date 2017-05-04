@@ -4,7 +4,11 @@
   "goalTimeSilver": 45,
   "goalTimeBronze": 60,
   "recordTime": 9999999.0,
-  "title": "Tutorial 5",
+  "maxX": 36.0,
+  "maxY": 34.0,
+  "minX": -9.0,
+  "minY": 2.0,
+  "title": "Tutorial 4",
   "background": "texture/background/background1.png",
   "soundtrack": "TODO",
   "entities": [
@@ -17,10 +21,10 @@
         "height": 20.0,
         "depth": 20.0,
         "angle": 0.0,
-        "alpha": 1.0,
         "scalex": 1.0,
         "scaley": 1.0,
-        "texturePath": "texture/background/sil4.png"
+        "texturePath": "texture/background/sil4.png",
+        "color": -1
       }
     },
     {
@@ -32,37 +36,53 @@
         "height": 10.0,
         "depth": 12.0,
         "angle": 0.0,
-        "alpha": 1.0,
         "scalex": 1.0,
         "scaley": 1.0,
-        "texturePath": "texture/background/sil1.png"
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.sloth.SlothModel",
-      "INSTANCE": {
-        "x": -1.8600006,
-        "y": 14.039996,
-        "lTheta": 0.0,
-        "rTheta": 0.0,
-        "setLastGrabX": false,
-        "lastGrabX": 0.0
+        "texturePath": "texture/background/sil1.png",
+        "color": -1
       }
     },
     {
       "CLASSNAME": "askew.entity.tree.Trunk",
       "INSTANCE": {
-        "x": -3.9800005,
-        "y": 14.059995,
+        "x": -3.0,
+        "y": 14.0,
+        "angle": 270.0,
+        "numLinks": 5.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 11.08,
+        "y": 13.979997,
         "angle": -90.0,
-        "numLinks": 8.0
+        "numLinks": 5.0
       }
     },
     {
       "CLASSNAME": "askew.entity.tree.Trunk",
       "INSTANCE": {
-        "x": 27.159985,
-        "y": 13.059994,
+        "x": 4.0200005,
+        "y": 15.999996,
+        "angle": -90.0,
+        "numLinks": 5.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 19.119999,
+        "y": 14.019997,
+        "angle": -90.0,
+        "numLinks": 5.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 29.0,
+        "y": 31.0,
         "angle": -90.0,
         "numLinks": 5.0
       }
@@ -70,73 +90,33 @@
     {
       "CLASSNAME": "askew.entity.owl.OwlModel",
       "INSTANCE": {
-        "x": 30.699986,
-        "y": 14.119994
+        "x": 32.0,
+        "y": 32.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.sloth.SlothModel",
+      "INSTANCE": {
+        "x": -1.8979998,
+        "y": 13.975008,
+        "lTheta": 0.0,
+        "rTheta": 0.0
       }
     },
     {
       "CLASSNAME": "askew.entity.tree.Trunk",
       "INSTANCE": {
-        "x": 15.919992,
-        "y": 12.159994,
-        "angle": 30.0,
-        "numLinks": 5.0
+        "x": -9.0,
+        "y": 7.0199976,
+        "angle": -90.0,
+        "numLinks": 45.0
       }
     },
     {
       "CLASSNAME": "askew.entity.tree.Trunk",
       "INSTANCE": {
-        "x": 6.0199976,
-        "y": 11.939994,
-        "angle": 0.0,
-        "numLinks": 5.0
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.tree.Trunk",
-      "INSTANCE": {
-        "x": 7.999997,
-        "y": 12.159994,
-        "angle": -30.0,
-        "numLinks": 5.0
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.tree.Trunk",
-      "INSTANCE": {
-        "x": 11.979997,
-        "y": 12.059995,
-        "angle": 0.0,
-        "numLinks": 5.0
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.vine.Vine",
-      "INSTANCE": {
-        "numLinks": 5.0,
-        "x": 18.079992,
-        "y": 16.899994,
-        "angle": 5.0,
-        "omega": -100.0,
-        "pin": false
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.vine.Vine",
-      "INSTANCE": {
-        "numLinks": 5.0,
-        "x": 23.07999,
-        "y": 16.999992,
-        "angle": 5.0,
-        "omega": -100.0,
-        "pin": false
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.tree.Trunk",
-      "INSTANCE": {
-        "x": -6.080001,
-        "y": 10.379995,
+        "x": -5.959999,
+        "y": 9.299997,
         "angle": 0.0,
         "numLinks": 6.0
       }
@@ -144,10 +124,46 @@
     {
       "CLASSNAME": "askew.entity.tree.Trunk",
       "INSTANCE": {
-        "x": -9.000001,
-        "y": 8.979995,
-        "angle": -90.0,
-        "numLinks": 45.0
+        "x": 26.0,
+        "y": 15.0,
+        "angle": 0.0,
+        "numLinks": 4.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 30.0,
+        "y": 16.0,
+        "angle": 0.0,
+        "numLinks": 4.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 30.0,
+        "y": 23.0,
+        "angle": 0.0,
+        "numLinks": 4.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 26.0,
+        "y": 21.0,
+        "angle": 0.0,
+        "numLinks": 4.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 26.0,
+        "y": 28.0,
+        "angle": 0.0,
+        "numLinks": 4.0
       }
     },
     {
@@ -159,10 +175,10 @@
         "height": 2.0,
         "depth": 0.99,
         "angle": 0.0,
-        "alpha": 1.0,
         "scalex": 1.0,
         "scaley": 1.0,
-        "texturePath": "texture/background/fern.png"
+        "texturePath": "texture/background/fern.png",
+        "color": -1
       }
     },
     {
@@ -174,10 +190,10 @@
         "height": 2.0,
         "depth": 0.99,
         "angle": 0.0,
-        "alpha": 1.0,
         "scalex": 1.0,
         "scaley": 1.0,
-        "texturePath": "texture/background/fern.png"
+        "texturePath": "texture/background/fern.png",
+        "color": -1
       }
     }
   ]

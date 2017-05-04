@@ -81,6 +81,7 @@ public class SlothModel extends ComplexObstacle  {
     private transient Body rightTarget;
 
     // help lines for tutorial mode
+    public static final int DEFAULT = -1;
     public static final int SHIMMY_E = 0;
     public static final int SHIMMY_SE = 1;
     public static final int SHIMMY_S = 2;
@@ -89,6 +90,8 @@ public class SlothModel extends ComplexObstacle  {
     public static final int SHIMMY_NW = 5;
     public static final int SHIMMY_N = 6;
     public static final int SHIMMY_NE = 7;
+    public static final int PLUS_30 = 8;
+    public static final int MINUS_30 = 9;
 
     /** Set damping constant for rotation of Flow's arms */
     private static final float ROTATION_DAMPING = 5f;
@@ -195,7 +198,7 @@ public class SlothModel extends ComplexObstacle  {
     //private static final float HAND_XOFFSET  = (ARM_WIDTH / 2f) - HAND_WIDTH/2;
     private static final float HAND_XOFFSET  = (ARM_WIDTH / 2f) - HAND_WIDTH * 2 - .07f;
 
-    public static final float ARMSPAN = ARM_XOFFSET*2;
+    public static final float ARMSPAN = ARM_XOFFSET*2 - 0.05f;
 
 
     /** Texture assets for the body parts */
@@ -721,6 +724,10 @@ public class SlothModel extends ComplexObstacle  {
 
     public float getRTheta() {return rTheta;}
 
+    public Body getLeftHand() {return bodies.get(PART_LEFT_HAND).getBody();}
+
+    public Body getRightHand() {return bodies.get(PART_RIGHT_HAND).getBody();}
+
     public Body getLeftTarget() {return leftTarget;}
 
     public Body getRightTarget() {return rightTarget;}
@@ -1148,7 +1155,7 @@ public class SlothModel extends ComplexObstacle  {
 
     public void setTutorial() {tutorial = true;}
 
-    public void drawHelpLines(GameCanvas canvas, Affine2 camTrans, int mode) {
+    public void drawHelpLines(GameCanvas canvas, Affine2 camTrans, int mode, float angleDiff) {
         if (tutorial) {
             Obstacle left = bodies.get(PART_LEFT_HAND);
             Obstacle right = bodies.get(PART_RIGHT_HAND);
@@ -1157,68 +1164,46 @@ public class SlothModel extends ComplexObstacle  {
             Vector2 lPos = left.getPosition();
             Vector2 rPos = right.getPosition();
             Vector2 bPos = body.getPosition();
-
-            float diag = ARMSPAN*(float)Math.cos(Math.PI/4);
+            float mag;
             if(isActualLeftGrab() || isActualRightGrab()) {
                 if (isActualLeftGrab()) {
                     if (!isActualRightGrab() || left.getX() < right.getX()) {
                         switch(mode) {
-                            case SHIMMY_E:
-                                rPos = new Vector2(lPos.x+ARMSPAN,lPos.y);
-                                break;
                             case SHIMMY_S:
                                 rPos = new Vector2(lPos.x,lPos.y-ARMSPAN);
                                 break;
-                            case SHIMMY_W:
-                                rPos = new Vector2(lPos.x-ARMSPAN,lPos.y);
+                            case PLUS_30:
+                                rPos = (rPos.cpy().sub(bPos)).rotate(30).add(bPos);
                                 break;
-                            case SHIMMY_N:
-                                rPos = new Vector2(lPos.x,lPos.y+ARMSPAN);
+                            case MINUS_30:
+                                rPos = (rPos.cpy().sub(bPos)).rotate(-30).add(bPos);
                                 break;
-                            case SHIMMY_SE:
-                                rPos = new Vector2(lPos.x+diag,lPos.y-diag);
-                                break;
-                            case SHIMMY_SW:
-                                rPos = new Vector2(lPos.x-diag,lPos.y-diag);
-                                break;
-                            case SHIMMY_NW:
-                                rPos = new Vector2(lPos.x-diag, lPos.y+diag);
-                                break;
-                            case SHIMMY_NE:
-                                rPos = new Vector2(lPos.x+diag, lPos.y+diag);
+                            default:
+                                rPos.sub(bPos).rotate(-angleDiff).add(bPos);
                         }
-//                        rPos = arrow.setAngle(0).add(bPos);
                     }
                 } else {
                     if (!isActualLeftGrab() || right.getX() < left.getX()) {
                         switch(mode) {
-                            case SHIMMY_E:
-                                lPos = new Vector2(rPos.x+ARMSPAN,rPos.y);
-                                break;
                             case SHIMMY_S:
                                 lPos = new Vector2(rPos.x,rPos.y-ARMSPAN);
                                 break;
-                            case SHIMMY_W:
-                                lPos = new Vector2(rPos.x-ARMSPAN,rPos.y);
+                            case PLUS_30:
+                                lPos.sub(bPos).rotate(30).add(bPos);
                                 break;
-                            case SHIMMY_N:
-                                lPos = new Vector2(rPos.x,rPos.y+ARMSPAN);
+                            case MINUS_30:
+                                lPos.sub(bPos).rotate(-30).add(bPos);
                                 break;
-                            case SHIMMY_SE:
-                                lPos = new Vector2(rPos.x+diag,rPos.y-diag);
-                                break;
-                            case SHIMMY_SW:
-                                lPos = new Vector2(rPos.x-diag,rPos.y-diag);
-                                break;
-                            case SHIMMY_NW:
-                                lPos = new Vector2(rPos.x-diag, rPos.y+diag);
-                                break;
-                            case SHIMMY_NE:
-                                lPos = new Vector2(rPos.x+diag, rPos.y+diag);
+                            default:
+                                lPos.sub(bPos).rotate(-angleDiff).add(bPos);
                         }
                     }
                 }
-
+//                System.out.println("     left: "+lPos.angle()+" right: "+rPos.angle());
+//                System.out.println("lPos ("+lPos.x+","+lPos.y+")  rPos ("+rPos.x+","+rPos.y+")");
+                mag = Math.min(lPos.cpy().sub(bPos).len(),rPos.cpy().sub(bPos).len());
+                lPos.sub(bPos).setLength(mag).add(bPos);
+                rPos.sub(bPos).setLength(mag).add(bPos);
                 canvas.beginDebug(camTrans);
                 canvas.drawLine(bPos.x * drawScale.x, bPos.y * drawScale.y, lPos.x * drawScale.x, lPos.y * drawScale.y, Color.BLUE, Color.BLUE);
                 canvas.drawLine(bPos.x * drawScale.x, bPos.y * drawScale.y, rPos.x * drawScale.x, rPos.y * drawScale.y, Color.RED, Color.RED);
