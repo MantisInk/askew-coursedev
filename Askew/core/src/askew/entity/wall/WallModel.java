@@ -57,20 +57,26 @@ public class WallModel extends PolygonObstacle {
 
     @Override
     public void setTextures(MantisAssetManager manager) {
-        TextureRegion wallTextureRegion;
-        wallTextureRegion = manager.getProcessedTextureMap().get(MantisAssetManager.WALL_TEXTURE);
-        edgeTextureRegion = manager.getProcessedTextureMap().get(MantisAssetManager.EDGE_TEXTURE);
-        edgeTextureRegion.setV(edgeTextureRegion.getV() + .003f);
-        edgeTextureRegion.setV2(edgeTextureRegion.getV2() - .003f);
+        if(circleTextureRegion == null) {
+            TextureRegion wallTextureRegion;
+            wallTextureRegion = manager.getProcessedTextureMap().get(MantisAssetManager.WALL_TEXTURE);
+            edgeTextureRegion = manager.getProcessedTextureMap().get(MantisAssetManager.EDGE_TEXTURE);
+            edgeTextureRegion.setV(.035f);
+            edgeTextureRegion.setV2(.965f);
 
-        circleTextureRegion = new TextureRegion(manager.get("texture/wall/corner.png",Texture.class));
-        setTexture(wallTextureRegion);
+            System.out.println("v:" + edgeTextureRegion.getV());
+
+            System.out.println("v2:" + edgeTextureRegion.getV2());
+
+            circleTextureRegion = new TextureRegion(manager.get("texture/wall/corner.png", Texture.class));
+            setTexture(wallTextureRegion);
+        }
     }
 
     @Override
     public void draw(GameCanvas canvas) {
 
-        float edgeWidth = 25f;
+        float edgeWidth = 16f;
 
         // Draw corners
         for (int i = 0; i < points.length; i+=2) {
