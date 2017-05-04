@@ -77,14 +77,16 @@ public class TutorialModeController extends GameModeController {
 	protected ArrayList<Trunk> trunkEntities = new ArrayList<Trunk>();
 	private ArrayList<Boolean> trunkGrabbed = new ArrayList<Boolean>();
 
+	// margin allowance for measuring distance from setpoints
 	private float[] inRangeAllowance = {0.02f, 0.02f, 0.02f, ARMSPAN*3/4, 0.02f};
-	// list of setpoints for drawing helplines
-	private int inRangeSetPt = -1;
-	private final int MINUS30 = -1;
-	private final int NEUTRAL = 0;
-	private final int PLUS30 = 1;
-	private int targetLine = PLUS30;
-	private float angleDiff = 0f;
+	// list of setpoints for drawing helplines & other vars
+	private int inRangeSetPt = -1;			// step progression within tutorial level
+	private final int MINUS30 = -1;			// constant as signal for drawing help lines -30 degrees from moving arm
+	private final int NEUTRAL = 0;			// constant as signal for drawing help lines when moving arm close to target
+	private final int PLUS30 = 1;			// constant as signal for drawing help lines +30 degrees from moving arm
+	private int targetLine = NEUTRAL;		// variable to store decision on what type of help line to draw
+	private float angleDiff = 0f; 			// keeps track of (arm angle minus target angle) for sloth to draw
+	private boolean swing = false; 			// does sloth have enough angular velocity to fling?
 	private float[] grabSetPoints = {14.019997f, 11.73999f, 9.399997f, 7.0199966f, 4.720001f};
 	private Vector2[] shimmySetPoints = {
 			new Vector2(12f,14f),
@@ -97,7 +99,13 @@ public class TutorialModeController extends GameModeController {
 			new Vector2(9f,16f),
 			new Vector2(16f, 14f),
 			new Vector2(24f, 14f)  };
-	private Vector2[] flingLandPoints = {
+	private Vector2[] flingLandPoints0 = {
+			new Vector2(6.5f, 16f),
+			new Vector2(12.5f, 14f),
+			new Vector2(21.5f, 14f),
+			new Vector2(26f, 17f)
+	};
+	private Vector2[] flingLandPointsf = {
 			new Vector2(6.5f, 16f),
 			new Vector2(12.5f, 14f),
 			new Vector2(21.5f, 14f),
@@ -282,7 +290,7 @@ public class TutorialModeController extends GameModeController {
 					}
 					System.out.println(inRangeSetPt);
 					if (inRangeSetPt < flingGrabbed.length-1 && !flingGrabbed[inRangeSetPt+1]) {
-						flingGrabbed[inRangeSetPt+1] = inRange(flingLandPoints[inRangeSetPt+1]);
+						flingGrabbed[inRangeSetPt+1] = inRange(flingLandPoints0[inRangeSetPt+1]);
 //						System.out.println(flingGrabbed[inRangeSetPt+1]);
 					}
 					break;
