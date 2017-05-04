@@ -81,6 +81,7 @@ public class SlothModel extends ComplexObstacle  {
     private transient Body rightTarget;
 
     // help lines for tutorial mode
+    public static final int DEFAULT = -1;
     public static final int SHIMMY_E = 0;
     public static final int SHIMMY_SE = 1;
     public static final int SHIMMY_S = 2;
@@ -1168,6 +1169,9 @@ public class SlothModel extends ComplexObstacle  {
                 if (isActualLeftGrab()) {
                     if (!isActualRightGrab() || left.getX() < right.getX()) {
                         switch(mode) {
+                            case SHIMMY_S:
+                                rPos = new Vector2(lPos.x,lPos.y-ARMSPAN);
+                                break;
                             case PLUS_30:
                                 rPos = (rPos.cpy().sub(bPos)).rotate(30).add(bPos);
                                 break;
@@ -1181,6 +1185,9 @@ public class SlothModel extends ComplexObstacle  {
                 } else {
                     if (!isActualLeftGrab() || right.getX() < left.getX()) {
                         switch(mode) {
+                            case SHIMMY_S:
+                                lPos = new Vector2(rPos.x,rPos.y-ARMSPAN);
+                                break;
                             case PLUS_30:
                                 lPos.sub(bPos).rotate(30).add(bPos);
                                 break;
