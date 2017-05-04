@@ -335,7 +335,7 @@ public class TutorialModeController extends GameModeController {
 
 	// checks if next set point is in range for changing arm help
 	public boolean inRange(Vector2 setpt) {
-		System.out.print("setpt: ("+setpt.x+","+setpt.y+")   ");
+//		System.out.print("setpt: ("+setpt.x+","+setpt.y+")   ");
 		Body lTarget = sloth.getLeftTarget();
 		Body rTarget = sloth.getRightTarget();
 		Body lHand = sloth.getLeftHand();
@@ -364,16 +364,16 @@ public class TutorialModeController extends GameModeController {
 				tAngle = (setpt.cpy().sub(rPos).angle()+360)%360;
 				aAngle = (lhPos.cpy().sub(rhPos).angle()+360) %360;
 
-				xrange = Math.abs(setpt.x - lPos.x) <= ARMSPAN+0.04f;
-				yrange = Math.abs(setpt.y - lPos.y) <= ARMSPAN+0.04f;
+				xrange = Math.abs(setpt.x - lPos.x) <= ARMSPAN+0.02f;
+				yrange = Math.abs(setpt.y - lPos.y) <= ARMSPAN+0.02f;
 				grabPos = lPos;
 			} else {
 				// move lh
 				tAngle = (setpt.cpy().sub(lPos).angle()+360)%360;
 				aAngle = (rhPos.cpy().sub(lhPos).angle()+360) %360;
 
-				xrange = Math.abs(setpt.x - rPos.x) <= ARMSPAN+0.04f;
-				yrange = Math.abs(setpt.y - rPos.y) <= ARMSPAN+0.04f;
+				xrange = Math.abs(setpt.x - rPos.x) <= ARMSPAN+0.02f;
+				yrange = Math.abs(setpt.y - rPos.y) <= ARMSPAN+0.02f;
 				grabPos = rPos;
 			}
 		}
@@ -383,8 +383,8 @@ public class TutorialModeController extends GameModeController {
 			tAngle = (setpt.cpy().sub(lPos).angle()+360)%360;
 			aAngle = (rhPos.cpy().sub(lhPos).angle()+360) %360;
 
-			xrange = Math.abs(setpt.x - lPos.x) <= ARMSPAN+0.04f;
-			yrange = Math.abs(setpt.y - lPos.y) <= ARMSPAN+0.04f;
+			xrange = Math.abs(setpt.x - lPos.x) <= ARMSPAN+0.02f;
+			yrange = Math.abs(setpt.y - lPos.y) <= ARMSPAN+0.02f;
 			grabPos = lPos;
 		}
 		if (rTarget != null) {
@@ -393,8 +393,8 @@ public class TutorialModeController extends GameModeController {
 			tAngle = (setpt.cpy().sub(rPos).angle()+360)%360;
 			aAngle = (lhPos.cpy().sub(rhPos).angle()+360) %360;
 
-			xrange = Math.abs(setpt.x - rPos.x) <= ARMSPAN+0.04f;
-			yrange = Math.abs(setpt.y - rPos.y) <= ARMSPAN+0.04f;
+			xrange = Math.abs(setpt.x - rPos.x) <= ARMSPAN+0.02f;
+			yrange = Math.abs(setpt.y - rPos.y) <= ARMSPAN+0.02f;
 			grabPos = rPos;
 		}
 
@@ -411,7 +411,7 @@ public class TutorialModeController extends GameModeController {
 
 
 //		System.out.println("target "+targetLine);
-		System.out.print("grabpt: ("+grabPos.x+","+grabPos.y+")   ");
+//		System.out.print("grabpt: ("+grabPos.x+","+grabPos.y+")   ");
 		checkCloseToCorner(setpt,grabPos);
 
 		return xrange && yrange;

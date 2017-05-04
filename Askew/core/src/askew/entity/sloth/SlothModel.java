@@ -1199,12 +1199,15 @@ public class SlothModel extends ComplexObstacle  {
 //                                break;
                             case PLUS_30:
                                 rPos = (rPos.cpy().sub(bPos)).rotate(30).add(bPos);
+//                                lPos = rPos.cpy().sub(bPos).rotate(180).add(bPos);
                                 break;
                             case MINUS_30:
                                 rPos = (rPos.cpy().sub(bPos)).rotate(-30).add(bPos);
+//                                lPos = rPos.cpy().sub(bPos).rotate(180).add(bPos);
                                 break;
                             default:
-                                rPos = (rPos.cpy().sub(bPos)).rotate(angleDiff).add(bPos);
+                                rPos.sub(bPos).rotate(-angleDiff).add(bPos);
+//                                lPos.sub(bPos).rotate(-angleDiff).add(bPos);
                         }
 //                        rPos = arrow.setAngle(0).add(bPos);
                     }
@@ -1236,25 +1239,28 @@ public class SlothModel extends ComplexObstacle  {
 //                                lPos = new Vector2(rPos.x+diag, rPos.y+diag);
 //                                break;
                             case PLUS_30:
-                                lPos = (lPos.cpy().sub(bPos)).rotate(30).add(bPos);
+                                lPos.sub(bPos).rotate(30).add(bPos);
+//                                rPos = lPos.cpy().sub(bPos).rotate(180).add(bPos);
                                 break;
                             case MINUS_30:
-                                lPos = (lPos.cpy().sub(bPos)).rotate(-30).add(bPos);
+                                lPos.sub(bPos).rotate(-30).add(bPos);
+//                                rPos = lPos.cpy().sub(bPos).rotate(180).add(bPos);
                                 break;
                             default:
-                                lPos = (lPos.cpy().sub(bPos)).rotate(-angleDiff).add(bPos);
+                                lPos.sub(bPos).rotate(-angleDiff).add(bPos);
+//                                rPos.sub(bPos).rotate(-angleDiff).add(bPos);
                         }
                     }
                 }
 //                lPos = (lPos.cpy().sub(bPos)).rotate(30).add(bPos);
 //                rPos = (rPos.cpy().sub(bPos)).rotate(30).add(bPos);
 //                System.out.println("     left: "+lPos.angle()+" right: "+rPos.angle());
-
-                System.out.println("lPos ("+lPos.x+","+lPos.y+")  rPos ("+rPos.x+","+rPos.y+")");
+                System.out.println("anglediff "+angleDiff);
+//                System.out.println("lPos ("+lPos.x+","+lPos.y+")  rPos ("+rPos.x+","+rPos.y+")");
                 mag = Math.min(lPos.cpy().sub(bPos).len(),rPos.cpy().sub(bPos).len());
                 lPos.sub(bPos).setLength(mag).add(bPos);
                 rPos.sub(bPos).setLength(mag).add(bPos);
-                System.out.println("lmag: "+lPos.cpy().sub(bPos).len()+"   rmag: "+rPos.cpy().sub(bPos).len());
+//                System.out.println("lmag: "+lPos.cpy().sub(bPos).len()+"   rmag: "+rPos.cpy().sub(bPos).len());
                 canvas.beginDebug(camTrans);
                 canvas.drawLine(bPos.x * drawScale.x, bPos.y * drawScale.y, lPos.x * drawScale.x, lPos.y * drawScale.y, Color.BLUE, Color.BLUE);
                 canvas.drawLine(bPos.x * drawScale.x, bPos.y * drawScale.y, rPos.x * drawScale.x, rPos.y * drawScale.y, Color.RED, Color.RED);
