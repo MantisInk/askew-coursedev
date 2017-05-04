@@ -30,6 +30,7 @@ public class BackgroundEntity extends Entity{
 
     protected transient  Vector2 positionCache = new Vector2();
     private transient Vector2 sizeCache = new Vector2();
+    protected transient Color tint;
 
 
     public BackgroundEntity() {
@@ -63,6 +64,7 @@ public class BackgroundEntity extends Entity{
         objectScale = new Vector2(1,1);
         setObjectScale(scalex,scaley);
         origin = new Vector2(1,1);
+        tint = new Color(color);
 
     }
 
@@ -176,7 +178,7 @@ public class BackgroundEntity extends Entity{
 
     @Override
     public void draw(GameCanvas canvas) {
-        draw(canvas, new Color(color));
+        draw(canvas, tint);
     }
 
     public void draw(GameCanvas canvas, Color tint) {
