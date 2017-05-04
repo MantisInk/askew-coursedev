@@ -1154,7 +1154,7 @@ public class SlothModel extends ComplexObstacle  {
 
     public void setTutorial() {tutorial = true;}
 
-    public void drawHelpLines(GameCanvas canvas, Affine2 camTrans, int mode) {
+    public void drawHelpLines(GameCanvas canvas, Affine2 camTrans, int mode, float angleDiff) {
         if (tutorial) {
             Obstacle left = bodies.get(PART_LEFT_HAND);
             Obstacle right = bodies.get(PART_RIGHT_HAND);
@@ -1167,82 +1167,94 @@ public class SlothModel extends ComplexObstacle  {
 //            float lAngle = (float) Math.toDegrees(lTheta);
 //            float rAngle = (float) Math.toDegrees(rTheta);
             float diag = ARMSPAN*(float)Math.cos(Math.PI/4);
+            float mag = lPos.cpy().sub(bPos).len();
 //            System.out.println("left: "+lAngle+" right: "+rAngle);
             if(isActualLeftGrab() || isActualRightGrab()) {
                 if (isActualLeftGrab()) {
                     if (!isActualRightGrab() || left.getX() < right.getX()) {
                         switch(mode) {
-                            case SHIMMY_E:
-                                rPos = new Vector2(lPos.x+ARMSPAN,lPos.y);
-                                break;
-                            case SHIMMY_S:
-                                rPos = new Vector2(lPos.x,lPos.y-ARMSPAN);
-                                break;
-                            case SHIMMY_W:
-                                rPos = new Vector2(lPos.x-ARMSPAN,lPos.y);
-                                break;
-                            case SHIMMY_N:
-                                rPos = new Vector2(lPos.x,lPos.y+ARMSPAN);
-                                break;
-                            case SHIMMY_SE:
-                                rPos = new Vector2(lPos.x+diag,lPos.y-diag);
-                                break;
-                            case SHIMMY_SW:
-                                rPos = new Vector2(lPos.x-diag,lPos.y-diag);
-                                break;
-                            case SHIMMY_NW:
-                                rPos = new Vector2(lPos.x-diag, lPos.y+diag);
-                                break;
-                            case SHIMMY_NE:
-                                rPos = new Vector2(lPos.x+diag, lPos.y+diag);
-                                break;
+//                            case SHIMMY_E:
+//                                rPos = new Vector2(lPos.x+ARMSPAN,lPos.y);
+//                                break;
+//                            case SHIMMY_S:
+//                                rPos = new Vector2(lPos.x,lPos.y-ARMSPAN);
+//                                break;
+//                            case SHIMMY_W:
+//                                rPos = new Vector2(lPos.x-ARMSPAN,lPos.y);
+//                                break;
+//                            case SHIMMY_N:
+//                                rPos = new Vector2(lPos.x,lPos.y+ARMSPAN);
+//                                break;
+//                            case SHIMMY_SE:
+//                                rPos = new Vector2(lPos.x+diag,lPos.y-diag);
+//                                break;
+//                            case SHIMMY_SW:
+//                                rPos = new Vector2(lPos.x-diag,lPos.y-diag);
+//                                break;
+//                            case SHIMMY_NW:
+//                                rPos = new Vector2(lPos.x-diag, lPos.y+diag);
+//                                break;
+//                            case SHIMMY_NE:
+//                                rPos = new Vector2(lPos.x+diag, lPos.y+diag);
+//                                break;
                             case PLUS_30:
                                 rPos = (rPos.cpy().sub(bPos)).rotate(30).add(bPos);
                                 break;
                             case MINUS_30:
                                 rPos = (rPos.cpy().sub(bPos)).rotate(-30).add(bPos);
                                 break;
+                            default:
+                                rPos = (rPos.cpy().sub(bPos)).rotate(angleDiff).add(bPos);
                         }
 //                        rPos = arrow.setAngle(0).add(bPos);
                     }
                 } else {
                     if (!isActualLeftGrab() || right.getX() < left.getX()) {
                         switch(mode) {
-                            case SHIMMY_E:
-                                lPos = new Vector2(rPos.x+ARMSPAN,rPos.y);
-                                break;
-                            case SHIMMY_S:
-                                lPos = new Vector2(rPos.x,rPos.y-ARMSPAN);
-                                break;
-                            case SHIMMY_W:
-                                lPos = new Vector2(rPos.x-ARMSPAN,rPos.y);
-                                break;
-                            case SHIMMY_N:
-                                lPos = new Vector2(rPos.x,rPos.y+ARMSPAN);
-                                break;
-                            case SHIMMY_SE:
-                                lPos = new Vector2(rPos.x+diag,rPos.y-diag);
-                                break;
-                            case SHIMMY_SW:
-                                lPos = new Vector2(rPos.x-diag,rPos.y-diag);
-                                break;
-                            case SHIMMY_NW:
-                                lPos = new Vector2(rPos.x-diag, rPos.y+diag);
-                                break;
-                            case SHIMMY_NE:
-                                lPos = new Vector2(rPos.x+diag, rPos.y+diag);
+//                            case SHIMMY_E:
+//                                lPos = new Vector2(rPos.x+ARMSPAN,rPos.y);
+//                                break;
+//                            case SHIMMY_S:
+//                                lPos = new Vector2(rPos.x,rPos.y-ARMSPAN);
+//                                break;
+//                            case SHIMMY_W:
+//                                lPos = new Vector2(rPos.x-ARMSPAN,rPos.y);
+//                                break;
+//                            case SHIMMY_N:
+//                                lPos = new Vector2(rPos.x,rPos.y+ARMSPAN);
+//                                break;
+//                            case SHIMMY_SE:
+//                                lPos = new Vector2(rPos.x+diag,rPos.y-diag);
+//                                break;
+//                            case SHIMMY_SW:
+//                                lPos = new Vector2(rPos.x-diag,rPos.y-diag);
+//                                break;
+//                            case SHIMMY_NW:
+//                                lPos = new Vector2(rPos.x-diag, rPos.y+diag);
+//                                break;
+//                            case SHIMMY_NE:
+//                                lPos = new Vector2(rPos.x+diag, rPos.y+diag);
+//                                break;
                             case PLUS_30:
                                 lPos = (lPos.cpy().sub(bPos)).rotate(30).add(bPos);
                                 break;
                             case MINUS_30:
                                 lPos = (lPos.cpy().sub(bPos)).rotate(-30).add(bPos);
                                 break;
+                            default:
+                                lPos = (lPos.cpy().sub(bPos)).rotate(-angleDiff).add(bPos);
                         }
                     }
                 }
 //                lPos = (lPos.cpy().sub(bPos)).rotate(30).add(bPos);
 //                rPos = (rPos.cpy().sub(bPos)).rotate(30).add(bPos);
 //                System.out.println("     left: "+lPos.angle()+" right: "+rPos.angle());
+
+                System.out.println("lPos ("+lPos.x+","+lPos.y+")  rPos ("+rPos.x+","+rPos.y+")");
+                mag = Math.min(lPos.cpy().sub(bPos).len(),rPos.cpy().sub(bPos).len());
+                lPos.sub(bPos).setLength(mag).add(bPos);
+                rPos.sub(bPos).setLength(mag).add(bPos);
+                System.out.println("lmag: "+lPos.cpy().sub(bPos).len()+"   rmag: "+rPos.cpy().sub(bPos).len());
                 canvas.beginDebug(camTrans);
                 canvas.drawLine(bPos.x * drawScale.x, bPos.y * drawScale.y, lPos.x * drawScale.x, lPos.y * drawScale.y, Color.BLUE, Color.BLUE);
                 canvas.drawLine(bPos.x * drawScale.x, bPos.y * drawScale.y, rPos.x * drawScale.x, rPos.y * drawScale.y, Color.RED, Color.RED);

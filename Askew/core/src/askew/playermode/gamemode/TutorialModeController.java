@@ -83,6 +83,7 @@ public class TutorialModeController extends GameModeController {
 	private final int NEUTRAL = 0;
 	private final int PLUS30 = 1;
 	private int targetLine = PLUS30;
+	private float angleDiff = 0f;
 	private Vector2[] shimmySetPoints = {
 			new Vector2(12f,14f),
 			new Vector2(12f,9f),
@@ -147,6 +148,7 @@ public class TutorialModeController extends GameModeController {
 		time = 0;
 		inRangeSetPt = -1;
 		targetLine = NEUTRAL;
+		angleDiff = 0f;
 		for(int i = 0; i < shimmyGrabbed.length; i++)
 			shimmyGrabbed[i] = false;
 
@@ -399,7 +401,10 @@ public class TutorialModeController extends GameModeController {
 			targetLine = PLUS30;
 		} else {
 			targetLine = NEUTRAL;
+			angleDiff = diff;
 		}
+
+
 //		System.out.println("target "+targetLine);
 		System.out.print("grabpt: ("+grabPos.x+","+grabPos.y+")   ");
 		checkCloseToCorner(setpt,grabPos);
@@ -433,55 +438,57 @@ public class TutorialModeController extends GameModeController {
 				break;
 			case STAGE_GRAB:
 				if(!grabbedAll)
-					sloth.drawHelpLines(canvas, camTrans, SHIMMY_S);
+					sloth.drawHelpLines(canvas, camTrans, SHIMMY_S, 0f);
 				break;
 			case STAGE_SHIMMY:
 				switch (targetLine) {
 					case PLUS30:
-						sloth.drawHelpLines(canvas, camTrans, PLUS_30);
+						sloth.drawHelpLines(canvas, camTrans, PLUS_30, 0f);
 						break;
 					case MINUS30:
-						sloth.drawHelpLines(canvas, camTrans, MINUS_30);
+						sloth.drawHelpLines(canvas, camTrans, MINUS_30, 0f);
 						break;
 					case NEUTRAL: {
+						Vector2 lastPt = shimmySetPoints[shimmySetPoints.length-1];
+						Vector2 pass = (inRangeSetPt < shimmySetPoints.length) ? shimmySetPoints[inRangeSetPt+1] : lastPt;
 						switch (inRangeSetPt) {
 							case 0:
 								if (!shimmyGrabbed[inRangeSetPt]) {
-									sloth.drawHelpLines(canvas, camTrans, SHIMMY_SE);
+									sloth.drawHelpLines(canvas, camTrans, SHIMMY_SE, angleDiff);
 								} else {
-									sloth.drawHelpLines(canvas, camTrans, SHIMMY_S);
+									sloth.drawHelpLines(canvas, camTrans, SHIMMY_S, angleDiff);
 								}
 								break;
 							case 1:
 								if (!shimmyGrabbed[inRangeSetPt]) {
-									sloth.drawHelpLines(canvas, camTrans, SHIMMY_SE);
+									sloth.drawHelpLines(canvas, camTrans, SHIMMY_SE, angleDiff);
 								} else {
-									sloth.drawHelpLines(canvas, camTrans, SHIMMY_E);
+									sloth.drawHelpLines(canvas, camTrans, SHIMMY_E, angleDiff);
 								}
 								break;
 							case 2:
 								if (!shimmyGrabbed[inRangeSetPt]) {
-									sloth.drawHelpLines(canvas, camTrans, SHIMMY_NE);
+									sloth.drawHelpLines(canvas, camTrans, SHIMMY_NE, angleDiff);
 								} else {
-									sloth.drawHelpLines(canvas, camTrans, SHIMMY_N);
+									sloth.drawHelpLines(canvas, camTrans, SHIMMY_N, angleDiff);
 								}
 								break;
 							case 3:
 								if (!shimmyGrabbed[inRangeSetPt]) {
-									sloth.drawHelpLines(canvas, camTrans, SHIMMY_NE);
+									sloth.drawHelpLines(canvas, camTrans, SHIMMY_NE, angleDiff);
 								} else {
-									sloth.drawHelpLines(canvas, camTrans, SHIMMY_E);
+									sloth.drawHelpLines(canvas, camTrans, SHIMMY_E, angleDiff);
 								}
 								break;
 							case 4:
 								if (!shimmyGrabbed[inRangeSetPt]) {
-									sloth.drawHelpLines(canvas, camTrans, SHIMMY_SE);
+									sloth.drawHelpLines(canvas, camTrans, SHIMMY_SE, angleDiff);
 								} else {
-									sloth.drawHelpLines(canvas, camTrans, SHIMMY_E);
+									sloth.drawHelpLines(canvas, camTrans, SHIMMY_E, angleDiff);
 								}
 								break;
 							default:
-								sloth.drawHelpLines(canvas, camTrans, SHIMMY_E);
+								sloth.drawHelpLines(canvas, camTrans, SHIMMY_E, angleDiff);
 						}
 						break;
 					}
@@ -493,7 +500,7 @@ public class TutorialModeController extends GameModeController {
 					case 1:
 					case 3:
 					default:
-						sloth.drawHelpLines(canvas, camTrans, SHIMMY_E);
+						sloth.drawHelpLines(canvas, camTrans, SHIMMY_E, 0f);
 				}
 				break;
 			case STAGE_VINE:
