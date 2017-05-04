@@ -66,4 +66,21 @@ public class RecordBook {
         }
         return true;
     }
+
+//    public boolean save() {
+//        try {
+//            FileWriter fw = new FileWriter(CONFIG_PATH);
+//            GsonBuilder gsonBuilder = new GsonBuilder();
+//            gsonBuilder.setPrettyPrinting();
+//            gsonBuilder.registerTypeAdapter(Entity.class, wrapper);
+//            Gson gson = gsonBuilder.create();
+//            gson.toJson(toSave, fw);
+//            fw.flush();
+//            fw.close();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//            return false;
+//        }
+//        return true;
+//    }
 }

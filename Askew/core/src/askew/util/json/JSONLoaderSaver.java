@@ -18,12 +18,14 @@ public class JSONLoaderSaver {
 
     private EntityWrapper wrapper;
 
-    public JSONLoaderSaver() {
-        wrapper = new EntityWrapper();
-        GsonBuilder gsonBuilder = new GsonBuilder();
-        gsonBuilder.setPrettyPrinting();
-        gsonBuilder.registerTypeAdapter(Entity.class, wrapper);
-        gson = gsonBuilder.create();
+    public JSONLoaderSaver(boolean record) {
+        if (!record) {
+            wrapper = new EntityWrapper();
+            GsonBuilder gsonBuilder = new GsonBuilder();
+            gsonBuilder.setPrettyPrinting();
+            gsonBuilder.registerTypeAdapter(Entity.class, wrapper);
+            gson = gsonBuilder.create();
+        }
     }
 
     public LevelModel loadLevel(String levelName) throws FileNotFoundException {
