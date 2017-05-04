@@ -54,6 +54,9 @@ public class WallModel extends PolygonObstacle {
         TextureRegion wallTextureRegion;
         wallTextureRegion = manager.getProcessedTextureMap().get(MantisAssetManager.WALL_TEXTURE);
         edgeTextureRegion = manager.getProcessedTextureMap().get(MantisAssetManager.EDGE_TEXTURE);
+        edgeTextureRegion.setV(edgeTextureRegion.getV() + .003f);
+        edgeTextureRegion.setV2(edgeTextureRegion.getV2() - .003f);
+
         circleTextureRegion = new TextureRegion(manager.get("texture/wall/corner.png",Texture.class));
         setTexture(wallTextureRegion);
     }
@@ -66,12 +69,12 @@ public class WallModel extends PolygonObstacle {
         // Draw corners
         for (int i = 0; i < points.length; i+=2) {
             //TextureRegion region, Color tint, float ox, float oy,float x, float y, float angle, float sx, float sy)
-            canvas.draw(circleTextureRegion,Color.WHITE,circleTextureRegion.getRegionWidth()/2f,circleTextureRegion.getRegionHeight()/2f,(getX()+points[i])*drawScale.x,(getY()+points[i+1])*drawScale.y,0,edgeWidth/edgeTextureRegion.getRegionHeight()/2,edgeWidth/edgeTextureRegion.getRegionHeight()/2);
+            canvas.draw(circleTextureRegion,Color.LIGHT_GRAY,circleTextureRegion.getRegionWidth()/2f,circleTextureRegion.getRegionHeight()/2f,(getX()+points[i])*drawScale.x,(getY()+points[i+1])*drawScale.y,0,edgeWidth/edgeTextureRegion.getRegionHeight()/2,edgeWidth/edgeTextureRegion.getRegionHeight()/2);
         }
 
         // Base draw
         if (region != null) {
-            canvas.draw(region, Color.BROWN ,0,0,getX()*drawScale.x,getY()*drawScale.y,getAngle(),1,1);
+            canvas.draw(region, new Color(0x00877AFF) ,0,0,getX()*drawScale.x,getY()*drawScale.y,getAngle(),1,1);
         }
 
         // TODO: Still need to set scaling on y, determines how thick
@@ -83,7 +86,7 @@ public class WallModel extends PolygonObstacle {
 
             edgeTextureRegion.setRegionWidth((int)Math.sqrt((drawScale.y * drawScale.y * (y2 - y1) * (y2 - y1))
                     + (drawScale.x * drawScale.x *(x2 - x1) * (x2 - x1))));
-            canvas.draw(edgeTextureRegion, Color.LIGHT_GRAY, 0, edgeTextureRegion.getRegionHeight()/2,
+            canvas.draw(edgeTextureRegion, Color.WHITE, 0, 0,
                     (getX()+x1) * drawScale.x,(getY()+y1) * drawScale.y,
                     (float)Math.atan2(y2-y1,x2-x1), 1,edgeWidth/edgeTextureRegion.getRegionHeight());
         }
