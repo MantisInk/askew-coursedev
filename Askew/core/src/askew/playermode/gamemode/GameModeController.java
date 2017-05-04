@@ -209,7 +209,7 @@ public class GameModeController extends WorldController {
 
 	// Physics constants for initialization
 	/** The new heavier gravity for this world (so it is not so floaty) */
-	private static final float  DEFAULT_GRAVITY = -15.7f;
+	private static final float  DEFAULT_GRAVITY = -12.5f;//-15.7f;
 
 	// Physics objects for the game
 	/** Reference to the character avatar */
@@ -309,6 +309,7 @@ public class GameModeController extends WorldController {
 		victory_mode = VICTORY_NEXT;
 		currentControl = GlobalConfiguration.getInstance().getAsInt("flowControlMode");
 		currentMovement = GlobalConfiguration.getInstance().getAsInt("flowMovementMode");
+		System.out.println("currentmovmentgm:" + currentMovement);
 //		System.out.println("control "+currentControl+" movement "+currentMovement);
 		populateLevel();
 		// set death height

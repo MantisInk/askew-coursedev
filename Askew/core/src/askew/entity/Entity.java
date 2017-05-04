@@ -59,6 +59,28 @@ public abstract class Entity implements Comparable{
     public abstract void update(float delta);
     public abstract void draw(GameCanvas canvas);
 
+    public Vector2 getModifiedPosition(float adjustedCxCamera, float adjustedCyCamera){
+        Vector2 pos = getPosition();
+        if(this instanceof BackgroundEntity){
+            float offsetx = ((this.getPosition().x - adjustedCxCamera)) / ((BackgroundEntity) this).getDepth();
+            float offsety = ((this.getPosition().y - adjustedCyCamera)) / ((BackgroundEntity) this).getDepth();
+            pos.set(adjustedCxCamera  + offsetx, adjustedCyCamera + offsety);
+
+        }
+        return pos;
+    }
+
+    public void setModifiedPosition( float x, float y, float adjustedCxCamera, float adjustedCyCamera){
+        if(this instanceof BackgroundEntity){
+            this.setPosition(x * ((BackgroundEntity) this).getDepth(), y * ((BackgroundEntity) this).getDepth());
+            this.setPosition( (x - adjustedCxCamera) * ((BackgroundEntity) this).getDepth() + adjustedCxCamera,
+                    (y - adjustedCyCamera) * ((BackgroundEntity) this).getDepth() + adjustedCyCamera);
+
+        } else{
+            this.setPosition(x,y);
+        }
+    }
+
     @Override
     public int compareTo(Object o) {
 

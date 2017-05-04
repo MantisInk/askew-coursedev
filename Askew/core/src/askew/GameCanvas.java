@@ -372,8 +372,9 @@ public class GameCanvas {
 		global.idt();
 		global.scl(sx,sy,1.0f);
     	global.mulLeft(camera.combined);
-		spriteBatch.setProjectionMatrix(global);
 
+		setBlendState(BlendState.NO_PREMULT);
+		spriteBatch.setProjectionMatrix(global);
     	spriteBatch.begin();
     	active = DrawPass.STANDARD;
     }
@@ -386,6 +387,7 @@ public class GameCanvas {
     public void begin() {
 		spriteBatch.setProjectionMatrix(camera.combined);
     	spriteBatch.begin();
+		setBlendState(BlendState.NO_PREMULT);
     	active = DrawPass.STANDARD;
     }
 

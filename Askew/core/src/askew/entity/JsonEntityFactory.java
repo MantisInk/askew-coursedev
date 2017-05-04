@@ -97,7 +97,25 @@ public class JsonEntityFactory {
         for (int i = 0; i < arrayPoints.length; i++) {
             copy[i] = arrayPoints[i];
         }
-        wall = new WallModel(x, y, copy);
+        String colorString;
+        try {colorString = instance.get("color").getAsString();}
+        catch(NullPointerException e){
+            colorString = "0xffffffff";
+        }
+        int intColor;
+        try {
+            long color = instance.get("color").getAsLong();
+            intColor = (int) color;
+        } catch (Exception e) {
+            try {
+                long color = Long.decode(colorString);
+                intColor = (int) color;
+            } catch (Exception ee) {
+                long color = Long.valueOf(colorString, 16);
+                intColor = (int) color;
+            }
+        }
+        wall = new WallModel(x, y, copy,intColor);
         wall.setTextures(manager);
         return wall;
     }

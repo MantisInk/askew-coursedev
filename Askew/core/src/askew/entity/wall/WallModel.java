@@ -27,14 +27,20 @@ public class WallModel extends PolygonObstacle {
     private float x;
     private float y;
 
+    private int color;
+    protected transient Color tint;
+
     /** The points that define the convex hull of the wall. Must be an even number (2n) of points representing (x1,y1) ... (xn,yn) */
     private float[] points;
 
-    public WallModel(float x, float y, float[] points) {
+    public WallModel(float x, float y, float[] points, int color) {
         super(points, x, y);
         this.x = x;
         this.y = y;
         this.points = points;
+        this.color = color;
+
+        tint = new Color(color);
         this.setBodyType(BodyDef.BodyType.StaticBody);
         this.setDensity(0);
         this.setFriction(WALL_FRICTION);
@@ -51,27 +57,36 @@ public class WallModel extends PolygonObstacle {
 
     @Override
     public void setTextures(MantisAssetManager manager) {
-        TextureRegion wallTextureRegion;
-        wallTextureRegion = manager.getProcessedTextureMap().get(MantisAssetManager.WALL_TEXTURE);
-        edgeTextureRegion = manager.getProcessedTextureMap().get(MantisAssetManager.EDGE_TEXTURE);
-        circleTextureRegion = new TextureRegion(manager.get("texture/wall/corner.png",Texture.class));
-        setTexture(wallTextureRegion);
+        if(circleTextureRegion == null) {
+            TextureRegion wallTextureRegion;
+            wallTextureRegion = manager.getProcessedTextureMap().get(MantisAssetManager.WALL_TEXTURE);
+            edgeTextureRegion = manager.getProcessedTextureMap().get(MantisAssetManager.EDGE_TEXTURE);
+            edgeTextureRegion.setV(.035f);
+            edgeTextureRegion.setV2(.965f);
+
+            System.out.println("v:" + edgeTextureRegion.getV());
+
+            System.out.println("v2:" + edgeTextureRegion.getV2());
+
+            circleTextureRegion = new TextureRegion(manager.get("texture/wall/corner.png", Texture.class));
+            setTexture(wallTextureRegion);
+        }
     }
 
     @Override
     public void draw(GameCanvas canvas) {
 
-        float edgeWidth = 25f;
+        float edgeWidth = 16f;
 
         // Draw corners
         for (int i = 0; i < points.length; i+=2) {
             //TextureRegion region, Color tint, float ox, float oy,float x, float y, float angle, float sx, float sy)
-            canvas.draw(circleTextureRegion,Color.WHITE,circleTextureRegion.getRegionWidth()/2f,circleTextureRegion.getRegionHeight()/2f,(getX()+points[i])*drawScale.x,(getY()+points[i+1])*drawScale.y,0,edgeWidth/edgeTextureRegion.getRegionHeight(),edgeWidth/edgeTextureRegion.getRegionHeight());
+            canvas.draw(circleTextureRegion,tint,circleTextureRegion.getRegionWidth()/2f,circleTextureRegion.getRegionHeight()/2f,(getX()+points[i])*drawScale.x,(getY()+points[i+1])*drawScale.y,0,edgeWidth/edgeTextureRegion.getRegionHeight()/2,edgeWidth/edgeTextureRegion.getRegionHeight()/2);
         }
 
         // Base draw
         if (region != null) {
-            canvas.draw(region, Color.BROWN ,0,0,getX()*drawScale.x,getY()*drawScale.y,getAngle(),1,1);
+            canvas.draw(region, tint ,0,0,getX()*drawScale.x,getY()*drawScale.y,getAngle(),1,1);
         }
 
         // TODO: Still need to set scaling on y, determines how thick
@@ -83,7 +98,7 @@ public class WallModel extends PolygonObstacle {
 
             edgeTextureRegion.setRegionWidth((int)Math.sqrt((drawScale.y * drawScale.y * (y2 - y1) * (y2 - y1))
                     + (drawScale.x * drawScale.x *(x2 - x1) * (x2 - x1))));
-            canvas.draw(edgeTextureRegion, Color.LIGHT_GRAY, 0, 0,
+            canvas.draw(edgeTextureRegion, tint, 0, 0,
                     (getX()+x1) * drawScale.x,(getY()+y1) * drawScale.y,
                     (float)Math.atan2(y2-y1,x2-x1), 1,edgeWidth/edgeTextureRegion.getRegionHeight());
         }

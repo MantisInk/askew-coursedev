@@ -27,6 +27,7 @@ import askew.playermode.WorldController;
 import askew.playermode.gamemode.GameModeController;
 import askew.playermode.leveleditor.button.Button;
 import askew.playermode.leveleditor.button.ButtonList;
+import askew.playermode.leveleditor.button.MenuArrowButton;
 import askew.playermode.leveleditor.button.ToggleButton;
 import askew.util.RecordBook;
 import askew.util.json.JSONLoaderSaver;
@@ -119,16 +120,26 @@ public class LevelEditorController extends WorldController {
 	public static final float GUI_LOWER_BAR_HEIGHT = 200.f;
 	public static final float GUI_LEFT_BAR_WIDTH = 200.f;
 	public static final float GUI_LEFT_BAR_MARGIN = 16f;
+	public static final float GUI_EMARROW_WIDTH = 32f;
 
 	public float MAX_SNAP_DISTANCE = 1f;
 	public float CAMERA_PAN_SPEED = 20f;
 
 	private EntityTree entityTree;
 	private Entity selected;
+	private Entity temporary;
 	private Button manip;
 	private boolean dragging = false;
 	private boolean creating = false;
 	private boolean snapping = false;
+	private boolean movefar = false;
+	private boolean dragmode = false;
+	private boolean prevclick = false;
+	private boolean currentclick = false;
+	private int entitiesPerPage;
+
+	private int entityMenuPage = 0;
+
 	private GameModeController gmc;
 
 	private ButtonList buttons;
@@ -158,6 +169,8 @@ public class LevelEditorController extends WorldController {
 			"H: Toggle this help text";
 	private boolean loadingLevelPrompt;
 	private boolean shouldDrawGrid;
+
+	private Vector2 temp;
 
 	/**
 	 * Preloads the assets for this controller.
@@ -295,26 +308,135 @@ public class LevelEditorController extends WorldController {
 		buttons.add(new Button(GUI_LEFT_BAR_MARGIN, 3 * GUI_LEFT_BAR_MARGIN,
 				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
 				"JSON", 1, "globalconfig"));
+
 		buttons.add(new ToggleButton(GUI_LEFT_BAR_MARGIN, 5 * GUI_LEFT_BAR_MARGIN,
 				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
 				"LEOptions", 0, "snapping"));
 
-		buttons.add(new Button(GUI_LEFT_BAR_MARGIN, 9 * GUI_LEFT_BAR_MARGIN,
+		buttons.add(new ToggleButton(GUI_LEFT_BAR_MARGIN, 7 * GUI_LEFT_BAR_MARGIN,
 				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
-				"Entity", 0, "edit"));
+				"LEOptions", 1, "move far"));
+
+		buttons.add(new ToggleButton(GUI_LEFT_BAR_MARGIN, 9 * GUI_LEFT_BAR_MARGIN,
+				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
+				"LEOptions", 2, "drag mode"));
 
 		buttons.add(new Button(GUI_LEFT_BAR_MARGIN, 11 * GUI_LEFT_BAR_MARGIN,
 				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
-				"Entity", 1, "delete"));
+				"Entity", 0, "edit"));
 
 		buttons.add(new Button(GUI_LEFT_BAR_MARGIN, 13 * GUI_LEFT_BAR_MARGIN,
 				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
-				"Entity", 2, "copy"));
+				"Entity", 1, "delete"));
 
 		buttons.add(new Button(GUI_LEFT_BAR_MARGIN, 15 * GUI_LEFT_BAR_MARGIN,
 				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
-				"Entity", 3, "deselect"));
+				"Entity", 2, "duplicate"));
 
+		buttons.add(new Button(GUI_LEFT_BAR_MARGIN, 19 * GUI_LEFT_BAR_MARGIN,
+				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
+				"Entity", 4, "deselect"));
+
+		buttons.add(new MenuArrowButton(GUI_LEFT_BAR_WIDTH, 0,
+				GUI_EMARROW_WIDTH, GUI_LOWER_BAR_HEIGHT,
+				"EntityMenu", 0, "left", 0,true));
+
+		buttons.add(new MenuArrowButton(canvas.getWidth()-GUI_EMARROW_WIDTH, 0,
+				GUI_EMARROW_WIDTH, GUI_LOWER_BAR_HEIGHT,
+				"EntityMenu", 0, "right", 0,false));
+
+	}
+
+	private boolean processButtons(Button b){
+		if(b != null){
+			switch (b.getGroup()){
+				case("JSON"):
+					switch (b.getName()){
+						case("levelgui"):
+							makeGuiWindow();
+							break;
+						case("globalconfig"):
+							promptGlobalConfig();
+							break;
+						default:
+							break;
+					}
+					break;
+				case("LEOptions"):
+					switch (b.getName()){
+						case("snapping"):
+							ToggleButton t = ((ToggleButton)b);
+							t.setOn(!t.isOn());
+							snapping = t.isOn();
+							break;
+						case("move far"):
+							t = ((ToggleButton)b);
+							t.setOn(!t.isOn());
+							movefar = t.isOn();
+							break;
+						case("drag mode"):
+							t = ((ToggleButton)b);
+							t.setOn(!t.isOn());
+							dragmode = t.isOn();
+							break;
+
+						default:
+							break;
+					}
+					break;
+				case("Entity"):
+					switch(b.getName()){
+						case("edit"):
+							if (selected != null) {
+								promptTemplate(selected);
+								objects.remove(selected);
+								selected = null;
+							}
+							dragging = false;
+							creating = false;
+							break;
+						case("delete"):
+							if (selected != null) {
+								objects.remove(selected);
+								selected = null;
+							}
+							dragging = false;
+							creating = false;
+							break;
+						case("duplicate"):
+							if(selected != null)
+								copyEntity(selected);
+							break;
+						case("deselect"):
+							selected = null;
+							dragging = false;
+							creating = false;
+							break;
+						default:
+							break;
+					}
+				case("EntityMenu"):
+					switch (b.getName()){
+						case("left"):
+							entityMenuPage--;
+							entityMenuPage = entityMenuPage % ((int)(entityTree.current.children.size()/entitiesPerPage)+1);
+							break;
+						case("right"):
+							entityMenuPage++;
+							entityMenuPage = entityMenuPage % ((int)(entityTree.current.children.size()/entitiesPerPage)+1);
+							break;
+						default:
+							break;
+					}
+					break;
+				default:
+					break;
+			}
+			return true;
+		}
+		else{
+			return false;
+		}
 	}
 
 	//region Utility Helpers
@@ -353,7 +475,7 @@ public class LevelEditorController extends WorldController {
 				entity = new OwlModel(x,y);
 				break;
 			case "WallModel":
-				entity = new WallModel(x,y,new float[] {0,0,0f,1f,1f,1f,1f,0f});
+				entity = new WallModel(x,y,new float[] {0,0,0f,1f,1f,1f,1f,0f}, 0xFFFFFFFF);
 				break;
 			case "ThornModel":
 				entity = new ThornModel(x,y,1,0);
@@ -392,7 +514,12 @@ public class LevelEditorController extends WorldController {
 		Vector2 mouse = new Vector2(adjustedMouseX, adjustedMouseY);
 		float minDistance = Float.MAX_VALUE;
 		for (Entity e : objects) {
-			float curDist = e.getPosition().dst(mouse);
+			Vector2 pos = e.getPosition();
+			if(movefar){
+				pos = e.getModifiedPosition(adjustedCxCamera,adjustedCyCamera);
+			}
+
+			float curDist = pos.dst(mouse);
 			if (curDist < minDistance) {
 				found = e;
 				minDistance = curDist;
@@ -411,71 +538,7 @@ public class LevelEditorController extends WorldController {
 
 	}
 
-	private boolean processButtons(Button b){
-		if(b != null){
-			switch (b.getGroup()){
-				case("JSON"):
-					switch (b.getName()){
-						case("levelgui"):
-							makeGuiWindow();
-							break;
-						case("globalconfig"):
-							promptGlobalConfig();
-							break;
-						default:
-							break;
-					}
-					break;
-				case("LEOptions"):
-					switch (b.getName()){
-						case("snapping"):
-							ToggleButton t = ((ToggleButton)b);
-							t.setOn(!t.isOn());
-							snapping = t.isOn();
-							break;
-						default:
-							break;
-					}
-					break;
-				case("Entity"):
-					switch(b.getName()){
-						case("edit"):
-							if (selected != null) {
-								promptTemplate(selected);
-								objects.remove(selected);
-								selected = null;
-							}
-							dragging = false;
-							creating = false;
-							break;
-						case("delete"):
-							if (selected != null) {
-								objects.remove(selected);
-								selected = null;
-							}
-							dragging = false;
-							creating = false;
-							break;
-						case("copy"):
 
-							break;
-						case("deselect"):
-							selected = null;
-							dragging = false;
-							creating = false;
-							break;
-						default:
-							break;
-					}
-				default:
-					break;
-			}
-			return true;
-		}
-		else{
-			return false;
-		}
-	}
 	//endregion
 
 	/**
@@ -570,6 +633,7 @@ public class LevelEditorController extends WorldController {
 					if (button == -2) {
 						//do nothing
 					} else if (button == -1) {
+						entityMenuPage = 0;
 						if (entityTree.current.parent != null) {
 							entityTree.upFolder();
 							creating = false;
@@ -577,6 +641,7 @@ public class LevelEditorController extends WorldController {
 						}
 					} else {
 						if (!entityTree.current.children.get(button).isLeaf) {
+							entityMenuPage = 0;
 							entityTree.setCurrent(entityTree.current.children.get(button));
 							creating = false;
 							selected = null;
@@ -591,9 +656,16 @@ public class LevelEditorController extends WorldController {
 				} else {
 					creating = false;
 					dragging = false;
-					selected = entityQuery();
-					if (selected != null) {
-						//createXY(creationOptions[entityIndex], adjustedMouseX,adjustedMouseY);
+					if (dragmode) {
+						if (entityQuery() != selected) {
+							selected = null;
+						}
+						if (selected == null) {
+							temporary = entityQuery();
+						}
+					} else {
+
+						selected = entityQuery();
 					}
 				}
 
@@ -605,10 +677,13 @@ public class LevelEditorController extends WorldController {
 
 			}else if(mouseY * worldScale.y <= GUI_LOWER_BAR_HEIGHT){
 
-			} else {
+			}else{
 				dragging = true;
 				if(selected != null){
 					selected.setPosition(adjustedMouseX, adjustedMouseY);
+					if(movefar){
+						selected.setModifiedPosition( adjustedMouseX, adjustedMouseY, adjustedCxCamera, adjustedCyCamera);
+					}
 					selected.setTextures(getMantisAssetManager());
 				}else{
 					// find nearest wall, custom entity query
@@ -662,15 +737,20 @@ public class LevelEditorController extends WorldController {
 				if(selected != null){
 					if(dragging) {
 						dragging = false;
-						if (selected != null) {
-							selected.setPosition(adjustedMouseX, adjustedMouseY);
-							selected.setTextures(getMantisAssetManager());
+
+						selected.setPosition(adjustedMouseX, adjustedMouseY);
+						if(movefar){
+							selected.setModifiedPosition( adjustedMouseX, adjustedMouseY, adjustedCxCamera, adjustedCyCamera);
 						}
+						selected.setTextures(getMantisAssetManager());
+
 						if (creating) {
 							promptTemplate(selected);
 						}
 					}
 				}else {
+					selected = temporary;
+					temporary = null;
 
 				}
 			}
@@ -744,16 +824,15 @@ public class LevelEditorController extends WorldController {
 		}
 
 		// horizontal
-		for (float i = ((int)(-cyCamera * worldScale.x) % dpsH - dpsH); i < canvas.getHeight(); i += dpsH) {
+		for (float i = ((int)(-cyCamera * worldScale.y) % dpsH - dpsH); i < canvas.getHeight(); i += dpsH) {
 			gridLineRenderer.setColor(Color.FOREST);
 			gridLineRenderer.line(0, i,canvas.getWidth(),i);
 		}
 		gridLineRenderer.end();
-		gridLineRenderer.begin(ShapeRenderer.ShapeType.Line);
-
 		// While we're at it, just draw the level bounds.
 		gridLineRenderer.setColor(Color.RED);
 		Gdx.gl.glLineWidth(4);
+		gridLineRenderer.begin(ShapeRenderer.ShapeType.Line);
 		float minPixelsX = levelModel.getMinX() * worldScale.x - cxCamera *
 				worldScale.x;
 		float minPixelsY = levelModel.getMinY() * worldScale.y - cyCamera *
@@ -782,17 +861,28 @@ public class LevelEditorController extends WorldController {
 		Gdx.gl.glLineWidth(5);
 		canvas.beginDebug(camTrans);
 		Entity ent = entityQuery();
-		if(ent!= null)
-			canvas.drawPhysics(circleShape, new Color(0xcfcf000f),ent.getPosition().x , ent.getPosition().y ,worldScale.x,worldScale.y );
+
+
+		if(ent!= null) {
+			temp = ent.getPosition();
+			if(movefar){
+				temp = ent.getModifiedPosition(adjustedCxCamera,adjustedCyCamera);
+			}
+			canvas.drawPhysics(circleShape, new Color(0xcfcf000f), temp.x, temp.y, worldScale.x, worldScale.y);
+		}
 
 		circleShape.setRadius(.05f);
 		for(Entity e : objects){
+			temp = e.getPosition();
+			if(movefar){
+				temp = e.getModifiedPosition(adjustedCxCamera,adjustedCyCamera);
+			}
 			//if(e.getPosition().x * worldScale.x  > GUI_LEFT_BAR_WIDTH && )
-			canvas.drawPhysics(circleShape, new Color(0xcfcf000f),e.getPosition().x , e.getPosition().y ,worldScale.x,worldScale.y );
+			canvas.drawPhysics(circleShape, new Color(0xcfcf000f),temp.x , temp.y ,worldScale.x,worldScale.y );
 			if(e instanceof BackgroundEntity){
 				float offsetx = ((e.getPosition().x - adjustedCxCamera) * worldScale.x) / ((BackgroundEntity) e).getDepth();
 				float offsety = ((e.getPosition().y - adjustedCyCamera) * worldScale.y) / ((BackgroundEntity) e).getDepth();
-				canvas.drawLine(e.getPosition().x *worldScale.x, e.getPosition().y *worldScale.y , adjustedCxCamera*worldScale.x  + offsetx, adjustedCyCamera*worldScale.y + offsety, Color.YELLOW, Color.CHARTREUSE);
+				canvas.drawLine(temp.x *worldScale.x, temp.y *worldScale.y , adjustedCxCamera*worldScale.x  + offsetx, adjustedCyCamera*worldScale.y + offsety, Color.YELLOW, Color.CHARTREUSE);
 			}
 		}
 
@@ -800,21 +890,6 @@ public class LevelEditorController extends WorldController {
 
 	}
 
-	public Vector2 getModifiedPosition(Entity e){
-		Vector2 pos = e.getPosition();
-		if(e instanceof BackgroundEntity){
-			pos.scl(1f/((BackgroundEntity) e).getDepth());
-		}
-		return pos;
-	}
-
-	public void setModifiedPosition(Entity e, float x, float y){
-		if(e instanceof BackgroundEntity){
-			e.setPosition(x * ((BackgroundEntity) e).getDepth(), y * ((BackgroundEntity) e).getDepth());
-		} else{
-			e.setPosition(x,y);
-		}
-	}
 
 	//ox and oy are bottom left corner
 	public boolean inBounds(float x ,float y, float ox ,float oy, float width, float height){
@@ -823,7 +898,7 @@ public class LevelEditorController extends WorldController {
 
 	private int getEntityMenuButton(float mousex, float mousey){
 		float margin = 18f;
-		float startx = GUI_LEFT_BAR_WIDTH + margin;
+		float startx = GUI_LEFT_BAR_WIDTH + margin + GUI_EMARROW_WIDTH;
 		float starty = GUI_LOWER_BAR_HEIGHT - margin;
 		float sizex = 64f;
 		float sizey = 64f;
@@ -832,11 +907,19 @@ public class LevelEditorController extends WorldController {
 			return -1;
 		}
 
-		for(int i = 0; i < entityTree.current.children.size(); i++) {
-			float x = startx + ((i + 1) * (sizex + margin));
-			float y = starty - sizey;
+		float x;
+		float y;
+		for(int i = 0; i < entitiesPerPage; i++) {
+			if(i < (entitiesPerPage/2)+1) {
+				x = startx + ((i + 1) * (sizex + margin));
+				y = starty - sizey;
+			}
+			else{
+				x = startx + ((i - (entitiesPerPage/2)+1) * (sizex + margin));
+				y = starty - sizey - margin - sizey;
+			}
 			if (inBounds(mousex, mousey, x, y, sizex, sizey)) {
-				return i;
+				return i  + entitiesPerPage * entityMenuPage;
 			}
 
 		}
@@ -846,39 +929,67 @@ public class LevelEditorController extends WorldController {
 	}
 
 	private void drawEntityMenu(){
+		int numChildren = entityTree.current.children.size();
+
 		float margin = 18f;
-		float startx = GUI_LEFT_BAR_WIDTH + margin;
+		float startx = GUI_LEFT_BAR_WIDTH + margin + GUI_EMARROW_WIDTH;
 		float starty = GUI_LOWER_BAR_HEIGHT - margin;
 		float sizex = 64f;
 		float sizey = 64f;
 
+		float oneUnit = sizex + margin;
+		float totalWidth = canvas.getWidth() - GUI_LEFT_BAR_WIDTH - (2*GUI_EMARROW_WIDTH);
+
+		int entitiesPerRow = (int)(totalWidth/oneUnit);
+		entitiesPerPage = 2 * entitiesPerRow -1;
+
+
 		float mousex = mouseX * worldScale.x;
 		float mousey = mouseY * worldScale.y;
 
-		Texture tex = upFolder;
+		Texture tex;
+		float x = 0;
+		float y = 0;
+		String name;
 
-		if(entityTree.current.parent == null){
-			tex = placeholder;
-		}
-		if(inBounds(mousex,mousey,startx,starty-sizey,sizex,sizey)){
-			canvas.draw(yellowbox ,Color.WHITE,0,0,startx - 3f ,starty - sizey -3f ,0,(sizex+6f) /yellowbox.getWidth(), (sizey + 6f)/yellowbox.getHeight());
-		}
-		canvas.draw(tex ,Color.WHITE,0,tex.getHeight(),startx ,starty,0,sizex /tex.getWidth(), sizey/tex.getHeight());
+		for(int i = 0;  i <= entitiesPerPage; i++){
 
-		for(int i = 0; i < entityTree.current.children.size(); i++){
-
-			tex = entityTree.current.children.get(i).texture;
-			if (!entityTree.current.children.get(i).isLeaf){
-				tex = folder;
+			if (i == 0) {
+				x = startx;
+				y = starty - sizey;
+				tex = upFolder;
+				name = "Up Folder";
+				if (entityTree.current.parent == null) {
+					tex = placeholder;
+					name = "";
+				}
 			}
-			float x = startx + ((i + 1) * (sizex + margin));
-			float y = starty - sizey;
-			if(inBounds(mousex,mousey,x,y,sizex,sizey)){
-				canvas.draw(yellowbox ,Color.WHITE,0,0,x - 3f ,y-3f ,0,(sizex+6f) /yellowbox.getWidth(), (sizey + 6f)/yellowbox.getHeight());
-			}
-			canvas.draw(tex ,Color.WHITE,0,0,x ,y,0,sizex /tex.getWidth(), sizey/tex.getHeight());
-			canvas.drawTextStandard(entityTree.current.children.get(i).name, x, y - 10f);
+			else {
+				if (i < entitiesPerRow) {
+					x = startx + (i * (sizex + margin));
+					y = starty - sizey;
 
+
+				} else {
+
+					x = startx + ((i - entitiesPerRow) * (sizex + margin));
+					y = starty - sizey - margin - sizey;
+				}
+				if (i + entitiesPerPage * entityMenuPage - 1 >= entityTree.current.children.size() || i + entitiesPerPage * entityMenuPage - 1 < 0) {
+					break;
+				}
+				tex = entityTree.current.children.get(i + entitiesPerPage * entityMenuPage - 1).texture;
+				name = entityTree.current.children.get(i + entitiesPerPage * entityMenuPage - 1).name;
+				if (!entityTree.current.children.get(i + entitiesPerPage * entityMenuPage - 1).isLeaf) {
+					tex = folder;
+				}
+
+			}
+			if (inBounds(mousex, mousey, x, y, sizex, sizey)) {
+				canvas.draw(yellowbox, Color.WHITE, 0, 0, x - 3f, y - 3f, 0, (sizex + 6f) / yellowbox.getWidth(), (sizey + 6f) / yellowbox.getHeight());
+			}
+			canvas.draw(tex, Color.WHITE, 0, 0, x, y, 0, sizex / tex.getWidth(), sizey / tex.getHeight());
+			canvas.drawTextStandard(name, x, y - 5f);
 
 		}
 
@@ -891,8 +1002,12 @@ public class LevelEditorController extends WorldController {
 		Gdx.gl.glLineWidth(5);
 		canvas.beginDebug(camTrans);
 		Entity ent = selected;
-		if(ent!= null)
-			canvas.drawPhysics(circleShape, new Color(Color.FIREBRICK),ent.getPosition().x , ent.getPosition().y ,worldScale.x,worldScale.y );
+		if(ent!= null) {
+			temp = ent.getPosition();
+			if (movefar)
+				temp = ent.getModifiedPosition(adjustedCxCamera,adjustedCyCamera);
+			canvas.drawPhysics(circleShape, new Color(Color.FIREBRICK), temp.x, temp.y, worldScale.x, worldScale.y);
+		}
 		canvas.endDebug();
 	}
 
@@ -1169,6 +1284,12 @@ public class LevelEditorController extends WorldController {
 		return null;
 	}
 
+	private void copyEntity(Entity template){
+		JsonObject entityObject = jsonLoaderSaver.gsonToJsonObject(template);
+		String stringJson = jsonLoaderSaver.stringFromJson(entityObject);
+		promptTemplateCallback(stringJson);
+	}
+
 	private void promptTemplate(Entity template) {
 		if (!prompting) {
 			prompting = true; //Use different constant? Can just use the same one?
@@ -1332,4 +1453,5 @@ public class LevelEditorController extends WorldController {
 			mainFrame.setVisible(true);
 		}
 	}
+	//endregion
 }
