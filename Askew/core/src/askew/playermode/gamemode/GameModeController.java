@@ -468,12 +468,12 @@ public class GameModeController extends WorldController {
 				return false;
 			}
 			//InputController input = InputController.getInstance();
-			if (input.didBottomButtonPress() && pause_mode == PAUSE_RESUME) {
+			if ((input.didBottomButtonPress() || input.didEnterKeyPress()) && pause_mode == PAUSE_RESUME) {
 				paused = false;
 				playerIsReady = false;
-			} else if (input.didBottomButtonPress() && pause_mode == PAUSE_RESTART) {
+			} else if ((input.didBottomButtonPress() || input.didEnterKeyPress()) && pause_mode == PAUSE_RESTART) {
 				reset();
-			} else if (input.didBottomButtonPress() && pause_mode == PAUSE_MAINMENU) {
+			} else if ((input.didBottomButtonPress() || input.didEnterKeyPress()) && pause_mode == PAUSE_MAINMENU) {
 				System.out.println("MM");
 				listener.exitScreen(this, EXIT_GM_MM);
 			}

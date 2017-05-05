@@ -28,6 +28,8 @@ public class MainMenuController extends WorldController {
 
     private int MAX_LEVEL;
 
+    public final Color fontcolor = new Color(.984f,.545f,.384f,1);
+
     // main menu modes
     private final int HOME_SCREEN = 0;
     private final int LEVEL_SELECT = 1;
@@ -116,8 +118,9 @@ public class MainMenuController extends WorldController {
         int textscale = 1;
         param.size = 56*textscale;
         regina = generator.generateFont(param);
+        param.color = fontcolor;
         param.size = 32*textscale;
-        param.color = Color.GREEN;
+//        param.color = Color.GREEN;
         regina1 = generator.generateFont(param);
         param.size = 44*textscale;
         param.shadowColor = Color.BLACK;
@@ -183,13 +186,13 @@ public class MainMenuController extends WorldController {
     @Override
     public void draw(float delta) {
         canvas.clear();
-        displayFont.setColor(Color.GREEN);
+        displayFont.setColor(fontcolor);
 
         canvas.begin(); // DO NOT SCALE
         canvas.draw(menu);
         if(mode == HOME_SCREEN) {
             for(int i = 0; i < home_text_locs.length; i++) {
-                canvas.drawTextAlignedRight(home_text[i], regina, home_text_locs[i].x * canvas.getWidth(), home_text_locs[i].y * canvas.getHeight(), Color.GREEN);
+                canvas.drawTextAlignedRight(home_text[i], regina, home_text_locs[i].x * canvas.getWidth(), home_text_locs[i].y * canvas.getHeight(), fontcolor);
             }
             canvas.draw(fern, Color.WHITE,fern.getWidth()/2, fern.getHeight()/2,
                     home_button_locs[home_button].x * canvas.getWidth(), home_button_locs[home_button].y* canvas.getHeight(),
@@ -206,10 +209,10 @@ public class MainMenuController extends WorldController {
         else if (mode == SETTINGS) {
             for (int i = 0; i < settings_text_locs.length; i++) {
                 if (i == 0 || i == 3 || i == 6)
-                    canvas.drawTextAlignedRight(settings_text[i], regina, settings_text_locs[i].x*canvas.getWidth(), settings_text_locs[i].y*canvas.getHeight(), Color.GREEN);
+                    canvas.drawTextAlignedRight(settings_text[i], regina, settings_text_locs[i].x*canvas.getWidth(), settings_text_locs[i].y*canvas.getHeight(), fontcolor);
             }
             if (control) {
-                canvas.drawText(settings_text[2], regina2, settings_text_locs[2].x * canvas.getWidth(), settings_text_locs[2].y * canvas.getHeight());
+                canvas.drawText(settings_text[2], regina2, settings_text_locs[2].x*canvas.getWidth(), settings_text_locs[2].y*canvas.getHeight());
                 canvas.drawText(settings_text[1], regina1, settings_text_locs[1].x*canvas.getWidth(), settings_text_locs[1].y*canvas.getHeight());
             } else {
                 canvas.drawText(settings_text[1], regina2, settings_text_locs[1].x*canvas.getWidth(), settings_text_locs[1].y*canvas.getHeight());
