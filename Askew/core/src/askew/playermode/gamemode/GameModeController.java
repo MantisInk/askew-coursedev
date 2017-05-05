@@ -370,8 +370,11 @@ public class GameModeController extends WorldController {
 		lastLevel = loadLevel;
 		try {
 			levelModel = jsonLoaderSaver.loadLevel(loadLevel);
-			background = manager.get(levelModel.getBackground(), Texture.class);
-			recordTime = records.getRecord(loadLevel);
+			if (levelModel != null) {
+				background = manager.get(levelModel.getBackground(), Texture.class);
+				recordTime = records.getRecord(loadLevel);
+			}
+
 			if (levelModel == null) {
 				levelModel = new LevelModel();
 			}

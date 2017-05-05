@@ -15,8 +15,8 @@ import java.util.Optional;
 public class JSONLoaderSaver {
 
     private Gson gson;
-
     private EntityWrapper wrapper;
+    private JsonParser jsonParser;
 
     public JSONLoaderSaver(boolean record) {
         if (!record) {
@@ -25,6 +25,7 @@ public class JSONLoaderSaver {
             gsonBuilder.setPrettyPrinting();
             gsonBuilder.registerTypeAdapter(Entity.class, wrapper);
             gson = gsonBuilder.create();
+            jsonParser = new JsonParser();
         }
     }
 
@@ -32,6 +33,14 @@ public class JSONLoaderSaver {
         FileHandle fileHandle = Gdx.files.internal("levels/" + levelName + ".json");
         if (fileHandle.exists() && !fileHandle.isDirectory()) {
             String contents = fileHandle.readString();
+
+            // Scan the raw level in case we need to perform conversions
+            JsonObject rawLevel = jsonParser.parse(contents).getAsJsonObject();
+            int levelVersion = rawLevel.get("levelModelVersion").getAsInt();
+            if (levelVersion < LevelModel.LATEST_LEVEL_MODEL_VERSION) {
+                // Convert!
+                contents = convertLevel(rawLevel);
+            }
             return gson.fromJson(contents, LevelModel.class);
         }
 
@@ -61,12 +70,10 @@ public class JSONLoaderSaver {
     }
 
     public JsonObject gsonToJsonObject(Entity o) {
-        JsonParser jsonParser = new JsonParser();
         return jsonParser.parse(gson.toJson(o, Entity.class)).getAsJsonObject();
     }
 
     public JsonObject gsonToJsonObject(Object o) {
-        JsonParser jsonParser = new JsonParser();
         return jsonParser.parse(gson.toJson(o)).getAsJsonObject();
     }
 
@@ -115,5 +122,24 @@ public class JSONLoaderSaver {
 
     public void setManager(MantisAssetManager manager) {
         wrapper.setManager(manager);
+    }
+
+    /**
+     * Converts a level object to the latest version by version patch functions
+     * @param levelObject
+     * @return
+     */
+    private String convertLevel(JsonObject levelObject) {
+        switch(levelObject.get("levelModelVersion").getAsInt()) {
+            case 1:
+                levelObject.addProperty("levelModelVersion",2);
+                return convertLevel(levelObject);
+            case LevelModel.LATEST_LEVEL_MODEL_VERSION:
+                return gson.toJson(levelObject);
+            default:
+                System.err.println("Trying to convert a level model without a conversion function!");
+                break;
+        }
+        return null;
     }
 }
