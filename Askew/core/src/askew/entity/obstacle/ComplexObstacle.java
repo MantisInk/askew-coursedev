@@ -1003,6 +1003,7 @@ public abstract class ComplexObstacle extends Obstacle {
 		if (bodyinfo.active) {
 			// Should be good for most (simple) applications.
 			for (Joint joint : joints) {
+				System.err.println(joint);
 				world.destroyJoint(joint);
 			}
 			joints.clear();

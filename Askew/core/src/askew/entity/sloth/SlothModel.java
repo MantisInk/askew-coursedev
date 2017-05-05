@@ -857,29 +857,56 @@ public class SlothModel extends ComplexObstacle  {
         target.setUserData("grabbed");
 
         joints.add(grabJoint);
+        System.err.println(grabJoint);
         grabbedEntity = true;
     }
 
     public void releaseLeft(World world) {
         if (didSafeGrab) return;
         if (leftGrabJoint != null) {
-            if (movementMode != GRAB_TOGGLE || !leftGrabbing) world.destroyJoint(leftGrabJoint);
+            joints.removeValue(leftGrabJoint,true);
+            world.destroyJoint(leftGrabJoint);
             leftCanGrabOrIsGrabbing = false;
             releasedEntity = true;
+            leftGrabJoint = null;
+            leftTarget = null;
         }
-        leftGrabJoint = null;
-        leftTarget = null;
     }
 
     public void releaseRight(World world) {
         if (didSafeGrab) return;
         if (rightGrabJoint != null) {
-            if (movementMode != GRAB_TOGGLE || !rightGrabbing) world.destroyJoint(rightGrabJoint);
+            joints.removeValue(rightGrabJoint,true);
+            world.destroyJoint(rightGrabJoint);
             leftCanGrabOrIsGrabbing = true;
             releasedEntity = true;
+            rightGrabJoint = null;
+            rightTarget = null;
         }
-        rightGrabJoint = null;
-        rightTarget = null;
+    }
+
+    @Override
+    public void deactivatePhysics(World world) {
+        world.destroyBody(grabPointL);
+        world.destroyBody(grabPointR);
+        if (leftGrabJoint != null) {
+            joints.removeValue(leftGrabJoint,true);
+            // not sure why but dont destroy these joints. it crashes the game. -trevor
+//            world.destroyJoint(leftGrabJoint);
+            leftCanGrabOrIsGrabbing = false;
+            releasedEntity = true;
+            leftGrabJoint = null;
+            leftTarget = null;
+        }
+        if (rightGrabJoint != null) {
+            joints.removeValue(rightGrabJoint,true);
+//            world.destroyJoint(rightGrabJoint);
+            leftCanGrabOrIsGrabbing = true;
+            releasedEntity = true;
+            rightGrabJoint = null;
+            rightTarget = null;
+        }
+        super.deactivatePhysics(world);
     }
 
     public void activateSlothPhysics(World world) {

@@ -289,7 +289,7 @@ public class GameModeController extends WorldController {
 		InputControllerManager.getInstance().inputControllers().forEach(InputController::releaseGrabs);
 
 		for(Entity obj : objects) {
-			if( (obj instanceof Obstacle && !(obj instanceof SlothModel)))
+			if( (obj instanceof Obstacle))
 				((Obstacle)obj).deactivatePhysics(world);
 		}
 
