@@ -513,7 +513,7 @@ public class LevelEditorController extends WorldController {
 				entity = new ThornModel(x,y,1,0);
 				break;
 			case "GhostModel":
-				entity = new GhostModel(x,y,x+2,y+2);
+				entity = new GhostModel(x,y,x+2,y+2,x,y);
 				break;
 			case "BackgroundEntity":
 				entity = new BackgroundEntity(xorig,yorig);

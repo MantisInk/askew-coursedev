@@ -1,12 +1,10 @@
 package askew.playermode.gamemode;
 
 import com.badlogic.gdx.physics.box2d.*;
-import com.badlogic.gdx.utils.ObjectSet;
 import lombok.Getter;
 import lombok.Setter;
 import askew.entity.obstacle.BoxObstacle;
 import askew.entity.obstacle.Obstacle;
-import askew.entity.obstacle.PolygonObstacle;
 import askew.entity.sloth.SlothModel;
 
 import java.util.Arrays;
@@ -45,26 +43,21 @@ public class PhysicsController implements ContactListener {
         return obs.getName() != null && obs.getName().contains("slothpart");
     }
 
-    @Override
     /**
      * Callback method for the start of a collision
      *
      * This method is called when we first get a collision between two objects.  We use
-     * this method to test if it is the "right" kind of collision.  In particular, we
-     * use it to test if we made it to the win door.
-     *
+     * this method to test if it is the "right" kind of collision.
      *
      * @param contact The two bodies that collided
      */
+    @Override
     public void beginContact(Contact contact) {
         Fixture fix1 = contact.getFixtureA();
         Fixture fix2 = contact.getFixtureB();
 
         Body body1 = fix1.getBody();
         Body body2 = fix2.getBody();
-
-        Object fd1 = fix1.getUserData();
-        Object fd2 = fix2.getUserData();
 
         try {
             if(!(body1.getUserData() instanceof Obstacle) || !(body2.getUserData() instanceof Obstacle)) return;
@@ -74,19 +67,14 @@ public class PhysicsController implements ContactListener {
 
             // Check for thorns
             if (bd1 != null && bd2 != null && (isSlothPart(bd1) || isSlothPart(bd2))) {
-                Obstacle slothy;
                 Obstacle other;
                 if (isSlothPart(bd1) && isSlothPart(bd2)) return;
 
                 if (isSlothPart(bd1)) {
-                    slothy = bd1;
                     other = bd2;
                 } else {
-                    slothy = bd2;
                     other = bd1;
                 }
-
-                System.out.println(other.getName());
 
                 if (other.getName() != null && (other.getName().equals("thorns") || other.getName().equals("ghost") )) {
                     isFlowKill = true;

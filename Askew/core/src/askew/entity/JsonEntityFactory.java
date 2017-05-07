@@ -136,9 +136,11 @@ public class JsonEntityFactory {
         GhostModel ghost;
         float x = instance.get("x").getAsFloat();
         float y = instance.get("y").getAsFloat();
-        float patroldx = instance.get("patroldx").getAsFloat();
-        float patroldy = instance.get("patroldy").getAsFloat();
-        ghost = new GhostModel(x, y, patroldx, patroldy);
+        float patroldx1 = instance.get("patroldx1").getAsFloat();
+        float patroldy1 = instance.get("patroldy1").getAsFloat();
+        float patroldx2 = instance.get("patroldx2").getAsFloat();
+        float patroldy2 = instance.get("patroldy2").getAsFloat();
+        ghost = new GhostModel(x, y, patroldx1, patroldy1, patroldx2, patroldy2);
         ghost.setTextures(manager);
         return ghost;
     }
