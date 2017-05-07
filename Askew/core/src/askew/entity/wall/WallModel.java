@@ -1,8 +1,11 @@
 package askew.entity.wall;
 
+import askew.GameCanvas;
 import askew.MantisAssetManager;
 import askew.entity.FilterGroup;
 import askew.entity.obstacle.PolygonObstacle;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Filter;
@@ -17,6 +20,7 @@ public class WallModel extends PolygonObstacle {
 
     public static final float WALL_FRICTION = 1.0f;
     public static final float WALL_RESTITUTION = 0.1f;
+    TextureRegion circleTextureRegion;
 
     // Instance variables
     private float x;
@@ -48,7 +52,24 @@ public class WallModel extends PolygonObstacle {
     public void setTextures(MantisAssetManager manager) {
         TextureRegion wallTextureRegion;
         wallTextureRegion = manager.getProcessedTextureMap().get(MantisAssetManager.WALL_TEXTURE);
+        circleTextureRegion = new TextureRegion(manager.get("texture/wall/corner.png",Texture.class));
         setTexture(wallTextureRegion);
+    }
+
+    @Override
+    public void draw(GameCanvas canvas) {
+        // Base draw
+        if (region != null) {
+            canvas.draw(region, Color.WHITE,0,0,getX()*drawScale.x,getY()*drawScale.y,getAngle(),1,1);
+        }
+
+        // TODO: Draw edge texture
+
+        // Draw corners
+        for (int i = 0; i < points.length; i+=2) {
+            //TextureRegion region, Color tint, float ox, float oy,float x, float y, float angle, float sx, float sy)
+            canvas.draw(circleTextureRegion,Color.WHITE,circleTextureRegion.getRegionWidth()/2f,circleTextureRegion.getRegionHeight()/2f,(getX()+points[i])*drawScale.x,(getY()+points[i+1])*drawScale.y,0,.25f,.25f);
+        }
     }
 
     public void setPosition(float x, float y){
