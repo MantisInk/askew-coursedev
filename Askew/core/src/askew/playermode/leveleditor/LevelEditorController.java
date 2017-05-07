@@ -836,7 +836,8 @@ public class LevelEditorController extends WorldController {
 					continue;
 				}
 			}
-			ent.update(dt); // called last!
+			// we don't need ents to update in level editor
+//			ent.update(dt); // called last!
 		}
 	}
 
