@@ -137,8 +137,9 @@ public class TutorialModeController extends GameModeController {
 
 		if(currentStage == STAGE_PINNED) {
 			sloth.pin(world);
-			sloth.setTutorial();
+			sloth.setPinned();
 		}
+
 	}
 
 	/**
@@ -302,6 +303,7 @@ public class TutorialModeController extends GameModeController {
 				, sloth.getBody().getPosition().y * worldScale.y);
 		canvas.begin(camTrans);
 		Collections.sort(objects);
+		sloth.setTutorial();
 		for(Entity obj : objects) {
 			obj.setDrawScale(worldScale);
 			// if stage 2, tint trunks if already grabbed
@@ -331,6 +333,7 @@ public class TutorialModeController extends GameModeController {
 			printHelp();
 		canvas.end();
 		sloth.drawGrab(canvas, camTrans);
+		sloth.drawHelpLines(canvas, camTrans);
 
 		canvas.begin();
 		canvas.drawTextStandard("current time:    "+currentTime, 10f, 70f);
@@ -340,6 +343,8 @@ public class TutorialModeController extends GameModeController {
 		canvas.drawTextStandard(typeMovement, 10f, 700f);
 		canvas.drawTextStandard(typeControl,10f,680f);
 		canvas.end();
+
+//		sloth.drawHelpLines();
 
 		if (debug) {
 			canvas.beginDebug(camTrans);
@@ -355,6 +360,11 @@ public class TutorialModeController extends GameModeController {
 			canvas.end();
 			sloth.drawForces(canvas, camTrans);
 		}
+
+		// draw instructional animations
+		canvas.begin();
+		drawInstructions();
+		canvas.end();
 
 		if (coverOpacity > 0) {
 			Gdx.gl.glEnable(GL20.GL_BLEND);
@@ -380,12 +390,6 @@ public class TutorialModeController extends GameModeController {
 			canvas.end();
 		}
 
-
-		// new draw stuff
-		// draw instructional animations
-		canvas.begin();
-		drawInstructions();
-		canvas.end();
 	}
 
 	public void restart() {
