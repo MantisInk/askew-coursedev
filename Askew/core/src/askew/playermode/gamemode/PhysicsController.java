@@ -121,17 +121,7 @@ public class PhysicsController implements ContactListener {
             Object fd1 = fix1.getUserData();
             Object fd2 = fix2.getUserData();
 
-            if(!(body1.getUserData() instanceof Obstacle) || !(body2.getUserData() instanceof Obstacle)) {
-                if (!(body1.getUserData() instanceof Obstacle)) {
-                    if (body1.getUserData() != null)
-                    System.err.println(body1.getUserData());
-                }
-                if (!(body2.getUserData() instanceof Obstacle)) {
-                    if (body2.getUserData() != null)
-                    System.err.println(body2.getUserData());
-                }
-                return null;
-            }
+            if(!(body1.getUserData() instanceof Obstacle) || !(body2.getUserData() instanceof Obstacle)) return null;
 
             Obstacle bd1 = (Obstacle)body1.getUserData();
             Obstacle bd2 = (Obstacle)body2.getUserData();
@@ -140,9 +130,10 @@ public class PhysicsController implements ContactListener {
                 return body2;
             }
 
-            if (fd2 != null && ((String)fd2).contains(checkString) && bd1 != sloth && bd1 != null) {
+            if (fd2 != null && ((String)fd2).contains(checkString) && bd1 != sloth) {
                 return body1;
             }
+            
             return null;
         }).filter(Objects::nonNull).findFirst().orElse(null);
     }
