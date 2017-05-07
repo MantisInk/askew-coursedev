@@ -193,10 +193,10 @@ public class SlothModel extends ComplexObstacle  {
     private static final float ARM_XOFFSET    = ARM_WIDTH / 2f + .375f;
     private static final float ARM_YOFFSET    = 0f;
 
-    private static final float HAND_WIDTH = 0.1125f;
-    private static final float HAND_HEIGHT = 0.1125f;
+    private static final float HAND_WIDTH = 0.1f;
+    private static final float HAND_HEIGHT = 0.1f;
     //private static final float HAND_XOFFSET  = (ARM_WIDTH / 2f) - HAND_WIDTH/2;
-    private static final float HAND_XOFFSET  = (ARM_WIDTH / 2f) - HAND_WIDTH * 2 - .07f;
+    private static final float HAND_XOFFSET  = (ARM_WIDTH / 2f) - HAND_WIDTH * 2 - .3f;
 
     public static final float ARMSPAN = ARM_XOFFSET*2 - 0.05f;
 
@@ -854,7 +854,9 @@ public class SlothModel extends ComplexObstacle  {
             rightTarget = target;
         }
         // set data as grabbed for pinned to shade grabbed stuff
-        target.setUserData("grabbed");
+        if (target.getUserData() instanceof Obstacle) {
+            ((Obstacle)target.getUserData()).setGrabbed();
+        }
 
         joints.add(grabJoint);
         grabbedEntity = true;
@@ -911,14 +913,12 @@ public class SlothModel extends ComplexObstacle  {
     }
 
     public void activateSlothPhysics(World world) {
-        float MN_SENSOR_HEIGHT = HAND_HEIGHT/2f;
-        float MN_SENSOR_WIDTH = HAND_WIDTH/2f;
         Vector2 sensorCenter = new Vector2(0, 0);
         FixtureDef sensorDef = new FixtureDef();
         sensorDef.density = 0.0f;
         sensorDef.isSensor = true;
         sensorShape = new PolygonShape();
-        sensorShape.setAsBox(MN_SENSOR_WIDTH, MN_SENSOR_HEIGHT, sensorCenter, 0.0f);
+        sensorShape.setAsBox(HAND_WIDTH, HAND_HEIGHT, sensorCenter, 0.0f);
         sensorDef.shape = sensorShape;
 
         Filter f = new Filter();

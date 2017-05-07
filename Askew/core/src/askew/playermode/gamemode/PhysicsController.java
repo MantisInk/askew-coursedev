@@ -1,6 +1,7 @@
 package askew.playermode.gamemode;
 
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.utils.ObjectSet;
 import lombok.Getter;
 import lombok.Setter;
 import askew.entity.obstacle.BoxObstacle;
@@ -8,12 +9,11 @@ import askew.entity.obstacle.Obstacle;
 import askew.entity.obstacle.PolygonObstacle;
 import askew.entity.sloth.SlothModel;
 
+import java.util.Arrays;
+import java.util.Objects;
+
 
 public class PhysicsController implements ContactListener {
-    @Getter
-    private Body leftBody;
-    @Getter
-    private Body rightBody;
     @Getter
     private boolean isFlowKill;
     @Getter @Setter
@@ -39,7 +39,6 @@ public class PhysicsController implements ContactListener {
         goalDoor = null;
         isFlowKill = false;
         isFlowWin = false;
-        clearGrab();
     }
 
 
@@ -72,21 +71,6 @@ public class PhysicsController implements ContactListener {
             Obstacle bd1 = (Obstacle)body1.getUserData();
             Obstacle bd2 = (Obstacle)body2.getUserData();
 
-            if (fd1 != null && bd2 != null && ((String)fd1).contains("sloth left hand") &&
-                    (!sloth.badBodies().contains(bd2)) && (!(bd2 instanceof PolygonObstacle))) {
-                leftBody = body2;
-            }
-            if (fd1 != null && ((String)fd1).contains("sloth right hand") && bd2 != sloth && (!sloth.badBodies().contains(bd2))&& (!(bd2 instanceof PolygonObstacle))) {
-                rightBody = body2;
-            }
-
-            if (fd2 != null && ((String)fd2).contains("sloth left hand")  && bd1 != sloth && (!sloth.badBodies().contains(bd1))&& (!(bd1 instanceof PolygonObstacle))) {
-                leftBody = body1;
-            }
-            if (fd2 != null && ((String)fd2).contains("sloth right hand")  && bd1 != sloth && (!sloth.badBodies().contains(bd1))&& (!(bd1 instanceof PolygonObstacle))) {
-                rightBody = body1;
-            }
-
             // Check for thorns
             if (
                     (fd1 != null && ((String)fd1).contains("hand") ||   fd2!= null && ((String)fd2).contains("hand")) ||
@@ -117,49 +101,51 @@ public class PhysicsController implements ContactListener {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
     /**
      * Callback method for the start of a collision
      *
-     * This method is called when two objects cease to touch.  The main use of this method
-     * is to determine when the characer is NOT on the ground.  This is how we prevent
-     * double jumping.
+     * This method is called when two objects cease to touch.
      */
-    public void endContact(Contact contact) {
-        Fixture fix1 = contact.getFixtureA();
-        Fixture fix2 = contact.getFixtureB();
+    public void endContact(Contact contact) {}
 
-        Body body1 = fix1.getBody();
-        Body body2 = fix2.getBody();
+    private Body getBody(World world, String checkString) {
+        return Arrays.stream(world.getContactList().toArray()).filter(Contact::isTouching).map(contact->{
+            Fixture fix1 = contact.getFixtureA();
+            Fixture fix2 = contact.getFixtureB();
 
-        Object fd1 = fix1.getUserData();    
-        Object fd2 = fix2.getUserData();
+            Body body1 = fix1.getBody();
+            Body body2 = fix2.getBody();
 
-        Object bd1 = body1.getUserData();
-        Object bd2 = body2.getUserData();
+            Object fd1 = fix1.getUserData();
+            Object fd2 = fix2.getUserData();
 
-        if (fd1 != null && ((String)fd1).contains("sloth left hand") && body2 == leftBody) {
-            leftBody = null;
+            if(!(body1.getUserData() instanceof Obstacle) || !(body2.getUserData() instanceof Obstacle)) return null;
 
-        }
-        if (fd2 != null && ((String)fd2).contains("sloth left hand") && body1 == leftBody) {
-            leftBody = null;
-        }
-        if (fd1 != null && ((String)fd1).contains("sloth right hand") && body2 == rightBody) {
-            rightBody = null;
-        }
-        if (fd2 != null && ((String)fd2).contains("sloth right hand") && body1 == rightBody) {
-            rightBody = null;
-        }
+            Obstacle bd1 = (Obstacle)body1.getUserData();
+            Obstacle bd2 = (Obstacle)body2.getUserData();
+
+            if (fd1 != null && ((String)fd1).contains(checkString) && bd2 != sloth && bd2 != null) {
+                return body2;
+            }
+
+            if (fd2 != null && ((String)fd2).contains(checkString) && bd1 != sloth) {
+                return body1;
+            }
+            
+            return null;
+        }).filter(Objects::nonNull).findFirst().orElse(null);
     }
 
-    // only for forcing release on reset
-    public void clearGrab(){
-        leftBody = null;
-        rightBody = null;
+    public Body getLeftBody(World world) {
+        return getBody(world, "sloth left hand");
     }
+
+    public Body getRightBody(World world) {
+        return getBody(world, "sloth right hand");
+    }
+
     /** Unused ContactListener method */
     public void postSolve(Contact contact, ContactImpulse impulse) {}
     /** Unused ContactListener method */
