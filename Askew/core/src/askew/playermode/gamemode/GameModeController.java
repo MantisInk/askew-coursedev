@@ -289,7 +289,7 @@ public class GameModeController extends WorldController {
 		InputControllerManager.getInstance().inputControllers().forEach(InputController::releaseGrabs);
 
 		for(Entity obj : objects) {
-			if( (obj instanceof Obstacle && !(obj instanceof SlothModel)))
+			if( (obj instanceof Obstacle))
 				((Obstacle)obj).deactivatePhysics(world);
 		}
 
@@ -370,8 +370,11 @@ public class GameModeController extends WorldController {
 		lastLevel = loadLevel;
 		try {
 			levelModel = jsonLoaderSaver.loadLevel(loadLevel);
-			background = manager.get(levelModel.getBackground(), Texture.class);
-			recordTime = records.getRecord(loadLevel);
+			if (levelModel != null) {
+				background = manager.get(levelModel.getBackground(), Texture.class);
+				recordTime = records.getRecord(loadLevel);
+			}
+
 			if (levelModel == null) {
 				levelModel = new LevelModel();
 			}
@@ -581,16 +584,20 @@ public class GameModeController extends WorldController {
 			Body leftCollisionBody = collisions.getLeftBody();
 			Body rightCollisionBody = collisions.getRightBody();
 
-			sloth.setLeftHori(InputControllerManager.getInstance().getController(0).getLeftHorizontal());
-			sloth.setLeftVert(InputControllerManager.getInstance().getController(0).getLeftVertical());
-			sloth.setRightHori(InputControllerManager.getInstance().getController(0).getRightHorizontal());
-			sloth.setRightVert(InputControllerManager.getInstance().getController(0).getRightVertical());
-			sloth.setLeftGrab(InputControllerManager.getInstance().getController(0).getLeftGrab());
-			sloth.setRightGrab(InputControllerManager.getInstance().getController(0).getRightGrab());
-			sloth.setSafeGrab(InputControllerManager.getInstance().getController(0).isBottomButtonPressed(), leftCollisionBody, rightCollisionBody, world);
-			sloth.setOneGrab(InputControllerManager.getInstance().getController(0).getRightGrab());
-			sloth.setLeftStickPressed(InputControllerManager.getInstance().getController(0).getLeftStickPressed());
-			sloth.setRightStickPressed(InputControllerManager.getInstance().getController(0).getRightStickPressed());
+			// Prevent control input if flow is win
+			if (!collisions.isFlowWin()) {
+				sloth.setLeftHori(InputControllerManager.getInstance().getController(0).getLeftHorizontal());
+				sloth.setLeftVert(InputControllerManager.getInstance().getController(0).getLeftVertical());
+				sloth.setRightHori(InputControllerManager.getInstance().getController(0).getRightHorizontal());
+				sloth.setRightVert(InputControllerManager.getInstance().getController(0).getRightVertical());
+				sloth.setLeftGrab(InputControllerManager.getInstance().getController(0).getLeftGrab());
+				sloth.setRightGrab(InputControllerManager.getInstance().getController(0).getRightGrab());
+				sloth.setSafeGrab(InputControllerManager.getInstance().getController(0).isBottomButtonPressed(), leftCollisionBody, rightCollisionBody, world);
+				sloth.setOneGrab(InputControllerManager.getInstance().getController(0).getRightGrab());
+				sloth.setLeftStickPressed(InputControllerManager.getInstance().getController(0).getLeftStickPressed());
+				sloth.setRightStickPressed(InputControllerManager.getInstance().getController(0).getRightStickPressed());
+			}
+
 			currentTime += dt;
 
 			//#TODO Collision states check
@@ -610,7 +617,9 @@ public class GameModeController extends WorldController {
 						sloth.grab(world, owl.getBody(), false);
 					}
 				}
+
 				coverOpacity = owl.doVictory();
+
 				if (owl.didVictory()) {
 					setComplete(true);
 				}
@@ -630,11 +639,11 @@ public class GameModeController extends WorldController {
 				}
 			}
 
-			if (sloth.isGrabbedEntity()) {
+			if (sloth.isGrabbedEntity() && !collisions.isFlowWin()) {
 				grabSound.play();
 			}
 
-			if (sloth.isReleasedEntity()) {
+			if (sloth.isReleasedEntity() && !collisions.isFlowWin()) {
 				releaseSound.play();
 			}
 
