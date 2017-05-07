@@ -63,11 +63,6 @@ public class WallModel extends PolygonObstacle {
             edgeTextureRegion = manager.getProcessedTextureMap().get(MantisAssetManager.EDGE_TEXTURE);
             edgeTextureRegion.setV(.035f);
             edgeTextureRegion.setV2(.965f);
-
-            System.out.println("v:" + edgeTextureRegion.getV());
-
-            System.out.println("v2:" + edgeTextureRegion.getV2());
-
             circleTextureRegion = new TextureRegion(manager.get("texture/wall/corner.png", Texture.class));
             setTexture(wallTextureRegion);
         }

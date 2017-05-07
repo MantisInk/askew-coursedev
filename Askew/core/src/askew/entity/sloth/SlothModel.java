@@ -132,7 +132,7 @@ public class SlothModel extends ComplexObstacle  {
     @Getter
     private transient float power;
 
-    @Setter
+    @Getter @Setter
     private transient int movementMode;
     private transient boolean leftGrabbing;
     private transient boolean rightGrabbing;
@@ -886,8 +886,10 @@ public class SlothModel extends ComplexObstacle  {
 
     @Override
     public void deactivatePhysics(World world) {
-        world.destroyBody(grabPointL);
-        world.destroyBody(grabPointR);
+        if(grabPointL != null)
+            world.destroyBody(grabPointL);
+        if(grabPointR != null)
+            world.destroyBody(grabPointR);
         if (leftGrabJoint != null) {
             joints.removeValue(leftGrabJoint,true);
             // not sure why but dont destroy these joints. it crashes the game. -trevor
@@ -978,6 +980,10 @@ public class SlothModel extends ComplexObstacle  {
         partTextures[6] = new TextureRegion(managedFrontArmMoving);
         partTextures[7] = new TextureRegion(managedBackArmMoving);
         partTextures[8] = new TextureRegion(managedPowerGlow);
+
+//        for(int i = 0; i < partTextures.length; i++){
+//            partTextures[i].getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+//        }
 
         if (bodies.size == 0) {
             init();
