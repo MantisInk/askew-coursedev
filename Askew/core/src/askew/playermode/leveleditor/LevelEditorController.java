@@ -1152,6 +1152,8 @@ public class LevelEditorController extends WorldController {
 
 		loadButton.addActionListener(e -> {
 			loadLevel(fileName.getText());
+			editorWindow.setVisible(false);
+			editorWindow.dispose();
 		});
 
 		saveButton.addActionListener(e -> {
