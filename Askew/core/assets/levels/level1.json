@@ -23,7 +23,7 @@
         "angle": 0.0,
         "scalex": 1.0,
         "scaley": 1.0,
-        "texturePath": "texture/background/sil2.png",
+        "texturePath": "texture/background/BackgroundStuff/sil2.png",
         "color": -1
       }
     },
@@ -38,7 +38,7 @@
         "angle": 0.0,
         "scalex": 1.0,
         "scaley": 1.0,
-        "texturePath": "texture/background/sil4.png",
+        "texturePath": "texture/background/BackgroundStuff/sil4.png",
         "color": -16711681
       }
     },

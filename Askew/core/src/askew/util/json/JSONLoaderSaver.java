@@ -133,6 +133,16 @@ public class JSONLoaderSaver {
         switch(levelObject.get("levelModelVersion").getAsInt()) {
             case 1:
                 levelObject.addProperty("levelModelVersion",2);
+                for (JsonElement ent : levelObject.getAsJsonArray("entities")) {
+                    if (ent.getAsJsonObject().getAsJsonPrimitive("CLASSNAME").getAsString().equals("askew.entity.BackgroundEntity")) {
+                        if (ent.getAsJsonObject().getAsJsonObject("INSTANCE").get("texturePath").getAsString().equals("texture/background/sil4.png")) {
+                            ent.getAsJsonObject().getAsJsonObject("INSTANCE").addProperty("texturePath","texture/background/BackgroundStuff/sil4.png");
+                        }
+                        if (ent.getAsJsonObject().getAsJsonObject("INSTANCE").get("texturePath").getAsString().equals("texture/background/sil1.png")) {
+                            ent.getAsJsonObject().getAsJsonObject("INSTANCE").addProperty("texturePath","texture/background/BackgroundStuff/sil1.png");
+                        }
+                    }
+                }
                 return convertLevel(levelObject);
             case LevelModel.LATEST_LEVEL_MODEL_VERSION:
                 return gson.toJson(levelObject);
