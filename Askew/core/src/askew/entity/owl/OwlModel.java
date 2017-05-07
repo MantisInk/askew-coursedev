@@ -6,6 +6,7 @@ import askew.entity.FilterGroup;
 import askew.entity.obstacle.BoxObstacle;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -105,7 +106,7 @@ public class OwlModel extends BoxObstacle  {
         } else {
             drawFrame = idleAnimation.getKeyFrame(elapseTime, true);
         }
-
+        drawFrame.getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
         setTexture(drawFrame);
         this.owlHeight = OWL_DRAW_WIDTH * (drawFrame.getRegionHeight() / drawFrame.getRegionWidth());
 

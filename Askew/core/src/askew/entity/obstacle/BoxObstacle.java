@@ -227,6 +227,7 @@ public class BoxObstacle extends SimpleObstacle {
 	 */
 	public void draw(GameCanvas canvas, Color tint) {
 		if (texture != null) {
+			texture.getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
 			canvas.draw(texture,tint,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),
 					(1.0f/texture.getRegionWidth()) *   getWidth() * getDrawScale().x * getObjectScale().x * customScale.x,
 					(1.0f/texture.getRegionHeight()  * getHeight()* getDrawScale().y * getObjectScale().y * customScale.y));

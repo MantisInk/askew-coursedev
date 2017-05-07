@@ -662,6 +662,9 @@ public class LevelEditorController extends WorldController {
 				} else if (mouseY * worldScale.y <= GUI_LOWER_BAR_HEIGHT) {
 
 					int button = getEntityMenuButton(mouseX * worldScale.x, mouseY * worldScale.y);
+					if(button > entityTree.current.children.size()){
+						button = -2;
+					}
 					if (button == -2) {
 						//do nothing
 					} else if (button == -1) {
