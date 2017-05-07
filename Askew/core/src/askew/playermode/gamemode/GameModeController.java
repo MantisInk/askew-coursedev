@@ -283,7 +283,6 @@ public class GameModeController extends WorldController {
 		this.windVolume = 0;
 		playerIsReady = false;
 		paused = false;
-		collisions.clearGrab();
 		Vector2 gravity = new Vector2(world.getGravity() );
 
 		InputControllerManager.getInstance().inputControllers().forEach(InputController::releaseGrabs);
@@ -581,8 +580,8 @@ public class GameModeController extends WorldController {
 
 		if (!paused) {
 			// Process actions in object model
-			Body leftCollisionBody = collisions.getLeftBody();
-			Body rightCollisionBody = collisions.getRightBody();
+			Body leftCollisionBody = collisions.getLeftBody(world);
+			Body rightCollisionBody = collisions.getRightBody(world);
 
 			// Prevent control input if flow is win
 			if (!collisions.isFlowWin()) {
@@ -608,9 +607,9 @@ public class GameModeController extends WorldController {
 				if (!owl.isDoingVictory()) {
 					sloth.releaseLeft(world);
 					sloth.releaseRight(world);
-					if (collisions.getLeftBody() != null && collisions.getLeftBody().equals(owl.getBody()))
+					if (collisions.getLeftBody(world) != null && collisions.getLeftBody(world).equals(owl.getBody()))
 						sloth.grab(world, owl.getBody(), true);
-					else if (collisions.getRightBody() != null && collisions.getRightBody().equals(owl.getBody()))
+					else if (collisions.getRightBody(world) != null && collisions.getRightBody(world).equals(owl.getBody()))
 						sloth.grab(world, owl.getBody(), false);
 					else {
 						sloth.grab(world, owl.getBody(), true);

@@ -22,6 +22,7 @@ import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import askew.GameCanvas;
+import lombok.Getter;
 
 /**
  * Base model class to support collisions.
@@ -63,6 +64,8 @@ public abstract class Obstacle extends Entity {
 	protected transient Vector2 velocityCache = new Vector2();
 	/** A cache value for when the user wants to access the center of mass */
 	protected transient Vector2 centroidCache = new Vector2();
+	@Getter
+	private boolean grabbed;
 	/// BodyDef Methods
 	/**
 	 * Returns the body type for Box2D physics
@@ -952,5 +955,7 @@ public abstract class Obstacle extends Entity {
 	public abstract void drawDebug(GameCanvas canvas);
 
 
-
+    public void setGrabbed() {
+    	this.grabbed = true;
+    }
 }
