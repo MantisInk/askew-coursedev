@@ -160,6 +160,8 @@ public class LevelEditorController extends WorldController {
 	private boolean loadingLevelPrompt;
 	private boolean shouldDrawGrid;
 
+	private Vector2 temp;
+
 	/**
 	 * Preloads the assets for this controller.
 	 *
@@ -398,11 +400,10 @@ public class LevelEditorController extends WorldController {
 		float minDistance = Float.MAX_VALUE;
 		for (Entity e : objects) {
 			Vector2 pos = e.getPosition();
-			if(selected instanceof BackgroundEntity){
-				if(movefar){
-					pos = getModifiedPosition(selected);
-				}
+			if(movefar){
+				pos = e.getModifiedPosition(adjustedCxCamera,adjustedCyCamera);
 			}
+
 			float curDist = pos.dst(mouse);
 			if (curDist < minDistance) {
 				found = e;
@@ -625,10 +626,8 @@ public class LevelEditorController extends WorldController {
 				dragging = true;
 				if(selected != null){
 					selected.setPosition(adjustedMouseX, adjustedMouseY);
-					if(selected instanceof BackgroundEntity){
-						if(movefar){
-							setModifiedPosition(selected, adjustedMouseX, adjustedMouseY);
-						}
+					if(movefar){
+						selected.setModifiedPosition( adjustedMouseX, adjustedMouseY, adjustedCxCamera, adjustedCyCamera);
 					}
 					selected.setTextures(getMantisAssetManager());
 				}else{
@@ -685,10 +684,8 @@ public class LevelEditorController extends WorldController {
 						dragging = false;
 						if (selected != null) {
 							selected.setPosition(adjustedMouseX, adjustedMouseY);
-							if(selected instanceof BackgroundEntity){
-								if(movefar){
-									setModifiedPosition(selected, adjustedMouseX, adjustedMouseY);
-								}
+							if(movefar){
+								selected.setModifiedPosition( adjustedMouseX, adjustedMouseY, adjustedCxCamera, adjustedCyCamera);
 							}
 							selected.setTextures(getMantisAssetManager());
 						}
@@ -807,17 +804,28 @@ public class LevelEditorController extends WorldController {
 		Gdx.gl.glLineWidth(5);
 		canvas.beginDebug(camTrans);
 		Entity ent = entityQuery();
-		if(ent!= null)
-			canvas.drawPhysics(circleShape, new Color(0xcfcf000f),ent.getPosition().x , ent.getPosition().y ,worldScale.x,worldScale.y );
+
+
+		if(ent!= null) {
+			temp = ent.getPosition();
+			if(movefar){
+				temp = ent.getModifiedPosition(adjustedCxCamera,adjustedCyCamera);
+			}
+			canvas.drawPhysics(circleShape, new Color(0xcfcf000f), temp.x, temp.y, worldScale.x, worldScale.y);
+		}
 
 		circleShape.setRadius(.05f);
 		for(Entity e : objects){
+			temp = e.getPosition();
+			if(movefar){
+				temp = e.getModifiedPosition(adjustedCxCamera,adjustedCyCamera);
+			}
 			//if(e.getPosition().x * worldScale.x  > GUI_LEFT_BAR_WIDTH && )
-			canvas.drawPhysics(circleShape, new Color(0xcfcf000f),e.getPosition().x , e.getPosition().y ,worldScale.x,worldScale.y );
+			canvas.drawPhysics(circleShape, new Color(0xcfcf000f),temp.x , temp.y ,worldScale.x,worldScale.y );
 			if(e instanceof BackgroundEntity){
 				float offsetx = ((e.getPosition().x - adjustedCxCamera) * worldScale.x) / ((BackgroundEntity) e).getDepth();
 				float offsety = ((e.getPosition().y - adjustedCyCamera) * worldScale.y) / ((BackgroundEntity) e).getDepth();
-				canvas.drawLine(e.getPosition().x *worldScale.x, e.getPosition().y *worldScale.y , adjustedCxCamera*worldScale.x  + offsetx, adjustedCyCamera*worldScale.y + offsety, Color.YELLOW, Color.CHARTREUSE);
+				canvas.drawLine(temp.x *worldScale.x, temp.y *worldScale.y , adjustedCxCamera*worldScale.x  + offsetx, adjustedCyCamera*worldScale.y + offsety, Color.YELLOW, Color.CHARTREUSE);
 			}
 		}
 
@@ -825,21 +833,6 @@ public class LevelEditorController extends WorldController {
 
 	}
 
-	public Vector2 getModifiedPosition(Entity e){
-		Vector2 pos = e.getPosition();
-		if(e instanceof BackgroundEntity){
-			pos.scl(1f/((BackgroundEntity) e).getDepth());
-		}
-		return pos;
-	}
-
-	public void setModifiedPosition(Entity e, float x, float y){
-		if(e instanceof BackgroundEntity){
-			e.setPosition(x * ((BackgroundEntity) e).getDepth(), y * ((BackgroundEntity) e).getDepth());
-		} else{
-			e.setPosition(x,y);
-		}
-	}
 
 	//ox and oy are bottom left corner
 	public boolean inBounds(float x ,float y, float ox ,float oy, float width, float height){
@@ -922,8 +915,12 @@ public class LevelEditorController extends WorldController {
 		Gdx.gl.glLineWidth(5);
 		canvas.beginDebug(camTrans);
 		Entity ent = selected;
-		if(ent!= null)
-			canvas.drawPhysics(circleShape, new Color(Color.FIREBRICK),ent.getPosition().x , ent.getPosition().y ,worldScale.x,worldScale.y );
+		if(ent!= null) {
+			temp = ent.getPosition();
+			if (movefar)
+				temp = ent.getModifiedPosition(adjustedCxCamera,adjustedCyCamera);
+			canvas.drawPhysics(circleShape, new Color(Color.FIREBRICK), temp.x, temp.y, worldScale.x, worldScale.y);
+		}
 		canvas.endDebug();
 	}
 
