@@ -26,6 +26,7 @@ public class BackgroundEntity extends Entity{
 
     private transient TextureRegion texture;
     protected transient Vector2 origin;
+    @Getter
     protected transient float aspectRatio;
 
     protected transient  Vector2 positionCache = new Vector2();

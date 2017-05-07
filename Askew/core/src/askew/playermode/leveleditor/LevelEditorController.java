@@ -348,8 +348,15 @@ public class LevelEditorController extends WorldController {
 
 		buttons.add(new Button(GUI_LEFT_BAR_MARGIN, 21 * GUI_LEFT_BAR_MARGIN,
 				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
-				"Entity", 5, "debug"));
+				"LEOptions", 5, "debug"));
 
+		buttons.add(new Button(GUI_LEFT_BAR_MARGIN, 23 * GUI_LEFT_BAR_MARGIN,
+				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
+				"LEOptions", 6, "zoom in"));
+
+		buttons.add(new Button(GUI_LEFT_BAR_MARGIN, 25 * GUI_LEFT_BAR_MARGIN,
+				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
+				"LEOptions", 7, "zoom out"));
 
 
 		buttons.add(new MenuArrowButton(GUI_LEFT_BAR_WIDTH, 0,
@@ -393,7 +400,17 @@ public class LevelEditorController extends WorldController {
 							t.setOn(!t.isOn());
 							dragmode = t.isOn();
 							break;
-
+						case("debug"):
+							System.out.println(levelModel);
+							break;
+						case("zoom in"):
+							bounds.setSize(bounds.getWidth() - 1.6f, bounds.getHeight() - .9f);
+							setWorldScale(canvas);
+							break;
+						case("zoom out"):
+							bounds.setSize(bounds.getWidth() + 1.6f, bounds.getHeight() + .9f);
+							setWorldScale(canvas);
+							break;
 						default:
 							break;
 					}
@@ -449,9 +466,6 @@ public class LevelEditorController extends WorldController {
 								undoCreate = null;
 							}
 
-							break;
-						case("debug"):
-							System.out.println(levelModel);
 							break;
 						default:
 							break;
@@ -650,6 +664,10 @@ public class LevelEditorController extends WorldController {
 			if(InputControllerManager.getInstance().getController(0).isSpaceKeyPressed()){
 				adjustedCxCamera = 0;
 				adjustedCyCamera = 0;
+				if(selected != null && selected instanceof BackgroundEntity){
+					adjustedCxCamera = selected.getX();
+					adjustedCyCamera = selected.getY();
+				}
 			}
 			camUpdate();
 		}
@@ -1053,6 +1071,32 @@ public class LevelEditorController extends WorldController {
 			if (movefar)
 				temp = ent.getModifiedPosition(adjustedCxCamera,adjustedCyCamera);
 			canvas.drawPhysics(circleShape, new Color(Color.FIREBRICK), temp.x, temp.y, worldScale.x, worldScale.y);
+
+			if(false && ent instanceof BackgroundEntity) {
+				gridLineRenderer.setColor(Color.ORANGE);
+				Gdx.gl.glLineWidth(4);
+				gridLineRenderer.begin(ShapeRenderer.ShapeType.Line);
+				temp = ent.getModifiedPosition(levelModel.getMinX(),levelModel.getMinY());
+				float minPixelsX = ((temp.x + (((BackgroundEntity) ent).getWidth()*((BackgroundEntity) ent).getAspectRatio())/2) * worldScale.x) - (cxCamera * worldScale.x);
+				float minPixelsY = ((temp.y + (((BackgroundEntity) ent).getHeight())/2) * worldScale.y) - (cyCamera * worldScale.y);
+				temp = ent.getModifiedPosition(levelModel.getMaxX(),levelModel.getMaxY());
+				float maxPixelsX = ((temp.x - (((BackgroundEntity) ent).getWidth()*((BackgroundEntity) ent).getAspectRatio())/2) * worldScale.x) - (cxCamera * worldScale.x);
+				float maxPixelsY = ((temp.y - (((BackgroundEntity) ent).getHeight())/2) * worldScale.y) - (cyCamera * worldScale.y);
+				//gridLineRenderer.line(minPixelsX, minPixelsY, (ent.getX()-cxCamera) * worldScale.x, (ent.getY()-cyCamera) * worldScale.y);
+				//gridLineRenderer.line(minPixelsX, minPixelsY , minPixelsX + 3, minPixelsY);
+
+
+				// left line
+				gridLineRenderer.line(minPixelsX, maxPixelsY, minPixelsX, minPixelsY);
+				// top line
+				gridLineRenderer.line(minPixelsX, maxPixelsY, maxPixelsX, maxPixelsY);
+				// right line
+				gridLineRenderer.line(maxPixelsX, maxPixelsY, maxPixelsX, minPixelsY);
+				// bottom line
+				gridLineRenderer.line(minPixelsX, minPixelsY, maxPixelsX, minPixelsY);
+
+				gridLineRenderer.end();
+			}
 		}
 		canvas.endDebug();
 	}
