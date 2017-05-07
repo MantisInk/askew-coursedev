@@ -6,10 +6,6 @@ texture/background/menu1.png
 texture/background/menu2.png
 texture/background/menu_background.png
 texture/background/pause.png
-texture/background/sil1.png
-texture/background/sil2.png
-texture/background/sil3.png
-texture/background/sil4.png
 texture/background/sil5.png
 texture/background/sil6.png
 texture/background/topvine/Topvine_0000_Layer-2.png
@@ -58,6 +54,10 @@ texture/tutorial/joystick2.png
 texture/vine/vine.png
 texture/thorn/thorns.png
 texture/wall/wall.png
-texture/background/purple.png
-texture/background/rusty.png
+texture/background/BackgroundStuff/purple.png
+texture/background/BackgroundStuff/rusty.png
 texture/background/foreground/leaf.png
+texture/background/BackgroundStuff/sil1.png
+texture/background/BackgroundStuff/sil2.png
+texture/background/BackgroundStuff/sil3.png
+texture/background/BackgroundStuff/sil4.png
