@@ -20,8 +20,8 @@ public class WallModel extends PolygonObstacle {
 
     public static final float WALL_FRICTION = 1.0f;
     public static final float WALL_RESTITUTION = 0.1f;
-    TextureRegion circleTextureRegion;
-    TextureRegion edgeTextureRegion;
+    private transient TextureRegion circleTextureRegion;
+    private transient TextureRegion edgeTextureRegion;
 
     // Instance variables
     private float x;
