@@ -9,7 +9,7 @@
   "minX": -5.0,
   "minY": 6.0,
   "title": "level2",
-  "background": "texture/background/background1.png",
+  "background": "texture/background/BackgroundStuff/purple.png",
   "soundtrack": "TODO",
   "entities": [
     {
@@ -63,11 +63,7 @@
         "x": -3.0,
         "y": 19.0,
         "lTheta": 0.0,
-        "rTheta": 0.0,
-        "setLastGrabX": false,
-        "lastGrabX": 0.0,
-        "didOneArmCheck": false,
-        "waitingForSafeRelease": false
+        "rTheta": 0.0
       }
     },
     {

@@ -9,14 +9,14 @@
   "minX": -12.0,
   "minY": 6.0,
   "title": "The First One",
-  "background": "texture/background/background1.png",
+  "background": "texture/background/BackgroundStuff/purple.png",
   "soundtrack": "TODO",
   "entities": [
     {
       "CLASSNAME": "askew.entity.BackgroundEntity",
       "INSTANCE": {
-        "x": 0.35000038,
-        "y": 15.761719,
+        "x": 6.906245,
+        "y": 28.762505,
         "width": 25.0,
         "height": 25.0,
         "depth": 15.0,
@@ -24,14 +24,59 @@
         "scalex": 1.0,
         "scaley": 1.0,
         "texturePath": "texture/background/BackgroundStuff/sil2.png",
-        "color": -1
+        "color": 2013323519
       }
     },
     {
       "CLASSNAME": "askew.entity.BackgroundEntity",
       "INSTANCE": {
-        "x": 16.0,
-        "y": 12.0,
+        "x": -6.2075005,
+        "y": 8.791248,
+        "width": 20.0,
+        "height": 20.0,
+        "depth": 12.0,
+        "angle": 45.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/sil2.png",
+        "color": 1543548415
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": -3.2824993,
+        "y": 19.41875,
+        "width": 10.0,
+        "height": 10.0,
+        "depth": 6.0,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/cloud.png",
+        "color": -136
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": -15.031249,
+        "y": 20.718742,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 5.0,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/eyes.png",
+        "color": -176
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 15.924998,
+        "y": 12.187496,
         "width": 25.0,
         "height": 25.0,
         "depth": 5.0,
@@ -39,7 +84,7 @@
         "scalex": 1.0,
         "scaley": 1.0,
         "texturePath": "texture/background/BackgroundStuff/sil4.png",
-        "color": -16711681
+        "color": 1275101439
       }
     },
     {
@@ -61,8 +106,8 @@
     {
       "CLASSNAME": "askew.entity.tree.Trunk",
       "INSTANCE": {
-        "x": 24.180002,
-        "y": 9.795702,
+        "x": 24.407497,
+        "y": 9.814998,
         "angle": 90.0,
         "numLinks": 7.0
       }
@@ -70,8 +115,8 @@
     {
       "CLASSNAME": "askew.entity.tree.Trunk",
       "INSTANCE": {
-        "x": 13.0,
-        "y": 14.0,
+        "x": 13.178746,
+        "y": 14.121244,
         "angle": 225.0,
         "numLinks": 6.0
       }
@@ -79,8 +124,67 @@
     {
       "CLASSNAME": "askew.entity.wall.WallModel",
       "INSTANCE": {
+        "circleTextureRegion": {
+          "texture": {
+            "data": {
+              "file": {
+                "file": {
+                  "path": "texture/wall/corner.png"
+                },
+                "type": "Internal"
+              },
+              "width": 25,
+              "height": 25,
+              "format": "RGBA8888",
+              "useMipMaps": false,
+              "isPrepared": false
+            },
+            "glTarget": 3553,
+            "glHandle": 75,
+            "minFilter": "Nearest",
+            "magFilter": "Nearest",
+            "uWrap": "ClampToEdge",
+            "vWrap": "ClampToEdge"
+          },
+          "u": 0.0,
+          "v": 0.0,
+          "u2": 1.0,
+          "v2": 1.0,
+          "regionWidth": 25,
+          "regionHeight": 25
+        },
+        "edgeTextureRegion": {
+          "texture": {
+            "data": {
+              "file": {
+                "file": {
+                  "path": "texture/wall/edge.png"
+                },
+                "type": "Internal"
+              },
+              "width": 100,
+              "height": 16,
+              "format": "RGBA8888",
+              "useMipMaps": false,
+              "isPrepared": false
+            },
+            "glTarget": 3553,
+            "glHandle": 76,
+            "minFilter": "Linear",
+            "magFilter": "Linear",
+            "uWrap": "Repeat",
+            "vWrap": "Repeat"
+          },
+          "u": 0.0,
+          "v": 0.035,
+          "u2": 3.07,
+          "v2": 0.965,
+          "regionWidth": 307,
+          "regionHeight": 15
+        },
         "x": 24.0,
         "y": 6.0,
+        "color": -1,
         "points": [
           0.0,
           0.0,
@@ -96,8 +200,67 @@
     {
       "CLASSNAME": "askew.entity.wall.WallModel",
       "INSTANCE": {
+        "circleTextureRegion": {
+          "texture": {
+            "data": {
+              "file": {
+                "file": {
+                  "path": "texture/wall/corner.png"
+                },
+                "type": "Internal"
+              },
+              "width": 25,
+              "height": 25,
+              "format": "RGBA8888",
+              "useMipMaps": false,
+              "isPrepared": false
+            },
+            "glTarget": 3553,
+            "glHandle": 75,
+            "minFilter": "Nearest",
+            "magFilter": "Nearest",
+            "uWrap": "ClampToEdge",
+            "vWrap": "ClampToEdge"
+          },
+          "u": 0.0,
+          "v": 0.0,
+          "u2": 1.0,
+          "v2": 1.0,
+          "regionWidth": 25,
+          "regionHeight": 25
+        },
+        "edgeTextureRegion": {
+          "texture": {
+            "data": {
+              "file": {
+                "file": {
+                  "path": "texture/wall/edge.png"
+                },
+                "type": "Internal"
+              },
+              "width": 100,
+              "height": 16,
+              "format": "RGBA8888",
+              "useMipMaps": false,
+              "isPrepared": false
+            },
+            "glTarget": 3553,
+            "glHandle": 76,
+            "minFilter": "Linear",
+            "magFilter": "Linear",
+            "uWrap": "Repeat",
+            "vWrap": "Repeat"
+          },
+          "u": 0.0,
+          "v": 0.035,
+          "u2": 3.07,
+          "v2": 0.965,
+          "regionWidth": 307,
+          "regionHeight": 15
+        },
         "x": 12.0,
         "y": 2.0,
+        "color": -1,
         "points": [
           0.0,
           0.0,
@@ -113,8 +276,67 @@
     {
       "CLASSNAME": "askew.entity.wall.WallModel",
       "INSTANCE": {
+        "circleTextureRegion": {
+          "texture": {
+            "data": {
+              "file": {
+                "file": {
+                  "path": "texture/wall/corner.png"
+                },
+                "type": "Internal"
+              },
+              "width": 25,
+              "height": 25,
+              "format": "RGBA8888",
+              "useMipMaps": false,
+              "isPrepared": false
+            },
+            "glTarget": 3553,
+            "glHandle": 75,
+            "minFilter": "Nearest",
+            "magFilter": "Nearest",
+            "uWrap": "ClampToEdge",
+            "vWrap": "ClampToEdge"
+          },
+          "u": 0.0,
+          "v": 0.0,
+          "u2": 1.0,
+          "v2": 1.0,
+          "regionWidth": 25,
+          "regionHeight": 25
+        },
+        "edgeTextureRegion": {
+          "texture": {
+            "data": {
+              "file": {
+                "file": {
+                  "path": "texture/wall/edge.png"
+                },
+                "type": "Internal"
+              },
+              "width": 100,
+              "height": 16,
+              "format": "RGBA8888",
+              "useMipMaps": false,
+              "isPrepared": false
+            },
+            "glTarget": 3553,
+            "glHandle": 76,
+            "minFilter": "Linear",
+            "magFilter": "Linear",
+            "uWrap": "Repeat",
+            "vWrap": "Repeat"
+          },
+          "u": 0.0,
+          "v": 0.035,
+          "u2": 3.07,
+          "v2": 0.965,
+          "regionWidth": 307,
+          "regionHeight": 15
+        },
         "x": 12.0,
         "y": 10.0,
+        "color": -1,
         "points": [
           0.0,
           0.0,
@@ -128,8 +350,67 @@
     {
       "CLASSNAME": "askew.entity.wall.WallModel",
       "INSTANCE": {
+        "circleTextureRegion": {
+          "texture": {
+            "data": {
+              "file": {
+                "file": {
+                  "path": "texture/wall/corner.png"
+                },
+                "type": "Internal"
+              },
+              "width": 25,
+              "height": 25,
+              "format": "RGBA8888",
+              "useMipMaps": false,
+              "isPrepared": false
+            },
+            "glTarget": 3553,
+            "glHandle": 75,
+            "minFilter": "Nearest",
+            "magFilter": "Nearest",
+            "uWrap": "ClampToEdge",
+            "vWrap": "ClampToEdge"
+          },
+          "u": 0.0,
+          "v": 0.0,
+          "u2": 1.0,
+          "v2": 1.0,
+          "regionWidth": 25,
+          "regionHeight": 25
+        },
+        "edgeTextureRegion": {
+          "texture": {
+            "data": {
+              "file": {
+                "file": {
+                  "path": "texture/wall/edge.png"
+                },
+                "type": "Internal"
+              },
+              "width": 100,
+              "height": 16,
+              "format": "RGBA8888",
+              "useMipMaps": false,
+              "isPrepared": false
+            },
+            "glTarget": 3553,
+            "glHandle": 76,
+            "minFilter": "Linear",
+            "magFilter": "Linear",
+            "uWrap": "Repeat",
+            "vWrap": "Repeat"
+          },
+          "u": 0.0,
+          "v": 0.035,
+          "u2": 3.07,
+          "v2": 0.965,
+          "regionWidth": 307,
+          "regionHeight": 15
+        },
         "x": 17.0,
         "y": 13.0,
+        "color": -1,
         "points": [
           0.0,
           0.0,
@@ -145,8 +426,67 @@
     {
       "CLASSNAME": "askew.entity.wall.WallModel",
       "INSTANCE": {
+        "circleTextureRegion": {
+          "texture": {
+            "data": {
+              "file": {
+                "file": {
+                  "path": "texture/wall/corner.png"
+                },
+                "type": "Internal"
+              },
+              "width": 25,
+              "height": 25,
+              "format": "RGBA8888",
+              "useMipMaps": false,
+              "isPrepared": false
+            },
+            "glTarget": 3553,
+            "glHandle": 75,
+            "minFilter": "Nearest",
+            "magFilter": "Nearest",
+            "uWrap": "ClampToEdge",
+            "vWrap": "ClampToEdge"
+          },
+          "u": 0.0,
+          "v": 0.0,
+          "u2": 1.0,
+          "v2": 1.0,
+          "regionWidth": 25,
+          "regionHeight": 25
+        },
+        "edgeTextureRegion": {
+          "texture": {
+            "data": {
+              "file": {
+                "file": {
+                  "path": "texture/wall/edge.png"
+                },
+                "type": "Internal"
+              },
+              "width": 100,
+              "height": 16,
+              "format": "RGBA8888",
+              "useMipMaps": false,
+              "isPrepared": false
+            },
+            "glTarget": 3553,
+            "glHandle": 76,
+            "minFilter": "Linear",
+            "magFilter": "Linear",
+            "uWrap": "Repeat",
+            "vWrap": "Repeat"
+          },
+          "u": 0.0,
+          "v": 0.035,
+          "u2": 3.07,
+          "v2": 0.965,
+          "regionWidth": 307,
+          "regionHeight": 15
+        },
         "x": 12.0,
         "y": 19.0,
+        "color": -1,
         "points": [
           0.0,
           0.0,
@@ -160,8 +500,67 @@
     {
       "CLASSNAME": "askew.entity.wall.WallModel",
       "INSTANCE": {
+        "circleTextureRegion": {
+          "texture": {
+            "data": {
+              "file": {
+                "file": {
+                  "path": "texture/wall/corner.png"
+                },
+                "type": "Internal"
+              },
+              "width": 25,
+              "height": 25,
+              "format": "RGBA8888",
+              "useMipMaps": false,
+              "isPrepared": false
+            },
+            "glTarget": 3553,
+            "glHandle": 75,
+            "minFilter": "Nearest",
+            "magFilter": "Nearest",
+            "uWrap": "ClampToEdge",
+            "vWrap": "ClampToEdge"
+          },
+          "u": 0.0,
+          "v": 0.0,
+          "u2": 1.0,
+          "v2": 1.0,
+          "regionWidth": 25,
+          "regionHeight": 25
+        },
+        "edgeTextureRegion": {
+          "texture": {
+            "data": {
+              "file": {
+                "file": {
+                  "path": "texture/wall/edge.png"
+                },
+                "type": "Internal"
+              },
+              "width": 100,
+              "height": 16,
+              "format": "RGBA8888",
+              "useMipMaps": false,
+              "isPrepared": false
+            },
+            "glTarget": 3553,
+            "glHandle": 76,
+            "minFilter": "Linear",
+            "magFilter": "Linear",
+            "uWrap": "Repeat",
+            "vWrap": "Repeat"
+          },
+          "u": 0.0,
+          "v": 0.035,
+          "u2": 3.07,
+          "v2": 0.965,
+          "regionWidth": 307,
+          "regionHeight": 15
+        },
         "x": 12.0,
         "y": 15.0,
+        "color": -1,
         "points": [
           0.0,
           0.0,
@@ -170,23 +569,6 @@
           5.0,
           50.0,
           5.0,
-          0.0
-        ]
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.wall.WallModel",
-      "INSTANCE": {
-        "x": -12.0,
-        "y": 6.0,
-        "points": [
-          0.0,
-          0.0,
-          0.0,
-          100.0,
-          3.0,
-          100.0,
-          3.0,
           0.0
         ]
       }
@@ -194,10 +576,295 @@
     {
       "CLASSNAME": "askew.entity.tree.Trunk",
       "INSTANCE": {
-        "x": -9.0,
-        "y": 14.0,
+        "x": -8.693748,
+        "y": 14.088744,
         "angle": 270.0,
         "numLinks": 22.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": -6.3537493,
+        "y": 7.3124995,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 1.0,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/foreground/fernTile.png",
+        "color": -1404174337
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": -2.3237495,
+        "y": 7.4099994,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 1.0,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/foreground/fernTile.png",
+        "color": -1404174337
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 2.2749996,
+        "y": 7.3937497,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 1.0,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/foreground/fernTile.png",
+        "color": -1404174337
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 6.7112503,
+        "y": 7.3612494,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 1.0,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/foreground/fernTile.png",
+        "color": -1404174337
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 11.049999,
+        "y": 7.42625,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 1.0,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/foreground/fernTile.png",
+        "color": -1404174337
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 15.274999,
+        "y": 7.3937497,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 1.0,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/foreground/fernTile.png",
+        "color": -1404174337
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 19.353745,
+        "y": 7.4099994,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 1.0,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/foreground/fernTile.png",
+        "color": -1404174337
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 23.952505,
+        "y": 7.3612494,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 1.0,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/foreground/fernTile.png",
+        "color": -1404174337
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": -8.8237505,
+        "y": 16.347496,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 0.75,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/leafPalm.png",
+        "color": 1275101439
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": -9.75,
+        "y": 16.266245,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 0.75,
+        "angle": 45.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/leafPalm.png",
+        "color": 1275101439
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": -9.2300005,
+        "y": 15.372496,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 0.75,
+        "angle": 45.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/leafPalm.png",
+        "color": 1275101439
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": -9.99375,
+        "y": 14.803745,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 0.75,
+        "angle": 90.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/leafPalm.png",
+        "color": 1275101439
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": -11.098744,
+        "y": 15.713745,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 0.75,
+        "angle": 180.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/leafPalm.png",
+        "color": 1275101439
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": -8.20625,
+        "y": 15.274996,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 0.75,
+        "angle": 180.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/leafPalm.png",
+        "color": 1275101439
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": -9.83125,
+        "y": 17.078745,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 0.75,
+        "angle": 180.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/leafPalm.png",
+        "color": 1275101439
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": -8.88875,
+        "y": 14.251246,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 0.75,
+        "angle": 180.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/leafPalm.png",
+        "color": 1275101439
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": -9.83125,
+        "y": 13.487495,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 0.75,
+        "angle": 180.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/leafPalm.png",
+        "color": 1275101439
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": -8.563747,
+        "y": 13.471246,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 0.75,
+        "angle": 180.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/leafPalm.png",
+        "color": 1275101439
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": -10.481247,
+        "y": 14.316246,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 0.75,
+        "angle": 180.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/leafPalm.png",
+        "color": 1275101439
       }
     }
   ]
