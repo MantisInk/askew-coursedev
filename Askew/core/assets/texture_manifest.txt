@@ -1,4 +1,6 @@
 texture/background/background1.png
+texture/background/BackgroundStuff/cloud.png
+texture/background/BackgroundStuff/cloud1.png
 texture/background/BackgroundStuff/purple.png
 texture/background/BackgroundStuff/rusty.png
 texture/background/BackgroundStuff/sil1.png
@@ -40,6 +42,15 @@ texture/background/topvine/Topvine_0015_Layer-17.png
 texture/background/topvine/Topvine_0016_Layer-18.png
 texture/background/topvine/Topvine_0017_Layer-19.png
 texture/background/topvine/Topvine_0018_Layer-20.png
+texture/background/topvine/Topvine10.png
+texture/background/topvine/Topvine11.png
+texture/background/topvine/Topvine2.png
+texture/background/topvine/Topvine3.png
+texture/background/topvine/Topvine4.png
+texture/background/topvine/Topvine5.png
+texture/background/topvine/Topvine6.png
+texture/background/topvine/Topvine8.png
+texture/background/topvine/Topvine9.png
 texture/background/victory.png
 texture/branch/branch.png
 texture/leveleditor/button.png
