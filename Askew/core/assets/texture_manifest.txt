@@ -68,3 +68,7 @@ texture/background/BackgroundStuff/sil2.png
 texture/background/BackgroundStuff/sil3.png
 texture/background/BackgroundStuff/sil4.png
 texture/vine/vine2Tile.png
+texture/background/purple.png
+texture/background/rusty.png
+texture/background/foreground/leaf.png
+texture/sloth/power_glow.png

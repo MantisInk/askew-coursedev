@@ -23,6 +23,7 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 
 import askew.GameCanvas;
+import lombok.Getter;
 
 /**
  * Base model class to support collisions.
@@ -40,6 +41,7 @@ public abstract class SimpleObstacle extends Obstacle {
 	protected transient TextureRegion texture;
 
 	/** The texture origin for drawing */
+	@Getter
 	protected transient Vector2 origin;
 	
 	/// BodyDef Methods
