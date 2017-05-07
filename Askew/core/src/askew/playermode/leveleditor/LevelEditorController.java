@@ -279,7 +279,7 @@ public class LevelEditorController extends WorldController {
 		pressedL = false;
 		prevPressedL = false;
 		released = true;
-		if (didLoad) makeGuiWindow();
+		//if (didLoad) makeGuiWindow();
 	}
 
 	/**
