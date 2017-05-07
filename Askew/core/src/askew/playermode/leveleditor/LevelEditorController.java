@@ -708,16 +708,15 @@ public class LevelEditorController extends WorldController {
 		}
 
 		// horizontal
-		for (float i = ((int)(-cyCamera * worldScale.x) % dpsH - dpsH); i < canvas.getHeight(); i += dpsH) {
+		for (float i = ((int)(-cyCamera * worldScale.y) % dpsH - dpsH); i < canvas.getHeight(); i += dpsH) {
 			gridLineRenderer.setColor(Color.FOREST);
 			gridLineRenderer.line(0, i,canvas.getWidth(),i);
 		}
 		gridLineRenderer.end();
-		gridLineRenderer.begin(ShapeRenderer.ShapeType.Line);
-
 		// While we're at it, just draw the level bounds.
 		gridLineRenderer.setColor(Color.RED);
 		Gdx.gl.glLineWidth(4);
+		gridLineRenderer.begin(ShapeRenderer.ShapeType.Line);
 		float minPixelsX = levelModel.getMinX() * worldScale.x - cxCamera *
 				worldScale.x;
 		float minPixelsY = levelModel.getMinY() * worldScale.y - cyCamera *
