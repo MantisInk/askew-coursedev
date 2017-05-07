@@ -41,7 +41,6 @@ public class AssetTraversalController {
         String[] allPaths = textureManifestHandle.readString().split("\\R");
         manager.setTexturePaths(allPaths);
         for (String handleString : allPaths) {
-            System.err.println("[debug] " + handleString);
             manager.load(handleString, Texture.class);
         }
 

@@ -1,5 +1,5 @@
 {
-  "levelModelVersion": 1,
+  "levelModelVersion": 2,
   "goalTimeGold": 30,
   "goalTimeSilver": 45,
   "goalTimeBronze": 60,
@@ -11,6 +11,5 @@
   "title": "test_save_obstacle",
   "background": "texture/background/BackgroundStuff/purple.png",
   "soundtrack": "TODO",
-  "entities": [
-]
+  "entities": []
 }

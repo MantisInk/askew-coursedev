@@ -28,6 +28,8 @@ public class MainMenuController extends WorldController {
 
     private int MAX_LEVEL;
 
+    public final Color fontcolor = new Color(.984f,.545f,.384f,1);
+
     // main menu modes
     private final int HOME_SCREEN = 0;
     private final int LEVEL_SELECT = 1;
@@ -71,13 +73,13 @@ public class MainMenuController extends WorldController {
     private boolean grab = false;           // false means hold to grab
     private String[] settings_text = {"Control Scheme", "One Arm", "Two Arm", "Grab Scheme", "Hold to Grab", "Release to Grab", "Main Menu"};
     private Vector2[] settings_text_locs = {
-            new Vector2(0.4f, 0.54f),   new Vector2(0.45f, 0.54f), new Vector2(0.65f, 0.54f),
-            new Vector2(0.4f, 0.44f),   new Vector2(0.45f, 0.44f), new Vector2(0.65f, 0.44f),
+            new Vector2(0.4f, 0.54f),   new Vector2(0.45f, 0.54f), new Vector2(0.7f, 0.54f),
+            new Vector2(0.4f, 0.44f),   new Vector2(0.45f, 0.44f), new Vector2(0.7f, 0.44f),
             new Vector2(0.4f, 0.34f)
     };
     private Vector2[] settings_button_locs = {
-            new Vector2(0.43f, 0.53f), new Vector2(0.63f, 0.53f),
-            new Vector2(0.43f, 0.43f), new Vector2(0.63f, 0.43f),
+            new Vector2(0.43f, 0.53f), new Vector2(0.68f, 0.53f),
+            new Vector2(0.43f, 0.43f), new Vector2(0.68f, 0.43f),
             new Vector2(0.43f, 0.33f)
     };
 
@@ -113,12 +115,14 @@ public class MainMenuController extends WorldController {
 
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(fontFile);
         FreeTypeFontGenerator.FreeTypeFontParameter param = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        param.size = 56;
+        int textscale = 1;
+        param.size = 56*textscale;
         regina = generator.generateFont(param);
-        param.size = 32;
-        param.color = Color.GREEN;
+        param.color = fontcolor;
+        param.size = 32*textscale;
+//        param.color = Color.GREEN;
         regina1 = generator.generateFont(param);
-        param.size = 44;
+        param.size = 44*textscale;
         param.shadowColor = Color.BLACK;
         param.shadowOffsetX = 1;
         param.shadowOffsetY = 1;
@@ -182,13 +186,13 @@ public class MainMenuController extends WorldController {
     @Override
     public void draw(float delta) {
         canvas.clear();
-        displayFont.setColor(Color.GREEN);
+        displayFont.setColor(fontcolor);
 
         canvas.begin(); // DO NOT SCALE
         canvas.draw(menu);
         if(mode == HOME_SCREEN) {
             for(int i = 0; i < home_text_locs.length; i++) {
-                canvas.drawTextAlignedRight(home_text[i], regina, home_text_locs[i].x * canvas.getWidth(), home_text_locs[i].y * canvas.getHeight(), Color.GREEN);
+                canvas.drawTextAlignedRight(home_text[i], regina, home_text_locs[i].x * canvas.getWidth(), home_text_locs[i].y * canvas.getHeight(), fontcolor);
             }
             canvas.draw(fern, Color.WHITE,fern.getWidth()/2, fern.getHeight()/2,
                     home_button_locs[home_button].x * canvas.getWidth(), home_button_locs[home_button].y* canvas.getHeight(),
@@ -205,10 +209,10 @@ public class MainMenuController extends WorldController {
         else if (mode == SETTINGS) {
             for (int i = 0; i < settings_text_locs.length; i++) {
                 if (i == 0 || i == 3 || i == 6)
-                    canvas.drawTextAlignedRight(settings_text[i], regina, settings_text_locs[i].x*canvas.getWidth(), settings_text_locs[i].y*canvas.getHeight(), Color.GREEN);
+                    canvas.drawTextAlignedRight(settings_text[i], regina, settings_text_locs[i].x*canvas.getWidth(), settings_text_locs[i].y*canvas.getHeight(), fontcolor);
             }
             if (control) {
-                canvas.drawText(settings_text[2], regina2, settings_text_locs[2].x * canvas.getWidth(), settings_text_locs[2].y * canvas.getHeight());
+                canvas.drawText(settings_text[2], regina2, settings_text_locs[2].x*canvas.getWidth(), settings_text_locs[2].y*canvas.getHeight());
                 canvas.drawText(settings_text[1], regina1, settings_text_locs[1].x*canvas.getWidth(), settings_text_locs[1].y*canvas.getHeight());
             } else {
                 canvas.drawText(settings_text[1], regina2, settings_text_locs[1].x*canvas.getWidth(), settings_text_locs[1].y*canvas.getHeight());

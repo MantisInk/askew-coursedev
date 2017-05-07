@@ -249,10 +249,6 @@ public class TutorialModeController extends GameModeController {
 			time = time+dt ;
 			// TODO: move sloth movement in slothmodel
 
-			//Increment Steps
-			System.out.println("stage " + currentStage);
-			InputController input =  InputControllerManager.getInstance().getController(0);
-
 			switch(currentStage) {
 				case STAGE_PINNED:
 					if( (int)(time/3) %2 == 0) {
@@ -554,6 +550,9 @@ public class TutorialModeController extends GameModeController {
 		canvas.draw(background);
 		canvas.end();
 
+		System.out.println("stage " + currentStage);
+		InputController input =  InputControllerManager.getInstance().getController(0);
+
 		camTrans.setToTranslation(-1 * sloth.getBody().getPosition().x * worldScale.x
 				, -1 * sloth.getBody().getPosition().y * worldScale.y);
 		camTrans.translate(canvas.getWidth()/2,canvas.getHeight()/2);
@@ -579,6 +578,7 @@ public class TutorialModeController extends GameModeController {
 				obj.draw(canvas);
 			}
 		}
+
 		// trunk tinting done here
 		for (int i = 0; i <trunkEntities.size(); i++) {
 			if (trunkGrabbed.get(i)) {
