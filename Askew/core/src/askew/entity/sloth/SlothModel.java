@@ -1195,6 +1195,7 @@ public class SlothModel extends ComplexObstacle  {
             Vector2 rPos = right.getPosition();
             Vector2 bPos = body.getPosition();
             float mag;
+
             if(isActualLeftGrab() || isActualRightGrab()) {
                 if (isActualLeftGrab()) {
                     if (!isActualRightGrab() || left.getX() < right.getX()) {
@@ -1229,6 +1230,7 @@ public class SlothModel extends ComplexObstacle  {
                         }
                     }
                 }
+
 //                System.out.println("     left: "+lPos.angle()+" right: "+rPos.angle());
 //                System.out.println("lPos ("+lPos.x+","+lPos.y+")  rPos ("+rPos.x+","+rPos.y+")");
                 mag = Math.min(lPos.cpy().sub(bPos).len(),rPos.cpy().sub(bPos).len());

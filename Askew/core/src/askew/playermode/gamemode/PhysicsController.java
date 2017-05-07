@@ -68,7 +68,7 @@ public class PhysicsController implements ContactListener {
         try {
             if(!(body1.getUserData() instanceof Obstacle) || !(body2.getUserData() instanceof Obstacle))
                 return;
-          
+
             Obstacle bd1 = (Obstacle)body1.getUserData();
             Obstacle bd2 = (Obstacle)body2.getUserData();
 

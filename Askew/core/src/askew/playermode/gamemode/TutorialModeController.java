@@ -248,6 +248,7 @@ public class TutorialModeController extends GameModeController {
 			elapseTime += dt;
 			time = time+dt ;
 			// TODO: move sloth movement in slothmodel
+
 			switch(currentStage) {
 				case STAGE_PINNED:
 					if( (int)(time/3) %2 == 0) {
@@ -577,6 +578,7 @@ public class TutorialModeController extends GameModeController {
 				obj.draw(canvas);
 			}
 		}
+
 		// trunk tinting done here
 		for (int i = 0; i <trunkEntities.size(); i++) {
 			if (trunkGrabbed.get(i)) {

@@ -352,7 +352,6 @@ public class LevelEditorController extends WorldController {
 		buttons.add(new MenuArrowButton(canvas.getWidth()-GUI_EMARROW_WIDTH, 0,
 				GUI_EMARROW_WIDTH, GUI_LOWER_BAR_HEIGHT,
 				"EntityMenu", 0, "right", 0,false));
-
 	}
 
 	private boolean processButtons(Button b){
@@ -470,6 +469,7 @@ public class LevelEditorController extends WorldController {
 			return false;
 		}
 	}
+
 
 	//region Utility Helpers
 	/**
@@ -709,7 +709,7 @@ public class LevelEditorController extends WorldController {
 
 			}else if(mouseY * worldScale.y <= GUI_LOWER_BAR_HEIGHT){
 
-			}else{
+			} else {
 				dragging = true;
 				if(selected != null){
 					selected.setPosition(adjustedMouseX, adjustedMouseY);
