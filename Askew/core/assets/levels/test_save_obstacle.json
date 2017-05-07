@@ -254,7 +254,8 @@
         "y": -94.10781,
         "angle": 5.0,
         "omega": -400.0,
-        "pin": false
+        "pin": false,
+        "texture": 0
       }
     },
     {
@@ -265,7 +266,8 @@
         "y": -1.144,
         "angle": 5.0,
         "omega": -400.0,
-        "pin": false
+        "pin": false,
+        "texture": 0
       }
     },
     {
@@ -276,7 +278,8 @@
         "y": 3.0,
         "angle": 5.0,
         "omega": -400.0,
-        "pin": false
+        "pin": false,
+        "texture": 0
       }
     },
     {
@@ -287,7 +290,8 @@
         "y": 4.6150002,
         "angle": 5.0,
         "omega": -400.0,
-        "pin": false
+        "pin": false,
+        "texture": 0
       }
     },
     {
@@ -298,7 +302,8 @@
         "y": 3.0,
         "angle": 0.0,
         "omega": 0.0,
-        "pin": false
+        "pin": false,
+        "texture": 0
       }
     },
     {
@@ -425,7 +430,8 @@
         "y": 4.4199996,
         "angle": 5.0,
         "omega": -400.0,
-        "pin": false
+        "pin": false,
+        "texture": 0
       }
     },
     {
@@ -436,7 +442,8 @@
         "y": 5.525,
         "angle": 5.0,
         "omega": -400.0,
-        "pin": false
+        "pin": false,
+        "texture": 0
       }
     },
     {
@@ -447,7 +454,8 @@
         "y": 5.317,
         "angle": 5.0,
         "omega": -400.0,
-        "pin": false
+        "pin": false,
+        "texture": 0
       }
     },
     {
@@ -458,7 +466,8 @@
         "y": 5.5639997,
         "angle": 5.0,
         "omega": -400.0,
-        "pin": false
+        "pin": false,
+        "texture": 0
       }
     },
     {
@@ -469,7 +478,8 @@
         "y": 3.5619998,
         "angle": 5.0,
         "omega": -400.0,
-        "pin": false
+        "pin": false,
+        "texture": 0
       }
     },
     {
@@ -480,7 +490,8 @@
         "y": 4.81,
         "angle": 5.0,
         "omega": -400.0,
-        "pin": false
+        "pin": false,
+        "texture": 0
       }
     },
     {
@@ -491,7 +502,8 @@
         "y": 3.4059997,
         "angle": 5.0,
         "omega": -400.0,
-        "pin": false
+        "pin": false,
+        "texture": 0
       }
     },
     {
@@ -502,7 +514,8 @@
         "y": 1.7290001,
         "angle": 5.0,
         "omega": -400.0,
-        "pin": false
+        "pin": false,
+        "texture": 0
       }
     },
     {
@@ -513,7 +526,8 @@
         "y": 6.2009997,
         "angle": 5.0,
         "omega": -400.0,
-        "pin": false
+        "pin": false,
+        "texture": 0
       }
     },
     {
@@ -524,7 +538,8 @@
         "y": 3.5359998,
         "angle": 5.0,
         "omega": -400.0,
-        "pin": false
+        "pin": false,
+        "texture": 0
       }
     },
     {
@@ -535,7 +550,8 @@
         "y": 3.6529999,
         "angle": 5.0,
         "omega": -400.0,
-        "pin": false
+        "pin": false,
+        "texture": 0
       }
     },
     {
@@ -546,7 +562,8 @@
         "y": 5.550999,
         "angle": 5.0,
         "omega": -400.0,
-        "pin": false
+        "pin": false,
+        "texture": 0
       }
     }
   ]

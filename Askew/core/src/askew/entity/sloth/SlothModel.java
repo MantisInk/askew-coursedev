@@ -149,6 +149,8 @@ public class SlothModel extends ComplexObstacle  {
     private transient boolean didOneArmCheck;
     private transient boolean waitingForSafeRelease;
     private transient boolean tutorial = false;
+    @Getter
+    private transient Obstacle mostRecentlyGrabbed = null;
 
     /**
      * Returns the texture index for the given body part
@@ -820,6 +822,7 @@ public class SlothModel extends ComplexObstacle  {
             hand =  bodies.get(PART_RIGHT_HAND);
             otherHand = bodies.get(PART_LEFT_HAND);
         }
+        mostRecentlyGrabbed = hand;
 
         if (grabJoint != null || target == null) return;
 

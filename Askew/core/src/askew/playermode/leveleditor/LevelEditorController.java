@@ -460,7 +460,7 @@ public class LevelEditorController extends WorldController {
 				entity = new SlothModel(x,y);
 				break;
 			case "Vine":
-				entity = new Vine(x,y,5.0f, 5f, -400f);
+				entity = new Vine(x,y,5.0f, 5f, -400f, 0);
 				break;
 			case "Trunk":
 				entity = new Trunk(x,y, 5.0f, 0);

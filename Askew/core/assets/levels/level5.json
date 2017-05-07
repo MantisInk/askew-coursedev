@@ -103,7 +103,8 @@
         "y": 16.0,
         "angle": 5.0,
         "omega": -3.0,
-        "pin": false
+        "pin": false,
+        "texture": 0
       }
     },
     {
@@ -114,7 +115,8 @@
         "y": 21.0,
         "angle": 5.0,
         "omega": -3.0,
-        "pin": false
+        "pin": false,
+        "texture": 0
       }
     },
     {
@@ -125,7 +127,8 @@
         "y": 28.0,
         "angle": 5.0,
         "omega": -3.0,
-        "pin": false
+        "pin": false,
+        "texture": 0
       }
     },
     {
