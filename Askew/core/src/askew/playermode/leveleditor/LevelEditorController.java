@@ -662,7 +662,7 @@ public class LevelEditorController extends WorldController {
 				} else if (mouseY * worldScale.y <= GUI_LOWER_BAR_HEIGHT) {
 
 					int button = getEntityMenuButton(mouseX * worldScale.x, mouseY * worldScale.y);
-					if(button > entityTree.current.children.size()){
+					if(button >= entityTree.current.children.size()){
 						button = -2;
 					}
 					if (button == -2) {
@@ -944,13 +944,14 @@ public class LevelEditorController extends WorldController {
 
 		float x;
 		float y;
+
 		for(int i = 0; i < entitiesPerPage; i++) {
-			if(i < (entitiesPerPage/2)+1) {
+			if(i < (entitiesPerPage/2)) {
 				x = startx + ((i + 1) * (sizex + margin));
 				y = starty - sizey;
 			}
 			else{
-				x = startx + ((i - (entitiesPerPage/2)+1) * (sizex + margin));
+				x = startx + ((i - ((entitiesPerPage/2))) * (sizex + margin));
 				y = starty - sizey - margin - sizey;
 			}
 			if (inBounds(mousex, mousey, x, y, sizex, sizey)) {
