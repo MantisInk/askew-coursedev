@@ -857,7 +857,6 @@ public class SlothModel extends ComplexObstacle  {
         target.setUserData("grabbed");
 
         joints.add(grabJoint);
-        System.err.println(grabJoint);
         grabbedEntity = true;
     }
 
