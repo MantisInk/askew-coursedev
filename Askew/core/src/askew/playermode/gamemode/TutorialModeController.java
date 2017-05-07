@@ -570,7 +570,7 @@ public class TutorialModeController extends GameModeController {
 				int ind = trunkEntities.indexOf(obj);
 
 				for(Obstacle plank: trunk.getBodies()){
-					if(plank.getBody().getUserData().equals("grabbed")) {
+					if(plank.getBody().getUserData() instanceof Obstacle && ((Obstacle)plank.getBody().getUserData()).isGrabbed()) {
 						trunkGrabbed.set(ind,true);
 					}
 				}
