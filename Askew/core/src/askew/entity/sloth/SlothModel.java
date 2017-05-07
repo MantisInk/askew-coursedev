@@ -132,7 +132,7 @@ public class SlothModel extends ComplexObstacle  {
     @Getter
     private transient float power;
 
-    @Setter
+    @Getter @Setter
     private transient int movementMode;
     private transient boolean leftGrabbing;
     private transient boolean rightGrabbing;
@@ -978,6 +978,10 @@ public class SlothModel extends ComplexObstacle  {
         partTextures[6] = new TextureRegion(managedFrontArmMoving);
         partTextures[7] = new TextureRegion(managedBackArmMoving);
         partTextures[8] = new TextureRegion(managedPowerGlow);
+
+        for(int i = 0; i < partTextures.length; i++){
+            partTextures[i].getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        }
 
         if (bodies.size == 0) {
             init();
