@@ -704,8 +704,10 @@ public class GameModeController extends WorldController {
 			}
 			if (isFailure()) {
 				if (sloth != null) {
-					if (sloth.dismember(world))
+					if (sloth.dismember(world)) {
 						grabSound.play();
+						fallDeathHeight = sloth.getPosition().y - NEAR_FALL_DEATH_DISTANCE;
+					}
 				}
 			}
 		}

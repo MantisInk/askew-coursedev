@@ -41,7 +41,9 @@ public class PhysicsController implements ContactListener {
         isFlowWin = false;
     }
 
-
+    private boolean isSlothPart(Obstacle obs) {
+        return obs.getName() != null && obs.getName().contains("slothpart");
+    }
 
     @Override
     /**
@@ -65,35 +67,32 @@ public class PhysicsController implements ContactListener {
         Object fd2 = fix2.getUserData();
 
         try {
-            if(!(body1.getUserData() instanceof Obstacle) || !(body2.getUserData() instanceof Obstacle))
-                return;
+            if(!(body1.getUserData() instanceof Obstacle) || !(body2.getUserData() instanceof Obstacle)) return;
 
             Obstacle bd1 = (Obstacle)body1.getUserData();
             Obstacle bd2 = (Obstacle)body2.getUserData();
 
             // Check for thorns
-            if (
-                    (fd1 != null && ((String)fd1).contains("hand") ||   fd2!= null && ((String)fd2).contains("hand")) ||
-                    (bd1 != null && bd2 != null && ((bd1.getName() != null && bd1.getName().contains("slothpart")) ||( bd2.getName() != null && bd2.getName().contains("slothpart"))))
-                    ) {
+            if (bd1 != null && bd2 != null && (isSlothPart(bd1) || isSlothPart(bd2))) {
                 Obstacle slothy;
                 Obstacle other;
-                if ( (fd1 != null && ((String)fd1).contains("hand")) || (bd1.getName() != null && bd1.getName().equals("slothpart"))) {
-                    if (fd2 !=null && ((String)fd2).contains("slothpart")) return;
+                if (isSlothPart(bd1) && isSlothPart(bd2)) return;
+
+                if (isSlothPart(bd1)) {
                     slothy = bd1;
                     other = bd2;
                 } else {
-                    if (fd1 !=null && ((String)fd1).contains("slothpart")) return;
                     slothy = bd2;
                     other = bd1;
                 }
+
+                System.out.println(other.getName());
 
                 if (other.getName() != null && (other.getName().equals("thorns") || other.getName().equals("ghost") )) {
                     isFlowKill = true;
                 }
 
                 if (other.getName() != null && other.getName().equals("owl") ) {
-                    System.out.println("Hoot hoot");
                     isFlowWin = true;
                 }
 
@@ -133,7 +132,7 @@ public class PhysicsController implements ContactListener {
             if (fd2 != null && ((String)fd2).contains(checkString) && bd1 != sloth) {
                 return body1;
             }
-            
+
             return null;
         }).filter(Objects::nonNull).findFirst().orElse(null);
     }

@@ -65,8 +65,8 @@ public class GhostModel extends BoxObstacle  {
         this.setRestitution(0);
         this.setSensor(true);
         Filter f = new Filter();
-        f.maskBits = FilterGroup.SLOTH;
-        f.categoryBits = FilterGroup.WALL;
+        f.maskBits = FilterGroup.SLOTH | FilterGroup.ARM;
+        f.categoryBits = FilterGroup.WALL | FilterGroup.THORN;
         this.setFilterData(f);
         this.setName("ghost");
         elapseTime = 1;
