@@ -30,7 +30,7 @@ public class SlothModel extends ComplexObstacle  {
     /** Constants for tuning sloth behaviour */
     private static final float HAND_DENSITY = 10.0f;
     private transient float ARM_DENSITY;
-    private static final float BODY_DENSITY = .7f;
+    private static final float BODY_MASS = 0.5903138f;
     private transient float TORQUE;
     private static final boolean BODY_FIXED_ROTATION = true;
     private static final boolean HANDS_FIXED_ROTATION = true;
@@ -250,7 +250,7 @@ public class SlothModel extends ComplexObstacle  {
         BoxObstacle part;
 
         // Body
-        part = makePart(PART_BODY, PART_NONE, x, y,BODY_WIDTH,BODY_HEIGHT, BODY_DENSITY,true);
+        part = makePart(PART_BODY, PART_NONE, x, y,BODY_WIDTH,BODY_HEIGHT, 0,true);
         part.setFixedRotation(BODY_FIXED_ROTATION);
         part.setGravityScale(GRAVITY_SCALE);
         part.setLinearDamping(0.08f); // small amount to balance linear gimp
@@ -340,6 +340,7 @@ public class SlothModel extends ComplexObstacle  {
             f.categoryBits = FilterGroup.ARM;
             body.setFilterData(f);
         }
+
         body.setDrawScale(drawScale);
         body.setTexture(texture);
         body.setDensity(density);
@@ -910,6 +911,7 @@ public class SlothModel extends ComplexObstacle  {
         grabPointR = world.createBody(bd);
         grabPointL.setTransform(-5f, -5f, 0f);
         grabPointR.setTransform(-5f, -5f, 0f);
+        bodies.get(0).setMass(BODY_MASS);
     }
 
     public float getTorqueForce(float torque, float r, float theta){
@@ -1009,11 +1011,9 @@ public class SlothModel extends ComplexObstacle  {
                 //If the body parts are from the right limb
                 if (body_ind == PART_LEFT_HAND || body_ind == PART_RIGHT_HAND) continue;
                 if (body_ind == PART_RIGHT_ARM) {
-//                    float rightPower = (float) Math.sqrt(getRightVert() * getRightVert() + getRightHori() * getRightHori());
                     drawArm(canvas, part, (leftCanGrabOrIsGrabbing && isActualLeftGrab()) || (!leftCanGrabOrIsGrabbing && !isActualRightGrab()));
                 } else if (body_ind == PART_LEFT_ARM) {
                     // left limb
-//                    float leftPower = (float) Math.sqrt(getLeftVert() * getLeftVert() + getLeftHori() * getLeftHori());
                     drawArm(canvas, part, (leftCanGrabOrIsGrabbing && !isActualLeftGrab()) || (!leftCanGrabOrIsGrabbing && isActualRightGrab()));
                 }
                 //If the body parts are not limbs
@@ -1164,6 +1164,8 @@ public class SlothModel extends ComplexObstacle  {
             Vector2 rPos = right.getPosition();
             Vector2 bPos = body.getPosition();
             float mag;
+
+            float diag = ARMSPAN*(float)Math.cos(Math.PI/4);
             if(isActualLeftGrab() || isActualRightGrab()) {
                 if (isActualLeftGrab()) {
                     if (!isActualRightGrab() || left.getX() < right.getX()) {
@@ -1192,11 +1194,15 @@ public class SlothModel extends ComplexObstacle  {
                         }
                     }
                 }
+<<<<<<< HEAD
 //                System.out.println("     left: "+lPos.angle()+" right: "+rPos.angle());
 //                System.out.println("lPos ("+lPos.x+","+lPos.y+")  rPos ("+rPos.x+","+rPos.y+")");
                 mag = Math.min(lPos.cpy().sub(bPos).len(),rPos.cpy().sub(bPos).len());
                 lPos.sub(bPos).setLength(mag).add(bPos);
                 rPos.sub(bPos).setLength(mag).add(bPos);
+=======
+
+>>>>>>> 7b63ad0... constant flow mass
                 canvas.beginDebug(camTrans);
                 canvas.drawLine(bPos.x * drawScale.x, bPos.y * drawScale.y, lPos.x * drawScale.x, lPos.y * drawScale.y, Color.BLUE, Color.BLUE);
                 canvas.drawLine(bPos.x * drawScale.x, bPos.y * drawScale.y, rPos.x * drawScale.x, rPos.y * drawScale.y, Color.RED, Color.RED);
