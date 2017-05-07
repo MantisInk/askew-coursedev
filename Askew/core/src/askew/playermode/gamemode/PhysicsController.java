@@ -105,7 +105,6 @@ public class PhysicsController implements ContactListener {
                 }
 
                 if (other.getName() != null && (other.getName().equals("thorns") || other.getName().equals("ghost") )) {
-                    System.out.println("GG TODO KILL FLOW");
                     isFlowKill = true;
                 }
 

@@ -109,9 +109,8 @@ public class JsonEntityFactory {
         float x = instance.get("x").getAsFloat();
         float y = instance.get("y").getAsFloat();
         float width = instance.get("width").getAsFloat();
-        float height = instance.get("height").getAsFloat();
         float angle = instance.get("angle").getAsFloat();
-        thorn = new ThornModel(x, y, width, height, angle);
+        thorn = new ThornModel(x, y, width, angle);
         thorn.setTextures(manager);
         return thorn;
     }
