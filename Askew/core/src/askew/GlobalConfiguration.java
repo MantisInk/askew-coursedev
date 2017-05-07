@@ -73,4 +73,20 @@ public class GlobalConfiguration {
         dataBlob.remove("currentLevel");
         dataBlob.addProperty("currentLevel",lvl);
     }
+
+    public void setFlowControlMode(boolean mode) {
+        dataBlob.remove("flowControlMode");
+        if (mode)
+            dataBlob.addProperty("flowControlMode", 0);
+        else
+            dataBlob.addProperty("flowControlMode", 1);
+    }
+
+    public void setFlowMovementMode(boolean mode) {
+        dataBlob.remove("flowMovementMode");
+        if (mode)
+            dataBlob.addProperty("flowMovementMode",0);
+        else
+            dataBlob.addProperty("flowMovementMode",1);
+    }
 }

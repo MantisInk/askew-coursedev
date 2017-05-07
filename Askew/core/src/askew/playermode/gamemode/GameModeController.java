@@ -282,6 +282,9 @@ public class GameModeController extends WorldController {
 		world.setContactListener(collisions);
 		setComplete(false);
 		setFailure(false);
+		currentControl = GlobalConfiguration.getInstance().getAsInt("flowControlMode");
+		currentMovement = GlobalConfiguration.getInstance().getAsInt("flowMovementMode");
+//		System.out.println("control "+currentControl+" movement "+currentMovement);
 		populateLevel();
 		// set death height
 //		fallDeathHeight = Float.MAX_VALUE;

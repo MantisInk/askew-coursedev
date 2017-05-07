@@ -36,7 +36,7 @@ public class SlothModel extends ComplexObstacle  {
     private transient boolean GRABBING_HAND_HAS_TORQUE;
     private transient float OMEGA_NORMALIZER;
 
-    @Setter
+    @Setter @Getter
     public transient int controlMode;
     /** After flying this distance, flow starts to experience some serious
      * air resistance.
