@@ -15,7 +15,6 @@ import askew.InputController;
 import askew.InputControllerManager;
 import askew.MantisAssetManager;
 import askew.entity.Entity;
-import askew.entity.obstacle.BoxObstacle;
 import askew.entity.obstacle.Obstacle;
 import askew.entity.owl.OwlModel;
 import askew.entity.sloth.SlothModel;
