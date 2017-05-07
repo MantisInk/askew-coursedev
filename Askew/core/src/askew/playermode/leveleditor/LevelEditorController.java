@@ -45,6 +45,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import lombok.Getter;
 import lombok.Setter;
+import org.lwjgl.Sys;
 
 import javax.swing.*;
 import java.awt.*;
@@ -288,6 +289,7 @@ public class LevelEditorController extends WorldController {
 	private void populateLevel() {
 		try {
 			levelModel = jsonLoaderSaver.loadLevel(currentLevel);
+			System.out.println(levelModel);
 			if (levelModel != null)
 				background = mantisAssetManager.get(levelModel.getBackground(), Texture.class);
 		} catch (FileNotFoundException e) {
@@ -343,6 +345,11 @@ public class LevelEditorController extends WorldController {
 		buttons.add(new Button(GUI_LEFT_BAR_MARGIN, 21 * GUI_LEFT_BAR_MARGIN,
 				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
 				"Entity", 4, "undo"));
+
+		buttons.add(new Button(GUI_LEFT_BAR_MARGIN, 21 * GUI_LEFT_BAR_MARGIN,
+				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
+				"Entity", 5, "debug"));
+
 
 
 		buttons.add(new MenuArrowButton(GUI_LEFT_BAR_WIDTH, 0,
@@ -442,6 +449,9 @@ public class LevelEditorController extends WorldController {
 								undoCreate = null;
 							}
 
+							break;
+						case("debug"):
+							System.out.println(levelModel);
 							break;
 						default:
 							break;
@@ -1128,6 +1138,7 @@ public class LevelEditorController extends WorldController {
 		didLoad = true;
 		if (editorWindow != null) {
 			editorWindow.dispose();
+			editorWindow = null;
 		}
 		//GUI Mode Enabled
 		//Prevent multiple windows from being created
@@ -1154,6 +1165,7 @@ public class LevelEditorController extends WorldController {
 			loadLevel(fileName.getText());
 			editorWindow.setVisible(false);
 			editorWindow.dispose();
+			editorWindow = null;
 		});
 
 		saveButton.addActionListener(e -> {
