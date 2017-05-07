@@ -1456,7 +1456,7 @@ public class LevelEditorController extends WorldController {
 
 	private void promptTemplateCallback(String json) {
 		Entity toAdd = jsonLoaderSaver.entityFromJson(json);
-		addObject( toAdd);
+		objects.add(toAdd);
 		undoDelete = toAdd;
 		prompting = false;
 	}
