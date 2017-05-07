@@ -50,14 +50,9 @@ public class TutorialModeController extends GameModeController {
 
 	private final float CONTROLLER_DEADZONE = 0.15f;
 
-	private ArrayList<Boolean> trunkGrabbed = new ArrayList<Boolean>();
-
-	private float countdown = 0.15f;
-
 	private boolean pressedA = false;
 	private boolean prevRightGrab;
 	private boolean prevLeftGrab;
-//	private int grabs = 0;
 	private boolean grabbedAll;
 
 	private float time = 0f;
@@ -76,6 +71,7 @@ public class TutorialModeController extends GameModeController {
 
 	// list of objects for stage of tutorial
 	protected ArrayList<Trunk> trunkEntities = new ArrayList<Trunk>();
+	private ArrayList<Boolean> trunkGrabbed = new ArrayList<Boolean>();
 
 	/**
 	 * Load the assets for this controller.
@@ -121,8 +117,6 @@ public class TutorialModeController extends GameModeController {
 		trunkGrabbed.clear();
 		super.reset();
 		time = 0;
-//		grabs = 0;
-
 		joystickTexture = joystickAnimation.getKeyFrame(0);
 		bumperLTexture = bumperLAnimation.getKeyFrame(0);
 		bumperRTexture = bumperRAnimation.getKeyFrame(0);
@@ -247,12 +241,6 @@ public class TutorialModeController extends GameModeController {
 		if (!paused) {
 			elapseTime += dt;
 			time = time+dt ;
-			// Process actions in object model
-//			lAngle = (float) ((sloth.getLeftArm().getAngle()) - 1.5*Math.PI);//+3.14)%3.14);
-//			rAngle = (float) ((sloth.getRightArm().getAngle()) - 1.5*Math.PI);//+ 3.14)%3.14);
-//			System.out.print(lAngle+" ");
-//			System.out.println(rAngle);
-
 			// TODO: move sloth movement in slothmodel
 
 			//Increment Steps
@@ -268,9 +256,6 @@ public class TutorialModeController extends GameModeController {
 					}
 					break;
 				case STAGE_GRAB:
-//					if((!prevRightGrab && sloth.isActualRightGrab()) || (!prevLeftGrab && sloth.isActualLeftGrab())) {
-//						grabs++;
-//					}
 					grabbedAll = trunkGrabbed.get(0);
 					for (int i = 0; i < trunkGrabbed.size(); i++) {
 						grabbedAll = trunkGrabbed.get(i) && grabbedAll;
@@ -278,12 +263,6 @@ public class TutorialModeController extends GameModeController {
 					break;
 				case STAGE_SHIMMY:
 				case STAGE_FLING:
-//					if(!isPlayerIsReady() || (isPlayerIsReady() && countdown > 0)) {
-//						sloth.setLeftGrab(true);
-//						sloth.setRightGrab(true);
-//					} else if (isPlayerIsReady() && countdown > 0) {
-//						countdown -= dt;
-//					}
 					break;
 				case STAGE_VINE:
 					break;
@@ -325,6 +304,7 @@ public class TutorialModeController extends GameModeController {
 		Collections.sort(objects);
 		for(Entity obj : objects) {
 			obj.setDrawScale(worldScale);
+			// if stage 2, tint trunks if already grabbed
 			if(currentStage == STAGE_GRAB && obj instanceof Trunk) {
 				Trunk trunk = (Trunk) obj;
 				int ind = trunkEntities.indexOf(obj);
@@ -338,6 +318,7 @@ public class TutorialModeController extends GameModeController {
 				obj.draw(canvas);
 			}
 		}
+		// trunk tinting done here
 		for (int i = 0; i <trunkEntities.size(); i++) {
 			if (trunkGrabbed.get(i)) {
 				(trunkEntities.get(i)).draw(canvas, Color.GRAY);
@@ -389,7 +370,6 @@ public class TutorialModeController extends GameModeController {
 			canvas.end();
 		}
 
-
 		// draw pause menu stuff over everything
 		if (paused) {
 			canvas.begin();
@@ -401,14 +381,11 @@ public class TutorialModeController extends GameModeController {
 		}
 
 
-
 		// new draw stuff
-
 		// draw instructional animations
 		canvas.begin();
 		drawInstructions();
 		canvas.end();
-
 	}
 
 	public void restart() {

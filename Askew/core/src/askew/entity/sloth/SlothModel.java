@@ -762,6 +762,7 @@ public class SlothModel extends ComplexObstacle  {
         } else {
             rightGrabJoint = grabJoint;
         }
+        // set data as grabbed for tutorial to shade grabbed stuff
         target.setUserData("grabbed");
 
         joints.add(grabJoint);
