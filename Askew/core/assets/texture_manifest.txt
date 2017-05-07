@@ -8,6 +8,11 @@ texture/background/menu_background.png
 texture/background/pause.png
 texture/background/sil5.png
 texture/background/sil6.png
+texture/background/victory.png
+texture/background/sil1.png
+texture/background/sil2.png
+texture/background/sil3.png
+texture/background/sil4.png
 texture/background/topvine/Topvine_0000_Layer-2.png
 texture/background/topvine/Topvine_0001_Layer-3.png
 texture/background/topvine/Topvine_0002_Layer-4.png
