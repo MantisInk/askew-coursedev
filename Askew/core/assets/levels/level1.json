@@ -7,7 +7,7 @@
   "maxX": 27.0,
   "maxY": 20.0,
   "minX": -12.0,
-  "minY": 6.0,
+  "minY": 4.0,
   "title": "The First One",
   "background": "texture/background/BackgroundStuff/purple.png",
   "soundtrack": "TODO",
@@ -120,8 +120,8 @@
     {
       "CLASSNAME": "askew.entity.BackgroundEntity",
       "INSTANCE": {
-        "x": 5.703747,
-        "y": 3.3800015,
+        "x": 2.716999,
+        "y": 5.3430047,
         "width": 10.0,
         "height": 10.0,
         "depth": 3.0,
@@ -150,8 +150,8 @@
     {
       "CLASSNAME": "askew.entity.BackgroundEntity",
       "INSTANCE": {
-        "x": -6.9062505,
-        "y": 1.7549996,
+        "x": -9.399,
+        "y": 6.1620016,
         "width": 4.0,
         "height": 4.0,
         "depth": 1.5,
@@ -165,8 +165,8 @@
     {
       "CLASSNAME": "askew.entity.BackgroundEntity",
       "INSTANCE": {
-        "x": 4.395624,
-        "y": 2.1206255,
+        "x": 2.2230005,
+        "y": 5.7980056,
         "width": 4.0,
         "height": 4.0,
         "depth": 1.5,
@@ -180,8 +180,8 @@
     {
       "CLASSNAME": "askew.entity.BackgroundEntity",
       "INSTANCE": {
-        "x": -6.1424985,
-        "y": 4.3631253,
+        "x": -7.3190002,
+        "y": 4.6670012,
         "width": 4.0,
         "height": 4.0,
         "depth": 1.5,
@@ -353,8 +353,8 @@
     {
       "CLASSNAME": "askew.entity.BackgroundEntity",
       "INSTANCE": {
-        "x": -10.546249,
-        "y": 2.4212494,
+        "x": -9.529001,
+        "y": 5.3300014,
         "width": 3.0,
         "height": 3.0,
         "depth": 1.0,
@@ -368,8 +368,8 @@
     {
       "CLASSNAME": "askew.entity.BackgroundEntity",
       "INSTANCE": {
-        "x": -0.8612499,
-        "y": 2.1774998,
+        "x": -3.3409996,
+        "y": 5.265001,
         "width": 3.0,
         "height": 3.0,
         "depth": 1.0,
@@ -383,8 +383,8 @@
     {
       "CLASSNAME": "askew.entity.BackgroundEntity",
       "INSTANCE": {
-        "x": 2.9412498,
-        "y": 2.1450007,
+        "x": 1.2350006,
+        "y": 5.291001,
         "width": 3.0,
         "height": 3.0,
         "depth": 1.0,
@@ -398,8 +398,8 @@
     {
       "CLASSNAME": "askew.entity.BackgroundEntity",
       "INSTANCE": {
-        "x": 7.1987495,
-        "y": 2.2587507,
+        "x": 5.330001,
+        "y": 5.343,
         "width": 3.0,
         "height": 3.0,
         "depth": 1.0,
@@ -413,8 +413,8 @@
     {
       "CLASSNAME": "askew.entity.BackgroundEntity",
       "INSTANCE": {
-        "x": 10.838748,
-        "y": 2.3400004,
+        "x": 9.685002,
+        "y": 5.291,
         "width": 3.0,
         "height": 3.0,
         "depth": 1.0,
@@ -428,8 +428,8 @@
     {
       "CLASSNAME": "askew.entity.BackgroundEntity",
       "INSTANCE": {
-        "x": 15.404994,
-        "y": 2.3725007,
+        "x": 15.522008,
+        "y": 5.395,
         "width": 3.0,
         "height": 3.0,
         "depth": 1.0,
@@ -443,8 +443,8 @@
     {
       "CLASSNAME": "askew.entity.BackgroundEntity",
       "INSTANCE": {
-        "x": 19.694996,
-        "y": 2.3075006,
+        "x": 20.150015,
+        "y": 5.4600005,
         "width": 3.0,
         "height": 3.0,
         "depth": 1.0,
@@ -458,8 +458,8 @@
     {
       "CLASSNAME": "askew.entity.BackgroundEntity",
       "INSTANCE": {
-        "x": 23.741243,
-        "y": 1.9337511,
+        "x": 24.245014,
+        "y": 5.4080005,
         "width": 3.0,
         "height": 3.0,
         "depth": 1.0,
