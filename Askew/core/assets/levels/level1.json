@@ -713,7 +713,7 @@
         "angle": 0.0,
         "scalex": 1.0,
         "scaley": 1.0,
-        "texturePath": "texture/background/BackgroundStuff/leafPalm.png",
+        "texturePath": "texture/background/BackgroundStuff/palmLeaf.png",
         "color": 1275101439
       }
     },
@@ -728,7 +728,7 @@
         "angle": 45.0,
         "scalex": 1.0,
         "scaley": 1.0,
-        "texturePath": "texture/background/BackgroundStuff/leafPalm.png",
+        "texturePath": "texture/background/BackgroundStuff/palmLeaf.png",
         "color": 1275101439
       }
     },
@@ -743,7 +743,7 @@
         "angle": 45.0,
         "scalex": 1.0,
         "scaley": 1.0,
-        "texturePath": "texture/background/BackgroundStuff/leafPalm.png",
+        "texturePath": "texture/background/BackgroundStuff/palmLeaf.png",
         "color": 1275101439
       }
     },
@@ -758,7 +758,7 @@
         "angle": 90.0,
         "scalex": 1.0,
         "scaley": 1.0,
-        "texturePath": "texture/background/BackgroundStuff/leafPalm.png",
+        "texturePath": "texture/background/BackgroundStuff/palmLeaf.png",
         "color": 1275101439
       }
     },
@@ -773,7 +773,7 @@
         "angle": 180.0,
         "scalex": 1.0,
         "scaley": 1.0,
-        "texturePath": "texture/background/BackgroundStuff/leafPalm.png",
+        "texturePath": "texture/background/BackgroundStuff/palmLeaf.png",
         "color": 1275101439
       }
     },
@@ -788,7 +788,7 @@
         "angle": 180.0,
         "scalex": 1.0,
         "scaley": 1.0,
-        "texturePath": "texture/background/BackgroundStuff/leafPalm.png",
+        "texturePath": "texture/background/BackgroundStuff/palmLeaf.png",
         "color": 1275101439
       }
     },
@@ -803,7 +803,7 @@
         "angle": 180.0,
         "scalex": 1.0,
         "scaley": 1.0,
-        "texturePath": "texture/background/BackgroundStuff/leafPalm.png",
+        "texturePath": "texture/background/BackgroundStuff/palmLeaf.png",
         "color": 1275101439
       }
     },
@@ -818,7 +818,7 @@
         "angle": 180.0,
         "scalex": 1.0,
         "scaley": 1.0,
-        "texturePath": "texture/background/BackgroundStuff/leafPalm.png",
+        "texturePath": "texture/background/BackgroundStuff/palmLeaf.png",
         "color": 1275101439
       }
     },
@@ -833,7 +833,7 @@
         "angle": 180.0,
         "scalex": 1.0,
         "scaley": 1.0,
-        "texturePath": "texture/background/BackgroundStuff/leafPalm.png",
+        "texturePath": "texture/background/BackgroundStuff/palmLeaf.png",
         "color": 1275101439
       }
     },
@@ -848,7 +848,7 @@
         "angle": 180.0,
         "scalex": 1.0,
         "scaley": 1.0,
-        "texturePath": "texture/background/BackgroundStuff/leafPalm.png",
+        "texturePath": "texture/background/BackgroundStuff/palmLeaf.png",
         "color": 1275101439
       }
     },
@@ -863,7 +863,7 @@
         "angle": 180.0,
         "scalex": 1.0,
         "scaley": 1.0,
-        "texturePath": "texture/background/BackgroundStuff/leafPalm.png",
+        "texturePath": "texture/background/BackgroundStuff/palmLeaf.png",
         "color": 1275101439
       }
     }
