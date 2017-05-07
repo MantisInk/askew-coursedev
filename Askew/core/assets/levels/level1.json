@@ -120,8 +120,8 @@
     {
       "CLASSNAME": "askew.entity.BackgroundEntity",
       "INSTANCE": {
-        "x": 2.716999,
-        "y": 5.3430047,
+        "x": 2.3270006,
+        "y": 8.268003,
         "width": 10.0,
         "height": 10.0,
         "depth": 3.0,
@@ -165,8 +165,8 @@
     {
       "CLASSNAME": "askew.entity.BackgroundEntity",
       "INSTANCE": {
-        "x": 2.2230005,
-        "y": 5.7980056,
+        "x": 3.5230007,
+        "y": 5.824003,
         "width": 4.0,
         "height": 4.0,
         "depth": 1.5,
@@ -227,116 +227,6 @@
         "y": 14.121244,
         "angle": 225.0,
         "numLinks": 6.0,
-        "grabbed": false
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.wall.WallModel",
-      "INSTANCE": {
-        "x": 24.0,
-        "y": 6.0,
-        "color": -1,
-        "points": [
-          0.0,
-          0.0,
-          0.0,
-          25.0,
-          3.0,
-          250.0,
-          3.0,
-          0.0
-        ],
-        "grabbed": false
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.wall.WallModel",
-      "INSTANCE": {
-        "x": 11.943746,
-        "y": 2.0149994,
-        "color": -1,
-        "points": [
-          0.0,
-          0.0,
-          0.0,
-          8.0,
-          1.0,
-          8.0,
-          1.0562544,
-          -0.01499939
-        ],
-        "grabbed": false
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.wall.WallModel",
-      "INSTANCE": {
-        "x": 12.0,
-        "y": 10.0,
-        "color": -1,
-        "points": [
-          0.0,
-          0.0,
-          0.5,
-          1.0,
-          1.0,
-          0.0
-        ],
-        "grabbed": false
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.wall.WallModel",
-      "INSTANCE": {
-        "x": 17.0,
-        "y": 13.0,
-        "color": -1,
-        "points": [
-          0.0,
-          0.0,
-          0.0,
-          25.0,
-          7.0,
-          250.0,
-          7.0,
-          0.0
-        ],
-        "grabbed": false
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.wall.WallModel",
-      "INSTANCE": {
-        "x": 12.0,
-        "y": 19.0,
-        "color": -1,
-        "points": [
-          0.0,
-          0.0,
-          5.0,
-          0.0,
-          5.0,
-          -5.0
-        ],
-        "grabbed": false
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.wall.WallModel",
-      "INSTANCE": {
-        "x": 12.0,
-        "y": 15.0,
-        "color": -1,
-        "points": [
-          0.0,
-          0.0,
-          0.0,
-          50.0,
-          5.0,
-          50.0,
-          5.0,
-          0.0
-        ],
         "grabbed": false
       }
     },
@@ -588,6 +478,116 @@
         "scaley": 1.0,
         "texturePath": "texture/background/topvine/Topvine4.png",
         "color": -895746049
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.wall.WallModel",
+      "INSTANCE": {
+        "x": 17.34201,
+        "y": 13.091012,
+        "color": 1914808831,
+        "points": [
+          0.0,
+          0.0,
+          0.0,
+          25.0,
+          7.0,
+          250.0,
+          7.0,
+          0.0
+        ],
+        "grabbed": false
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.wall.WallModel",
+      "INSTANCE": {
+        "x": 23.933018,
+        "y": 6.032002,
+        "color": 1914808831,
+        "points": [
+          0.0,
+          0.0,
+          0.0,
+          25.0,
+          3.0,
+          250.0,
+          3.0,
+          0.0
+        ],
+        "grabbed": false
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.wall.WallModel",
+      "INSTANCE": {
+        "x": 12.19401,
+        "y": 18.928013,
+        "color": 1914808831,
+        "points": [
+          0.0,
+          0.0,
+          5.0,
+          0.0,
+          5.0,
+          -5.0
+        ],
+        "grabbed": false
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.wall.WallModel",
+      "INSTANCE": {
+        "x": 12.18101,
+        "y": 15.002012,
+        "color": 1914808831,
+        "points": [
+          0.0,
+          0.0,
+          0.0,
+          50.0,
+          5.0,
+          50.0,
+          5.0,
+          0.0
+        ],
+        "grabbed": false
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.wall.WallModel",
+      "INSTANCE": {
+        "x": 11.89501,
+        "y": 9.997005,
+        "color": 1914808831,
+        "points": [
+          0.0,
+          0.0,
+          0.5,
+          1.0,
+          1.0,
+          0.0
+        ],
+        "grabbed": false
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.wall.WallModel",
+      "INSTANCE": {
+        "x": 11.88201,
+        "y": 1.8980012,
+        "color": 1914808831,
+        "points": [
+          0.0,
+          0.0,
+          0.0,
+          8.0,
+          1.0,
+          8.0,
+          1.0562544,
+          -0.01499939
+        ],
+        "grabbed": false
       }
     },
     {
