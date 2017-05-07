@@ -123,8 +123,8 @@ public class JsonEntityFactory {
 
     public static ThornModel createThorn(MantisAssetManager manager, JsonObject instance) {
         ThornModel thorn;
-        float x = instance.get("x").getAsFloat();
-        float y = instance.get("y").getAsFloat();
+        float x = instance.get("realX").getAsFloat();
+        float y = instance.get("realY").getAsFloat();
         float width = instance.get("width").getAsFloat();
         float angle = instance.get("angle").getAsFloat();
         thorn = new ThornModel(x, y, width, angle);
