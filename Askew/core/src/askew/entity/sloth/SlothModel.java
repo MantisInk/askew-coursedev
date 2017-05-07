@@ -1201,15 +1201,10 @@ public class SlothModel extends ComplexObstacle  {
                         }
                     }
                 }
-<<<<<<< HEAD
-//                System.out.println("     left: "+lPos.angle()+" right: "+rPos.angle());
-//                System.out.println("lPos ("+lPos.x+","+lPos.y+")  rPos ("+rPos.x+","+rPos.y+")");
+
                 mag = Math.min(lPos.cpy().sub(bPos).len(),rPos.cpy().sub(bPos).len());
                 lPos.sub(bPos).setLength(mag).add(bPos);
                 rPos.sub(bPos).setLength(mag).add(bPos);
-=======
-
->>>>>>> 7b63ad0... constant flow mass
                 canvas.beginDebug(camTrans);
                 canvas.drawLine(bPos.x * drawScale.x, bPos.y * drawScale.y, lPos.x * drawScale.x, lPos.y * drawScale.y, Color.BLUE, Color.BLUE);
                 canvas.drawLine(bPos.x * drawScale.x, bPos.y * drawScale.y, rPos.x * drawScale.x, rPos.y * drawScale.y, Color.RED, Color.RED);
