@@ -125,6 +125,7 @@ public class LevelEditorController extends WorldController {
 
 	private EntityTree entityTree;
 	private Entity selected;
+	private Entity copy;
 	private Button manip;
 	private boolean dragging = false;
 	private boolean creating = false;
@@ -298,6 +299,7 @@ public class LevelEditorController extends WorldController {
 		buttons.add(new Button(GUI_LEFT_BAR_MARGIN, 3 * GUI_LEFT_BAR_MARGIN,
 				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
 				"JSON", 1, "globalconfig"));
+		
 		buttons.add(new ToggleButton(GUI_LEFT_BAR_MARGIN, 5 * GUI_LEFT_BAR_MARGIN,
 				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
 				"LEOptions", 0, "snapping"));
@@ -316,12 +318,84 @@ public class LevelEditorController extends WorldController {
 
 		buttons.add(new Button(GUI_LEFT_BAR_MARGIN, 15 * GUI_LEFT_BAR_MARGIN,
 				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
-				"Entity", 2, "copy"));
+				"Entity", 2, "duplicate"));
 
-		buttons.add(new Button(GUI_LEFT_BAR_MARGIN, 17 * GUI_LEFT_BAR_MARGIN,
+		buttons.add(new Button(GUI_LEFT_BAR_MARGIN, 19 * GUI_LEFT_BAR_MARGIN,
 				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
-				"Entity", 3, "deselect"));
+				"Entity", 4, "deselect"));
 
+	}
+
+	private boolean processButtons(Button b){
+		if(b != null){
+			switch (b.getGroup()){
+				case("JSON"):
+					switch (b.getName()){
+						case("levelgui"):
+							makeGuiWindow();
+							break;
+						case("globalconfig"):
+							promptGlobalConfig();
+							break;
+						default:
+							break;
+					}
+					break;
+				case("LEOptions"):
+					switch (b.getName()){
+						case("snapping"):
+							ToggleButton t = ((ToggleButton)b);
+							t.setOn(!t.isOn());
+							snapping = t.isOn();
+							break;
+						case("move far"):
+							t = ((ToggleButton)b);
+							t.setOn(!t.isOn());
+							movefar = t.isOn();
+							break;
+						default:
+							break;
+					}
+					break;
+				case("Entity"):
+					switch(b.getName()){
+						case("edit"):
+							if (selected != null) {
+								promptTemplate(selected);
+								objects.remove(selected);
+								selected = null;
+							}
+							dragging = false;
+							creating = false;
+							break;
+						case("delete"):
+							if (selected != null) {
+								objects.remove(selected);
+								selected = null;
+							}
+							dragging = false;
+							creating = false;
+							break;
+						case("duplicate"):
+							if(selected != null)
+								copyEntity(selected);
+							break;
+						case("deselect"):
+							selected = null;
+							dragging = false;
+							creating = false;
+							break;
+						default:
+							break;
+					}
+				default:
+					break;
+			}
+			return true;
+		}
+		else{
+			return false;
+		}
 	}
 
 	//region Utility Helpers
@@ -423,76 +497,7 @@ public class LevelEditorController extends WorldController {
 
 	}
 
-	private boolean processButtons(Button b){
-		if(b != null){
-			switch (b.getGroup()){
-				case("JSON"):
-					switch (b.getName()){
-						case("levelgui"):
-							makeGuiWindow();
-							break;
-						case("globalconfig"):
-							promptGlobalConfig();
-							break;
-						default:
-							break;
-					}
-					break;
-				case("LEOptions"):
-					switch (b.getName()){
-						case("snapping"):
-							ToggleButton t = ((ToggleButton)b);
-							t.setOn(!t.isOn());
-							snapping = t.isOn();
-							break;
-						case("move far"):
-							t = ((ToggleButton)b);
-							t.setOn(!t.isOn());
-							movefar = t.isOn();
-							break;
-						default:
-							break;
-					}
-					break;
-				case("Entity"):
-					switch(b.getName()){
-						case("edit"):
-							if (selected != null) {
-								promptTemplate(selected);
-								objects.remove(selected);
-								selected = null;
-							}
-							dragging = false;
-							creating = false;
-							break;
-						case("delete"):
-							if (selected != null) {
-								objects.remove(selected);
-								selected = null;
-							}
-							dragging = false;
-							creating = false;
-							break;
-						case("copy"):
 
-							break;
-						case("deselect"):
-							selected = null;
-							dragging = false;
-							creating = false;
-							break;
-						default:
-							break;
-					}
-				default:
-					break;
-			}
-			return true;
-		}
-		else{
-			return false;
-		}
-	}
 	//endregion
 
 	/**
@@ -1195,6 +1200,12 @@ public class LevelEditorController extends WorldController {
 		}
 		System.err.println("CANT FIND " + key);
 		return null;
+	}
+
+	private void copyEntity(Entity template){
+		JsonObject entityObject = jsonLoaderSaver.gsonToJsonObject(template);
+		String stringJson = jsonLoaderSaver.stringFromJson(entityObject);
+		promptTemplateCallback(stringJson);
 	}
 
 	private void promptTemplate(Entity template) {
