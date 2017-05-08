@@ -92,6 +92,8 @@ public class SlothModel extends ComplexObstacle  {
     public static final int SHIMMY_NE = 7;
     public static final int PLUS_30 = 8;
     public static final int MINUS_30 = 9;
+    public static final int PLUS_10 = 10;
+    public static final int MINUS_10 = 11;
 
     /** Set damping constant for rotation of Flow's arms */
     private static final float ROTATION_DAMPING = 5f;
@@ -1231,6 +1233,12 @@ public class SlothModel extends ComplexObstacle  {
                             case MINUS_30:
                                 rPos = (rPos.cpy().sub(bPos)).rotate(-30).add(bPos);
                                 break;
+                            case PLUS_10:
+                                rPos = (rPos.cpy().sub(bPos)).rotate(10).add(bPos);
+                                break;
+                            case MINUS_10:
+                                rPos = (rPos.cpy().sub(bPos)).rotate(-10).add(bPos);
+                                break;
                             default:
                                 rPos.sub(bPos).rotate(-angleDiff).add(bPos);
                         }
@@ -1250,6 +1258,12 @@ public class SlothModel extends ComplexObstacle  {
                                 break;
                             case MINUS_30:
                                 lPos.sub(bPos).rotate(-30).add(bPos);
+                                break;
+                            case PLUS_10:
+                                lPos.sub(bPos).rotate(10).add(bPos);
+                                break;
+                            case MINUS_10:
+                                lPos.sub(bPos).rotate(-10).add(bPos);
                                 break;
                             default:
                                 lPos.sub(bPos).rotate(-angleDiff).add(bPos);
