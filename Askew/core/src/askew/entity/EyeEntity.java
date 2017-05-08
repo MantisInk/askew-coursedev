@@ -11,6 +11,7 @@ public class EyeEntity extends BackgroundEntity{
 
     private transient Vector2 pupilOffset;
     private transient TextureRegion texture2;
+    private final float PUPIL_OFFSET = 1;
     private final String pathEyes = "texture/background/eyes.png";
     private final String pathPupils = "texture/background/pupils.png";
 
@@ -35,6 +36,23 @@ public class EyeEntity extends BackgroundEntity{
     @Override
     public void update(float delta) {
         //TODO draw moving eyes
+//        SlothModel sloth = SlothModel.getInstance();
+//        Vector2 sPos = new Vector2(sloth.getX(),sloth.getY());
+//        if (sPos.x < this.x) {
+//            pupilOffset.x = -PUPIL_OFFSET;
+//        } else if (sPos.x == this.x) {
+//            pupilOffset.x = PUPIL_OFFSET;
+//        } else {
+//            pupilOffset.x = 0;
+//        }
+//
+//        if(sPos.y < this.y) {
+//            pupilOffset.y = -PUPIL_OFFSET;
+//        } else if (sPos.y > this.y) {
+//            pupilOffset.y = PUPIL_OFFSET;
+//        } else {
+//            pupilOffset.y = 0;
+//        }
     }
 
     @Override
@@ -47,7 +65,7 @@ public class EyeEntity extends BackgroundEntity{
             canvas.drawBackgroundEntity(texture,tint,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y, getDepth(), getAngle(),
                     (1.0f/texture.getRegionWidth()) * getWidth() * getDrawScale().x * objectScale.x * aspectRatio,
                     (1.0f/texture.getRegionHeight() * getHeight()* getDrawScale().y * objectScale.y), 1);
-            canvas.drawBackgroundEntity(texture2,tint,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y, getDepth(), getAngle(),
+            canvas.drawBackgroundEntity(texture2,tint,origin.x,origin.y,(getX()+pupilOffset.x)*drawScale.x,(getY()+pupilOffset.y)*drawScale.y, getDepth(), getAngle(),
                     (1.0f/texture2.getRegionWidth()) * getWidth() * getDrawScale().x * objectScale.x * aspectRatio,
                     (1.0f/texture2.getRegionHeight() * getHeight()* getDrawScale().y * objectScale.y), 1);
         }

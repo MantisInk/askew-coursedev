@@ -11,8 +11,8 @@ import lombok.Setter;
 
 public class BackgroundEntity extends Entity{
 
-    private float x;
-    private float y;
+    protected float x;
+    protected float y;
     private float width;
     private float height;
     private float depth;
