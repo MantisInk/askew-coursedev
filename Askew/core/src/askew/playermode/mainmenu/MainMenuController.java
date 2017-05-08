@@ -62,7 +62,10 @@ public class MainMenuController extends WorldController {
     private final int CHOOSE_LEVEL = 0;
     private final int RETURN_HOME = 1;
     private int select_button = CHOOSE_LEVEL;
-    private Vector2[] select_button_locs = {new Vector2(10f, 3.8f), new Vector2(10f, 2.8f)};
+    private Vector2[] select_button_locs = {
+            new Vector2(0.65f, 0.45f),
+            new Vector2(0.65f, 0.35f)
+    };
 
     // settings mode options
     private final int CONTROL_SCHEME = 0;
@@ -201,9 +204,9 @@ public class MainMenuController extends WorldController {
         // TODO: new level select screen
         else if(mode == LEVEL_SELECT) {
             canvas.draw(menu2);
-            canvas.drawText("         " + selected, displayFont, 6.5f*worldScale.x, 4.1f*worldScale.y);
+            canvas.drawText("         " + selected, displayFont, 0.42f*canvas.getWidth(), 0.45f*canvas.getHeight());
             canvas.draw(fern, Color.WHITE,fern.getWidth()/2, fern.getHeight()/2,
-                    select_button_locs[select_button].x * worldScale.x, select_button_locs[select_button].y* worldScale.y,
+                    select_button_locs[select_button].x * canvas.getWidth(), select_button_locs[select_button].y* canvas.getHeight(),
                     0,worldScale.x/fern.getWidth(),worldScale.y/fern.getHeight());
         }
         else if (mode == SETTINGS) {
