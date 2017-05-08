@@ -1,9 +1,13 @@
 {
-  "levelModelVersion": 1,
+  "levelModelVersion": 2,
   "goalTimeGold": 30,
   "goalTimeSilver": 45,
   "goalTimeBronze": 60,
   "recordTime": 6.030836,
+  "maxX": 20.0,
+  "maxY": 20.0,
+  "minX": 0.0,
+  "minY": 0.0,
   "title": "Surprise?",
   "background": "texture/background/background1.png",
   "soundtrack": "TODO",
@@ -15,7 +19,8 @@
         "numLinks": 5.0,
         "x": -9.0,
         "y": 15.0,
-        "angle": 0.0
+        "angle": 0.0,
+        "grabbed": false
       }
     },
     {
@@ -24,8 +29,8 @@
         "x": -5.0,
         "y": 15.0,
         "angle": -30.0,
-        "linksize": 1.0,
-        "numLinks": 5.0
+        "numLinks": 5.0,
+        "grabbed": false
       }
     },
     {
@@ -34,8 +39,8 @@
         "x": 0.0,
         "y": 15.0,
         "angle": -30.0,
-        "linksize": 1.0,
-        "numLinks": 5.0
+        "numLinks": 5.0,
+        "grabbed": false
       }
     },
     {
@@ -54,7 +59,8 @@
       "CLASSNAME": "askew.entity.owl.OwlModel",
       "INSTANCE": {
         "x": 17.0,
-        "y": 4.0
+        "y": 4.0,
+        "grabbed": false
       }
     },
     {
@@ -63,14 +69,18 @@
         "angle": 0.0,
         "numLinks": 4.0,
         "x": 13.0,
-        "y": 8.0
+        "y": 8.0,
+        "grabbed": false
       }
     },
     {
       "CLASSNAME": "askew.entity.sloth.SlothModel",
       "INSTANCE": {
         "x": -12.0,
-        "y": 18.0
+        "y": 18.0,
+        "lTheta": 0.0,
+        "rTheta": 0.0,
+        "grabbed": false
       }
     },
     {
@@ -79,8 +89,8 @@
         "x": -15.0,
         "y": 15.0,
         "angle": -90.0,
-        "linksize": 1.0,
-        "numLinks": 5.0
+        "numLinks": 5.0,
+        "grabbed": false
       }
     },
     {
@@ -88,7 +98,7 @@
       "INSTANCE": {
         "x": -21.0,
         "y": 10.0,
-        "thorn": true,
+        "color": -1,
         "points": [
           0.0,
           0.0,
@@ -98,7 +108,8 @@
           1.0,
           22.0,
           0.0
-        ]
+        ],
+        "grabbed": false
       }
     },
     {
@@ -106,7 +117,7 @@
       "INSTANCE": {
         "x": -7.0,
         "y": 0.0,
-        "thorn": true,
+        "color": -1,
         "points": [
           0.0,
           0.0,
@@ -116,7 +127,8 @@
           1.0,
           35.0,
           0.0
-        ]
+        ],
+        "grabbed": false
       }
     },
     {
@@ -125,8 +137,8 @@
         "x": 5.0,
         "y": 8.0,
         "angle": 0.0,
-        "linksize": 1.0,
-        "numLinks": 5.0
+        "numLinks": 5.0,
+        "grabbed": false
       }
     },
     {
@@ -135,7 +147,8 @@
         "angle": 0.0,
         "numLinks": 3.0,
         "x": 5.0,
-        "y": 10.0
+        "y": 10.0,
+        "grabbed": false
       }
     },
     {
@@ -144,8 +157,8 @@
         "x": 9.0,
         "y": 8.0,
         "angle": 0.0,
-        "linksize": 1.0,
-        "numLinks": 5.0
+        "numLinks": 5.0,
+        "grabbed": false
       }
     },
     {
@@ -154,7 +167,8 @@
         "angle": 0.0,
         "numLinks": 3.0,
         "x": 9.0,
-        "y": 10.0
+        "y": 10.0,
+        "grabbed": false
       }
     }
   ]

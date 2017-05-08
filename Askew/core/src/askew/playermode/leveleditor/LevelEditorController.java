@@ -14,6 +14,7 @@ import askew.*;
 import askew.entity.BackgroundEntity;
 import askew.entity.Entity;
 import askew.entity.ghost.GhostModel;
+import askew.entity.obstacle.ComplexObstacle;
 import askew.entity.obstacle.Obstacle;
 import askew.entity.owl.OwlModel;
 import askew.entity.sloth.SlothModel;
@@ -158,12 +159,9 @@ public class LevelEditorController extends WorldController {
 			"often!\n" +
 			"\n" +
 			"The controls are as follows:\n" +
-			"Left Click: Place currently selected entity\n" +
-			"Right Click: Delete entity under mouse\n" +
-			"Left Arrow Key: Cycle left on selected entity\n" +
-			"Right Arrow Key: Cycle right on selected entity\n" +
-			"Enter: Select entity for placement\n" +
-			"E: Edit entity under mouse\n" +
+			"Drag entities for the bar at the bottom to add them to the level\n" +
+			"R: Reset the level to saved file without saving\n" +
+			"E: Edit entity under the mouse\n" +
 			"N: Name level (can be used to make a new level)\n" +
 			"L: Load level (do not include .json in the level name!)\n" +
 			"S: Save\n" +
@@ -235,7 +233,7 @@ public class LevelEditorController extends WorldController {
 		jsonLoaderSaver = new JSONLoaderSaver(false);
 		entityTree = new EntityTree();
 		buttons = new ButtonList();
-		currentLevel = "test_save_obstacle";
+		currentLevel = "level1";
 		showHelp = true;
 		shouldDrawGrid = true;
 		camTrans = new Affine2();
@@ -744,6 +742,9 @@ public class LevelEditorController extends WorldController {
 				dragging = true;
 				if(selected != null){
 					selected.setPosition(adjustedMouseX, adjustedMouseY);
+					if(selected instanceof ComplexObstacle){
+						((ComplexObstacle) selected).rebuild();
+					}
 					if(movefar){
 						selected.setModifiedPosition( adjustedMouseX, adjustedMouseY, adjustedCxCamera, adjustedCyCamera);
 					}
@@ -802,6 +803,9 @@ public class LevelEditorController extends WorldController {
 						dragging = false;
 
 						selected.setPosition(adjustedMouseX, adjustedMouseY);
+						if(selected instanceof ComplexObstacle){
+							((ComplexObstacle) selected).rebuild();
+						}
 						if(movefar){
 							selected.setModifiedPosition( adjustedMouseX, adjustedMouseY, adjustedCxCamera, adjustedCyCamera);
 						}
@@ -818,6 +822,50 @@ public class LevelEditorController extends WorldController {
 				}
 			}
 			creating = false;
+		}
+
+		// Edit entity with mouse over it
+		if(InputControllerManager.getInstance().getController(0).isEKeyPressed()) {
+			Entity select = entityQuery();
+			if (select != null) {
+				if (!prompting) {
+					prompting = true; //Use different constant? Can just use the same one?
+
+					JDialog entityDisplay = new JDialog();
+					entityDisplay.setUndecorated(true);
+					entityDisplay.setSize(600,600);
+					entityDisplay.toFront();
+					JPanel panel = makeEntityWindow(select,entityDisplay);
+
+					entityDisplay.add(panel);
+					entityDisplay.setVisible(true);
+				}
+			}
+			inputRateLimiter = UI_WAIT_SHORT;
+		}
+
+		// Name
+		if(InputControllerManager.getInstance().getController(0).isNKeyPressed()) {
+			String prevLevel = currentLevel;
+			currentLevel = showInputDialog("What should we call this level?");
+			//If action cancelled or entry is empty
+			if(currentLevel.isEmpty()) { currentLevel = prevLevel; }
+			inputRateLimiter = UI_WAIT_LONG;
+		}
+
+		// Load
+		if(InputControllerManager.getInstance().getController(0).isLKeyPressed()) {
+			if (!loadingLevelPrompt) {
+				loadingLevelPrompt = true;
+				loadLevel(showInputDialog("What level do you want to load?"));
+				loadingLevelPrompt = false;
+			}
+			inputRateLimiter = UI_WAIT_LONG;
+		}
+
+		// Save
+		if(InputControllerManager.getInstance().getController(0).isSKeyPressed()) {
+			saveLevel();
 		}
 
 		// Help
@@ -841,7 +889,7 @@ public class LevelEditorController extends WorldController {
 		}
 
 		// Playtest
-		if (InputControllerManager.getInstance().getController(0).isEKeyPressed()) {
+		if (InputControllerManager.getInstance().getController(0).isXKeyPressed()) {
 			gmc.setLevel(currentLevel);
 			saveLevel();
 			listener.exitScreen(this, EXIT_LE_GM);

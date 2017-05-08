@@ -22,6 +22,8 @@ import askew.entity.owl.OwlModel;
 import askew.entity.sloth.SlothModel;
 import askew.entity.vine.Vine;
 import askew.playermode.WorldController;
+import askew.playermode.gamemode.Particles.Particle;
+import askew.playermode.gamemode.Particles.ParticleController;
 import askew.playermode.leveleditor.LevelModel;
 import askew.util.RecordBook;
 import askew.util.SoundController;
@@ -64,6 +66,7 @@ public class GameModeController extends WorldController {
 	/** Track asset loading from all instances and subclasses */
 	@Getter
 	protected static boolean playerIsReady = false;
+	@Getter
 	protected boolean paused = false;
 	protected boolean prevPaused = false;
 	private boolean victory = false;
@@ -119,6 +122,7 @@ public class GameModeController extends WorldController {
 	protected Texture pauseTexture;
 	protected Texture victoryTexture;
 	protected Texture fern;
+	protected Texture edgefade;
 	private static final float NEAR_FALL_DEATH_DISTANCE = 9;
 	private static final float LOWEST_ENTITY_FALL_DEATH_THRESHOLD = 12;
 	protected static final float CYCLES_OF_INTRO = 50f;
@@ -132,18 +136,19 @@ public class GameModeController extends WorldController {
 	private float cameraVelocityY;
 
 	//For playtesting control schemes
-	protected String typeMovement;
 	private int currentMovement;
-	protected String typeControl;
 	private int currentControl;
 	private float windVolume;
 
-	private int control_three_wait;
-	private int UI_WAIT = 5;
 
 	/** The opacity of the black text covering the screen. Game can start
 	 * when this is zero. */
 	protected float coverOpacity;
+
+	protected ParticleController particleController;
+	protected static final int MAX_PARTICLES = 5000;
+	protected static final int INITIAL_FOG = 300;
+	protected float fogTime;
 
 	/**
 	 * Preloads the assets for this controller.
@@ -205,6 +210,9 @@ public class GameModeController extends WorldController {
 		pauseTexture = manager.get("texture/background/pause.png", Texture.class);
 		victoryTexture = manager.get("texture/background/victory.png", Texture.class);
 		fern = manager.get("texture/background/fern.png");
+		edgefade = manager.get("texture/postprocess/edgefade.png");
+
+		particleController.setTextures(manager);
 
 		super.loadContent(manager);
 		platformAssetState = AssetState.COMPLETE;
@@ -239,14 +247,7 @@ public class GameModeController extends WorldController {
 		storeTimeRecords = GlobalConfiguration.getInstance().getAsBoolean("storeTimeRecords");
 		jsonLoaderSaver = new JSONLoaderSaver(false);
 		slothList = new ArrayList<>();
-
-		// TODO: kill later
-		typeMovement = "Current movement is: "+"0";
-		currentMovement = 0;
-		typeControl = "Current control is: "+"0";
-		currentControl = 0;
-
-		control_three_wait = 0;
+		particleController = new ParticleController(this, MAX_PARTICLES);
 	}
 
 	// for use in progressing through levels
@@ -292,6 +293,8 @@ public class GameModeController extends WorldController {
 
 		InputControllerManager.getInstance().inputControllers().forEach(InputController::releaseGrabs);
 
+		particleController.reset();
+		fogTime = 0;
 		for(Entity obj : objects) {
 			if( (obj instanceof Obstacle))
 				((Obstacle)obj).deactivatePhysics(world);
@@ -414,18 +417,18 @@ public class GameModeController extends WorldController {
 
 			if (slothId == 2) {
 				// Attach the sloths
-				Vine wtfVine = new Vine(initFlowX,initFlowY,6,false,90,0,0,false);
+				Vine wtfVine = new Vine(initFlowX, initFlowY, 6, false, 90, 0, 0, false);
 				wtfVine.setTextures(manager);
 				addObject(wtfVine);
 				objects.remove(wtfVine);
-				objects.add(0,wtfVine);
+				objects.add(0, wtfVine);
 
 				List<Obstacle> lazy = new ArrayList<>();
 				wtfVine.getBodies().forEach(lazy::add);
 				Filter f = new Filter();
 				f.maskBits = 0;
 				f.categoryBits = 0;
-				wtfVine.getBodies().forEach(body->body.setFilterData(f));
+				wtfVine.getBodies().forEach(body -> body.setFilterData(f));
 				Obstacle left = lazy.get(0);
 
 				// Definition for a revolute joint
@@ -434,8 +437,8 @@ public class GameModeController extends WorldController {
 				// Initial joint
 				jointDef.bodyB = slothList.get(0).getMainBody();
 				jointDef.bodyA = left.getBody();
-				jointDef.localAnchorB.set(new Vector2(0,0.2f));
-				jointDef.localAnchorA.set(new Vector2(0,Vine.lheight/2));
+				jointDef.localAnchorB.set(new Vector2(0, 0.2f));
+				jointDef.localAnchorA.set(new Vector2(0, Vine.lheight / 2));
 				jointDef.collideConnected = false;
 				Joint joint = world.createJoint(jointDef);
 
@@ -444,11 +447,14 @@ public class GameModeController extends WorldController {
 
 				// Initial joint
 				jointDef.bodyB = slothList.get(1).getMainBody();
-				jointDef.bodyA = lazy.get(lazy.size()-1).getBody();
-				jointDef.localAnchorB.set(new Vector2(0,0.2f));
-				jointDef.localAnchorA.set(new Vector2(0,-Vine.lheight/2));
+				jointDef.bodyA = lazy.get(lazy.size() - 1).getBody();
+				jointDef.localAnchorB.set(new Vector2(0, 0.2f));
+				jointDef.localAnchorA.set(new Vector2(0, -Vine.lheight / 2));
 				jointDef.collideConnected = false;
 				joint = world.createJoint(jointDef);
+			}
+			for(int i = 0; i < INITIAL_FOG; i++) {
+				particleController.fog(levelModel.getMaxX()-levelModel.getMinX(),levelModel.getMaxY()-levelModel.getMinY() );
 			}
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -584,9 +590,9 @@ public class GameModeController extends WorldController {
 	 * @param dt Number of seconds since last animation frame
 	 */
 	public void update(float dt) {
-		//Increment UI check
-		if(currentControl==2){
-			control_three_wait = (control_three_wait+1) % UI_WAIT;
+
+		if (InputControllerManager.getInstance().getController(0).isZKeyPressed()) {
+			particleController.effect1(10,18);
 		}
 
 		if (!paused) {
@@ -615,7 +621,6 @@ public class GameModeController extends WorldController {
 					} else {
 						sloth.releaseLeft(world);
 					}
-
 					if (sloth.isRightGrab()) {
 						sloth.grab(world, rightCollisionBody, false);
 					} else {
@@ -656,6 +661,13 @@ public class GameModeController extends WorldController {
 					}
 				}
 			}
+			currentTime += dt;
+			if(currentTime - fogTime > .1f) {
+				particleController.fog(cameraX, cameraY);
+				fogTime = currentTime;
+			}
+			particleController.update(dt);
+
 
 			//#TODO Collision states check
 			if (!collisions.isFlowWin()) setFailure(collisions.isFlowKill());
@@ -770,11 +782,36 @@ public class GameModeController extends WorldController {
 				, cameraY * worldScale.y);
 
 		canvas.begin(camTrans);
+
 		Collections.sort(objects);
-		for(Entity obj : objects) {
-			obj.setDrawScale(worldScale);
-			obj.draw(canvas);
+		Particle[] particles = particleController.getSorted();
+		particleController.setDrawScale(worldScale);
+		int n = particleController.numParticles();
+		int total = objects.size() + n;
+		int i = 0;
+		int j = 0;
+		Particle p = null;
+		Entity ent = null;
+		while( i + j < total){
+			p = null;
+			ent = null;
+			if( i < n){
+				 p = particles[i];
+			}
+			if( j < objects.size()) {
+				ent = objects.get(j);
+			}
+			if(ent != null && ent.compareTo(p) < 0){
+				ent.setDrawScale(worldScale);
+				ent.draw(canvas);
+				j++;
+			} else if (p != null) {
+				particleController.draw(canvas, p);
+				i++;
+			}
 		}
+
+
 
 		if (!playerIsReady && !paused && coverOpacity <= 0)
 			printHelp();
@@ -784,10 +821,7 @@ public class GameModeController extends WorldController {
 		canvas.begin();
 		canvas.drawTextStandard("current time:    "+currentTime, 10f, 70f);
 		canvas.drawTextStandard("record time:     "+recordTime,10f,50f);
-    
-		//Draw control schemes
-		canvas.drawTextStandard(typeMovement, 10f, 700f);
-		canvas.drawTextStandard(typeControl,10f,680f);
+
 		canvas.end();
 
 		if (debug) {
@@ -837,6 +871,9 @@ public class GameModeController extends WorldController {
 					0,2*worldScale.x/fern.getWidth(), 2*worldScale.y/fern.getHeight());
 			canvas.end();
 		}
+		canvas.begin();
+		canvas.draw(edgefade);
+		canvas.end();
 	}
 
 }
