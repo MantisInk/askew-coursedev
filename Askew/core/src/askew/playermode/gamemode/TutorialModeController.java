@@ -690,6 +690,7 @@ public class TutorialModeController extends GameModeController {
 	}
 
 	public void drawInstructions() {
+		displayFont.setColor(Color.GOLDENROD);
 		joystickNeutralTexture = joystickAnimation.getKeyFrame(0);
 		joystickTexture = joystickAnimation.getKeyFrame(elapseTime, true);
 		bumperLTexture = bumperLAnimation.getKeyFrame(elapseTime,true);
@@ -706,10 +707,14 @@ public class TutorialModeController extends GameModeController {
 					}
 				} else if(currentStage == STAGE_GRAB) {
 					if (!grabbedAll) {
-				canvas.drawTextCentered("Try to grab all 5 branches", displayFont, 200f);
+				canvas.drawTextCentered("Try to grab all 5 branches", displayFont, 250f);
 			}
 		} else if (currentStage == STAGE_SHIMMY) {
-			canvas.drawTextCentered("Try to shimmy across", displayFont, 200f);
+			canvas.drawTextCentered("Try to shimmy across to the owl", displayFont, 250f);
+		} else if (currentStage == STAGE_FLING) {
+			canvas.drawTextCentered("Try to fling from branch to branch", displayFont, 250f);
+		} else if (currentStage == STAGE_VINE) {
+			canvas.drawTextCentered("Learn to swing on the vines", displayFont, 250f);
 		}
 		if (currentStage >= STAGE_GRAB) {
 			if(slothList.get(0).isActualRightGrab()) {
@@ -727,6 +732,9 @@ public class TutorialModeController extends GameModeController {
 		if((currentStage == STAGE_PINNED && time > 6f) ||
 				(currentStage == STAGE_GRAB && grabbedAll)) {
 			canvas.drawTextCentered("Press A to continue", displayFont, 200f);
+		}
+		if(currentStage == STAGE_PINNED && time < 6f) {
+			canvas.drawTextCentered("Practice moving one arm at a time", displayFont, 200f);
 		}
 	}
 
@@ -829,7 +837,7 @@ public class TutorialModeController extends GameModeController {
 
 	public void restart() {
 		//change back to 1
-		currentStage = 5;
+		currentStage = 1;
 	}
 
 	public void printVector(Vector2 v) {
