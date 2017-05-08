@@ -3,6 +3,7 @@ package askew.entity;
 
 import askew.GameCanvas;
 import askew.MantisAssetManager;
+import askew.playermode.gamemode.Particles.Particle;
 import com.badlogic.gdx.math.Vector2;
 
 public abstract class Entity implements Comparable{
@@ -83,6 +84,9 @@ public abstract class Entity implements Comparable{
 
     @Override
     public int compareTo(Object o) {
+        if(o == null){
+            return -1;
+        }
 
         float thisDepth = 1;
         float oDepth = 1;
@@ -97,6 +101,12 @@ public abstract class Entity implements Comparable{
             }
             oDrawNum = ((Entity)o).getDrawNumber();
         }
+
+        if(o instanceof Particle){
+            oDepth = ((Particle) o).getDepth();
+            oDrawNum = ((Particle)o).getDrawNumber();
+        }
+
         int comp =  java.lang.Float.compare(thisDepth,oDepth);
         if(comp == 0){
             comp = java.lang.Integer.compare(this.drawNumber, oDrawNum);
