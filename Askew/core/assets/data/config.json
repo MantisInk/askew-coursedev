@@ -3,7 +3,7 @@
   "flowArmDensity": 1.1,
   "flowTorque": 3.2,
   "flowOmegaNormalizer": 5.0,
-  "flowGravityScale": 1.0,
+  "flowGravityScale": 0.7,
   "flowCanMoveGrabbingHand": true,
   "flowMovementMode": 0,
   "flowControlMode": 0,
