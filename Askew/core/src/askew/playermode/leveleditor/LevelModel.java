@@ -49,4 +49,19 @@ class LevelModel {
     public void addEntity(Entity o) {
         entities.add(o);
     }
+
+    public String toString(){
+        String ans  = "";
+        ans += this.title;
+        ans += "\n";
+        ans += this.minX;
+        ans += "\n";
+        ans += this.minY;
+        ans += "\n";
+        ans += this.maxX;
+        ans += "\n";
+        ans += this.maxY;
+        ans += "\n";
+        return ans;
+    }
 }

@@ -1,11 +1,16 @@
 texture/background/background1.png
+texture/background/BackgroundStuff/bigpalmTree.png
 texture/background/BackgroundStuff/cloud.png
 texture/background/BackgroundStuff/cloud1.png
 texture/background/BackgroundStuff/eyes.png
 texture/background/BackgroundStuff/foregroundtree.png
+texture/background/BackgroundStuff/leafPalm.png
 texture/background/BackgroundStuff/palmLeaf.png
 texture/background/BackgroundStuff/palmLeaf2.png
+texture/background/BackgroundStuff/palms.png
 texture/background/BackgroundStuff/palmTree.png
+texture/background/BackgroundStuff/palmTree1.png
+texture/background/BackgroundStuff/palmTreeBig.png
 texture/background/BackgroundStuff/purple.png
 texture/background/BackgroundStuff/rusty.png
 texture/background/BackgroundStuff/sil1.png
@@ -15,6 +20,7 @@ texture/background/BackgroundStuff/sil4.png
 texture/background/BackgroundStuff/tree.png
 texture/background/BackgroundStuff/tree1.png
 texture/background/BackgroundStuff/turquoise.png
+texture/background/BackgroundStuff/zebraPlant.png
 texture/background/fern.png
 texture/background/foreground/fernTile.png
 texture/background/foreground/leaf.png

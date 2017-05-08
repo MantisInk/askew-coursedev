@@ -459,7 +459,7 @@ public abstract class WorldController implements Screen {
 		}
 
 		// Toggle debug
-		if (input.didRightButtonPress() || input.isEKeyPressed()) {
+		if (input.didRightButtonPress() || input.isGKeyPressed()) {
 			debug = !debug;
 		}
 		
