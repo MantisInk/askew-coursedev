@@ -52,15 +52,6 @@ public class Particle implements Comparable {
 
     }
 
-    public void draw(GameCanvas canvas){
-        if (texture != null) {
-            canvas.drawBackgroundEntity(texture, tint ,texture.getWidth()/2,texture.getHeight()/2,getX()*drawScale.x,getY()*drawScale.y, getDepth(), getAngle(),
-                    (1.0f/texture.getWidth()) *   width * getDrawScale().x  * aspectRatio,
-                    (1.0f/texture.getHeight())  * height * getDrawScale().y * objectScale.y), 1);
-        }
-
-    }
-
     public void setTexture(Texture texture){
         this.texture = texture;
 

@@ -70,7 +70,7 @@ public class ParticleController {
 
 
     private int effect1_num = 15;
-    private texturePath = ""
+    private String texturePath = "";
 
 
     public void effect1(){
