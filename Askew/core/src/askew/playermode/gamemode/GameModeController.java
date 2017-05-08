@@ -15,9 +15,12 @@ import askew.InputController;
 import askew.InputControllerManager;
 import askew.MantisAssetManager;
 import askew.entity.Entity;
+import askew.entity.FilterGroup;
+import askew.entity.obstacle.BoxObstacle;
 import askew.entity.obstacle.Obstacle;
 import askew.entity.owl.OwlModel;
 import askew.entity.sloth.SlothModel;
+import askew.entity.vine.Vine;
 import askew.playermode.WorldController;
 import askew.playermode.leveleditor.LevelModel;
 import askew.util.RecordBook;
@@ -30,9 +33,8 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.Fixture;
-import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
 import com.badlogic.gdx.utils.ObjectSet;
 import lombok.Getter;
 import lombok.Setter;
@@ -392,10 +394,12 @@ public class GameModeController extends WorldController {
 					SlothModel sloth = (SlothModel) o;
 					sloth.activateSlothPhysics(world);
 					collisions.addSloth(sloth);
-					initFlowX = sloth.getX();
-					initFlowY = sloth.getY();
-					cameraX = sloth.getX();
-					cameraY = sloth.getY();
+					if (slothId == 0) {
+						initFlowX = sloth.getX();
+						initFlowY = sloth.getY();
+						cameraX = sloth.getX();
+						cameraY = sloth.getY();
+					}
 
 					sloth.setControlMode(currentControl);
 					sloth.setMovementMode(currentMovement);
@@ -406,6 +410,45 @@ public class GameModeController extends WorldController {
 					owl = (OwlModel) o;
 				}
 
+			}
+
+			if (slothId == 2) {
+				// Attach the sloths
+				Vine wtfVine = new Vine(initFlowX,initFlowY,6,false,90,0, false);
+				wtfVine.setTextures(manager);
+				addObject(wtfVine);
+				objects.remove(wtfVine);
+				objects.add(0,wtfVine);
+
+				List<Obstacle> lazy = new ArrayList<>();
+				wtfVine.getBodies().forEach(lazy::add);
+				Filter f = new Filter();
+				f.maskBits = 0;
+				f.categoryBits = 0;
+				wtfVine.getBodies().forEach(body->body.setFilterData(f));
+				Obstacle left = lazy.get(0);
+
+				// Definition for a revolute joint
+				RevoluteJointDef jointDef = new RevoluteJointDef();
+
+				// Initial joint
+				jointDef.bodyB = slothList.get(0).getMainBody();
+				jointDef.bodyA = left.getBody();
+				jointDef.localAnchorB.set(new Vector2(0,0.2f));
+				jointDef.localAnchorA.set(new Vector2(0,Vine.lheight/2));
+				jointDef.collideConnected = false;
+				Joint joint = world.createJoint(jointDef);
+
+				// Definition for a revolute joint
+				jointDef = new RevoluteJointDef();
+
+				// Initial joint
+				jointDef.bodyB = slothList.get(1).getMainBody();
+				jointDef.bodyA = lazy.get(lazy.size()-1).getBody();
+				jointDef.localAnchorB.set(new Vector2(0,0.2f));
+				jointDef.localAnchorA.set(new Vector2(0,-Vine.lheight/2));
+				jointDef.collideConnected = false;
+				joint = world.createJoint(jointDef);
 			}
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -521,7 +564,7 @@ public class GameModeController extends WorldController {
 
 		return InputControllerManager.getInstance().inputControllers().parallelStream()
 				.map(controller ->controller.getRightGrab() || controller.getRightGrab())
-				.reduce((acc,el)->acc && el).orElse(false);
+				.reduce(false,(acc,el)->acc || el);
 	}
 
 	public void printHelp(){
@@ -692,8 +735,8 @@ public class GameModeController extends WorldController {
 		canvas.draw(background);
 		canvas.end();
 
-		float slothX = slothList.get(0).getBody().getPosition().x;
-		float slothY = slothList.get(0).getBody().getPosition().y;
+		float slothX = slothList.stream().map(sloth->sloth.getBody().getPosition().x).reduce((x,y)->x+y).orElse(0f) / slothList.size();
+		float slothY = slothList.stream().map(sloth->sloth.getBody().getPosition().y).reduce((x,y)->x+y).orElse(0f) / slothList.size();
 
 		cameraVelocityX = cameraVelocityX * 0.4f + (slothX - cameraX) * 0.18f;
 		cameraVelocityY = cameraVelocityY * 0.4f + (slothY - cameraY) * 0.18f;

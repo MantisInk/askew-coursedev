@@ -1054,7 +1054,7 @@ public class SlothModel extends ComplexObstacle  {
                 }
                 //If the body parts are not limbs
                 else {
-                    part.draw(canvas, Color.WHITE);
+                    part.draw(canvas, getDrawTint());
                 }
             }
         }
@@ -1063,7 +1063,7 @@ public class SlothModel extends ComplexObstacle  {
     private void drawArm(GameCanvas canvas, BoxObstacle part, boolean active) {
         if (controlMode == CONTROLS_ONE_ARM) {
             if (active) {
-                part.draw(canvas, Color.WHITE);
+                part.draw(canvas, getDrawTint());
                 // draw power halo
                 power = this.power;
 
@@ -1084,7 +1084,7 @@ public class SlothModel extends ComplexObstacle  {
                 part.draw(canvas, Color.BLACK);
             }
         } else {
-            part.draw(canvas, Color.WHITE);
+            part.draw(canvas, getDrawTint());
         }
     }
 
@@ -1186,6 +1186,14 @@ public class SlothModel extends ComplexObstacle  {
         joints.add(joint);
     }
 
+    private Color getDrawTint() {
+        if (id == 0) {
+            return Color.WHITE;
+        } else {
+            return new Color(0.5f,0.5f,1.0f,1.0f);
+        }
+    }
+
     public void setPinned() {pinned = true;}
 
     public void setTutorial() {tutorial = true;}
@@ -1248,5 +1256,6 @@ public class SlothModel extends ComplexObstacle  {
             }
         }
     }
+
 }
 
