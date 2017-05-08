@@ -42,6 +42,9 @@ texture/background/topvine/Topvine8.png
 texture/background/topvine/Topvine9.png
 texture/background/victory.png
 texture/branch/branch.png
+texture/eye/eye.png
+texture/eye/eyeR.png
+texture/eye/pupil.png
 texture/leveleditor/button.png
 texture/leveleditor/emleft.png
 texture/leveleditor/folder.png
