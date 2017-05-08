@@ -93,7 +93,7 @@ public class Particle implements Comparable {
         if(type == 1){
             this.x += (this.vx * delta);
             this.y += (this.vy * delta);
-            this.tint.set(1,1,1, .10f * (float)Math.sin( Math.PI * t));
+            this.tint.set(1,1,1, .10f * (-1 * .5f * (float)Math.cos( 2 * Math.PI * t) + .5f));
         }
 
 
