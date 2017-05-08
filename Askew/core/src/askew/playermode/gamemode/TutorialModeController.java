@@ -154,7 +154,6 @@ public class TutorialModeController extends GameModeController {
 	 */
 	public void loadContent(MantisAssetManager manager) {
 		super.loadContent(manager);
-		container = manager.get("texture/tutorial/infoContainer.png");
 		// reset animation frames
 		if(joystickAnimation == null) {
 			joystickAnimation = new Animation(0.15f, manager.getTextureAtlas().findRegions("joy"), Animation.PlayMode.LOOP);
