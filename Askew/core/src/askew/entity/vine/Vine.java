@@ -59,6 +59,8 @@ public class Vine extends ComplexObstacle {
 	protected transient Vector2 planksize;						/** The size of a vine piece */
 	protected transient float linksize = 1.0f;					/** The length of each vine piece*/
 	protected transient float spacing = 0.0f;					/** The spacing between each piece */
+	@Getter
+	private transient Obstacle endpt; 						// to help with tutorial getting vine endpt
 
 	//JSON
 	@Getter @Setter
@@ -142,6 +144,7 @@ public class Vine extends ComplexObstacle {
 			plank.setFilterData(f);
 			bodies.add(plank);
 		}
+		endpt = bodies.get(bodies.size-1);
 
 		setCustomScale(2,1.05f);
 	}
@@ -267,7 +270,7 @@ public class Vine extends ComplexObstacle {
 		Texture vineTexture = manager.get(VINE_TEXTURE, Texture.class);
 		TextureRegion regionedTexture = new TextureRegion(vineTexture);
 		for(Obstacle body : bodies) {
-			((SimpleObstacle)body).setTexture(regionedTexture);
+			((SimpleObstacle) body).setTexture(regionedTexture);
 		}
 	}
 
