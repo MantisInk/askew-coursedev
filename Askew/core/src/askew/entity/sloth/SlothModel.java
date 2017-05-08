@@ -100,7 +100,11 @@ public class SlothModel extends ComplexObstacle  {
     /** Set damping constant for rotation of Flow's arms */
     private static final float ROTATION_DAMPING = 5f;
 
-    private  transient Body grabPointR;
+    /** Cooldown for changing body frames */
+    private static final int TRANSITION_COOLDOWN = 10;
+    private static int currentCooldown = TRANSITION_COOLDOWN;
+
+    private transient Body grabPointR;
     private transient Body grabPointL;
 
     private transient Vector2 forceL = new Vector2();
@@ -206,6 +210,9 @@ public class SlothModel extends ComplexObstacle  {
     private static final float HAND_XOFFSET  = (ARM_WIDTH / 2f) - HAND_WIDTH * 2 - .3f;
 
     public static final float ARMSPAN = ARM_XOFFSET*2 - 0.05f;
+
+    private static float TIME_SINCE_LGRAB;
+    private static float TIME_SINCE_RGRAB;
 
 
     /** Texture assets for the body parts */
@@ -638,7 +645,7 @@ public class SlothModel extends ComplexObstacle  {
         this.power += (torquePower / 22f - power) * 0.10f;
         if (this.power > 1) this.power = 1;
 
-        flowFacingState = (int)bodies.get(PART_BODY).getBody().getLinearVelocity().x;
+        flowFacingState = bodies.get(PART_BODY).getBody().getLinearVelocity().x;
     }
 
 
@@ -1032,30 +1039,81 @@ public class SlothModel extends ComplexObstacle  {
             TextureRegion texture = part.getTexture();
             if (texture != null) {
                 // different textures for flow's body
-                if (body_ind == 0) {
-                    if (flowFacingState > 3 && flowFacingState < 6){
-                        part.setTexture(partTextures[2]);
-                        if (!texture.isFlipX()) {
-                            texture.flip(true, false);
+
+                //Velocity thresholds for Flow to turn
+                float upper_threshold = 9.75f;
+                float lower_threshold = 3.0f;
+
+                TextureRegion old_texture=texture;
+
+                if (body_ind == PART_BODY) {
+                    if(currentCooldown<0) {
+                        if (flowFacingState >= lower_threshold && flowFacingState <= upper_threshold) {
+                            // Right
+                            part.setTexture(partTextures[2]);
+                            texture = partTextures[2];
+                            if (!part.getTexture().isFlipX()) {
+                                texture.flip(true, false);
+                            }
+                        } else if (flowFacingState > upper_threshold) {
+                            // Far right
+                            part.setTexture(partTextures[5]);
+                            texture = partTextures[5];
+                            if (!texture.isFlipX()) {
+                                texture.flip(true, false);
+                            }
+                        } else if (flowFacingState <= -lower_threshold && flowFacingState >= -upper_threshold) {
+                            // Left
+                            part.setTexture(partTextures[2]);
+                            texture = partTextures[2];
+                            if (texture.isFlipX()) {
+                                texture.flip(true, false);
+                            }
+                        } else if (flowFacingState < -upper_threshold) {
+                            // Far left
+                            part.setTexture(partTextures[5]);
+                            texture = partTextures[5];
+                            if (texture.isFlipX()) {
+                                texture.flip(true, false);
+                            }
+                        } else {
+                            part.setTexture(partTextures[4]);
                         }
-                    } else if (flowFacingState > 6) {
-                        part.setTexture(partTextures[5]);
-                        if (!texture.isFlipX()) {
-                            texture.flip(true, false);
-                        }
-                    } else if (flowFacingState < -3 && flowFacingState > -6) {
-                        part.setTexture(partTextures[2]);
-                        if (texture.isFlipX()) {
-                            texture.flip(true, false);
-                        }
-                    } else if (flowFacingState < -6) {
-                        part.setTexture(partTextures[5]);
-                        if (texture.isFlipX()) {
-                            texture.flip(true, false);
+
+                        if(old_texture!=part.getTexture() || (old_texture.isFlipX()!=part.getTexture().isFlipX()) ){
+                            currentCooldown = TRANSITION_COOLDOWN;
                         }
                     } else {
                         part.setTexture(getFrontFlow());
                     }
+                    currentCooldown--;
+
+
+
+//                    System.out.println(flowFacingState);
+//                    if (flowFacingState > lower_threshold && flowFacingState < upper_threshold){
+//                        part.setTexture(partTextures[2]);
+//                        if (!texture.isFlipX()) {
+//                            texture.flip(true, false);
+//                        }
+//                    } else if (flowFacingState > upper_threshold) {
+//                        part.setTexture(partTextures[5]);
+//                        if (!texture.isFlipX()) {
+//                            texture.flip(true, false);
+//                        }
+//                    } else if (flowFacingState < -lower_threshold && flowFacingState > -upper_threshold) {
+//                        part.setTexture(partTextures[2]);
+//                        if (texture.isFlipX()) {
+//                            texture.flip(true, false);
+//                        }
+//                    } else if (flowFacingState < -upper_threshold) {
+//                        part.setTexture(partTextures[5]);
+//                        if (texture.isFlipX()) {
+//                            texture.flip(true, false);
+//                        }
+//                    } else {
+//                        part.setTexture(partTextures[4]);
+//                    }
                 }
 
                 // different textures for flow's arms if controlling

@@ -30,6 +30,7 @@ public class EntityTree {
 
         ETNode ghostmodel = new ETNode(enemies,"GhostModel", "texture/leveleditor/placeholder.png", true);
 
+        ETNode eyes = new ETNode(root, "EyeEntity", "texture/eye/eyes.png", true);
 //        root.add(backgrounds);
 //        root.add(sloth);
 //        root.add(vine);
