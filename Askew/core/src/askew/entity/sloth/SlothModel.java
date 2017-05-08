@@ -203,6 +203,9 @@ public class SlothModel extends ComplexObstacle  {
 
     public static final float ARMSPAN = ARM_XOFFSET*2 - 0.05f;
 
+    private static float TIME_SINCE_LGRAB;
+    private static float TIME_SINCE_RGRAB;
+
 
     /** Texture assets for the body parts */
     private transient TextureRegion[] partTextures;
@@ -1019,19 +1022,21 @@ public class SlothModel extends ComplexObstacle  {
                     String check;
 //                    System.out.println(TRANSITION_COOLDOWN);
 
-                    /*
+
                     if(TRANSITION_COOLDOWN<0) {
                         if (flowFacingState >= lower_threshold && flowFacingState <= upper_threshold) {
                             // right
                             part.setTexture(partTextures[2]);
+                            texture = partTextures[2];
                             System.out.println("Flip RIGHT?  "+!texture.isFlipX());
-                            if (!texture.isFlipX()) {
+                            if (!part.getTexture().isFlipX()) {
                                 texture.flip(true, false);
                             }
                             check = "RIGHT";
                         } else if (flowFacingState > upper_threshold) {
                             // far right
                             part.setTexture(partTextures[5]);
+                            texture = partTextures[5];
                             if (!texture.isFlipX()) {
                                 texture.flip(true, false);
                             }
@@ -1039,6 +1044,7 @@ public class SlothModel extends ComplexObstacle  {
                         } else if (flowFacingState <= -lower_threshold && flowFacingState >= -upper_threshold) {
                             // left
                             part.setTexture(partTextures[2]);
+                            texture = partTextures[2];
                             System.out.println("Flip LEFT?  "+texture.isFlipX());
                             if (texture.isFlipX()) {
                                 texture.flip(true, false);
@@ -1047,6 +1053,7 @@ public class SlothModel extends ComplexObstacle  {
                         } else if (flowFacingState < -upper_threshold) {
                             // far left
                             part.setTexture(partTextures[5]);
+                            texture = partTextures[5];
                             if (texture.isFlipX()) {
                                 texture.flip(true, false);
                             }
@@ -1063,33 +1070,33 @@ public class SlothModel extends ComplexObstacle  {
                         }
                     }
                     TRANSITION_COOLDOWN--;
-                    */
 
 
-                    System.out.println(flowFacingState);
-                    if (flowFacingState > lower_threshold && flowFacingState < upper_threshold){
-                        part.setTexture(partTextures[2]);
-                        if (!texture.isFlipX()) {
-                            texture.flip(true, false);
-                        }
-                    } else if (flowFacingState > upper_threshold) {
-                        part.setTexture(partTextures[5]);
-                        if (!texture.isFlipX()) {
-                            texture.flip(true, false);
-                        }
-                    } else if (flowFacingState < -lower_threshold && flowFacingState > -upper_threshold) {
-                        part.setTexture(partTextures[2]);
-                        if (texture.isFlipX()) {
-                            texture.flip(true, false);
-                        }
-                    } else if (flowFacingState < -upper_threshold) {
-                        part.setTexture(partTextures[5]);
-                        if (texture.isFlipX()) {
-                            texture.flip(true, false);
-                        }
-                    } else {
-                        part.setTexture(partTextures[4]);
-                    }
+
+//                    System.out.println(flowFacingState);
+//                    if (flowFacingState > lower_threshold && flowFacingState < upper_threshold){
+//                        part.setTexture(partTextures[2]);
+//                        if (!texture.isFlipX()) {
+//                            texture.flip(true, false);
+//                        }
+//                    } else if (flowFacingState > upper_threshold) {
+//                        part.setTexture(partTextures[5]);
+//                        if (!texture.isFlipX()) {
+//                            texture.flip(true, false);
+//                        }
+//                    } else if (flowFacingState < -lower_threshold && flowFacingState > -upper_threshold) {
+//                        part.setTexture(partTextures[2]);
+//                        if (texture.isFlipX()) {
+//                            texture.flip(true, false);
+//                        }
+//                    } else if (flowFacingState < -upper_threshold) {
+//                        part.setTexture(partTextures[5]);
+//                        if (texture.isFlipX()) {
+//                            texture.flip(true, false);
+//                        }
+//                    } else {
+//                        part.setTexture(partTextures[4]);
+//                    }
                 }
 
                 // different textures for flow's arms if controlling
