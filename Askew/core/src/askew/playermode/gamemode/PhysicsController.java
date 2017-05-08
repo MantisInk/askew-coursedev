@@ -149,6 +149,8 @@ public class PhysicsController implements ContactListener {
     }
 
     public SlothModel winningSloth() {
-        return winningSloth;
+        // TODO
+        return slothList.get(0);
+//        return winningSloth;
     }
 }

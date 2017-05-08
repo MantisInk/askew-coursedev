@@ -414,7 +414,7 @@ public class InputController {
 			if (id ==0)
 				readKeyboard(bounds, scale, false);
 			else {
-				System.err.println("No second controller detected");
+//				System.err.println("No second controller detected");
 			}
 		}
 	}
