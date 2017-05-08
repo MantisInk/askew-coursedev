@@ -118,6 +118,7 @@ public class GameModeController extends WorldController {
 	protected Texture pauseTexture;
 	protected Texture victoryTexture;
 	protected Texture fern;
+	protected Texture edgefade;
 	private static final float NEAR_FALL_DEATH_DISTANCE = 9;
 	private static final float LOWEST_ENTITY_FALL_DEATH_THRESHOLD = 12;
 	protected static final float CYCLES_OF_INTRO = 50f;
@@ -207,6 +208,7 @@ public class GameModeController extends WorldController {
 		pauseTexture = manager.get("texture/background/pause.png", Texture.class);
 		victoryTexture = manager.get("texture/background/victory.png", Texture.class);
 		fern = manager.get("texture/background/fern.png");
+		edgefade = manager.get("texture/postprocess/edgefade.png");
 
 		particleController.setTextures(manager);
 
@@ -856,6 +858,9 @@ public class GameModeController extends WorldController {
 					0,2*worldScale.x/fern.getWidth(), 2*worldScale.y/fern.getHeight());
 			canvas.end();
 		}
+		canvas.begin();
+		canvas.draw(edgefade);
+		canvas.end();
 	}
 
 }

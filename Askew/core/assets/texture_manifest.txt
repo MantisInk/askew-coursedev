@@ -50,6 +50,7 @@ texture/leveleditor/placeholder.png
 texture/leveleditor/up.png
 texture/leveleditor/yellowbox.png
 texture/particle/test.png
+texture/postprocess/edgefade.png
 texture/sloth/arm.png
 texture/sloth/backarm.png
 texture/sloth/backarm_moving.png
