@@ -178,17 +178,10 @@
       }
     },
     {
-      "CLASSNAME": "askew.entity.owl.OwlModel",
-      "INSTANCE": {
-        "x": 22.181252,
-        "y": 10.755467
-      }
-    },
-    {
       "CLASSNAME": "askew.entity.tree.Trunk",
       "INSTANCE": {
-        "x": 24.407497,
-        "y": 9.814998,
+        "x": 24.297012,
+        "y": 9.763008,
         "angle": 90.0,
         "numLinks": 7.0
       }
@@ -196,19 +189,10 @@
     {
       "CLASSNAME": "askew.entity.tree.Trunk",
       "INSTANCE": {
-        "x": 13.178746,
-        "y": 14.121244,
+        "x": 13.117008,
+        "y": 13.9880085,
         "angle": 225.0,
         "numLinks": 6.0
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.tree.Trunk",
-      "INSTANCE": {
-        "x": -8.693748,
-        "y": 14.088744,
-        "angle": 270.0,
-        "numLinks": 22.0
       }
     },
     {
@@ -553,6 +537,85 @@
           1.0562544,
           -0.01499939
         ]
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": -9.008999,
+        "y": 14.014008,
+        "angle": 270.0,
+        "numLinks": 7.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 7.0720024,
+        "y": 13.9880085,
+        "angle": 135.0,
+        "numLinks": 3.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 0.03900051,
+        "y": 11.934008,
+        "angle": 45.0,
+        "numLinks": 3.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 0.07800102,
+        "y": 16.068008,
+        "angle": 135.0,
+        "numLinks": 3.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 7.1240025,
+        "y": 13.9620075,
+        "angle": 45.0,
+        "numLinks": 3.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 5.031002,
+        "y": 16.068008,
+        "angle": 90.0,
+        "numLinks": 5.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 5.031002,
+        "y": 11.947008,
+        "angle": 90.0,
+        "numLinks": 5.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 13.104009,
+        "y": 13.975008,
+        "angle": 90.0,
+        "numLinks": 6.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.owl.OwlModel",
+      "INSTANCE": {
+        "x": 22.152012,
+        "y": 10.751008
       }
     },
     {
