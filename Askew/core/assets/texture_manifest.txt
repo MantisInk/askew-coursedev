@@ -47,9 +47,11 @@ texture/background/tutorial/rclicked.png
 texture/background/tutorial/rup.png
 texture/background/victory.png
 texture/branch/branch.png
-texture/eye/eye.png
+texture/eye/eyeL.png
 texture/eye/eyeR.png
+texture/eye/eyes.png
 texture/eye/pupil.png
+texture/eye/pupils.png
 texture/leveleditor/button.png
 texture/leveleditor/emleft.png
 texture/leveleditor/folder.png
