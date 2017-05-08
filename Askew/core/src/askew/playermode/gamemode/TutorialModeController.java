@@ -65,6 +65,7 @@ public class TutorialModeController extends GameModeController {
 	private Animation bumperLAnimation;
 	private Animation bumperRAnimation;
 	private float elapseTime;
+	private float count;
 
 	// selected animation textures to be drawn
 	TextureRegion joystickNeutralTexture;
@@ -78,7 +79,7 @@ public class TutorialModeController extends GameModeController {
 	private ArrayList<Boolean> trunkGrabbed = new ArrayList<Boolean>();
 
 	// margin allowance for measuring distance from setpoints
-	private float[] inRangeAllowance = {0.02f, 0.02f, 0.02f, ARMSPAN, 0.02f};
+	private float[] inRangeAllowance = {0.02f, 0.02f, 0.02f, ARMSPAN/2, 0.02f};
 	// list of setpoints for drawing helplines & other vars
 	private int inRangeSetPt = -1;			// step progression within tutorial level
 	private final int MINUS30 = -1;			// constant as signal for drawing help lines -30 degrees from moving arm
@@ -86,8 +87,11 @@ public class TutorialModeController extends GameModeController {
 	private final int PLUS30 = 1;			// constant as signal for drawing help lines +30 degrees from moving arm
 	private int targetLine = NEUTRAL;		// variable to store decision on what type of help line to draw
 	private float angleDiff = 0f; 			// keeps track of (arm angle minus target angle) for sloth to draw
-	private boolean buildP = false;			// build momentum
-	private boolean swing = false; 			// does sloth have enough angular velocity to fling?
+	private boolean nextSetPt = false;
+	private float omega = 0;
+	private final float omega_0 = 0.15f;
+	private boolean swing = false;
+	private boolean back = false;
 	private float[] grabSetPoints = {14.019997f, 11.73999f, 9.399997f, 7.0199966f, 4.720001f};
 	private Vector2[] shimmySetPoints = {
 			new Vector2(12f,14f),
@@ -166,8 +170,11 @@ public class TutorialModeController extends GameModeController {
 		inRangeSetPt = -1;
 		targetLine = NEUTRAL;
 		angleDiff = 0f;
+		nextSetPt = false;
+		omega = 0;
+		count = 0f;
 		swing = false;
-		buildP = false;
+		back = false;
 		for(int i = 0; i < shimmyGrabbed.length; i++)
 			shimmyGrabbed[i] = false;
 		for(int i = 0; i < flingGrabbed.length; i++)
@@ -219,7 +226,7 @@ public class TutorialModeController extends GameModeController {
 		if(next) {
 			currentStage++;
 			next = false;
-			if (currentStage < MAX_TUTORIAL) {
+			if (currentStage <= MAX_TUTORIAL) {
 				System.out.println("moving on");
 				listener.exitScreen(this, EXIT_TL_TL);
 				return false;
@@ -279,39 +286,72 @@ public class TutorialModeController extends GameModeController {
 					}
 					break;
 				case STAGE_FLING:
+					// if done with setpoints
+					System.out.println("\n progression "+inRangeSetPt);
 					if(inRangeSetPt+1 >= flingSetPoints.length) {
 						angleDiff = 0f;
 						targetLine = NEUTRAL;
 						break;
 					}
-					if (inRange(flingSetPoints[inRangeSetPt+1]) && flingGrabbed[inRangeSetPt+1]) {
-						System.out.println("fling setpoint in range "+inRange(flingSetPoints[inRangeSetPt+1]));
+					Vector2 set = flingSetPoints[inRangeSetPt+1];
+					Vector2 backpt = flingLandPoints0[inRangeSetPt+1];
+					Vector2 landpt = flingLandPointsf[inRangeSetPt+1];
+					inRange(set);
+					if(inRangeSetPt+2 < flingSetPoints.length && inRange(flingSetPoints[inRangeSetPt+2])){
 						inRangeSetPt++;
-						buildP = false;
-						swing = false;
 					}
-					System.out.println("progression "+inRangeSetPt);
-					if (inRangeSetPt < flingGrabbed.length-1 && !flingGrabbed[inRangeSetPt+1]) {
-						// inRange(flingLandPoints0[inRangeSetPt+1]);
-//						System.out.println("targetLINE "+targetLine);
-						// check if need to wind back to build momentum
-						if(setUpToFling(inRangeSetPt+1)) {
-							// check if built enough momentum
-							swing = readyToFling();
-							System.out.println("swing "+swing);
+					if (inRange(flingSetPoints[inRangeSetPt+1])) {
+						// update omega
+						try {
+							omega = sloth.getMostRecentlyGrabbed().getLinearVelocity().len();
+						} catch (NullPointerException e) {
+							omega = 0;
 						}
-						// check if have enough momentum
-						if (swing) {
-							flingGrabbed[inRangeSetPt + 1] = inRange(flingLandPointsf[inRangeSetPt + 1]);
-							if (flingGrabbed[inRangeSetPt + 1]) {
+						// set new target to land0
+//						System.out.println("swing "+swing);
+//						System.out.print("\n  omega: "+omega);
+//						System.out.println("   thresh: "+(omega>=omega_0));
+						if ((omega_0-omega) < 0.05) {
+//							System.out.print("   back "+back);
+							if(!back) {
+								inRange(backpt);
+//								targetLine = MINUS30;
+								back = reachedBackPt(backpt);
+								count = 0;
+							}
+							else {
+								inRange(landpt);
+//								targetLine = NEUTRAL;
+								count++;
+								if (count > 120) {
+									count = 0;
+									back = false;
+									swing = false;
+								}
+							}
+						}
+						// if enough momentum, set new target to landf
+						else {
+							swing = true;
+						}
+						if(inRange(landpt)) {
+							targetLine = NEUTRAL;
+							count++;
+							if (count > 120) {
+								count = 0;
+								back = false;
 								swing = false;
 							}
-							if (angleDiff <= 0.05) {
-								buildP = false;
-								swing = false;
-							}
+							inRangeSetPt++;
+							break;
 						}
-//						System.out.println(flingGrabbed[inRangeSetPt+1]);
+					}
+					if (swing && flingGrabbed[inRangeSetPt+1]) {
+						//reset
+						count = 0;
+						back = false;
+						swing = false;
+						inRangeSetPt++;
 					}
 					break;
 				case STAGE_VINE:
@@ -369,6 +409,23 @@ public class TutorialModeController extends GameModeController {
 			if (dir == SHIMMY_N && Math.abs(setpt.x - ttPos.x) <= 0.05) { xrange = true; }
 		}
 		return xrange && yrange;
+	}
+
+	public boolean reachedBackPt(Vector2 backpt) {
+		try {
+			Vector2 handPos = sloth.getMostRecentlyGrabbed().getPosition();
+			Vector2 diff = handPos.cpy().sub(backpt);
+//			System.out.print("   len "+diff.len());
+//			System.out.print("   backpt: "); printVector(backpt);
+//			System.out.print("   hand: "); printVector(handPos);
+			if(diff.len() < ARMSPAN) {
+				return true;
+			}
+			else
+				return false;
+		} catch (NullPointerException e) {
+			return false;
+		}
 	}
 
 	public boolean inRange(Vector2 setpt) {
@@ -458,21 +515,6 @@ public class TutorialModeController extends GameModeController {
 		if(xrange < 0.08 && yrange < 0.08) {
 			shimmyGrabbed[inRangeSetPt+1] = true;
 		}
-	}
-
-	public boolean setUpToFling(int ind) {
-//		System.out.println("anglediff: "+angleDiff);
-		if (!buildP) {
-			buildP = inRange(flingLandPoints0[ind], 0.02f);
-		}
-		System.out.println("buildP: "+buildP);
-		return buildP;
-	}
-
-	public boolean readyToFling() {
-		float lv = sloth.getMostRecentlyGrabbed().getLinearVelocity().len();
-//		System.out.println("HAND "+lv);
-		return lv > 0.5;
 	}
 
 	public boolean moveToNextStage() {
@@ -675,6 +717,10 @@ public class TutorialModeController extends GameModeController {
 	public void restart() {
 		//change back to 0
 		currentStage = 4;
+	}
+
+	public void printVector(Vector2 v) {
+		System.out.print("("+v.x+","+v.y+")");
 	}
 
 }

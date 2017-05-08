@@ -870,6 +870,9 @@ public class SlothModel extends ComplexObstacle  {
             leftCanGrabOrIsGrabbing = false;
             releasedEntity = true;
         }
+        if(mostRecentlyGrabbed != null && mostRecentlyGrabbed.getBody() == getLeftHand()){
+            mostRecentlyGrabbed = null;
+        }
         leftGrabJoint = null;
         leftTarget = null;
     }
@@ -880,6 +883,9 @@ public class SlothModel extends ComplexObstacle  {
             if (movementMode != GRAB_TOGGLE || !rightGrabbing) world.destroyJoint(rightGrabJoint);
             leftCanGrabOrIsGrabbing = true;
             releasedEntity = true;
+        }
+        if(mostRecentlyGrabbed != null && mostRecentlyGrabbed.getBody() == getRightHand()){
+            mostRecentlyGrabbed = null;
         }
         rightGrabJoint = null;
         rightTarget = null;
