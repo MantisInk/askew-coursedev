@@ -78,6 +78,7 @@ texture/tutorial/joystick1.png
 texture/tutorial/joystick2.png
 texture/vine/vine.png
 texture/vine/vine2.png
+texture/vine/vine4.png
 texture/wall/corner.png
 texture/wall/edge.png
 texture/wall/edge2.png
