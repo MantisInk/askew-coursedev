@@ -1213,13 +1213,15 @@ public class SlothModel extends ComplexObstacle  {
             float mag, mag2;
 
             boolean leftArrows = false;
-            Vector2 arrowBaseL, arrowBaseR;
             CircleShape circle = new CircleShape();
 
             if(isActualLeftGrab() || isActualRightGrab()) {
                 if (isActualLeftGrab()) {
                     if (!isActualRightGrab() || left.getX() < right.getX()) {
                         switch(mode) {
+                            case SHIMMY_E:
+                                rPos = new Vector2(lPos.x+ARMSPAN,lPos.y);
+                                break;
                             case SHIMMY_S:
                                 rPos = new Vector2(lPos.x,lPos.y-ARMSPAN);
                                 break;
@@ -1237,6 +1239,9 @@ public class SlothModel extends ComplexObstacle  {
                 } else {
                     if (!isActualLeftGrab() || right.getX() < left.getX()) {
                         switch(mode) {
+                            case SHIMMY_E:
+                                lPos = new Vector2(rPos.x+ARMSPAN,rPos.y);
+                                break;
                             case SHIMMY_S:
                                 lPos = new Vector2(rPos.x,rPos.y-ARMSPAN);
                                 break;
@@ -1256,7 +1261,6 @@ public class SlothModel extends ComplexObstacle  {
 //                System.out.println("     left: "+lPos.angle()+" right: "+rPos.angle());
 //                System.out.println("lPos ("+lPos.x+","+lPos.y+")  rPos ("+rPos.x+","+rPos.y+")");
                 mag = Math.min(lPos.cpy().sub(bPos).len(),rPos.cpy().sub(bPos).len());
-//                mag2 = mag/2;
                 mag2 = mag/20;
                 lPos.sub(bPos).setLength(mag).add(bPos);
                 rPos.sub(bPos).setLength(mag).add(bPos);
@@ -1264,25 +1268,14 @@ public class SlothModel extends ComplexObstacle  {
                 circle.setRadius(mag2);
 
                 canvas.beginDebug(camTrans);
-                canvas.drawLine(bPos.x * drawScale.x, bPos.y * drawScale.y, lPos.x * drawScale.x, lPos.y * drawScale.y, Color.WHITE, Color.WHITE);
-                canvas.drawLine(bPos.x * drawScale.x, bPos.y * drawScale.y, rPos.x * drawScale.x, rPos.y * drawScale.y, Color.GRAY, Color.GRAY);
+                canvas.drawLine(bPos.x * drawScale.x, bPos.y * drawScale.y, lPos.x * drawScale.x, lPos.y * drawScale.y, Color.LIGHT_GRAY, Color.LIGHT_GRAY);
+                canvas.drawLine(bPos.x * drawScale.x, bPos.y * drawScale.y, rPos.x * drawScale.x, rPos.y * drawScale.y, Color.DARK_GRAY, Color.DARK_GRAY);
 
                 if (!leftArrows) {
-                    canvas.drawPhysics(circle, new Color(Color.WHITE), lPos.x, lPos.y, drawScale.x, drawScale.y);
+                    canvas.drawPhysics(circle, new Color(Color.LIGHT_GRAY), lPos.x, lPos.y, drawScale.x, drawScale.y);
                 } else {
-                    canvas.drawPhysics(circle, new Color(Color.GRAY), rPos.x, rPos.y, drawScale.x, drawScale.y);
+                    canvas.drawPhysics(circle, new Color(Color.DARK_GRAY), rPos.x, rPos.y, drawScale.x, drawScale.y);
                 }
-//                if (!leftArrows) {
-//                    arrowBaseL = (lPos.cpy().sub(bPos).rotate(10)).setLength(mag2).add(bPos);
-//                    arrowBaseR = (lPos.cpy().sub(bPos).rotate(-10)).setLength(mag2).add(bPos);
-//                    canvas.drawLine(lPos.x*drawScale.x, lPos.y*drawScale.y, arrowBaseL.x*drawScale.x,arrowBaseL.y*drawScale.y, Color.BLUE, Color.BLUE);
-//                    canvas.drawLine(lPos.x*drawScale.x, lPos.y*drawScale.y, arrowBaseR.x*drawScale.x,arrowBaseR.y*drawScale.y, Color.BLUE, Color.BLUE);
-//                } else {
-//                    arrowBaseL = rPos.cpy().sub(bPos).rotate(10).add(bPos);
-//                    arrowBaseR = rPos.cpy().sub(bPos).rotate(-10).add(bPos);
-//                    canvas.drawLine(rPos.x*drawScale.x, rPos.y*drawScale.y, arrowBaseL.x*drawScale.x,arrowBaseL.y*drawScale.y, Color.RED, Color.RED);
-//                    canvas.drawLine(rPos.x*drawScale.x, rPos.y*drawScale.y, arrowBaseR.x*drawScale.x,arrowBaseR.y*drawScale.y, Color.RED, Color.RED);
-//                }
                 canvas.endDebug();
             }
         }
