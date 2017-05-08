@@ -40,6 +40,10 @@ texture/background/topvine/Topvine5.png
 texture/background/topvine/Topvine6.png
 texture/background/topvine/Topvine8.png
 texture/background/topvine/Topvine9.png
+texture/background/tutorial/lclicked.png
+texture/background/tutorial/lup.png
+texture/background/tutorial/rclicked.png
+texture/background/tutorial/rup.png
 texture/background/victory.png
 texture/branch/branch.png
 texture/eye/eye.png
@@ -77,10 +81,6 @@ texture/sloth/sad.png
 texture/sloth/scared.png
 texture/sloth/turquoise.png
 texture/thorn/thorns.png
-texture/tutorial/lclicked.png
-texture/tutorial/lup.png
-texture/tutorial/rclicked.png
-texture/tutorial/rup.png
 texture/vine/vine.png
 texture/vine/vine2.png
 texture/vine/vine4.png
