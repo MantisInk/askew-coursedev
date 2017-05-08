@@ -1,22 +1,130 @@
 {
-  "levelModelVersion": 1,
+  "levelModelVersion": 2,
   "goalTimeGold": 30,
   "goalTimeSilver": 45,
   "goalTimeBronze": 60,
   "recordTime": 9999999.0,
+  "maxX": 20.0,
+  "maxY": 18.0,
+  "minX": -6.0,
+  "minY": 4.0,
   "title": "level3",
-  "background": "texture/background/background1.png",
+  "background": "texture/background/BackgroundStuff/purple.png",
   "soundtrack": "TODO",
   "entities": [
     {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 11.440002,
+        "y": 20.123999,
+        "width": 15.0,
+        "height": 15.0,
+        "depth": 8.0,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/sil4.png",
+        "color": 722961663
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 16.380001,
+        "y": 12.090007,
+        "width": 8.0,
+        "height": 8.0,
+        "depth": 5.0,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/cloud1.png",
+        "color": -128
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 4.329001,
+        "y": 7.6375036,
+        "width": 8.0,
+        "height": 8.0,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/palmTreeBig.png",
+        "color": -8070913
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": -5.303999,
+        "y": 7.0850043,
+        "width": 8.0,
+        "height": 8.0,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/palmTreeBig.png",
+        "color": -8070913
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": -5.6744986,
+        "y": 15.203507,
+        "width": 1.5,
+        "height": 1.5,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/eyes.png",
+        "color": -122
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 5.278,
+        "y": 6.422002,
+        "width": 8.0,
+        "height": 8.0,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/palmTree.png",
+        "color": 476554751
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 1.4040012,
+        "y": 7.7155037,
+        "width": 10.0,
+        "height": 10.0,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/palmTree.png",
+        "color": 392660223
+      }
+    },
+    {
       "CLASSNAME": "askew.entity.sloth.SlothModel",
       "INSTANCE": {
-        "x": -2.0,
-        "y": 17.0,
+        "x": -1.9369993,
+        "y": 15.925009,
         "lTheta": 0.0,
         "rTheta": 0.0,
-        "setLastGrabX": false,
-        "lastGrabX": 0.0
+        "grabbed": false
       }
     },
     {
@@ -25,14 +133,16 @@
         "x": -3.0,
         "y": 13.0,
         "angle": 270.0,
-        "numLinks": 5.0
+        "numLinks": 5.0,
+        "grabbed": false
       }
     },
     {
       "CLASSNAME": "askew.entity.owl.OwlModel",
       "INSTANCE": {
         "x": 12.0,
-        "y": 8.0
+        "y": 8.0,
+        "grabbed": false
       }
     },
     {
@@ -43,7 +153,8 @@
         "y": 14.5,
         "angle": 15.0,
         "omega": -5.0,
-        "pin": false
+        "pin": false,
+        "grabbed": false
       }
     },
     {
@@ -52,7 +163,8 @@
         "x": 3.0,
         "y": 15.0,
         "angle": 270.0,
-        "numLinks": 6.0
+        "numLinks": 6.0,
+        "grabbed": false
       }
     },
     {
@@ -61,7 +173,233 @@
         "x": 13.999992,
         "y": 6.989998,
         "angle": 90.0,
-        "numLinks": 7.0
+        "numLinks": 7.0,
+        "grabbed": false
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 0.18200016,
+        "y": 6.526002,
+        "width": 6.0,
+        "height": 6.0,
+        "depth": 1.0,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/palmTreeBig.png",
+        "color": -10236417
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 2.1190004,
+        "y": 16.99101,
+        "width": 2.0,
+        "height": 2.0,
+        "depth": 1.0,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/topvine/Topvine10.png",
+        "color": -1720844289
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 11.362004,
+        "y": 17.75801,
+        "width": 0.5,
+        "height": 0.5,
+        "depth": 1.0,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/topvine/Topvine2.png",
+        "color": -1720844289
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": -0.0909996,
+        "y": 17.732012,
+        "width": 0.5,
+        "height": 0.5,
+        "depth": 1.0,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/topvine/Topvine4.png",
+        "color": -1720844289
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": -4.900999,
+        "y": 16.96501,
+        "width": 2.0,
+        "height": 2.0,
+        "depth": 1.0,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/topvine/Topvine10.png",
+        "color": -1720844289
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 9.061005,
+        "y": 16.99101,
+        "width": 2.0,
+        "height": 2.0,
+        "depth": 1.0,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/topvine/Topvine11.png",
+        "color": -1720844289
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": -2.4569998,
+        "y": 17.73201,
+        "width": 0.5,
+        "height": 0.5,
+        "depth": 1.0,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/topvine/Topvine2.png",
+        "color": -1720844289
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 6.682005,
+        "y": 17.74501,
+        "width": 0.5,
+        "height": 0.5,
+        "depth": 1.0,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/topvine/Topvine2.png",
+        "color": -1720844289
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 17.810009,
+        "y": 17.004011,
+        "width": 2.0,
+        "height": 2.0,
+        "depth": 1.0,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/topvine/Topvine11.png",
+        "color": -1720844289
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 13.689005,
+        "y": 17.74501,
+        "width": 0.5,
+        "height": 0.5,
+        "depth": 1.0,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/topvine/Topvine5.png",
+        "color": -1720844289
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 4.342001,
+        "y": 17.004011,
+        "width": 2.0,
+        "height": 2.0,
+        "depth": 1.0,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/topvine/Topvine11.png",
+        "color": -1720844289
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 19.786009,
+        "y": 17.732012,
+        "width": 0.5,
+        "height": 0.5,
+        "depth": 1.0,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/topvine/Topvine9.png",
+        "color": -1720844289
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 15.76901,
+        "y": 17.74501,
+        "width": 0.5,
+        "height": 0.5,
+        "depth": 1.0,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/topvine/Topvine9.png",
+        "color": -1720844289
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": -1.9863999,
+        "y": 6.323201,
+        "width": 6.0,
+        "height": 6.0,
+        "depth": 0.8,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/bigpalmTree.png",
+        "color": 476554751
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 4.7579994,
+        "y": 7.501004,
+        "width": 6.0,
+        "height": 6.0,
+        "depth": 0.8,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/bigpalmTree.png",
+        "color": 476554751
       }
     }
   ]
