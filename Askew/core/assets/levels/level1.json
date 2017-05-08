@@ -1,15 +1,15 @@
 {
-  "levelModelVersion": 1,
+  "levelModelVersion": 3,
   "goalTimeGold": 30,
   "goalTimeSilver": 45,
   "goalTimeBronze": 60,
   "recordTime": 9999999.0,
-  "maxX": 27.0,
-  "maxY": 26.0,
-  "minX": -12.0,
-  "minY": 6.0,
-  "title": "The First One",
-  "background": "texture/background/BackgroundStuff/purple.png",
+  "maxX": 20.0,
+  "maxY": 20.0,
+  "minX": 0.0,
+  "minY": 0.0,
+  "title": "Title",
+  "background": "texture/background/background1.png",
   "soundtrack": "TODO",
   "entities": [
     {
@@ -91,7 +91,8 @@
       "CLASSNAME": "askew.entity.owl.OwlModel",
       "INSTANCE": {
         "x": 22.181252,
-        "y": 10.755467
+        "y": 10.755467,
+        "grabbed": false
       }
     },
     {
@@ -100,7 +101,8 @@
         "x": -7.0,
         "y": 14.0,
         "lTheta": 0.0,
-        "rTheta": 0.0
+        "rTheta": 0.0,
+        "grabbed": false
       }
     },
     {
@@ -109,7 +111,8 @@
         "x": 24.407497,
         "y": 9.814998,
         "angle": 90.0,
-        "numLinks": 7.0
+        "numLinks": 7.0,
+        "grabbed": false
       }
     },
     {
@@ -118,7 +121,8 @@
         "x": 13.178746,
         "y": 14.121244,
         "angle": 225.0,
-        "numLinks": 6.0
+        "numLinks": 6.0,
+        "grabbed": false
       }
     },
     {
@@ -129,7 +133,7 @@
             "data": {
               "file": {
                 "file": {
-                  "path": "texture/wall/corner.png"
+                  "path": "texture\\wall\\corner.png"
                 },
                 "type": "Internal"
               },
@@ -140,7 +144,7 @@
               "isPrepared": false
             },
             "glTarget": 3553,
-            "glHandle": 75,
+            "glHandle": 79,
             "minFilter": "Nearest",
             "magFilter": "Nearest",
             "uWrap": "ClampToEdge",
@@ -158,7 +162,7 @@
             "data": {
               "file": {
                 "file": {
-                  "path": "texture/wall/edge.png"
+                  "path": "texture\\wall\\edge.png"
                 },
                 "type": "Internal"
               },
@@ -169,7 +173,7 @@
               "isPrepared": false
             },
             "glTarget": 3553,
-            "glHandle": 76,
+            "glHandle": 80,
             "minFilter": "Linear",
             "magFilter": "Linear",
             "uWrap": "Repeat",
@@ -194,7 +198,8 @@
           250.0,
           3.0,
           0.0
-        ]
+        ],
+        "grabbed": false
       }
     },
     {
@@ -205,7 +210,7 @@
             "data": {
               "file": {
                 "file": {
-                  "path": "texture/wall/corner.png"
+                  "path": "texture\\wall\\corner.png"
                 },
                 "type": "Internal"
               },
@@ -216,7 +221,7 @@
               "isPrepared": false
             },
             "glTarget": 3553,
-            "glHandle": 75,
+            "glHandle": 79,
             "minFilter": "Nearest",
             "magFilter": "Nearest",
             "uWrap": "ClampToEdge",
@@ -234,7 +239,7 @@
             "data": {
               "file": {
                 "file": {
-                  "path": "texture/wall/edge.png"
+                  "path": "texture\\wall\\edge.png"
                 },
                 "type": "Internal"
               },
@@ -245,7 +250,7 @@
               "isPrepared": false
             },
             "glTarget": 3553,
-            "glHandle": 76,
+            "glHandle": 80,
             "minFilter": "Linear",
             "magFilter": "Linear",
             "uWrap": "Repeat",
@@ -270,7 +275,8 @@
           8.0,
           1.0,
           0.0
-        ]
+        ],
+        "grabbed": false
       }
     },
     {
@@ -281,7 +287,7 @@
             "data": {
               "file": {
                 "file": {
-                  "path": "texture/wall/corner.png"
+                  "path": "texture\\wall\\corner.png"
                 },
                 "type": "Internal"
               },
@@ -292,7 +298,7 @@
               "isPrepared": false
             },
             "glTarget": 3553,
-            "glHandle": 75,
+            "glHandle": 79,
             "minFilter": "Nearest",
             "magFilter": "Nearest",
             "uWrap": "ClampToEdge",
@@ -310,7 +316,7 @@
             "data": {
               "file": {
                 "file": {
-                  "path": "texture/wall/edge.png"
+                  "path": "texture\\wall\\edge.png"
                 },
                 "type": "Internal"
               },
@@ -321,7 +327,7 @@
               "isPrepared": false
             },
             "glTarget": 3553,
-            "glHandle": 76,
+            "glHandle": 80,
             "minFilter": "Linear",
             "magFilter": "Linear",
             "uWrap": "Repeat",
@@ -344,7 +350,8 @@
           1.0,
           1.0,
           0.0
-        ]
+        ],
+        "grabbed": false
       }
     },
     {
@@ -355,7 +362,7 @@
             "data": {
               "file": {
                 "file": {
-                  "path": "texture/wall/corner.png"
+                  "path": "texture\\wall\\corner.png"
                 },
                 "type": "Internal"
               },
@@ -366,7 +373,7 @@
               "isPrepared": false
             },
             "glTarget": 3553,
-            "glHandle": 75,
+            "glHandle": 79,
             "minFilter": "Nearest",
             "magFilter": "Nearest",
             "uWrap": "ClampToEdge",
@@ -384,7 +391,7 @@
             "data": {
               "file": {
                 "file": {
-                  "path": "texture/wall/edge.png"
+                  "path": "texture\\wall\\edge.png"
                 },
                 "type": "Internal"
               },
@@ -395,7 +402,7 @@
               "isPrepared": false
             },
             "glTarget": 3553,
-            "glHandle": 76,
+            "glHandle": 80,
             "minFilter": "Linear",
             "magFilter": "Linear",
             "uWrap": "Repeat",
@@ -420,7 +427,8 @@
           250.0,
           7.0,
           0.0
-        ]
+        ],
+        "grabbed": false
       }
     },
     {
@@ -431,7 +439,7 @@
             "data": {
               "file": {
                 "file": {
-                  "path": "texture/wall/corner.png"
+                  "path": "texture\\wall\\corner.png"
                 },
                 "type": "Internal"
               },
@@ -442,7 +450,7 @@
               "isPrepared": false
             },
             "glTarget": 3553,
-            "glHandle": 75,
+            "glHandle": 79,
             "minFilter": "Nearest",
             "magFilter": "Nearest",
             "uWrap": "ClampToEdge",
@@ -460,7 +468,7 @@
             "data": {
               "file": {
                 "file": {
-                  "path": "texture/wall/edge.png"
+                  "path": "texture\\wall\\edge.png"
                 },
                 "type": "Internal"
               },
@@ -471,7 +479,7 @@
               "isPrepared": false
             },
             "glTarget": 3553,
-            "glHandle": 76,
+            "glHandle": 80,
             "minFilter": "Linear",
             "magFilter": "Linear",
             "uWrap": "Repeat",
@@ -494,7 +502,8 @@
           0.0,
           5.0,
           -5.0
-        ]
+        ],
+        "grabbed": false
       }
     },
     {
@@ -505,7 +514,7 @@
             "data": {
               "file": {
                 "file": {
-                  "path": "texture/wall/corner.png"
+                  "path": "texture\\wall\\corner.png"
                 },
                 "type": "Internal"
               },
@@ -516,7 +525,7 @@
               "isPrepared": false
             },
             "glTarget": 3553,
-            "glHandle": 75,
+            "glHandle": 79,
             "minFilter": "Nearest",
             "magFilter": "Nearest",
             "uWrap": "ClampToEdge",
@@ -534,7 +543,7 @@
             "data": {
               "file": {
                 "file": {
-                  "path": "texture/wall/edge.png"
+                  "path": "texture\\wall\\edge.png"
                 },
                 "type": "Internal"
               },
@@ -545,7 +554,7 @@
               "isPrepared": false
             },
             "glTarget": 3553,
-            "glHandle": 76,
+            "glHandle": 80,
             "minFilter": "Linear",
             "magFilter": "Linear",
             "uWrap": "Repeat",
@@ -570,7 +579,8 @@
           50.0,
           5.0,
           0.0
-        ]
+        ],
+        "grabbed": false
       }
     },
     {
@@ -579,7 +589,8 @@
         "x": -8.693748,
         "y": 14.088744,
         "angle": 270.0,
-        "numLinks": 22.0
+        "numLinks": 22.0,
+        "grabbed": false
       }
     },
     {
@@ -700,6 +711,16 @@
         "scaley": 1.0,
         "texturePath": "texture/background/foreground/fernTile.png",
         "color": -1404174337
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.sloth.SlothModel",
+      "INSTANCE": {
+        "x": -4.289999,
+        "y": 17.598743,
+        "lTheta": 0.0,
+        "rTheta": 0.0,
+        "grabbed": false
       }
     },
     {
