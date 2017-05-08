@@ -14,6 +14,7 @@ import askew.*;
 import askew.entity.BackgroundEntity;
 import askew.entity.Entity;
 import askew.entity.ghost.GhostModel;
+import askew.entity.obstacle.ComplexObstacle;
 import askew.entity.obstacle.Obstacle;
 import askew.entity.owl.OwlModel;
 import askew.entity.sloth.SlothModel;
@@ -744,6 +745,9 @@ public class LevelEditorController extends WorldController {
 				dragging = true;
 				if(selected != null){
 					selected.setPosition(adjustedMouseX, adjustedMouseY);
+					if(selected instanceof ComplexObstacle){
+						((ComplexObstacle) selected).rebuild();
+					}
 					if(movefar){
 						selected.setModifiedPosition( adjustedMouseX, adjustedMouseY, adjustedCxCamera, adjustedCyCamera);
 					}
@@ -802,6 +806,9 @@ public class LevelEditorController extends WorldController {
 						dragging = false;
 
 						selected.setPosition(adjustedMouseX, adjustedMouseY);
+						if(selected instanceof ComplexObstacle){
+							((ComplexObstacle) selected).rebuild();
+						}
 						if(movefar){
 							selected.setModifiedPosition( adjustedMouseX, adjustedMouseY, adjustedCxCamera, adjustedCyCamera);
 						}

@@ -156,7 +156,6 @@ public class Vine extends ComplexObstacle {
 		super.setPosition(x,y);
 		this.x = x;
 		this.y = y;
-		rebuild();
 	}
 
 	/**

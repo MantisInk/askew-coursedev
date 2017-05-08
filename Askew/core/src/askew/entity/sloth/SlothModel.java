@@ -245,7 +245,6 @@ public class SlothModel extends ComplexObstacle  {
  	    super.setPosition(x,y);
  	    this.x = x;
  	    this.y = y;
- 	    rebuild();
     }
 
     private void init() {
