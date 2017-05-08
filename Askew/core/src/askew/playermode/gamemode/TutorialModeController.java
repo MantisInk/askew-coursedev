@@ -101,20 +101,20 @@ public class TutorialModeController extends GameModeController {
 			new Vector2(22.5f,14f) };
 	private Vector2[] flingSetPoints = {
 			new Vector2(2f,14f),
-			new Vector2(9f,16f),
-			new Vector2(16f, 14f),
-			new Vector2(24f, 14f)  };
+			new Vector2(8f,16f),
+			new Vector2(14f, 14f),
+			new Vector2(22f, 14f)  };
 	private Vector2[] flingLandPoints0 = {
 			new Vector2(-2f, 12f),
-			new Vector2(5f, 14f),
-			new Vector2(13f, 12f),
-			new Vector2(19f, 11.5f)
+			new Vector2(4f, 14f),
+			new Vector2(10f, 12f),
+			new Vector2(18f, 11.5f)
 	};
 	private Vector2[] flingLandPointsf = {
-			new Vector2(6.5f, 16f),
-			new Vector2(12.5f, 14f),
-			new Vector2(21.5f, 14f),
-			new Vector2(26f, 17f)
+			new Vector2(5.5f, 16f),
+			new Vector2(11.5f, 14f),
+			new Vector2(19.5f, 14f),
+			new Vector2(23f, 16f)
 	};
 	private Vector2[] vineSetPoints = {};
 	// list of instructions
