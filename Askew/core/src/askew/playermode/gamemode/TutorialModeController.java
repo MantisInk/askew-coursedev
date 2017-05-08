@@ -659,15 +659,6 @@ public class TutorialModeController extends GameModeController {
 
 		drawHelpLines();
 
-		canvas.begin();
-		canvas.drawTextStandard("current time:    "+currentTime, 10f, 70f);
-		canvas.drawTextStandard("record time:     "+recordTime,10f,50f);
-
-		//Draw control schemes
-		canvas.drawTextStandard(typeMovement, 10f, 700f);
-		canvas.drawTextStandard(typeControl,10f,680f);
-		canvas.end();
-
 //		sloth.drawHelpLines();
 
 		if (debug) {

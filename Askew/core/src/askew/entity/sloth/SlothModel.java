@@ -232,6 +232,7 @@ public class SlothModel extends ComplexObstacle  {
         if (!InputControllerManager.getInstance().getController(0).getXbox().isConnected()) controlMode = CONTROLS_ONE_ARM;
         this.rightGrabbing = false;
         this.leftGrabbing =  true;
+        this.drawNumber = -20;
     }
 
     public void build(){
