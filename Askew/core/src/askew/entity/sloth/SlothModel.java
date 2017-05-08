@@ -331,7 +331,7 @@ public class SlothModel extends ComplexObstacle  {
         if(collides){
             body = new BoxObstacle(partCache.x, partCache.y, dWidth, dHeight);
             Filter f = new Filter();
-            f.maskBits = FilterGroup.WALL;
+            f.maskBits = FilterGroup.WALL | FilterGroup.THORN;
             f.categoryBits = FilterGroup.SLOTH;
             body.setFilterData(f);
         }
@@ -339,7 +339,7 @@ public class SlothModel extends ComplexObstacle  {
             body = new BoxObstacle(partCache.x, partCache.y, dWidth, dHeight);
             body.setFriction(.4f);
             Filter f = new Filter();
-            f.maskBits = FilterGroup.NOCOLLIDE;
+            f.maskBits = FilterGroup.NOCOLLIDE | FilterGroup.THORN;
             f.categoryBits = FilterGroup.ARM;
             body.setFilterData(f);
         }
