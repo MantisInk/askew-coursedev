@@ -69,7 +69,7 @@ public class SlothModel extends ComplexObstacle  {
     private static final float PI = (float)Math.PI;
 
     /** The number of DISTINCT body parts */
-    private static final int BODY_TEXTURE_COUNT = 9;
+    private static final int BODY_TEXTURE_COUNT = 11;
 
     private transient RevoluteJointDef leftGrabJointDef;
     private transient RevoluteJointDef rightGrabJointDef;
@@ -155,6 +155,7 @@ public class SlothModel extends ComplexObstacle  {
     private transient boolean tutorial = false;
     @Getter
     private transient Obstacle mostRecentlyGrabbed = null;
+    private int airTime;
 
     /**
      * Returns the texture index for the given body part
@@ -449,6 +450,13 @@ public class SlothModel extends ComplexObstacle  {
 
 
     public void doThePhysics() {
+        // TODO: MOVE
+        if (!this.isActualRightGrab() && !this.isActualLeftGrab()) {
+            this.airTime++;
+        } else {
+            this.airTime = 0;
+        }
+
         Obstacle rightHand = bodies.get(PART_RIGHT_HAND);
         Obstacle leftHand = bodies.get(PART_LEFT_HAND);
 
@@ -990,6 +998,8 @@ public class SlothModel extends ComplexObstacle  {
         Texture managedFrontArmMoving = manager.get("texture/sloth/frontarm_moving.png");
         Texture managedBackArmMoving = manager.get("texture/sloth/backarm_moving.png");
         Texture managedPowerGlow = manager.get("texture/sloth/power_glow.png");
+        Texture managedDeadFlow = manager.get("texture/sloth/dead.png");
+        Texture managedScaredFlow = manager.get("texture/sloth/scared.png");
         partTextures[0] = new TextureRegion(managedHand);
         partTextures[1] = new TextureRegion(managedFrontArm);
         partTextures[3] = new TextureRegion(managedBackArm);
@@ -999,6 +1009,8 @@ public class SlothModel extends ComplexObstacle  {
         partTextures[6] = new TextureRegion(managedFrontArmMoving);
         partTextures[7] = new TextureRegion(managedBackArmMoving);
         partTextures[8] = new TextureRegion(managedPowerGlow);
+        partTextures[9] = new TextureRegion(managedDeadFlow);
+        partTextures[10] = new TextureRegion(managedScaredFlow);
 
 //        for(int i = 0; i < partTextures.length; i++){
 //            partTextures[i].getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
@@ -1042,7 +1054,7 @@ public class SlothModel extends ComplexObstacle  {
                             texture.flip(true, false);
                         }
                     } else {
-                        part.setTexture(partTextures[4]);
+                        part.setTexture(getFrontFlow());
                     }
                 }
 
@@ -1303,6 +1315,16 @@ public class SlothModel extends ComplexObstacle  {
                 }
                 canvas.endDebug();
             }
+        }
+    }
+
+    private TextureRegion getFrontFlow() {
+        if (this.dismembered) {
+            return this.partTextures[9];
+        } else if (this.airTime > 60) {
+            return this.partTextures[10];
+        } else {
+            return this.partTextures[4];
         }
     }
 
