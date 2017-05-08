@@ -3,6 +3,7 @@ package askew.playermode.gamemode.Particles;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import lombok.Getter;
 
 public class Particle implements Comparable {
 
@@ -14,12 +15,15 @@ public class Particle implements Comparable {
     float fy;
     float width;
     float height;
+    @Getter
     float depth;
     float angle;
     float rot;
+    @Getter
     int drawNumber;
     float accumulator;
     float deathTime;
+    int type;
     Color tint;
     Texture texture;
 
@@ -49,10 +53,11 @@ public class Particle implements Comparable {
         this.y = y + (float)((Math.random() - .5) * 15 );;
         this.width = 1;
         this.height = 1;
-        this.depth = 3f + (float)((Math.random() - .5) * 5 );
+        this.depth = 6f;
         this.tint = new Color(0xFFFFFF4F);
         this.deathTime = 4 + (float)((Math.random() - .5) * 2 );
         this.accumulator = (float)((Math.random() - .5) * 2 );
+        this.type = 0;
         return this;
     }
 

@@ -764,18 +764,36 @@ public class GameModeController extends WorldController {
 				, cameraY * worldScale.y);
 
 		canvas.begin(camTrans);
-		Collections.sort(objects);
-		for(Entity obj : objects) {
-			obj.setDrawScale(worldScale);
-			obj.draw(canvas);
-		}
 
+		Collections.sort(objects);
 		Particle[] particles = particleController.getSorted();
 		particleController.setDrawScale(worldScale);
 		int n = particleController.numParticles();
-		for(int i =0; i < n; i++ ){
-			particleController.draw(canvas, particles[i]);
+		int total = objects.size() + n;
+		int i = 0;
+		int j = 0;
+		Particle p = null;
+		Entity ent = null;
+		while( i + j < total){
+			p = null;
+			ent = null;
+			if( i < n){
+				 p = particles[i];
+			}
+			if( j < objects.size()) {
+				ent = objects.get(j);
+			}
+			if(ent != null && ent.compareTo(p) < 0){
+				ent.setDrawScale(worldScale);
+				ent.draw(canvas);
+				j++;
+			} else if (p != null) {
+				particleController.draw(canvas, p);
+				i++;
+			}
 		}
+
+
 
 		if (!playerIsReady && !paused && coverOpacity <= 0)
 			printHelp();
