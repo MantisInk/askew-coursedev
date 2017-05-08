@@ -180,4 +180,36 @@ public class JsonEntityFactory {
         bge.setTextures(manager);
         return bge;
     }
+    public static BackgroundEntity createEyeEntity(MantisAssetManager manager, JsonObject instance) {
+        EyeEntity ee;
+        float x = instance.get("x").getAsFloat();
+        float y = instance.get("y").getAsFloat();
+        float depth = instance.get("depth").getAsFloat();
+        float angle = instance.get("angle").getAsFloat();
+        float scalex = instance.get("scalex").getAsFloat();
+        float scaley = instance.get("scaley").getAsFloat();
+        String colorString;
+        try {colorString = instance.get("color").getAsString();}
+        catch(NullPointerException e){
+            colorString = "0xffffffff";
+        }
+        int intColor;
+        try {
+            long color = instance.get("color").getAsLong();
+            intColor = (int) color;
+        } catch (Exception e) {
+            try {
+                long color = Long.decode(colorString);
+                intColor = (int) color;
+            } catch (Exception e2) {
+                long color = Long.valueOf(colorString, 16);
+                intColor = (int) color;
+            }
+        }
+
+        ee = new EyeEntity(x,y,depth,angle,scalex,scaley,intColor);
+        ee.setTextures(manager);
+        return ee;
+    }
+
 }

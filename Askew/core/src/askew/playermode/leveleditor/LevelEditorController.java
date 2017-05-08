@@ -13,6 +13,7 @@ package askew.playermode.leveleditor;
 import askew.*;
 import askew.entity.BackgroundEntity;
 import askew.entity.Entity;
+import askew.entity.EyeEntity;
 import askew.entity.ghost.GhostModel;
 import askew.entity.obstacle.ComplexObstacle;
 import askew.entity.obstacle.Obstacle;
@@ -46,7 +47,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import lombok.Getter;
 import lombok.Setter;
-import org.lwjgl.Sys;
 
 import javax.swing.*;
 import java.awt.*;
@@ -552,6 +552,8 @@ public class LevelEditorController extends WorldController {
 			case "BackgroundEntity":
 				entity = new BackgroundEntity(xorig,yorig);
 				break;
+			case "EyeEntity":
+				entity = new EyeEntity(xorig,yorig);
 
 			default:
 				//System.err.println("UNKNOWN ENT");

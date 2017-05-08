@@ -15,8 +15,6 @@ import askew.InputController;
 import askew.InputControllerManager;
 import askew.MantisAssetManager;
 import askew.entity.Entity;
-import askew.entity.FilterGroup;
-import askew.entity.obstacle.BoxObstacle;
 import askew.entity.obstacle.Obstacle;
 import askew.entity.owl.OwlModel;
 import askew.entity.sloth.SlothModel;
@@ -224,8 +222,6 @@ public class GameModeController extends WorldController {
 	private static final float  DEFAULT_GRAVITY = -12.5f;//-15.7f;
 
 	// Physics objects for the game
-	/** Reference to the character avatar */
-	protected List<SlothModel> slothList;
 	protected static OwlModel owl;
 
 	/** Mark set to handle more sophisticated collision callbacks */
