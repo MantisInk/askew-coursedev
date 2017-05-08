@@ -1260,10 +1260,10 @@ public class SlothModel extends ComplexObstacle  {
                                 lPos.sub(bPos).rotate(-30).add(bPos);
                                 break;
                             case PLUS_10:
-                                lPos.sub(bPos).rotate(10).add(bPos);
+                                lPos.sub(bPos).rotate(15).add(bPos);
                                 break;
                             case MINUS_10:
-                                lPos.sub(bPos).rotate(-10).add(bPos);
+                                lPos.sub(bPos).rotate(-15).add(bPos);
                                 break;
                             default:
                                 lPos.sub(bPos).rotate(-angleDiff).add(bPos);
