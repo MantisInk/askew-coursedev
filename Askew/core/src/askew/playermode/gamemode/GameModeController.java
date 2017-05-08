@@ -144,8 +144,8 @@ public class GameModeController extends WorldController {
 	protected float coverOpacity;
 
 	protected ParticleController particleController;
-	protected static final int MAX_PARTICLES = 10;
-	protected static final int INITIAL_FOG = 5;
+	protected static final int MAX_PARTICLES = 5000;
+	protected static final int INITIAL_FOG = 300;
 	protected float fogTime;
 
 	/**
