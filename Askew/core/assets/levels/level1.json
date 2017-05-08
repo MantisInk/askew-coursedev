@@ -1,5 +1,5 @@
 {
-  "levelModelVersion": 2,
+  "levelModelVersion": 3,
   "goalTimeGold": 30,
   "goalTimeSilver": 45,
   "goalTimeBronze": 60,
@@ -587,6 +587,16 @@
           1.0562544,
           -0.01499939
         ],
+        "grabbed": false
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.sloth.SlothModel",
+      "INSTANCE": {
+        "x": -3.9519987,
+        "y": 16.06801,
+        "lTheta": 0.0,
+        "rTheta": 0.0,
         "grabbed": false
       }
     },

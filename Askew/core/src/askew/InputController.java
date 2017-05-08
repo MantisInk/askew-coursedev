@@ -409,9 +409,6 @@ public class InputController {
 			readGamepad(bounds, scale);
 			if (id ==0)
 				readKeyboard(bounds, scale, true); // Read as a back-up
-			else {
-				System.err.println("input 1 connected");
-			}
 		} else {
 //			System.err.println("no 360 controller connected");
 			if (id ==0)

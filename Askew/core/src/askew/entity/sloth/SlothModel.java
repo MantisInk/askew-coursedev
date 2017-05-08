@@ -37,6 +37,8 @@ public class SlothModel extends ComplexObstacle  {
     private transient float GRAVITY_SCALE;
     private transient boolean GRABBING_HAND_HAS_TORQUE;
     private transient float OMEGA_NORMALIZER;
+    @Getter
+    private transient int id;
 
     @Setter @Getter
     public transient int controlMode;
@@ -925,9 +927,9 @@ public class SlothModel extends ComplexObstacle  {
         f.maskBits = FilterGroup.VINE | FilterGroup.WALL;
         f.categoryBits = FilterGroup.HAND;
         sensorFixture1 = bodies.get(PART_LEFT_HAND).getBody().createFixture(sensorDef);
-        sensorFixture1.setUserData("slothpart sloth left hand");
+        sensorFixture1.setUserData("slothpart sloth left hand slothid"+id);
         sensorFixture2 = bodies.get(PART_RIGHT_HAND).getBody().createFixture(sensorDef);
-        sensorFixture2.setUserData("slothpart sloth right hand");
+        sensorFixture2.setUserData("slothpart sloth right hand slothid"+id);
         sensorFixture1.setFilterData(f);
         sensorFixture2.setFilterData(f);
         sensorFixture1.getBody().setBullet(true);
@@ -943,6 +945,13 @@ public class SlothModel extends ComplexObstacle  {
         bodies.get(0).setMass(BODY_MASS);
     }
 
+    public void setId(int id) {
+        this.id = id;
+        sensorFixture1.setUserData("slothpart sloth left hand slothid"+id);
+        sensorFixture2.setUserData("slothpart sloth right hand slothid"+id);
+    }
+
+
     public float getTorqueForce(float torque, float r, float theta){
         return torque/(r*(float)Math.sin(theta));
     }
@@ -951,12 +960,6 @@ public class SlothModel extends ComplexObstacle  {
         super.drawDebug(canvas);
         canvas.drawPhysics(sensorShape, Color.RED,bodies.get(PART_LEFT_HAND).getX(),bodies.get(PART_LEFT_HAND).getY(),getAngle(),drawScale.x,drawScale.y);
         canvas.drawPhysics(sensorShape, Color.RED,bodies.get(PART_RIGHT_HAND).getX(),bodies.get(PART_RIGHT_HAND).getY(),getAngle(),drawScale.x,drawScale.y);
-    }
-
-    public ObjectSet<Obstacle> badBodies() {
-        ObjectSet<Obstacle> badSet = new ObjectSet<Obstacle>();
-        for (Obstacle b : bodies) badSet.add(b);
-        return badSet;
     }
 
     @Override

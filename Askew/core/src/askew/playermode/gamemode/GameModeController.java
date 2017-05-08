@@ -382,6 +382,8 @@ public class GameModeController extends WorldController {
 				levelModel = new LevelModel();
 			}
 
+			int slothId = 0;
+
 			for (Entity o : levelModel.getEntities()) {
 				// drawing
 
@@ -397,6 +399,7 @@ public class GameModeController extends WorldController {
 
 					sloth.setControlMode(currentControl);
 					sloth.setMovementMode(currentMovement);
+					sloth.setId(slothId++);
 					slothList.add(sloth);
 				}
 				if (o instanceof OwlModel) {

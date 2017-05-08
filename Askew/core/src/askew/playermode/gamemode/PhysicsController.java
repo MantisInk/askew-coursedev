@@ -123,7 +123,7 @@ public class PhysicsController implements ContactListener {
                 return body2;
             }
 
-            if (fd2 != null && ((String)fd2).contains(checkString) && bd1 != sloth) {
+            if (fd2 != null && ((String)fd2).contains(checkString)  && bd1 != sloth) {
                 return body1;
             }
 
@@ -132,11 +132,11 @@ public class PhysicsController implements ContactListener {
     }
 
     public Body getLeftBody(World world, SlothModel sloth) {
-        return getBody(world, "sloth left hand", sloth);
+        return getBody(world, "sloth left hand slothid"+sloth.getId(), sloth);
     }
 
     public Body getRightBody(World world, SlothModel sloth) {
-        return getBody(world, "sloth right hand", sloth);
+        return getBody(world, "sloth right hand slothid"+sloth.getId(), sloth);
     }
 
     /** Unused ContactListener method */
