@@ -56,6 +56,7 @@ import java.util.List;
 public class GameModeController extends WorldController {
 
 
+	public static final float MAX_MUSIC_VOLUME = 0.15f;
 	Affine2 camTrans = new Affine2();
 
 	/** Track asset loading from all instances and subclasses */
@@ -87,14 +88,16 @@ public class GameModeController extends WorldController {
 	};
 
 	public static final String GRAB_SOUND = "sound/effect/grab.wav";
+	public static final String VICTORY_SOUND = "sound/effect/realvictory.wav";
 	public static final String RELEASE_SOUND = "sound/effect/release.wav";
 	public static final String ARM_SOUND = "sound/effect/arm.wav";
 	public static final String WIND_SOUND = "sound/effect/wind.wav";
 	public static final String FALL_MUSIC = "sound/music/fallingtoyourdeath" +
-			".ogg";
+			".wav";
 
 	Sound grabSound;
 	Sound releaseSound;
+	Sound victorySound;
 
 	@Setter
 	protected String loadLevel, DEFAULT_LEVEL;
@@ -171,6 +174,7 @@ public class GameModeController extends WorldController {
 		manager.load(ARM_SOUND, Sound.class);
 		manager.load(WIND_SOUND, Sound.class);
 
+		manager.load(VICTORY_SOUND, Sound.class);
 		manager.load(GRAB_SOUND, Sound.class);
 		manager.load(RELEASE_SOUND, Sound.class);
 
@@ -206,6 +210,7 @@ public class GameModeController extends WorldController {
 
 		grabSound = Gdx.audio.newSound(Gdx.files.internal(GRAB_SOUND));
 		releaseSound = Gdx.audio.newSound(Gdx.files.internal(RELEASE_SOUND));
+		victorySound = Gdx.audio.newSound(Gdx.files.internal(VICTORY_SOUND));
 
 		pauseTexture = manager.get("texture/background/pause.png", Texture.class);
 		victoryTexture = manager.get("texture/background/victory.png", Texture.class);
@@ -336,7 +341,7 @@ public class GameModeController extends WorldController {
 			if (instance.isActive("menumusic")) instance.stop("menumusic");
 			if (instance.isActive("bgmusic")) instance.stop("bgmusic");
 			if (selectedTrack != null) {
-				instance.play("bgmusic", selectedTrack, true);
+				instance.play("bgmusic", selectedTrack, true, MAX_MUSIC_VOLUME);
 			}
 		}
 
@@ -635,17 +640,18 @@ public class GameModeController extends WorldController {
 									fallDeathHeight) / NEAR_FALL_DEATH_DISTANCE;
 							coverOpacity = 2 * (1 - normalizedDistanceFromDeath);
 							if (coverOpacity > 1) coverOpacity = 1;
-							SoundController.getInstance().setVolume("fallmusic", 1 -
-									normalizedDistanceFromDeath);
+							SoundController.getInstance().setVolume("fallmusic", (1 -
+									normalizedDistanceFromDeath)*MAX_MUSIC_VOLUME*2);
+							SoundController.getInstance().setPitch("fallmusic",normalizedDistanceFromDeath*0.6f+0.1f);
 							if (playingMusic)
 								SoundController.getInstance().setVolume("bgmusic",
-										normalizedDistanceFromDeath);
+										normalizedDistanceFromDeath*MAX_MUSIC_VOLUME);
 						}
 					} else {
 						SoundController.getInstance().setVolume("fallmusic", 0);
 						if (playingMusic)
 							SoundController.getInstance().setVolume("bgmusic",
-									1);
+									MAX_MUSIC_VOLUME);
 						if ((playerIsReady || paused) && (collisions.isFlowKill() || !collisions.isFlowWin())) {
 							coverOpacity = 0;
 						}
@@ -672,6 +678,8 @@ public class GameModeController extends WorldController {
 
 			if (!isFailure() && collisions.isFlowWin()) {
 				if (!owl.isDoingVictory()) {
+					victorySound.play(0.10f);
+					SoundController.getInstance().stop("bgmusic");
 					SlothModel sloth = collisions.winningSloth();
 					sloth.releaseLeft(world);
 					sloth.releaseRight(world);
