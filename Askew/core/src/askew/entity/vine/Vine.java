@@ -60,7 +60,7 @@ public class Vine extends ComplexObstacle {
 	protected transient float linksize = 1.0f;					/** The length of each vine piece*/
 	protected transient float spacing = 0.0f;					/** The spacing between each piece */
 	@Getter
-	private transient TrevorObstacle endpt; 						// to help with tutorial getting vine endpt
+	private transient Obstacle endpt; 						// to help with tutorial getting vine endpt
 
 	//JSON
 	@Getter @Setter
@@ -144,7 +144,7 @@ public class Vine extends ComplexObstacle {
 			plank.setFilterData(f);
 			bodies.add(plank);
 		}
-		endpt = new TrevorObstacle(pos.x, pos.y+planksize.y, planksize.x, planksize.y);
+		endpt = bodies.get(bodies.size-1);
 
 		setCustomScale(2,1.05f);
 	}
@@ -203,7 +203,7 @@ public class Vine extends ComplexObstacle {
 
 		// Link the pieces together
 		anchor1.y = -linksize / 2;
-		for (int ii = 0; ii < bodies.size-2; ii++) {
+		for (int ii = 0; ii < bodies.size-1; ii++) {
 			// join the planks
 			jointDef.bodyB = bodies.get(ii).getBody();
 			jointDef.bodyA = bodies.get(ii+1).getBody();
@@ -213,13 +213,6 @@ public class Vine extends ComplexObstacle {
 			joint = world.createJoint(jointDef);
 			joints.add(joint);
 		}
-		jointDef.bodyB = bodies.get(bodies.size-2).getBody();
-		jointDef.bodyA = bodies.get(bodies.size-1).getBody();
-		jointDef.localAnchorB.set(anchor1);
-		jointDef.localAnchorA.set(new Vector2());
-		jointDef.collideConnected = false;
-		joint = world.createJoint(jointDef);
-		joints.add(joint);
 
 		// optional
 		if (pin) {
@@ -277,8 +270,7 @@ public class Vine extends ComplexObstacle {
 		Texture vineTexture = manager.get(VINE_TEXTURE, Texture.class);
 		TextureRegion regionedTexture = new TextureRegion(vineTexture);
 		for(Obstacle body : bodies) {
-			if(!(body instanceof TrevorObstacle))
-			((SimpleObstacle)body).setTexture(regionedTexture);
+			((SimpleObstacle) body).setTexture(regionedTexture);
 		}
 	}
 
