@@ -40,6 +40,7 @@ texture/background/topvine/Topvine5.png
 texture/background/topvine/Topvine6.png
 texture/background/topvine/Topvine8.png
 texture/background/topvine/Topvine9.png
+texture/background/tutorial/joystick.png
 texture/background/tutorial/lclicked.png
 texture/background/tutorial/lup.png
 texture/background/tutorial/rclicked.png
