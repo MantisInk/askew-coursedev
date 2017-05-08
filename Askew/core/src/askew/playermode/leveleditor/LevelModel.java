@@ -9,7 +9,7 @@ import java.util.List;
 public @Data
 class LevelModel {
 
-    public static final int LATEST_LEVEL_MODEL_VERSION = 2;
+    public static final int LATEST_LEVEL_MODEL_VERSION = 3;
 
     int levelModelVersion;
 
