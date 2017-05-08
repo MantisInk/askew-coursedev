@@ -7,7 +7,9 @@ import askew.entity.obstacle.BoxObstacle;
 import askew.entity.obstacle.Obstacle;
 import askew.entity.sloth.SlothModel;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 
@@ -15,11 +17,13 @@ public class PhysicsController implements ContactListener {
     @Getter
     private boolean isFlowKill;
     @Getter @Setter
-    private SlothModel sloth;
+    private List<SlothModel> slothList;
     @Getter @Setter
     private BoxObstacle goalDoor;
     @Getter
     private boolean isFlowWin;
+
+    private SlothModel winningSloth;
 
     /**
      * This function deals with collisions.
@@ -29,11 +33,12 @@ public class PhysicsController implements ContactListener {
      *
      */
     public PhysicsController() {
+        this.slothList = new ArrayList<>();
         reset();
     }
 
     public void reset(){
-        sloth = null;
+        slothList.clear();
         goalDoor = null;
         isFlowKill = false;
         isFlowWin = false;
@@ -68,6 +73,7 @@ public class PhysicsController implements ContactListener {
             // Check for thorns
             if (bd1 != null && bd2 != null && (isSlothPart(bd1) || isSlothPart(bd2))) {
                 Obstacle other;
+                // TODO: Sloth Homicide
                 if (isSlothPart(bd1) && isSlothPart(bd2)) return;
 
                 if (isSlothPart(bd1)) {
@@ -97,7 +103,7 @@ public class PhysicsController implements ContactListener {
      */
     public void endContact(Contact contact) {}
 
-    private Body getBody(World world, String checkString) {
+    private Body getBody(World world, String checkString, SlothModel sloth) {
         return Arrays.stream(world.getContactList().toArray()).filter(Contact::isTouching).map(contact->{
             Fixture fix1 = contact.getFixtureA();
             Fixture fix2 = contact.getFixtureB();
@@ -117,7 +123,7 @@ public class PhysicsController implements ContactListener {
                 return body2;
             }
 
-            if (fd2 != null && ((String)fd2).contains(checkString) && bd1 != sloth) {
+            if (fd2 != null && ((String)fd2).contains(checkString)  && bd1 != sloth) {
                 return body1;
             }
 
@@ -125,16 +131,24 @@ public class PhysicsController implements ContactListener {
         }).filter(Objects::nonNull).findFirst().orElse(null);
     }
 
-    public Body getLeftBody(World world) {
-        return getBody(world, "sloth left hand");
+    public Body getLeftBody(World world, SlothModel sloth) {
+        return getBody(world, "sloth left hand slothid"+sloth.getId(), sloth);
     }
 
-    public Body getRightBody(World world) {
-        return getBody(world, "sloth right hand");
+    public Body getRightBody(World world, SlothModel sloth) {
+        return getBody(world, "sloth right hand slothid"+sloth.getId(), sloth);
     }
 
     /** Unused ContactListener method */
     public void postSolve(Contact contact, ContactImpulse impulse) {}
     /** Unused ContactListener method */
     public void preSolve(Contact contact, Manifold oldManifold) {}
+
+    public void addSloth(SlothModel sloth) {
+        slothList.add(sloth);
+    }
+
+    public SlothModel winningSloth() {
+        return winningSloth;
+    }
 }

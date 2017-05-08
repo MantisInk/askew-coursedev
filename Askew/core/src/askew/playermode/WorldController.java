@@ -451,9 +451,11 @@ public abstract class WorldController implements Screen {
 	 * @return whether to process the update loop
 	 */
 	public boolean preUpdate(float dt) {
-		InputController input = InputControllerManager.getInstance().getController(0);
 
-		input.readInput(bounds, worldScale);
+		InputControllerManager.getInstance().inputControllers().forEach(input->input.readInput(bounds, worldScale));
+
+		// player 1 priority
+		InputController input = InputControllerManager.getInstance().getController(0);
 		if (listener == null) {
 			return true;
 		}
