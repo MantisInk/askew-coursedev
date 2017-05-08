@@ -74,7 +74,16 @@ public class TutorialModeController extends GameModeController {
 	TextureRegion joystickTexture;
 	TextureRegion bumperLTexture;
 	TextureRegion bumperRTexture;
-	Texture container;
+
+	private String lPressedPath = "texture/background/tutorial/lclicked.png";
+	private String rPressedPath = "texture/background/tutorial/rclicked.png";
+	private String lUpPath = "texture/background/tutorial/lup.png";
+	private String rUpPath = "texture/background/tutorial/rup.png";;
+	Texture lPressed;
+	Texture rPressed;
+	Texture lUp;
+	Texture rUp;
+//	Texture container;
 
 	// list of objects for stage of tutorial
 	protected ArrayList<Trunk> trunkEntities = new ArrayList<Trunk>();
@@ -142,6 +151,9 @@ public class TutorialModeController extends GameModeController {
 	private boolean[] vineGrabbed = {false, false, false, false, false, false, false, false};
 	private int[] vineDir = {SHIMMY_E, SHIMMY_SE, SHIMMY_E, SHIMMY_E, SHIMMY_N, SHIMMY_E, SHIMMY_E, SHIMMY_NE};
 
+	public void preLoadContent(MantisAssetManager manager) {
+		super.preLoadContent(manager);
+	}
 	/**
 	 * Load the assets for this controller.
 	 *
@@ -160,7 +172,12 @@ public class TutorialModeController extends GameModeController {
 			bumperLAnimation = new Animation(0.20f, manager.getTextureAtlas().findRegions("bumperL"), Animation.PlayMode.LOOP);
 			bumperRAnimation = new Animation(0.20f, manager.getTextureAtlas().findRegions("bumperR"), Animation.PlayMode.LOOP);
 		}
-		DEFAULT_LEVEL = "tutorial0";
+
+		lPressed = manager.get(lPressedPath);
+		rPressed = manager.get(rPressedPath);
+		lUp = manager.get(lUpPath);
+		rUp = manager.get(rUpPath);
+		DEFAULT_LEVEL = "tutorial1";
 		loadLevel = DEFAULT_LEVEL;
 	}
 
@@ -678,42 +695,34 @@ public class TutorialModeController extends GameModeController {
 		bumperLTexture = bumperLAnimation.getKeyFrame(elapseTime,true);
 		bumperRTexture = bumperRAnimation.getKeyFrame(elapseTime, true);
 
-		canvas.draw(container, Color.WHITE, container.getWidth() / 2, 0, 425, 300, 0, worldScale.x * 5 / container.getWidth(), worldScale.y * 5 / container.getHeight());
-		if(currentStage == STAGE_PINNED) {
-			if((int)(time/3) %2 == 0){
-				canvas.draw(joystickTexture, Color.WHITE, joystickTexture.getRegionWidth() / 2, 0, 350, 450, 0, worldScale.x / joystickTexture.getRegionWidth(), worldScale.y / joystickTexture.getRegionHeight());
-				canvas.draw(joystickNeutralTexture, Color.WHITE, joystickNeutralTexture.getRegionWidth() / 2, 0, 450, 450, 0, worldScale.x / joystickNeutralTexture.getRegionWidth(), worldScale.y / joystickNeutralTexture.getRegionHeight());
-			} else{
-				canvas.draw(joystickNeutralTexture, Color.WHITE, joystickNeutralTexture.getRegionWidth() / 2, 0, 350, 450, 0, worldScale.x / joystickNeutralTexture.getRegionWidth(), worldScale.y / joystickNeutralTexture.getRegionHeight());
-				canvas.draw(joystickTexture, Color.WHITE, joystickTexture.getRegionWidth() / 2, 0, 450, 450, 0, worldScale.x / joystickTexture.getRegionWidth(), worldScale.y / joystickTexture.getRegionHeight());
-			}
-		} else if(currentStage == STAGE_GRAB) {
-			if (!grabbedAll) {
+//		canvas.draw(container, Color.WHITE, container.getWidth() / 2, 0, 425, 300, 0, worldScale.x * 5 / container.getWidth(), worldScale.y * 5 / container.getHeight());
+				if(currentStage == STAGE_PINNED) {
+					if((int)(time/3) %2 == 0){
+						canvas.draw(joystickTexture, Color.WHITE, joystickTexture.getRegionWidth() / 2, 0, 350, 450, 0, worldScale.x / joystickTexture.getRegionWidth(), worldScale.y / joystickTexture.getRegionHeight());
+						canvas.draw(joystickNeutralTexture, Color.WHITE, joystickNeutralTexture.getRegionWidth() / 2, 0, 450, 450, 0, worldScale.x / joystickNeutralTexture.getRegionWidth(), worldScale.y / joystickNeutralTexture.getRegionHeight());
+					} else{
+						canvas.draw(joystickNeutralTexture, Color.WHITE, joystickNeutralTexture.getRegionWidth() / 2, 0, 350, 450, 0, worldScale.x / joystickNeutralTexture.getRegionWidth(), worldScale.y / joystickNeutralTexture.getRegionHeight());
+						canvas.draw(joystickTexture, Color.WHITE, joystickTexture.getRegionWidth() / 2, 0, 450, 450, 0, worldScale.x / joystickTexture.getRegionWidth(), worldScale.y / joystickTexture.getRegionHeight());
+					}
+				} else if(currentStage == STAGE_GRAB) {
+					if (!grabbedAll) {
 				canvas.drawTextCentered("Try to grab all 5 branches", displayFont, 200f);
 			}
 		} else if (currentStage == STAGE_SHIMMY) {
 			canvas.drawTextCentered("Try to shimmy across", displayFont, 200f);
 		}
-		if (currentStage >= STAGE_GRAB && currentStage < STAGE_VINE) {
+		if (currentStage >= STAGE_GRAB) {
 			if(slothList.get(0).isActualRightGrab()) {
-				canvas.draw(bumperRTexture, Color.WHITE, bumperLTexture.getRegionWidth() / 2, 0, 400, 400, 0, worldScale.x * 3 / bumperLTexture.getRegionWidth(), worldScale.y * 3 / bumperLTexture.getRegionHeight());
+				canvas.draw(rPressed, Color.WHITE, rPressed.getWidth() / 2, 0, 450, 550, 0, worldScale.x / rPressed.getWidth(), worldScale.y / rPressed.getHeight());
+				canvas.draw(lUp, Color.WHITE, lUp.getWidth() / 2, 0, 350, 550, 0, worldScale.x / lUp.getWidth(), worldScale.y / lUp.getHeight());
 				canvas.draw(joystickTexture, Color.WHITE, joystickTexture.getRegionWidth() / 2, 0, 350, 450, 0, worldScale.x / joystickTexture.getRegionWidth(), worldScale.y / joystickTexture.getRegionHeight());
 				canvas.draw(joystickNeutralTexture, Color.WHITE, joystickNeutralTexture.getRegionWidth() / 2, 0, 450, 450, 0, worldScale.x/ joystickNeutralTexture.getRegionWidth(), worldScale.y / joystickNeutralTexture.getRegionHeight());
 			} else {
-				canvas.draw(bumperLTexture, Color.WHITE, bumperRTexture.getRegionWidth() / 2, 0, 400, 400, 0, worldScale.x * 3 / bumperRTexture.getRegionWidth(), worldScale.y * 3 / bumperRTexture.getRegionHeight());
+				canvas.draw(rUp, Color.WHITE, rUp.getWidth() / 2, 0, 450, 550, 0, worldScale.x / rUp.getWidth(), worldScale.y / rUp.getHeight());
+				canvas.draw(lPressed, Color.WHITE, lPressed.getWidth() / 2, 0, 350, 550, 0, worldScale.x / lPressed.getWidth(), worldScale.y / lPressed.getHeight());
 				canvas.draw(joystickNeutralTexture, Color.WHITE, joystickNeutralTexture.getRegionWidth() / 2, 0, 350, 450, 0, worldScale.x / joystickNeutralTexture.getRegionWidth(), worldScale.y / joystickNeutralTexture.getRegionHeight());
 				canvas.draw(joystickTexture, Color.WHITE, joystickTexture.getRegionWidth() / 2, 0, 450, 450, 0, worldScale.x / joystickTexture.getRegionWidth(), worldScale.y / joystickTexture.getRegionHeight());
 			}
-//		} else if (currentStage == MOVED_LEFT) {
-//		} else if (currentStage == MOVED_RIGHT) {
-//			canvas.draw(bumperLTexture, Color.WHITE, bumperLTexture.getRegionWidth() / 2, 0, 400, 400, 0, worldScale.x * 3 / bumperLTexture.getRegionWidth(), worldScale.y * 3 / bumperLTexture.getRegionHeight());
-//			canvas.draw(joystickTexture, Color.WHITE, joystickTexture.getRegionWidth() / 2, 0, 350, 450, 0, worldScale.x / joystickTexture.getRegionWidth(), worldScale.y / joystickTexture.getRegionHeight());
-//			canvas.draw(joystickNeutralTexture, Color.WHITE, joystickNeutralTexture.getRegionWidth() / 2, 0, 450, 450, 0, worldScale.x/ joystickNeutralTexture.getRegionWidth(), worldScale.y / joystickNeutralTexture.getRegionHeight());
-//		} else if (currentStage == GRABBED_LEFT) {
-//			canvas.draw(bumperRTexture, Color.WHITE, bumperRTexture.getRegionWidth() / 2, 0, 400, 400, 0, worldScale.x * 3 / bumperRTexture.getRegionWidth(), worldScale.y * 3 / bumperRTexture.getRegionHeight());
-//			canvas.draw(joystickNeutralTexture, Color.WHITE, joystickNeutralTexture.getRegionWidth() / 2, 0, 350, 450, 0, worldScale.x / joystickNeutralTexture.getRegionWidth(), worldScale.y / joystickNeutralTexture.getRegionHeight());
-//			canvas.draw(joystickTexture, Color.WHITE, joystickTexture.getRegionWidth() / 2, 0, 450, 450, 0, worldScale.x / joystickTexture.getRegionWidth(), worldScale.y / joystickTexture.getRegionHeight());
-//		} else if (currentStage >= GRABBED_RIGHT) {
 		}
 		if((currentStage == STAGE_PINNED && time > 6f) ||
 				(currentStage == STAGE_GRAB && grabbedAll)) {
@@ -722,14 +731,12 @@ public class TutorialModeController extends GameModeController {
 	}
 
 	public void draw(float delta){
-		// GameMode draw with changes
 		canvas.clear();
 
 		canvas.begin();
 		canvas.draw(background);
 		canvas.end();
 
-//		System.out.println("stage " + currentStage);
 		InputController input =  InputControllerManager.getInstance().getController(0);
 
 		camTrans.setToTranslation(-1 * slothList.get(0).getBody().getPosition().x * worldScale.x
@@ -774,8 +781,6 @@ public class TutorialModeController extends GameModeController {
 
 		drawHelpLines();
 
-//		sloth.drawHelpLines();
-
 		if (debug) {
 			canvas.beginDebug(camTrans);
 			for(Entity obj : objects) {
@@ -792,9 +797,9 @@ public class TutorialModeController extends GameModeController {
 		}
 
 		// draw instructional animations
-//		canvas.begin();
-//		drawInstructions();
-//		canvas.end();
+		canvas.begin();
+		drawInstructions();
+		canvas.end();
 
 		if (coverOpacity > 0) {
 			Gdx.gl.glEnable(GL20.GL_BLEND);
@@ -824,7 +829,7 @@ public class TutorialModeController extends GameModeController {
 
 	public void restart() {
 		//change back to 1
-		currentStage = 1;
+		currentStage = 5;
 	}
 
 	public void printVector(Vector2 v) {
