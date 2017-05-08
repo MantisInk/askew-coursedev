@@ -139,7 +139,7 @@ public class Vine extends ComplexObstacle {
 			bodies.add(plank);
 		}
 
-		setCustomScale(2,1);
+		setCustomScale(2,1.05f);
 	}
 
 
