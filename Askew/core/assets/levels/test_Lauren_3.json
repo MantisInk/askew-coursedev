@@ -1,5 +1,5 @@
 {
-  "levelModelVersion": 2,
+  "levelModelVersion": 3,
   "goalTimeGold": 30,
   "goalTimeSilver": 45,
   "goalTimeBronze": 60,
@@ -551,46 +551,6 @@
       }
     },
     {
-      "CLASSNAME": "askew.entity.ghost.GhostModel",
-      "INSTANCE": {
-        "x": 6.990673,
-        "y": 9.0,
-        "patroldx": 7.0,
-        "patroldy": 9.0,
-        "grabbed": false
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.ghost.GhostModel",
-      "INSTANCE": {
-        "x": 24.990656,
-        "y": 9.0,
-        "patroldx": 25.0,
-        "patroldy": 9.0,
-        "grabbed": false
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.ghost.GhostModel",
-      "INSTANCE": {
-        "x": 24.990656,
-        "y": 26.0,
-        "patroldx": 25.0,
-        "patroldy": 26.0,
-        "grabbed": false
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.ghost.GhostModel",
-      "INSTANCE": {
-        "x": 14.990682,
-        "y": 35.0,
-        "patroldx": 15.0,
-        "patroldy": 35.0,
-        "grabbed": false
-      }
-    },
-    {
       "CLASSNAME": "askew.entity.tree.Trunk",
       "INSTANCE": {
         "x": 9.0,
@@ -667,6 +627,90 @@
         "y": 37.0,
         "angle": 270.0,
         "numLinks": 8.0,
+        "grabbed": false
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.ghost.GhostModel",
+      "INSTANCE": {
+        "x": 7.0,
+        "y": 9.0,
+        "patroldx1": 7.0,
+        "patroldy1": 9.0,
+        "patroldx2": 13.0,
+        "patroldy2": 15.0,
+        "grabbed": false
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.ghost.GhostModel",
+      "INSTANCE": {
+        "x": 25.0,
+        "y": 9.0,
+        "patroldx1": 19.0,
+        "patroldy1": 15.0,
+        "patroldx2": 25.0,
+        "patroldy2": 9.0,
+        "grabbed": false
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.ghost.GhostModel",
+      "INSTANCE": {
+        "x": 25.0,
+        "y": 10.0,
+        "patroldx1": 25.0,
+        "patroldy1": 26.0,
+        "patroldx2": 25.0,
+        "patroldy2": 10.0,
+        "grabbed": false
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.ghost.GhostModel",
+      "INSTANCE": {
+        "x": 2.0,
+        "y": 43.0,
+        "patroldx1": 12.0,
+        "patroldy1": 43.0,
+        "patroldx2": 2.0,
+        "patroldy2": 43.0,
+        "grabbed": false
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.ghost.GhostModel",
+      "INSTANCE": {
+        "x": 19.0,
+        "y": 27.0,
+        "patroldx1": 9.0,
+        "patroldy1": 37.0,
+        "patroldx2": 19.0,
+        "patroldy2": 27.0,
+        "grabbed": false
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.ghost.GhostModel",
+      "INSTANCE": {
+        "x": 9.0,
+        "y": 51.0,
+        "patroldx1": 23.0,
+        "patroldy1": 51.0,
+        "patroldx2": 9.0,
+        "patroldy2": 51.0,
+        "grabbed": false
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.ghost.GhostModel",
+      "INSTANCE": {
+        "x": 23.0,
+        "y": 31.0,
+        "patroldx1": 15.0,
+        "patroldy1": 23.0,
+        "patroldx2": 23.0,
+        "patroldy2": 31.0,
         "grabbed": false
       }
     }
