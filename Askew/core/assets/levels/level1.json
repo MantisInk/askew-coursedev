@@ -1,5 +1,5 @@
 {
-  "levelModelVersion": 3,
+  "levelModelVersion": 4,
   "goalTimeGold": 30,
   "goalTimeSilver": 45,
   "goalTimeBronze": 60,
@@ -181,18 +181,7 @@
       "CLASSNAME": "askew.entity.owl.OwlModel",
       "INSTANCE": {
         "x": 22.181252,
-        "y": 10.755467,
-        "grabbed": false
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.sloth.SlothModel",
-      "INSTANCE": {
-        "x": -7.0,
-        "y": 14.0,
-        "lTheta": 0.0,
-        "rTheta": 0.0,
-        "grabbed": false
+        "y": 10.755467
       }
     },
     {
@@ -201,8 +190,7 @@
         "x": 24.407497,
         "y": 9.814998,
         "angle": 90.0,
-        "numLinks": 7.0,
-        "grabbed": false
+        "numLinks": 7.0
       }
     },
     {
@@ -211,8 +199,7 @@
         "x": 13.178746,
         "y": 14.121244,
         "angle": 225.0,
-        "numLinks": 6.0,
-        "grabbed": false
+        "numLinks": 6.0
       }
     },
     {
@@ -221,8 +208,7 @@
         "x": -8.693748,
         "y": 14.088744,
         "angle": 270.0,
-        "numLinks": 22.0,
-        "grabbed": false
+        "numLinks": 22.0
       }
     },
     {
@@ -480,8 +466,7 @@
           250.0,
           7.0,
           0.0
-        ],
-        "grabbed": false
+        ]
       }
     },
     {
@@ -499,8 +484,7 @@
           250.0,
           3.0,
           0.0
-        ],
-        "grabbed": false
+        ]
       }
     },
     {
@@ -516,8 +500,7 @@
           0.0,
           5.0,
           -5.0
-        ],
-        "grabbed": false
+        ]
       }
     },
     {
@@ -535,8 +518,7 @@
           50.0,
           5.0,
           0.0
-        ],
-        "grabbed": false
+        ]
       }
     },
     {
@@ -552,8 +534,7 @@
           1.0,
           1.0,
           0.0
-        ],
-        "grabbed": false
+        ]
       }
     },
     {
@@ -571,8 +552,16 @@
           8.0,
           1.0562544,
           -0.01499939
-        ],
-        "grabbed": false
+        ]
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.sloth.SlothModel",
+      "INSTANCE": {
+        "x": -7.0,
+        "y": 14.0,
+        "lTheta": 0.0,
+        "rTheta": 0.0
       }
     },
     {
