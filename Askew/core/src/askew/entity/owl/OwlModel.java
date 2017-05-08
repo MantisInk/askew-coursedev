@@ -23,7 +23,7 @@ public class OwlModel extends BoxObstacle  {
 
     public static final String OWL_TEXTURE = "texture/owl/owl.png";
     public static final float OWL_DRAW_WIDTH = 2.2f;
-    public static final float OWL_WIDTH = 1.3f;
+    public static final float OWL_WIDTH = 1.8f;
     public static final float VICTORY_SPEED = 0.15f;
     private static final float VICTORY_DISTANCE = 13f;
 
