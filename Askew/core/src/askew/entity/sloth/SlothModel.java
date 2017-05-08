@@ -92,6 +92,8 @@ public class SlothModel extends ComplexObstacle  {
     public static final int SHIMMY_NE = 7;
     public static final int PLUS_30 = 8;
     public static final int MINUS_30 = 9;
+    public static final int PLUS_10 = 10;
+    public static final int MINUS_10 = 11;
 
     /** Set damping constant for rotation of Flow's arms */
     private static final float ROTATION_DAMPING = 5f;
@@ -149,6 +151,8 @@ public class SlothModel extends ComplexObstacle  {
     private transient boolean didOneArmCheck;
     private transient boolean waitingForSafeRelease;
     private transient boolean tutorial = false;
+    @Getter
+    private transient Obstacle mostRecentlyGrabbed = null;
 
     /**
      * Returns the texture index for the given body part
@@ -820,6 +824,7 @@ public class SlothModel extends ComplexObstacle  {
             hand =  bodies.get(PART_RIGHT_HAND);
             otherHand = bodies.get(PART_LEFT_HAND);
         }
+        mostRecentlyGrabbed = hand;
 
         if (grabJoint != null || target == null) return;
 
@@ -872,6 +877,11 @@ public class SlothModel extends ComplexObstacle  {
             leftGrabJoint = null;
             leftTarget = null;
         }
+        if(mostRecentlyGrabbed != null && mostRecentlyGrabbed.getBody() == getLeftHand()){
+            mostRecentlyGrabbed = null;
+        }
+        leftGrabJoint = null;
+        leftTarget = null;
     }
 
     public void releaseRight(World world) {
@@ -909,7 +919,13 @@ public class SlothModel extends ComplexObstacle  {
             rightGrabJoint = null;
             rightTarget = null;
         }
+        if(mostRecentlyGrabbed != null && mostRecentlyGrabbed.getBody() == getRightHand()){
+            mostRecentlyGrabbed = null;
+        }
+        rightGrabJoint = null;
+        rightTarget = null;
         super.deactivatePhysics(world);
+
     }
 
     public void activateSlothPhysics(World world) {
@@ -1196,12 +1212,18 @@ public class SlothModel extends ComplexObstacle  {
             Vector2 lPos = left.getPosition();
             Vector2 rPos = right.getPosition();
             Vector2 bPos = body.getPosition();
-            float mag;
+            float mag, mag2;
+
+            boolean leftArrows = false;
+            CircleShape circle = new CircleShape();
 
             if(isActualLeftGrab() || isActualRightGrab()) {
                 if (isActualLeftGrab()) {
                     if (!isActualRightGrab() || left.getX() < right.getX()) {
                         switch(mode) {
+                            case SHIMMY_E:
+                                rPos = new Vector2(lPos.x+ARMSPAN,lPos.y);
+                                break;
                             case SHIMMY_S:
                                 rPos = new Vector2(lPos.x,lPos.y-ARMSPAN);
                                 break;
@@ -1211,13 +1233,23 @@ public class SlothModel extends ComplexObstacle  {
                             case MINUS_30:
                                 rPos = (rPos.cpy().sub(bPos)).rotate(-30).add(bPos);
                                 break;
+                            case PLUS_10:
+                                rPos = (rPos.cpy().sub(bPos)).rotate(10).add(bPos);
+                                break;
+                            case MINUS_10:
+                                rPos = (rPos.cpy().sub(bPos)).rotate(-10).add(bPos);
+                                break;
                             default:
                                 rPos.sub(bPos).rotate(-angleDiff).add(bPos);
                         }
+                        leftArrows = true;
                     }
                 } else {
                     if (!isActualLeftGrab() || right.getX() < left.getX()) {
                         switch(mode) {
+                            case SHIMMY_E:
+                                lPos = new Vector2(rPos.x+ARMSPAN,rPos.y);
+                                break;
                             case SHIMMY_S:
                                 lPos = new Vector2(rPos.x,rPos.y-ARMSPAN);
                                 break;
@@ -1227,20 +1259,37 @@ public class SlothModel extends ComplexObstacle  {
                             case MINUS_30:
                                 lPos.sub(bPos).rotate(-30).add(bPos);
                                 break;
+                            case PLUS_10:
+                                lPos.sub(bPos).rotate(15).add(bPos);
+                                break;
+                            case MINUS_10:
+                                lPos.sub(bPos).rotate(-15).add(bPos);
+                                break;
                             default:
                                 lPos.sub(bPos).rotate(-angleDiff).add(bPos);
                         }
+                        leftArrows = false;
                     }
                 }
 
 //                System.out.println("     left: "+lPos.angle()+" right: "+rPos.angle());
 //                System.out.println("lPos ("+lPos.x+","+lPos.y+")  rPos ("+rPos.x+","+rPos.y+")");
                 mag = Math.min(lPos.cpy().sub(bPos).len(),rPos.cpy().sub(bPos).len());
+                mag2 = mag/20;
                 lPos.sub(bPos).setLength(mag).add(bPos);
                 rPos.sub(bPos).setLength(mag).add(bPos);
+
+                circle.setRadius(mag2);
+
                 canvas.beginDebug(camTrans);
-                canvas.drawLine(bPos.x * drawScale.x, bPos.y * drawScale.y, lPos.x * drawScale.x, lPos.y * drawScale.y, Color.BLUE, Color.BLUE);
-                canvas.drawLine(bPos.x * drawScale.x, bPos.y * drawScale.y, rPos.x * drawScale.x, rPos.y * drawScale.y, Color.RED, Color.RED);
+                canvas.drawLine(bPos.x * drawScale.x, bPos.y * drawScale.y, lPos.x * drawScale.x, lPos.y * drawScale.y, Color.LIGHT_GRAY, Color.LIGHT_GRAY);
+                canvas.drawLine(bPos.x * drawScale.x, bPos.y * drawScale.y, rPos.x * drawScale.x, rPos.y * drawScale.y, Color.DARK_GRAY, Color.DARK_GRAY);
+
+                if (!leftArrows) {
+                    canvas.drawPhysics(circle, new Color(Color.LIGHT_GRAY), lPos.x, lPos.y, drawScale.x, drawScale.y);
+                } else {
+                    canvas.drawPhysics(circle, new Color(Color.DARK_GRAY), rPos.x, rPos.y, drawScale.x, drawScale.y);
+                }
                 canvas.endDebug();
             }
         }
