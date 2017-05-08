@@ -30,9 +30,10 @@ public class JsonEntityFactory {
         float numlinks = instance.get("numLinks").getAsFloat();
         float angle = instance.get("angle").getAsFloat();
         float omega = instance.get("omega").getAsFloat();
-        Texture managedTexture = manager.get(Vine.VINE_TEXTURE, Texture.class);
+        int texture = instance.get("texture").getAsInt();
+        Texture managedTexture = manager.get(Vine.VINE_TEXTURES[texture], Texture.class);
         //TextureRegion vineTexture = new TextureRegion(managedTexture);
-		vine = new Vine(x, y, numlinks, angle, omega);
+		vine = new Vine(x, y, numlinks, angle, omega, 0);
 		vine.setTextures(manager);
         return vine;
     }
