@@ -17,6 +17,7 @@ import askew.MantisAssetManager;
 import askew.entity.Entity;
 import askew.entity.obstacle.Obstacle;
 import askew.entity.tree.Trunk;
+import askew.entity.vine.Vine;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -27,6 +28,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 
 import static askew.entity.sloth.SlothModel.*;
@@ -77,24 +79,29 @@ public class TutorialModeController extends GameModeController {
 	// list of objects for stage of tutorial
 	protected ArrayList<Trunk> trunkEntities = new ArrayList<Trunk>();
 	private ArrayList<Boolean> trunkGrabbed = new ArrayList<Boolean>();
+	protected  ArrayList<Vine> vineEntities = new ArrayList<Vine>();
 
 	// margin allowance for measuring distance from setpoints
-	private float[] inRangeAllowance = {0.02f, 0.02f, 0.02f, ARMSPAN/2, 0.02f};
+	private float[] inRangeAllowance = {0.02f, 0.02f, 0.02f, ARMSPAN/2, 0.05f};
 	// list of setpoints for drawing helplines & other vars
 	private int inRangeSetPt = -1;			// step progression within tutorial level
-	private final int MINUS30 = -1;			// constant as signal for drawing help lines -30 degrees from moving arm
+	private final int MINUS30 = -2;			// constant as signal for drawing help lines -30 degrees from moving arm
+	private final int MINUS10 = -1;
 	private final int NEUTRAL = 0;			// constant as signal for drawing help lines when moving arm close to target
-	private final int PLUS30 = 1;			// constant as signal for drawing help lines +30 degrees from moving arm
+	private final int PLUS10 = 1;
+	private final int PLUS30 = 2;			// constant as signal for drawing help lines +30 degrees from moving arm
+	private final int EAST = 3;
 	private int targetLine = NEUTRAL;		// variable to store decision on what type of help line to draw
 	private float angleDiff = 0f; 			// keeps track of (arm angle minus target angle) for sloth to draw
 	private boolean nextSetPt = false;
+	private int ind = -1;
 	private float omega = 0;
 	private final float omega_0 = 0.15f;
 	private boolean swing = false;
 	private boolean back = false;
 	private float[] grabSetPoints = {14.019997f, 11.73999f, 9.399997f, 7.0199966f, 4.720001f};
 	private Vector2[] shimmySetPoints = {
-			new Vector2(12f,14f),
+			new Vector2(12f,13f),
 			new Vector2(12f,9f),
 			new Vector2(17f,9f),
 			new Vector2(17f,14f),
@@ -116,12 +123,24 @@ public class TutorialModeController extends GameModeController {
 			new Vector2(19.5f, 14f),
 			new Vector2(23f, 16f)
 	};
-	private Vector2[] vineSetPoints = {};
+	private Vector2[] vineSetPoints = {
+			new Vector2(4f, 13f),
+			new Vector2(6f, 16.5f),
+			new Vector2(9.6f, 12.7f),
+			new Vector2(13f,12f), 		// vine
+			new Vector2(16f, 12f),
+			new Vector2(19f, 12f),		// vine
+			new Vector2(23f, 12f), 	// vine
+			new Vector2(29f, 14f) 		// owl
+	};
+	private ArrayList<Integer> vineInds = new ArrayList<>(Arrays.asList(3,5,6));
 	// list of instructions
 	private boolean[] shimmyGrabbed = {false, false, false, false, false};
 	private int[] shimmyDir = {SHIMMY_S, SHIMMY_E, SHIMMY_N, SHIMMY_E, SHIMMY_SE};
 	private boolean[] flingGrabbed = {false, false, false, false};
 	private int[] flingDir = {SHIMMY_NE, SHIMMY_SE, SHIMMY_E, SHIMMY_SE};
+	private boolean[] vineGrabbed = {false, false, false, false, false, false, false, false};
+	private int[] vineDir = {SHIMMY_E, SHIMMY_SE, SHIMMY_E, SHIMMY_E, SHIMMY_N, SHIMMY_E, SHIMMY_E, SHIMMY_NE};
 
 	/**
 	 * Load the assets for this controller.
@@ -173,12 +192,15 @@ public class TutorialModeController extends GameModeController {
 		nextSetPt = false;
 		omega = 0;
 		count = 0f;
+		ind = -1;
 		swing = false;
 		back = false;
 		for(int i = 0; i < shimmyGrabbed.length; i++)
 			shimmyGrabbed[i] = false;
 		for(int i = 0; i < flingGrabbed.length; i++)
 			flingGrabbed[i] = false;
+		for(int i = 0; i < vineGrabbed.length; i++)
+			vineGrabbed[i] = false;
 
 		joystickTexture = joystickAnimation.getKeyFrame(0);
 		bumperLTexture = bumperLAnimation.getKeyFrame(0);
@@ -195,6 +217,9 @@ public class TutorialModeController extends GameModeController {
 			if(e instanceof Trunk) {
 				trunkEntities.add((Trunk)e);
 				trunkGrabbed.add(false);
+			}
+			if(e instanceof  Vine) {
+				vineEntities.add((Vine) e);
 			}
 		}
 
@@ -257,6 +282,7 @@ public class TutorialModeController extends GameModeController {
 			elapseTime += dt;
 			time = time+dt ;
 			// TODO: move sloth movement in slothmodel
+			Vector2 set;
 
 			switch(currentStage) {
 				case STAGE_PINNED:
@@ -288,13 +314,13 @@ public class TutorialModeController extends GameModeController {
 					break;
 				case STAGE_FLING:
 					// if done with setpoints
-					System.out.println("\n progression "+inRangeSetPt);
+//					System.out.println("\n progression "+inRangeSetPt);
 					if(inRangeSetPt+1 >= flingSetPoints.length) {
 						angleDiff = 0f;
 						targetLine = NEUTRAL;
 						break;
 					}
-					Vector2 set = flingSetPoints[inRangeSetPt+1];
+					set = flingSetPoints[inRangeSetPt+1];
 					Vector2 backpt = flingLandPoints0[inRangeSetPt+1];
 					Vector2 landpt = flingLandPointsf[inRangeSetPt+1];
 					inRange(set);
@@ -356,6 +382,54 @@ public class TutorialModeController extends GameModeController {
 					}
 					break;
 				case STAGE_VINE:
+//					System.out.print("\n progression "+inRangeSetPt);
+					if (inRangeSetPt == -1) {
+						targetLine = EAST;
+					}
+					if (inRangeSetPt+1 > vineSetPoints.length) {
+						angleDiff = 0f;
+						targetLine = NEUTRAL;
+						break;
+					}
+//					System.out.print("   targetLINE "+targetLine);
+//					System.out.print("   setpt ");
+//					printVector(vineSetPoints[inRangeSetPt+1]);
+//					System.out.print("   grabpt ");
+//					try {
+//						printVector(sloth.getMostRecentlyGrabbed().getPosition());
+//					} catch (NullPointerException e) {
+//						printVector(new Vector2());
+//					}
+//					System.out.print("   inRange "+inRange(vineSetPoints[inRangeSetPt+1]));
+					if (inRange(vineSetPoints[inRangeSetPt+1]) && vineGrabbed[inRangeSetPt+1]) {
+						inRangeSetPt++;
+						if (!swing) {
+							ind = vineInds.indexOf(inRangeSetPt + 1);
+						}
+						if (nextSetPt) {
+							nextSetPt = false;
+							swing = false;
+						}
+					}
+//					System.out.print("   ind "+ind);
+					if (ind != -1) {
+						swing = true;
+//						ind = vineInds.indexOf(inRangeSetPt+1);
+						Vine v = vineEntities.get(ind);
+						vineSetPoints[inRangeSetPt+1] = v.getEndpt().getPosition();
+						inRange(vineSetPoints[inRangeSetPt+1]);
+						setTarget(vineEntities.get(ind));
+					}
+//					System.out.print("   swing "+swing);
+					if (!vineGrabbed[inRangeSetPt+1]) {
+						if (!swing) {
+							inRange(vineSetPoints[inRangeSetPt + 1]);
+						}
+						vineGrabbed[inRangeSetPt+1] = checkGrabbedPt(vineSetPoints[inRangeSetPt+1], vineDir[inRangeSetPt+1]);
+						if (vineGrabbed[inRangeSetPt+1]) {
+							nextSetPt = true;
+						}
+					}
 					break;
 				default:
 					System.err.println(currentStage);
@@ -368,47 +442,57 @@ public class TutorialModeController extends GameModeController {
 	}
 
 	public boolean checkGrabbedPt(Vector2 setpt, int dir) {
-//		System.out.print("setpt: ("+setpt.x+","+setpt.y+")   ");
+//		System.out.print("   setpt: ("+setpt.x+","+setpt.y+")   ");
 		Body rTarget, lTarget, tTarget, bTarget;
 		Vector2 rtPos, ltPos, ttPos, btPos;
 		boolean xrange = false;
 		boolean yrange = false;
+		float other = (currentStage == STAGE_VINE) ? 0.6f : 0.05f;
+//		System.out.print("  dir "+dir);
 		if (dir == SHIMMY_E || dir == SHIMMY_SE || dir == SHIMMY_NE) {
 			rTarget = sloth.getRightmostTarget();
 			if (rTarget == null) { return false; }
 			rtPos = rTarget.getPosition();
-//			System.out.println("E: ("+rtPos.x+","+rtPos.y+")");
+//			System.out.print("   E: ("+rtPos.x+","+rtPos.y+")");
 
 			if (rtPos.x-0.05 >= setpt.x) { xrange = true; }
-			if (dir == SHIMMY_E && Math.abs(setpt.y-rtPos.y) <= 0.05) { yrange = true; }
+			if (dir == SHIMMY_E && Math.abs(setpt.y-rtPos.y) <= other) {
+//				System.out.print("  setpt.y "+setpt.y+"   pos.y "+rtPos.y);
+				yrange = true; }
 
-		} else if (dir == SHIMMY_W || dir == SHIMMY_SW || dir == SHIMMY_NW) {
+		}
+		if (dir == SHIMMY_W || dir == SHIMMY_SW || dir == SHIMMY_NW) {
 			lTarget = sloth.getLeftmostTarget();
 			if (lTarget == null) { return false; }
 			ltPos = lTarget.getPosition();
-//			System.out.println("W: ("+ltPos.x+","+ltPos.y+")");
+//			System.out.print("   W: ("+ltPos.x+","+ltPos.y+")");
 
 			if (ltPos.x+0.05 <= setpt.x) { xrange = true;}
-			if (dir == SHIMMY_W && Math.abs(setpt.y-ltPos.y) <= 0.05) { yrange = true; }
+			if (dir == SHIMMY_W && Math.abs(setpt.y-ltPos.y) <= other) {
+//				System.out.print("  setpt.y "+setpt.y+"   pos.y "+ltPos.y);
+				yrange = true; }
 
-		} else if (dir == SHIMMY_S || dir == SHIMMY_SE || dir == SHIMMY_SW){
+		}
+		if (dir == SHIMMY_S || dir == SHIMMY_SE || dir == SHIMMY_SW){
 			bTarget = sloth.getBottomTarget();
 			if (bTarget == null) { return false; }
 			btPos = bTarget.getPosition();
-//			System.out.println("S: ("+btPos.x+","+btPos.y+")");
+//			System.out.print("   S: ("+btPos.x+","+btPos.y+")");
 
-			if (btPos.y+0.05 <= setpt.y) { yrange = true; }
-			if (dir == SHIMMY_S && Math.abs(setpt.x - btPos.x) <= 0.05) { xrange = true; }
+			if (btPos.y+0.05f <= setpt.y) { yrange = true; }
+			if (dir == SHIMMY_S && Math.abs(setpt.x - btPos.x) <= other) { xrange = true; }
 
-		} else if (dir == SHIMMY_N || dir == SHIMMY_NE || dir == SHIMMY_NW) {
+		}
+		if (dir == SHIMMY_N || dir == SHIMMY_NE || dir == SHIMMY_NW) {
 			tTarget = sloth.getTopTarget();
 			if (tTarget == null) { return false; }
 			ttPos = tTarget.getPosition();
-//			System.out.println("N: ("+ttPos.x+","+ttPos.y+")");
+//			System.out.print("    N: ("+ttPos.x+","+ttPos.y+")");
 
 			if (ttPos.y-0.05 >= setpt.y) { yrange = true; }
-			if (dir == SHIMMY_N && Math.abs(setpt.x - ttPos.x) <= 0.05) { xrange = true; }
+			if (dir == SHIMMY_N && Math.abs(setpt.x - ttPos.x) <= other) { xrange = true; }
 		}
+//		System.out.print("  xrange "+xrange+"   yrange "+yrange);
 		return xrange && yrange;
 	}
 
@@ -510,6 +594,32 @@ public class TutorialModeController extends GameModeController {
 		return xrange && yrange;
 	}
 
+	public void setTarget(Vine v) {
+		Obstacle sHand = sloth.getMostRecentlyGrabbed();
+		if (sHand == null) {
+			return;
+		}
+		Body hand = sloth.getMostRecentlyGrabbed().getBody();
+		Body otherHand = (hand == sloth.getRightHand()) ? sloth.getLeftHand() : sloth.getRightHand();
+		float aAngle = otherHand.getPosition().sub(hand.getPosition()).angle();
+		float vAngle = v.getEndpt().getPosition().sub(v.getPosition()).angle();
+		angleDiff = (((aAngle - vAngle)%360)+360)%360;
+		float lv = v.getEndpt().getLinearVelocity().x;
+//		System.out.print("   lv "+lv);
+		if (10 < angleDiff && angleDiff < 350) {
+			if (lv < -0.05f) {
+				targetLine = MINUS10;
+			} else if (lv > 0.05f){
+				targetLine = PLUS10;
+			} else {
+				targetLine = NEUTRAL;
+			}
+		} else {
+			targetLine = NEUTRAL;
+		}
+
+	}
+
 	public void checkCloseToCorner(Vector2 setpt, Vector2 grabpt) {
 		float xrange = (float) Math.abs(setpt.x - grabpt.x);
 		float yrange = (float) Math.abs(setpt.y - grabpt.y);
@@ -539,6 +649,7 @@ public class TutorialModeController extends GameModeController {
 				break;
 			case STAGE_SHIMMY:
 			case STAGE_FLING:
+			case STAGE_VINE:
 				switch(targetLine) {
 					case PLUS30:
 						sloth.drawHelpLines(canvas, camTrans, PLUS_30, 0f);
@@ -546,12 +657,19 @@ public class TutorialModeController extends GameModeController {
 					case MINUS30:
 						sloth.drawHelpLines(canvas, camTrans, MINUS_30, 0f);
 						break;
+					case PLUS10:
+						sloth.drawHelpLines(canvas, camTrans, PLUS_10, 0f);
+						break;
+					case MINUS10:
+						sloth.drawHelpLines(canvas, camTrans, MINUS_10, 0f);
+						break;
 					case NEUTRAL:
 						sloth.drawHelpLines(canvas, camTrans, DEFAULT, angleDiff);
 						break;
+					case EAST:
+						sloth.drawHelpLines(canvas, camTrans, SHIMMY_E, 0f);
+						break;
 				}
-				break;
-			case STAGE_VINE:
 				break;
 		}
 
@@ -708,7 +826,7 @@ public class TutorialModeController extends GameModeController {
 	}
 
 	public void restart() {
-		//change back to 0
+		//change back to 1
 		currentStage = 1;
 	}
 
