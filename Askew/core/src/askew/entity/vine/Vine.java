@@ -45,7 +45,8 @@ public class Vine extends ComplexObstacle {
 	private static final float lwidth = .15f;
 	private static final float lheight = .7f;
 
-	public static final String VINE_TEXTURE = "texture/vine/vine.png";
+	public static final String[] VINE_TEXTURES = {"texture/vine/vine.png", "texture/vine/vine2.png"};
+	public static transient String VINE_TEXTURE; 		// default texture
 
 	// Invisible anchor objects
 	private transient WheelObstacle start = null;				// anchor point of vine (top)
@@ -72,13 +73,14 @@ public class Vine extends ComplexObstacle {
 	protected float omega = -400f;										/** starting angular velocity of vine */
 	@Getter @Setter
 	private boolean pin = false; 								// default no bottom anchor
+	protected int texture = 0; 										// default texture index
 
 
-	public Vine(float x, float y, float length,float angle ,float omega){
-		this(x, y, length,  false, angle, omega);
+	public Vine(float x, float y, float length, float angle, float omega, int texture){
+		this(x, y, length, false, angle, omega, texture);
 	}
 
-	public Vine(float x, float y, float length,  boolean pinned, float angle, float omega) {
+	public Vine(float x, float y, float length,  boolean pinned, float angle, float omega, int texture) {
 		super(x,y);
 		this.x = x;
 		this.y = y;
@@ -86,6 +88,8 @@ public class Vine extends ComplexObstacle {
 		this.pin = pinned;
 		this.angle = angle;
 		this.omega = omega;
+		this.texture = texture;
+		this.VINE_TEXTURE = VINE_TEXTURES[texture];
 
 		build();
 	}
@@ -139,7 +143,7 @@ public class Vine extends ComplexObstacle {
 			bodies.add(plank);
 		}
 
-		setCustomScale(2,1);
+		setCustomScale(2,1.05f);
 	}
 
 

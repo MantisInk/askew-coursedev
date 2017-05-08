@@ -4,6 +4,10 @@
   "goalTimeSilver": 45,
   "goalTimeBronze": 60,
   "recordTime": 4.673523,
+  "maxX": 20.0,
+  "maxY": 21.0,
+  "minX": -7.0,
+  "minY": 0.0,
   "title": "Why are the vines so long?",
   "background": "texture/background/background1.png",
   "soundtrack": "TODO",
@@ -18,9 +22,67 @@
     {
       "CLASSNAME": "askew.entity.wall.WallModel",
       "INSTANCE": {
+        "circleTextureRegion": {
+          "texture": {
+            "data": {
+              "file": {
+                "file": {
+                  "path": "texture\\wall\\corner.png"
+                },
+                "type": "Internal"
+              },
+              "width": 25,
+              "height": 25,
+              "format": "RGBA8888",
+              "useMipMaps": false,
+              "isPrepared": false
+            },
+            "glTarget": 3553,
+            "glHandle": 71,
+            "minFilter": "Nearest",
+            "magFilter": "Nearest",
+            "uWrap": "ClampToEdge",
+            "vWrap": "ClampToEdge"
+          },
+          "u": 0.0,
+          "v": 0.0,
+          "u2": 1.0,
+          "v2": 1.0,
+          "regionWidth": 25,
+          "regionHeight": 25
+        },
+        "edgeTextureRegion": {
+          "texture": {
+            "data": {
+              "file": {
+                "file": {
+                  "path": "texture\\wall\\edge.png"
+                },
+                "type": "Internal"
+              },
+              "width": 100,
+              "height": 16,
+              "format": "RGBA8888",
+              "useMipMaps": false,
+              "isPrepared": false
+            },
+            "glTarget": 3553,
+            "glHandle": 72,
+            "minFilter": "Linear",
+            "magFilter": "Linear",
+            "uWrap": "Repeat",
+            "vWrap": "Repeat"
+          },
+          "u": 0.0,
+          "v": 0.035,
+          "u2": 30.76,
+          "v2": 0.965,
+          "regionWidth": 3076,
+          "regionHeight": 15
+        },
         "x": -12.0,
         "y": 3.0,
-        "thorn": true,
+        "color": -1,
         "points": [
           0.0,
           0.0,
@@ -40,7 +102,7 @@
         "x": -2.0,
         "y": 16.0,
         "angle": 5.0,
-        "omega": -400.0,
+        "omega": -3.0,
         "pin": false,
         "texture": 0
       }
@@ -52,7 +114,7 @@
         "x": 4.0,
         "y": 21.0,
         "angle": 5.0,
-        "omega": -100.0,
+        "omega": -3.0,
         "pin": false,
         "texture": 0
       }
@@ -64,7 +126,7 @@
         "x": 13.0,
         "y": 28.0,
         "angle": 5.0,
-        "omega": -400.0,
+        "omega": -3.0,
         "pin": false,
         "texture": 0
       }
@@ -74,9 +136,7 @@
       "INSTANCE": {
         "x": -5.0,
         "y": 16.0,
-        "stiffLen": 0.0,
         "angle": -90.0,
-        "linksize": 1.0,
         "numLinks": 3.0
       }
     },
@@ -84,7 +144,9 @@
       "CLASSNAME": "askew.entity.sloth.SlothModel",
       "INSTANCE": {
         "x": -3.5,
-        "y": 20.0
+        "y": 20.0,
+        "lTheta": 0.0,
+        "rTheta": 0.0
       }
     }
   ]
