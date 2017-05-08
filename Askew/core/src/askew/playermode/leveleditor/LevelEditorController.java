@@ -492,7 +492,7 @@ public class LevelEditorController extends WorldController {
 				entity = new SlothModel(x,y);
 				break;
 			case "Vine":
-				entity = new Vine(x,y,5.0f, 5f, -400f);
+				entity = new Vine(x,y,5.0f, 5f, -400f, 0);
 				break;
 			case "Trunk":
 				entity = new Trunk(x,y, 5.0f, 0);
@@ -513,7 +513,7 @@ public class LevelEditorController extends WorldController {
 				entity = new ThornModel(x,y,1,0);
 				break;
 			case "GhostModel":
-				entity = new GhostModel(x,y,x+2,y+2);
+				entity = new GhostModel(x,y,x+2,y+2,x,y);
 				break;
 			case "BackgroundEntity":
 				entity = new BackgroundEntity(xorig,yorig);
@@ -836,7 +836,8 @@ public class LevelEditorController extends WorldController {
 					continue;
 				}
 			}
-			ent.update(dt); // called last!
+			// we don't need ents to update in level editor
+//			ent.update(dt); // called last!
 		}
 	}
 

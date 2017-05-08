@@ -26,17 +26,21 @@ public class GhostModel extends BoxObstacle  {
     // determined at runtime to preserve aspect ratio from designers
     private transient float ghostHeight;
 
-    private transient TextureRegion ghostTextureRegion;
-
     //JSON
     @Getter @Setter
     private float x;
     @Getter @Setter
     private float y;
+
+    /** Patrol points. */
     @Getter @Setter
-    private float patroldx;
+    private float patroldx1;
     @Getter @Setter
-    private float patroldy;
+    private float patroldy1;
+    @Getter @Setter
+    private float patroldx2;
+    @Getter @Setter
+    private float patroldy2;
 
     private transient boolean secondDestination;
 
@@ -53,20 +57,22 @@ public class GhostModel extends BoxObstacle  {
      * @param x  Initial x position of the ragdoll head
      * @param y  Initial y position of the ragdoll head
      */
-    public GhostModel(float x, float y, float patroldx, float patroldy) {
+    public GhostModel(float x, float y, float patroldx1, float patroldy1, float patroldx2, float patroldy2) {
         super(x,y, GHOST_WIDTH, GHOST_HEIGHT);
         this.x = x;
         this.y = y;
-        this.patroldx = patroldx;
-        this.patroldy = patroldy;
+        this.patroldx1 = patroldx1;
+        this.patroldy1 = patroldy1;
+        this.patroldx2 = patroldx2;
+        this.patroldy2 = patroldy2;
         this.setBodyType(BodyDef.BodyType.StaticBody);
         this.setDensity(0);
         this.setFriction(0);
         this.setRestitution(0);
         this.setSensor(true);
         Filter f = new Filter();
-        f.maskBits = FilterGroup.SLOTH;
-        f.categoryBits = FilterGroup.WALL;
+        f.maskBits = FilterGroup.SLOTH | FilterGroup.ARM;
+        f.categoryBits = FilterGroup.WALL | FilterGroup.THORN;
         this.setFilterData(f);
         this.setName("ghost");
         elapseTime = 1;
@@ -89,7 +95,7 @@ public class GhostModel extends BoxObstacle  {
         walkAnimation = new Animation(0.127f, manager.getTextureAtlas().findRegions("Ghosty"), Animation.PlayMode.LOOP);
         if (walkAnimation.getKeyFrames().length == 0)
             System.err.println("did not find ghost");
-        ghostTextureRegion = walkAnimation.getKeyFrame(0);
+        TextureRegion ghostTextureRegion = walkAnimation.getKeyFrame(0);
         this.ghostHeight = getWidth() * ((float) ghostTextureRegion.getRegionHeight() / (float) ghostTextureRegion.getRegionWidth()) / 2;
         setTexture(ghostTextureRegion);
     }
@@ -108,21 +114,21 @@ public class GhostModel extends BoxObstacle  {
             if (drawFrame.isFlipX())
                 drawFrame.flip(true,false);
         }
-        canvas.draw(texture, Color.WHITE, origin.x, origin.y,getPosition().x * drawScale.x,getPosition().y * drawScale.y, getAngle(),
+        canvas.draw(drawFrame, Color.WHITE, origin.x, origin.y,getPosition().x * drawScale.x,getPosition().y * drawScale.y, getAngle(),
                 (1.0f/texture.getRegionWidth()) * getWidth() * getDrawScale().x * objectScale.x,
                 (1.0f/texture.getRegionHeight() * getHeight()* getDrawScale().y * objectScale.y));
 
     }
-    //TODO MAKE POSITION LIST NOT USE X,Y
+
     @Override
     public void update(float dtime) {
         // Calculate vector to destination
         Vector2 myPos = getPosition();
         Vector2 dPos;
         if (secondDestination) {
-            dPos = new Vector2(patroldx, patroldy);
+            dPos = new Vector2(patroldx1, patroldy1);
         } else {
-            dPos = new Vector2(x, y);
+            dPos = new Vector2(patroldx2, patroldy2);
         }
 
         dPos = dPos.sub(myPos); // Direction now faces the destination
@@ -134,9 +140,9 @@ public class GhostModel extends BoxObstacle  {
             actualMoveDistance -= distanceToMove;
             secondDestination = !secondDestination;
             if (secondDestination) {
-                dPos = new Vector2(patroldx, patroldy);
+                dPos = new Vector2(patroldx1, patroldy1);
             } else {
-                dPos = new Vector2(x, y);
+                dPos = new Vector2(patroldx2, patroldy2);
             }
             dPos = dPos.sub(myPos); // Direction now faces the destination
         }
