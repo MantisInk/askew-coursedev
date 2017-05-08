@@ -58,6 +58,7 @@ import java.util.List;
 public class GameModeController extends WorldController {
 
 
+	public static final float MAX_MUSIC_VOLUME = 0.15f;
 	Affine2 camTrans = new Affine2();
 
 	/** Track asset loading from all instances and subclasses */
@@ -91,7 +92,7 @@ public class GameModeController extends WorldController {
 	public static final String ARM_SOUND = "sound/effect/arm.wav";
 	public static final String WIND_SOUND = "sound/effect/wind.wav";
 	public static final String FALL_MUSIC = "sound/music/fallingtoyourdeath" +
-			".ogg";
+			".wav";
 
 	Sound grabSound;
 	Sound releaseSound;
@@ -338,7 +339,7 @@ public class GameModeController extends WorldController {
 			if (instance.isActive("menumusic")) instance.stop("menumusic");
 			if (instance.isActive("bgmusic")) instance.stop("bgmusic");
 			if (selectedTrack != null) {
-				instance.play("bgmusic", selectedTrack, true);
+				instance.play("bgmusic", selectedTrack, true, MAX_MUSIC_VOLUME);
 			}
 		}
 
@@ -637,17 +638,18 @@ public class GameModeController extends WorldController {
 									fallDeathHeight) / NEAR_FALL_DEATH_DISTANCE;
 							coverOpacity = 2 * (1 - normalizedDistanceFromDeath);
 							if (coverOpacity > 1) coverOpacity = 1;
-							SoundController.getInstance().setVolume("fallmusic", 1 -
-									normalizedDistanceFromDeath);
+							SoundController.getInstance().setVolume("fallmusic", (1 -
+									normalizedDistanceFromDeath)*MAX_MUSIC_VOLUME);
+							SoundController.getInstance().setPitch("fallmusic",normalizedDistanceFromDeath*0.6f+0.1f);
 							if (playingMusic)
 								SoundController.getInstance().setVolume("bgmusic",
-										normalizedDistanceFromDeath);
+										normalizedDistanceFromDeath*MAX_MUSIC_VOLUME);
 						}
 					} else {
 						SoundController.getInstance().setVolume("fallmusic", 0);
 						if (playingMusic)
 							SoundController.getInstance().setVolume("bgmusic",
-									1);
+									MAX_MUSIC_VOLUME);
 						if ((playerIsReady || paused) && (collisions.isFlowKill() || !collisions.isFlowWin())) {
 							coverOpacity = 0;
 						}
