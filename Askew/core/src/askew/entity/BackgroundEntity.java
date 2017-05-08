@@ -24,7 +24,7 @@ public class BackgroundEntity extends Entity{
     @Getter
     private int color;
 
-    private transient TextureRegion texture;
+    protected transient TextureRegion texture;
     protected transient Vector2 origin;
     protected transient float aspectRatio;
 
@@ -34,7 +34,6 @@ public class BackgroundEntity extends Entity{
 
 
     public BackgroundEntity() {
-
         this(0,0);
     }
 

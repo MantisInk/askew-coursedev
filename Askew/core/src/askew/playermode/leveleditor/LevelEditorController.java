@@ -13,6 +13,7 @@ package askew.playermode.leveleditor;
 import askew.*;
 import askew.entity.BackgroundEntity;
 import askew.entity.Entity;
+import askew.entity.EyeEntity;
 import askew.entity.ghost.GhostModel;
 import askew.entity.obstacle.Obstacle;
 import askew.entity.owl.OwlModel;
@@ -515,6 +516,8 @@ public class LevelEditorController extends WorldController {
 			case "BackgroundEntity":
 				entity = new BackgroundEntity(xorig,yorig);
 				break;
+			case "EyeEntity":
+				entity = new EyeEntity(xorig,yorig);
 
 			default:
 				//System.err.println("UNKNOWN ENT");
