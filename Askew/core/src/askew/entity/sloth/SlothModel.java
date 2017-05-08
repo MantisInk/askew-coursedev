@@ -1077,14 +1077,14 @@ public class SlothModel extends ComplexObstacle  {
                                 texture.flip(true, false);
                             }
                         } else {
-                            part.setTexture(partTextures[4]);
+                            part.setTexture(getFrontFlow());
                         }
 
                         if(old_texture!=part.getTexture() || (old_texture.isFlipX()!=part.getTexture().isFlipX()) ){
                             currentCooldown = TRANSITION_COOLDOWN;
                         }
                     } else {
-                        part.setTexture(getFrontFlow());
+
                     }
                     currentCooldown--;
 
