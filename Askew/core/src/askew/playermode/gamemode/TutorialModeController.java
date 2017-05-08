@@ -224,8 +224,8 @@ public class TutorialModeController extends GameModeController {
 		}
 
 		if(currentStage == STAGE_PINNED) {
-			sloth.pin(world);
-			sloth.setPinned();
+			slothList.get(0).pin(world);
+			slothList.get(0).setPinned();
 		}
 
 	}
@@ -287,9 +287,9 @@ public class TutorialModeController extends GameModeController {
 			switch(currentStage) {
 				case STAGE_PINNED:
 					if( (int)(time/3) %2 == 0) {
-						sloth.getRightArm().setAngle((float)Math.PI);
+						slothList.get(0).getRightArm().setAngle((float)Math.PI);
 					} else {
-						sloth.getLeftArm().setAngle((float)Math.PI);
+						slothList.get(0).getLeftArm().setAngle((float)Math.PI);
 					}
 					break;
 				case STAGE_GRAB:
@@ -298,7 +298,7 @@ public class TutorialModeController extends GameModeController {
 						grabbedAll = trunkGrabbed.get(i) && grabbedAll;
 					}
 					if(inRangeSetPt+1 >= grabSetPoints.length) { break; }
-					Vector2 setpt = new Vector2(sloth.getX(),grabSetPoints[inRangeSetPt+1]);
+					Vector2 setpt = new Vector2(slothList.get(0).getX(),grabSetPoints[inRangeSetPt+1]);
 					if (inRange(setpt)) {
 						inRangeSetPt++;
 					}
@@ -330,7 +330,7 @@ public class TutorialModeController extends GameModeController {
 					if (inRange(flingSetPoints[inRangeSetPt+1])) {
 						// update omega
 						try {
-							omega = sloth.getMostRecentlyGrabbed().getLinearVelocity().len();
+							omega = slothList.get(0).getMostRecentlyGrabbed().getLinearVelocity().len();
 						} catch (NullPointerException e) {
 							omega = 0;
 						}
@@ -436,8 +436,8 @@ public class TutorialModeController extends GameModeController {
 			}
 			if(moveToNextStage())
 				next = true;
-			prevLeftGrab = sloth.isActualLeftGrab();
-			prevRightGrab = sloth.isActualRightGrab();
+			prevLeftGrab = slothList.get(0).isActualLeftGrab();
+			prevRightGrab = slothList.get(0).isActualRightGrab();
 		}
 	}
 
@@ -450,7 +450,7 @@ public class TutorialModeController extends GameModeController {
 		float other = (currentStage == STAGE_VINE) ? 0.6f : 0.05f;
 //		System.out.print("  dir "+dir);
 		if (dir == SHIMMY_E || dir == SHIMMY_SE || dir == SHIMMY_NE) {
-			rTarget = sloth.getRightmostTarget();
+			rTarget = slothList.get(0).getRightmostTarget();
 			if (rTarget == null) { return false; }
 			rtPos = rTarget.getPosition();
 //			System.out.print("   E: ("+rtPos.x+","+rtPos.y+")");
@@ -460,9 +460,8 @@ public class TutorialModeController extends GameModeController {
 //				System.out.print("  setpt.y "+setpt.y+"   pos.y "+rtPos.y);
 				yrange = true; }
 
-		}
-		if (dir == SHIMMY_W || dir == SHIMMY_SW || dir == SHIMMY_NW) {
-			lTarget = sloth.getLeftmostTarget();
+		} else if (dir == SHIMMY_W || dir == SHIMMY_SW || dir == SHIMMY_NW) {
+			lTarget = slothList.get(0).getLeftmostTarget();
 			if (lTarget == null) { return false; }
 			ltPos = lTarget.getPosition();
 //			System.out.print("   W: ("+ltPos.x+","+ltPos.y+")");
@@ -472,9 +471,9 @@ public class TutorialModeController extends GameModeController {
 //				System.out.print("  setpt.y "+setpt.y+"   pos.y "+ltPos.y);
 				yrange = true; }
 
-		}
-		if (dir == SHIMMY_S || dir == SHIMMY_SE || dir == SHIMMY_SW){
-			bTarget = sloth.getBottomTarget();
+		} else if (dir == SHIMMY_S || dir == SHIMMY_SE || dir == SHIMMY_SW){
+			bTarget = slothList.get(0).getBottomTarget();
+
 			if (bTarget == null) { return false; }
 			btPos = bTarget.getPosition();
 //			System.out.print("   S: ("+btPos.x+","+btPos.y+")");
@@ -482,9 +481,8 @@ public class TutorialModeController extends GameModeController {
 			if (btPos.y+0.05f <= setpt.y) { yrange = true; }
 			if (dir == SHIMMY_S && Math.abs(setpt.x - btPos.x) <= other) { xrange = true; }
 
-		}
-		if (dir == SHIMMY_N || dir == SHIMMY_NE || dir == SHIMMY_NW) {
-			tTarget = sloth.getTopTarget();
+		} else if (dir == SHIMMY_N || dir == SHIMMY_NE || dir == SHIMMY_NW) {
+			tTarget = slothList.get(0).getTopTarget();
 			if (tTarget == null) { return false; }
 			ttPos = tTarget.getPosition();
 //			System.out.print("    N: ("+ttPos.x+","+ttPos.y+")");
@@ -498,7 +496,7 @@ public class TutorialModeController extends GameModeController {
 
 	public boolean reachedBackPt(Vector2 backpt) {
 		try {
-			Vector2 handPos = sloth.getMostRecentlyGrabbed().getPosition();
+			Vector2 handPos = slothList.get(0).getMostRecentlyGrabbed().getPosition();
 			Vector2 diff = handPos.cpy().sub(backpt);
 //			System.out.print("   len "+diff.len());
 //			System.out.print("   backpt: "); printVector(backpt);
@@ -519,10 +517,10 @@ public class TutorialModeController extends GameModeController {
 
 	// checks if next set point is in range for changing arm help
 	public boolean inRange(Vector2 setpt, float allowance) {
-		Body lTarget = sloth.getLeftTarget();
-		Body rTarget = sloth.getRightTarget();
-		Body lHand = sloth.getLeftHand();
-		Body rHand = sloth.getRightHand();
+		Body lTarget = slothList.get(0).getLeftTarget();
+		Body rTarget = slothList.get(0).getRightTarget();
+		Body lHand = slothList.get(0).getLeftHand();
+		Body rHand = slothList.get(0).getRightHand();
 
 		Vector2 lhPos = lHand.getPosition();
 		Vector2 rhPos = rHand.getPosition();
@@ -595,12 +593,12 @@ public class TutorialModeController extends GameModeController {
 	}
 
 	public void setTarget(Vine v) {
-		Obstacle sHand = sloth.getMostRecentlyGrabbed();
+		Obstacle sHand = slothList.get(0).getMostRecentlyGrabbed();
 		if (sHand == null) {
 			return;
 		}
-		Body hand = sloth.getMostRecentlyGrabbed().getBody();
-		Body otherHand = (hand == sloth.getRightHand()) ? sloth.getLeftHand() : sloth.getRightHand();
+		Body hand = slothList.get(0).getMostRecentlyGrabbed().getBody();
+		Body otherHand = (hand == slothList.get(0).getRightHand()) ? slothList.get(0).getLeftHand() : slothList.get(0).getRightHand();
 		float aAngle = otherHand.getPosition().sub(hand.getPosition()).angle();
 		float vAngle = v.getEndpt().getPosition().sub(v.getPosition()).angle();
 		angleDiff = (((aAngle - vAngle)%360)+360)%360;
@@ -645,29 +643,29 @@ public class TutorialModeController extends GameModeController {
 				break;
 			case STAGE_GRAB:
 				if(!grabbedAll)
-					sloth.drawHelpLines(canvas, camTrans, SHIMMY_S, 0f);
+					slothList.get(0).drawHelpLines(canvas, camTrans, SHIMMY_S, 0f);
 				break;
 			case STAGE_SHIMMY:
 			case STAGE_FLING:
 			case STAGE_VINE:
 				switch(targetLine) {
 					case PLUS30:
-						sloth.drawHelpLines(canvas, camTrans, PLUS_30, 0f);
+						slothList.get(0).drawHelpLines(canvas, camTrans, PLUS_30, 0f);
 						break;
 					case MINUS30:
-						sloth.drawHelpLines(canvas, camTrans, MINUS_30, 0f);
+						slothList.get(0).drawHelpLines(canvas, camTrans, MINUS_30, 0f);
 						break;
 					case PLUS10:
-						sloth.drawHelpLines(canvas, camTrans, PLUS_10, 0f);
+						slothList.get(0).drawHelpLines(canvas, camTrans, PLUS_10, 0f);
 						break;
 					case MINUS10:
-						sloth.drawHelpLines(canvas, camTrans, MINUS_10, 0f);
+						slothList.get(0).drawHelpLines(canvas, camTrans, MINUS_10, 0f);
 						break;
 					case NEUTRAL:
-						sloth.drawHelpLines(canvas, camTrans, DEFAULT, angleDiff);
+						slothList.get(0).drawHelpLines(canvas, camTrans, DEFAULT, angleDiff);
 						break;
 					case EAST:
-						sloth.drawHelpLines(canvas, camTrans, SHIMMY_E, 0f);
+						slothList.get(0).drawHelpLines(canvas, camTrans, SHIMMY_E, 0f);
 						break;
 				}
 				break;
@@ -698,7 +696,7 @@ public class TutorialModeController extends GameModeController {
 			canvas.drawTextCentered("Try to shimmy across", displayFont, 200f);
 		}
 		if (currentStage >= STAGE_GRAB && currentStage < STAGE_VINE) {
-			if(sloth.isActualRightGrab()) {
+			if(slothList.get(0).isActualRightGrab()) {
 				canvas.draw(bumperRTexture, Color.WHITE, bumperLTexture.getRegionWidth() / 2, 0, 400, 400, 0, worldScale.x * 3 / bumperLTexture.getRegionWidth(), worldScale.y * 3 / bumperLTexture.getRegionHeight());
 				canvas.draw(joystickTexture, Color.WHITE, joystickTexture.getRegionWidth() / 2, 0, 350, 450, 0, worldScale.x / joystickTexture.getRegionWidth(), worldScale.y / joystickTexture.getRegionHeight());
 				canvas.draw(joystickNeutralTexture, Color.WHITE, joystickNeutralTexture.getRegionWidth() / 2, 0, 450, 450, 0, worldScale.x/ joystickNeutralTexture.getRegionWidth(), worldScale.y / joystickNeutralTexture.getRegionHeight());
@@ -735,15 +733,15 @@ public class TutorialModeController extends GameModeController {
 //		System.out.println("stage " + currentStage);
 		InputController input =  InputControllerManager.getInstance().getController(0);
 
-		camTrans.setToTranslation(-1 * sloth.getBody().getPosition().x * worldScale.x
-				, -1 * sloth.getBody().getPosition().y * worldScale.y);
+		camTrans.setToTranslation(-1 * slothList.get(0).getBody().getPosition().x * worldScale.x
+				, -1 * slothList.get(0).getBody().getPosition().y * worldScale.y);
 		camTrans.translate(canvas.getWidth()/2,canvas.getHeight()/2);
-		canvas.getCampos().set( sloth.getBody().getPosition().x * worldScale.x
-				, sloth.getBody().getPosition().y * worldScale.y);
+		canvas.getCampos().set( slothList.get(0).getBody().getPosition().x * worldScale.x
+				, slothList.get(0).getBody().getPosition().y * worldScale.y);
 
 		canvas.begin(camTrans);
 		Collections.sort(objects);
-		sloth.setTutorial();
+		slothList.get(0).setTutorial();
 		for(Entity obj : objects) {
 			obj.setDrawScale(worldScale);
 			// if stage 2, tint trunks if already grabbed
@@ -773,18 +771,9 @@ public class TutorialModeController extends GameModeController {
 		if (!playerIsReady && !paused && coverOpacity <= 0)
 			printHelp();
 		canvas.end();
-		sloth.drawGrab(canvas, camTrans);
+		slothList.get(0).drawGrab(canvas, camTrans);
 
 		drawHelpLines();
-
-		canvas.begin();
-		canvas.drawTextStandard("current time:    "+currentTime, 10f, 70f);
-		canvas.drawTextStandard("record time:     "+recordTime,10f,50f);
-
-		//Draw control schemes
-		canvas.drawTextStandard(typeMovement, 10f, 700f);
-		canvas.drawTextStandard(typeControl,10f,680f);
-		canvas.end();
 
 //		sloth.drawHelpLines();
 
@@ -800,7 +789,7 @@ public class TutorialModeController extends GameModeController {
 			// text
 			canvas.drawTextStandard("FPS: " + 1f/delta, 10.0f, 100.0f);
 			canvas.end();
-			sloth.drawForces(canvas, camTrans);
+			slothList.get(0).drawForces(canvas, camTrans);
 		}
 
 		// draw instructional animations

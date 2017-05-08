@@ -31,6 +31,8 @@ public class InputController {
 	private static final float GP_MAX_SPEED  = 10.0f;
 	private static final float GP_THRESHOLD  = 0.01f;
 
+	private int id;
+
 	@Getter
 	private boolean rightClickPressed;
 	private boolean rightClickPrevious;
@@ -141,8 +143,6 @@ public class InputController {
 	@Getter
 	private boolean downKeyPressed;
 	private boolean downKeyPrevious;
-
-
 
 
 	/** Whether the right hand is grabbing. */
@@ -356,6 +356,7 @@ public class InputController {
 		xbox = new XBox360Controller(id);
 		crosshair = new Vector2();
 		crosscache = new Vector2();
+		this.id = id;
 	}
 
 	/**
@@ -406,10 +407,15 @@ public class InputController {
 		// Check to see if a GamePad is connected
 		if (xbox.isConnected()) {
 			readGamepad(bounds, scale);
-			readKeyboard(bounds, scale, true); // Read as a back-up
+			if (id ==0)
+				readKeyboard(bounds, scale, true); // Read as a back-up
 		} else {
 //			System.err.println("no 360 controller connected");
-			readKeyboard(bounds, scale, false);
+			if (id ==0)
+				readKeyboard(bounds, scale, false);
+			else {
+//				System.err.println("No second controller detected");
+			}
 		}
 	}
 

@@ -15,6 +15,7 @@ import askew.entity.BackgroundEntity;
 import askew.entity.Entity;
 import askew.entity.EyeEntity;
 import askew.entity.ghost.GhostModel;
+import askew.entity.obstacle.ComplexObstacle;
 import askew.entity.obstacle.Obstacle;
 import askew.entity.owl.OwlModel;
 import askew.entity.sloth.SlothModel;
@@ -286,6 +287,7 @@ public class LevelEditorController extends WorldController {
 	private void populateLevel() {
 		try {
 			levelModel = jsonLoaderSaver.loadLevel(currentLevel);
+			System.out.println(levelModel);
 			if (levelModel != null)
 				background = mantisAssetManager.get(levelModel.getBackground(), Texture.class);
 		} catch (FileNotFoundException e) {
@@ -342,6 +344,18 @@ public class LevelEditorController extends WorldController {
 				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
 				"Entity", 4, "undo"));
 
+		buttons.add(new Button(GUI_LEFT_BAR_MARGIN, 21 * GUI_LEFT_BAR_MARGIN,
+				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
+				"LEOptions", 5, "debug"));
+
+		buttons.add(new Button(GUI_LEFT_BAR_MARGIN, 23 * GUI_LEFT_BAR_MARGIN,
+				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
+				"LEOptions", 6, "zoom in"));
+
+		buttons.add(new Button(GUI_LEFT_BAR_MARGIN, 25 * GUI_LEFT_BAR_MARGIN,
+				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
+				"LEOptions", 7, "zoom out"));
+
 
 		buttons.add(new MenuArrowButton(GUI_LEFT_BAR_WIDTH, 0,
 				GUI_EMARROW_WIDTH, GUI_LOWER_BAR_HEIGHT,
@@ -384,7 +398,17 @@ public class LevelEditorController extends WorldController {
 							t.setOn(!t.isOn());
 							dragmode = t.isOn();
 							break;
-
+						case("debug"):
+							System.out.println(levelModel);
+							break;
+						case("zoom in"):
+							bounds.setSize(bounds.getWidth() - 1.6f, bounds.getHeight() - .9f);
+							setWorldScale(canvas);
+							break;
+						case("zoom out"):
+							bounds.setSize(bounds.getWidth() + 1.6f, bounds.getHeight() + .9f);
+							setWorldScale(canvas);
+							break;
 						default:
 							break;
 					}
@@ -640,6 +664,10 @@ public class LevelEditorController extends WorldController {
 			if(InputControllerManager.getInstance().getController(0).isSpaceKeyPressed()){
 				adjustedCxCamera = 0;
 				adjustedCyCamera = 0;
+				if(selected != null && selected instanceof BackgroundEntity){
+					adjustedCxCamera = selected.getX();
+					adjustedCyCamera = selected.getY();
+				}
 			}
 			camUpdate();
 		}
@@ -716,6 +744,9 @@ public class LevelEditorController extends WorldController {
 				dragging = true;
 				if(selected != null){
 					selected.setPosition(adjustedMouseX, adjustedMouseY);
+					if(selected instanceof ComplexObstacle){
+						((ComplexObstacle) selected).rebuild();
+					}
 					if(movefar){
 						selected.setModifiedPosition( adjustedMouseX, adjustedMouseY, adjustedCxCamera, adjustedCyCamera);
 					}
@@ -774,6 +805,9 @@ public class LevelEditorController extends WorldController {
 						dragging = false;
 
 						selected.setPosition(adjustedMouseX, adjustedMouseY);
+						if(selected instanceof ComplexObstacle){
+							((ComplexObstacle) selected).rebuild();
+						}
 						if(movefar){
 							selected.setModifiedPosition( adjustedMouseX, adjustedMouseY, adjustedCxCamera, adjustedCyCamera);
 						}
@@ -1088,6 +1122,32 @@ public class LevelEditorController extends WorldController {
 			if (movefar)
 				temp = ent.getModifiedPosition(adjustedCxCamera,adjustedCyCamera);
 			canvas.drawPhysics(circleShape, new Color(Color.FIREBRICK), temp.x, temp.y, worldScale.x, worldScale.y);
+
+			if(false && ent instanceof BackgroundEntity) {
+				gridLineRenderer.setColor(Color.ORANGE);
+				Gdx.gl.glLineWidth(4);
+				gridLineRenderer.begin(ShapeRenderer.ShapeType.Line);
+				temp = ent.getModifiedPosition(levelModel.getMinX(),levelModel.getMinY());
+				float minPixelsX = ((temp.x + (((BackgroundEntity) ent).getWidth()*((BackgroundEntity) ent).getAspectRatio())/2) * worldScale.x) - (cxCamera * worldScale.x);
+				float minPixelsY = ((temp.y + (((BackgroundEntity) ent).getHeight())/2) * worldScale.y) - (cyCamera * worldScale.y);
+				temp = ent.getModifiedPosition(levelModel.getMaxX(),levelModel.getMaxY());
+				float maxPixelsX = ((temp.x - (((BackgroundEntity) ent).getWidth()*((BackgroundEntity) ent).getAspectRatio())/2) * worldScale.x) - (cxCamera * worldScale.x);
+				float maxPixelsY = ((temp.y - (((BackgroundEntity) ent).getHeight())/2) * worldScale.y) - (cyCamera * worldScale.y);
+				//gridLineRenderer.line(minPixelsX, minPixelsY, (ent.getX()-cxCamera) * worldScale.x, (ent.getY()-cyCamera) * worldScale.y);
+				//gridLineRenderer.line(minPixelsX, minPixelsY , minPixelsX + 3, minPixelsY);
+
+
+				// left line
+				gridLineRenderer.line(minPixelsX, maxPixelsY, minPixelsX, minPixelsY);
+				// top line
+				gridLineRenderer.line(minPixelsX, maxPixelsY, maxPixelsX, maxPixelsY);
+				// right line
+				gridLineRenderer.line(maxPixelsX, maxPixelsY, maxPixelsX, minPixelsY);
+				// bottom line
+				gridLineRenderer.line(minPixelsX, minPixelsY, maxPixelsX, minPixelsY);
+
+				gridLineRenderer.end();
+			}
 		}
 		canvas.endDebug();
 	}
@@ -1173,6 +1233,7 @@ public class LevelEditorController extends WorldController {
 		didLoad = true;
 		if (editorWindow != null) {
 			editorWindow.dispose();
+			editorWindow = null;
 		}
 		//GUI Mode Enabled
 		//Prevent multiple windows from being created
@@ -1197,6 +1258,9 @@ public class LevelEditorController extends WorldController {
 
 		loadButton.addActionListener(e -> {
 			loadLevel(fileName.getText());
+			editorWindow.setVisible(false);
+			editorWindow.dispose();
+			editorWindow = null;
 		});
 
 		saveButton.addActionListener(e -> {

@@ -17,7 +17,9 @@ package askew.playermode;/*
 
 import askew.*;
 import askew.entity.Entity;
+import askew.entity.EyeEntity;
 import askew.entity.obstacle.Obstacle;
+import askew.entity.sloth.SlothModel;
 import askew.playermode.gamemode.GameModeController;
 import askew.playermode.gamemode.TutorialModeController;
 import askew.util.FilmStrip;
@@ -32,8 +34,10 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
+import lombok.Getter;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Base class for a world-specific controller.
@@ -199,6 +203,9 @@ public abstract class WorldController implements Screen {
 	/** The default value of gravity (going down) */
 	protected static final float DEFAULT_GRAVITY = -4.9f;
 
+	/** Reference to the character avatar */
+	protected List<SlothModel> slothList;
+
 	/** Reference to the game canvas */
 	protected GameCanvas canvas;
 	/** All the objects in the world. */
@@ -209,6 +216,7 @@ public abstract class WorldController implements Screen {
 	/** The Box2D world */
 	protected World world;
 	/** The boundary of the world */
+	@Getter
 	protected Rectangle bounds;
 	/** The world scale */
 	protected Vector2 worldScale;
@@ -449,15 +457,17 @@ public abstract class WorldController implements Screen {
 	 * @return whether to process the update loop
 	 */
 	public boolean preUpdate(float dt) {
-		InputController input = InputControllerManager.getInstance().getController(0);
 
-		input.readInput(bounds, worldScale);
+		InputControllerManager.getInstance().inputControllers().forEach(input->input.readInput(bounds, worldScale));
+
+		// player 1 priority
+		InputController input = InputControllerManager.getInstance().getController(0);
 		if (listener == null) {
 			return true;
 		}
 
 		// Toggle debug
-		if (input.didRightButtonPress() || input.isEKeyPressed()) {
+		if (input.didRightButtonPress() || input.isGKeyPressed()) {
 			debug = !debug;
 		}
 		
@@ -545,7 +555,11 @@ public abstract class WorldController implements Screen {
 					continue;
 				}
 			}
-			ent.update(dt); // called last!
+			if (!(ent instanceof EyeEntity)) {
+				ent.update(dt); // called last!
+			} else {
+				((EyeEntity) ent).update(dt, slothList.get(0));
+			}
 		}
 	}
 	

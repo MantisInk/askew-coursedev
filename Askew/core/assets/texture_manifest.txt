@@ -1,11 +1,16 @@
 texture/background/background1.png
+texture/background/BackgroundStuff/bigPalmTree.png
 texture/background/BackgroundStuff/cloud.png
 texture/background/BackgroundStuff/cloud1.png
 texture/background/BackgroundStuff/eyes.png
 texture/background/BackgroundStuff/foregroundtree.png
+texture/background/BackgroundStuff/leafPalm.png
 texture/background/BackgroundStuff/palmLeaf.png
 texture/background/BackgroundStuff/palmLeaf2.png
+texture/background/BackgroundStuff/palms.png
 texture/background/BackgroundStuff/palmTree.png
+texture/background/BackgroundStuff/palmTree1.png
+texture/background/BackgroundStuff/palmTreeBig.png
 texture/background/BackgroundStuff/purple.png
 texture/background/BackgroundStuff/rusty.png
 texture/background/BackgroundStuff/sil1.png
@@ -15,6 +20,7 @@ texture/background/BackgroundStuff/sil4.png
 texture/background/BackgroundStuff/tree.png
 texture/background/BackgroundStuff/tree1.png
 texture/background/BackgroundStuff/turquoise.png
+texture/background/BackgroundStuff/zebraPlant.png
 texture/background/fern.png
 texture/background/foreground/fernTile.png
 texture/background/foreground/leaf.png
@@ -38,7 +44,9 @@ texture/background/victory.png
 texture/branch/branch.png
 texture/eye/eyeL.png
 texture/eye/eyeR.png
+texture/eye/eyes.png
 texture/eye/pupil.png
+texture/eye/pupils.png
 texture/leveleditor/button.png
 texture/leveleditor/emleft.png
 texture/leveleditor/folder.png
@@ -46,6 +54,12 @@ texture/leveleditor/grey.png
 texture/leveleditor/placeholder.png
 texture/leveleditor/up.png
 texture/leveleditor/yellowbox.png
+texture/particle/cloud.png
+texture/particle/cloud1.png
+texture/particle/test.png
+texture/postprocess/edgefade - Copy.png
+texture/postprocess/edgefade.png
+texture/postprocess/edgefade3.png
 texture/sloth/arm.png
 texture/sloth/backarm.png
 texture/sloth/backarm_moving.png
@@ -75,6 +89,7 @@ texture/tutorial/joystick1.png
 texture/tutorial/joystick2.png
 texture/vine/vine.png
 texture/vine/vine2.png
+texture/vine/vine4.png
 texture/wall/corner.png
 texture/wall/edge.png
 texture/wall/edge2.png

@@ -1,9 +1,13 @@
 {
-  "levelModelVersion": 1,
+  "levelModelVersion": 2,
   "goalTimeGold": 30,
   "goalTimeSilver": 45,
   "goalTimeBronze": 60,
   "recordTime": 9.213538,
+  "maxX": 20.0,
+  "maxY": 20.0,
+  "minX": 0.0,
+  "minY": 0.0,
   "title": "The Playground",
   "background": "texture/background/background1.png",
   "soundtrack": "TODO",
@@ -13,7 +17,7 @@
       "INSTANCE": {
         "x": 7.0,
         "y": 4.0,
-        "thorn": false,
+        "color": -1,
         "points": [
           0.0,
           0.0,
@@ -23,7 +27,8 @@
           1.0,
           2.0,
           0.0
-        ]
+        ],
+        "grabbed": false
       }
     },
     {
@@ -32,7 +37,8 @@
         "x": 3.0,
         "y": 1.0,
         "angle": -90.0,
-        "numLinks": 10.0
+        "numLinks": 10.0,
+        "grabbed": false
       }
     },
     {
@@ -42,8 +48,7 @@
         "y": 10.0,
         "lTheta": 0.0,
         "rTheta": 0.0,
-        "setLastGrabX": false,
-        "lastGrabX": 0.0
+        "grabbed": false
       }
     },
     {
@@ -52,7 +57,8 @@
         "x": 6.5,
         "y": 7.5,
         "angle": 270.0,
-        "numLinks": 3.0
+        "numLinks": 3.0,
+        "grabbed": false
       }
     },
     {
@@ -61,7 +67,8 @@
         "x": 3.0,
         "y": 1.0,
         "angle": 0.0,
-        "numLinks": 8.0
+        "numLinks": 8.0,
+        "grabbed": false
       }
     },
     {
@@ -70,7 +77,8 @@
         "x": 13.0,
         "y": 1.0,
         "angle": 0.0,
-        "numLinks": 8.0
+        "numLinks": 8.0,
+        "grabbed": false
       }
     },
     {
@@ -80,7 +88,8 @@
         "numLinks": 5.0,
         "x": 11.0,
         "y": 11.0,
-        "angle": 0.0
+        "angle": 0.0,
+        "grabbed": false
       }
     },
     {
@@ -90,32 +99,16 @@
         "numLinks": 5.0,
         "x": 5.0,
         "y": 11.0,
-        "angle": 0.0
+        "angle": 0.0,
+        "grabbed": false
       }
     },
     {
       "CLASSNAME": "askew.entity.owl.OwlModel",
       "INSTANCE": {
         "x": 8.0,
-        "y": 18.0
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.wall.WallModel",
-      "INSTANCE": {
-        "x": -7.0,
-        "y": -3.0,
-        "thorn": true,
-        "points": [
-          0.0,
-          0.0,
-          0.0,
-          1.0,
-          30.0,
-          1.0,
-          30.0,
-          0.0
-        ]
+        "y": 18.0,
+        "grabbed": false
       }
     }
   ]

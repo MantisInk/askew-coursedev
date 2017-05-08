@@ -9,7 +9,7 @@ import java.util.List;
 public @Data
 class LevelModel {
 
-    public static final int LATEST_LEVEL_MODEL_VERSION = 3;
+    public static final int LATEST_LEVEL_MODEL_VERSION = 4;
 
     int levelModelVersion;
 
@@ -48,5 +48,20 @@ class LevelModel {
 
     public void addEntity(Entity o) {
         entities.add(o);
+    }
+
+    public String toString(){
+        String ans  = "";
+        ans += this.title;
+        ans += "\n";
+        ans += this.minX;
+        ans += "\n";
+        ans += this.minY;
+        ans += "\n";
+        ans += this.maxX;
+        ans += "\n";
+        ans += this.maxY;
+        ans += "\n";
+        return ans;
     }
 }

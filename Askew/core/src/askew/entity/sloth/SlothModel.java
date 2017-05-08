@@ -37,6 +37,8 @@ public class SlothModel extends ComplexObstacle  {
     private transient float GRAVITY_SCALE;
     private transient boolean GRABBING_HAND_HAS_TORQUE;
     private transient float OMEGA_NORMALIZER;
+    @Getter
+    private transient int id;
 
     @Setter @Getter
     public transient int controlMode;
@@ -234,6 +236,7 @@ public class SlothModel extends ComplexObstacle  {
         if (!InputControllerManager.getInstance().getController(0).getXbox().isConnected()) controlMode = CONTROLS_ONE_ARM;
         this.rightGrabbing = false;
         this.leftGrabbing =  true;
+        this.drawNumber = -20;
     }
 
     public void build(){
@@ -247,7 +250,6 @@ public class SlothModel extends ComplexObstacle  {
  	    super.setPosition(x,y);
  	    this.x = x;
  	    this.y = y;
- 	    rebuild();
     }
 
     private void init() {
@@ -941,9 +943,9 @@ public class SlothModel extends ComplexObstacle  {
         f.maskBits = FilterGroup.VINE | FilterGroup.WALL;
         f.categoryBits = FilterGroup.HAND;
         sensorFixture1 = bodies.get(PART_LEFT_HAND).getBody().createFixture(sensorDef);
-        sensorFixture1.setUserData("slothpart sloth left hand");
+        sensorFixture1.setUserData("slothpart sloth left hand slothid"+id);
         sensorFixture2 = bodies.get(PART_RIGHT_HAND).getBody().createFixture(sensorDef);
-        sensorFixture2.setUserData("slothpart sloth right hand");
+        sensorFixture2.setUserData("slothpart sloth right hand slothid"+id);
         sensorFixture1.setFilterData(f);
         sensorFixture2.setFilterData(f);
         sensorFixture1.getBody().setBullet(true);
@@ -959,6 +961,13 @@ public class SlothModel extends ComplexObstacle  {
         bodies.get(0).setMass(BODY_MASS);
     }
 
+    public void setId(int id) {
+        this.id = id;
+        sensorFixture1.setUserData("slothpart sloth left hand slothid"+id);
+        sensorFixture2.setUserData("slothpart sloth right hand slothid"+id);
+    }
+
+
     public float getTorqueForce(float torque, float r, float theta){
         return torque/(r*(float)Math.sin(theta));
     }
@@ -967,12 +976,6 @@ public class SlothModel extends ComplexObstacle  {
         super.drawDebug(canvas);
         canvas.drawPhysics(sensorShape, Color.RED,bodies.get(PART_LEFT_HAND).getX(),bodies.get(PART_LEFT_HAND).getY(),getAngle(),drawScale.x,drawScale.y);
         canvas.drawPhysics(sensorShape, Color.RED,bodies.get(PART_RIGHT_HAND).getX(),bodies.get(PART_RIGHT_HAND).getY(),getAngle(),drawScale.x,drawScale.y);
-    }
-
-    public ObjectSet<Obstacle> badBodies() {
-        ObjectSet<Obstacle> badSet = new ObjectSet<Obstacle>();
-        for (Obstacle b : bodies) badSet.add(b);
-        return badSet;
     }
 
     @Override
@@ -1067,7 +1070,7 @@ public class SlothModel extends ComplexObstacle  {
                 }
                 //If the body parts are not limbs
                 else {
-                    part.draw(canvas, Color.WHITE);
+                    part.draw(canvas, getDrawTint());
                 }
             }
         }
@@ -1076,7 +1079,7 @@ public class SlothModel extends ComplexObstacle  {
     private void drawArm(GameCanvas canvas, BoxObstacle part, boolean active) {
         if (controlMode == CONTROLS_ONE_ARM) {
             if (active) {
-                part.draw(canvas, Color.WHITE);
+                part.draw(canvas, getDrawTint());
                 // draw power halo
                 power = this.power;
 
@@ -1097,7 +1100,7 @@ public class SlothModel extends ComplexObstacle  {
                 part.draw(canvas, Color.BLACK);
             }
         } else {
-            part.draw(canvas, Color.WHITE);
+            part.draw(canvas, getDrawTint());
         }
     }
 
@@ -1199,6 +1202,14 @@ public class SlothModel extends ComplexObstacle  {
         joints.add(joint);
     }
 
+    private Color getDrawTint() {
+        if (id == 0) {
+            return Color.WHITE;
+        } else {
+            return new Color(0.5f,0.5f,1.0f,1.0f);
+        }
+    }
+
     public void setPinned() {pinned = true;}
 
     public void setTutorial() {tutorial = true;}
@@ -1294,5 +1305,6 @@ public class SlothModel extends ComplexObstacle  {
             }
         }
     }
+
 }
 

@@ -2,6 +2,7 @@ package askew.entity;
 
 import askew.GameCanvas;
 import askew.MantisAssetManager;
+import askew.entity.sloth.SlothModel;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -11,9 +12,9 @@ public class EyeEntity extends BackgroundEntity{
 
     private transient Vector2 pupilOffset;
     private transient TextureRegion texture2;
-    private final float PUPIL_OFFSET = 1;
-    private final String pathEyes = "texture/background/eyes.png";
-    private final String pathPupils = "texture/background/pupils.png";
+    private final float PUPIL_OFFSET = 0.08f;
+    private final String pathEyes = "texture/eye/eyes.png";
+    private final String pathPupils = "texture/eye/pupils.png";
 
     public EyeEntity(float x, float y){
         this(x,y,1.5f,0,1,1,0xFFFFFFFF);
@@ -21,7 +22,7 @@ public class EyeEntity extends BackgroundEntity{
 
     public EyeEntity(float x, float y, float depth,
                      float angle, float scalex, float scaley, int color){
-        super(x, y, 1, 1, 1.5f, 0, scalex, scaley, "texture/background/eyes.png", color);
+        super(x, y, 1, 1, 1.5f, 0, scalex, scaley, "texture/eye/eyes.png", color);
         pupilOffset = new Vector2();
     }
 
@@ -33,26 +34,25 @@ public class EyeEntity extends BackgroundEntity{
 //        aspectRatio =(float)tex.getWidth()/(float)tex.getHeight();
     }
 
-    @Override
-    public void update(float delta) {
+    public void update(float delta, SlothModel sloth) {
         //TODO draw moving eyes
-//        SlothModel sloth = SlothModel.getInstance();
-//        Vector2 sPos = new Vector2(sloth.getX(),sloth.getY());
-//        if (sPos.x < this.x) {
-//            pupilOffset.x = -PUPIL_OFFSET;
-//        } else if (sPos.x == this.x) {
-//            pupilOffset.x = PUPIL_OFFSET;
-//        } else {
-//            pupilOffset.x = 0;
-//        }
-//
-//        if(sPos.y < this.y) {
-//            pupilOffset.y = -PUPIL_OFFSET;
-//        } else if (sPos.y > this.y) {
-//            pupilOffset.y = PUPIL_OFFSET;
-//        } else {
-//            pupilOffset.y = 0;
-//        }
+//        SlothModel sloth = slothlist.get(0);
+        Vector2 sPos = sloth.getMainBody().getPosition();
+        if (sPos.x < this.x) {
+            pupilOffset.x = -PUPIL_OFFSET;
+        } else if (sPos.x == this.x) {
+            pupilOffset.x = PUPIL_OFFSET;
+        } else {
+            pupilOffset.x = 0;
+        }
+
+        if(sPos.y < this.y) {
+            pupilOffset.y = -PUPIL_OFFSET;
+        } else if (sPos.y > this.y) {
+            pupilOffset.y = PUPIL_OFFSET;
+        } else {
+            pupilOffset.y = 0;
+        }
     }
 
     @Override
