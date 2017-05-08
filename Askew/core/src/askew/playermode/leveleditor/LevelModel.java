@@ -9,7 +9,7 @@ import java.util.List;
 public @Data
 class LevelModel {
 
-    public static final int LATEST_LEVEL_MODEL_VERSION = 1;
+    public static final int LATEST_LEVEL_MODEL_VERSION = 2;
 
     int levelModelVersion;
 
@@ -37,6 +37,7 @@ class LevelModel {
         this.goalTimeSilver = 45;
         this.goalTimeBronze = 60;
         this.recordTime = 9999999;
+        this.title = "Title";
         this.background = "texture/background/background1.png";
         this.soundtrack = "TODO";
         this.minX = 0;

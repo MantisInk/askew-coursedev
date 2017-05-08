@@ -132,7 +132,7 @@ public class SlothModel extends ComplexObstacle  {
     @Getter
     private transient float power;
 
-    @Setter
+    @Getter @Setter
     private transient int movementMode;
     private transient boolean leftGrabbing;
     private transient boolean rightGrabbing;
@@ -195,10 +195,10 @@ public class SlothModel extends ComplexObstacle  {
     private static final float ARM_XOFFSET    = ARM_WIDTH / 2f + .375f;
     private static final float ARM_YOFFSET    = 0f;
 
-    private static final float HAND_WIDTH = 0.1125f;
-    private static final float HAND_HEIGHT = 0.1125f;
+    private static final float HAND_WIDTH = 0.1f;
+    private static final float HAND_HEIGHT = 0.1f;
     //private static final float HAND_XOFFSET  = (ARM_WIDTH / 2f) - HAND_WIDTH/2;
-    private static final float HAND_XOFFSET  = (ARM_WIDTH / 2f) - HAND_WIDTH * 2 - .07f;
+    private static final float HAND_XOFFSET  = (ARM_WIDTH / 2f) - HAND_WIDTH * 2 - .3f;
 
     public static final float ARMSPAN = ARM_XOFFSET*2 - 0.05f;
 
@@ -857,7 +857,9 @@ public class SlothModel extends ComplexObstacle  {
             rightTarget = target;
         }
         // set data as grabbed for pinned to shade grabbed stuff
-        target.setUserData("grabbed");
+        if (target.getUserData() instanceof Obstacle) {
+            ((Obstacle)target.getUserData()).setGrabbed();
+        }
 
         joints.add(grabJoint);
         grabbedEntity = true;
@@ -866,9 +868,12 @@ public class SlothModel extends ComplexObstacle  {
     public void releaseLeft(World world) {
         if (didSafeGrab) return;
         if (leftGrabJoint != null) {
-            if (movementMode != GRAB_TOGGLE || !leftGrabbing) world.destroyJoint(leftGrabJoint);
+            joints.removeValue(leftGrabJoint,true);
+            world.destroyJoint(leftGrabJoint);
             leftCanGrabOrIsGrabbing = false;
             releasedEntity = true;
+            leftGrabJoint = null;
+            leftTarget = null;
         }
         if(mostRecentlyGrabbed != null && mostRecentlyGrabbed.getBody() == getLeftHand()){
             mostRecentlyGrabbed = null;
@@ -880,26 +885,54 @@ public class SlothModel extends ComplexObstacle  {
     public void releaseRight(World world) {
         if (didSafeGrab) return;
         if (rightGrabJoint != null) {
-            if (movementMode != GRAB_TOGGLE || !rightGrabbing) world.destroyJoint(rightGrabJoint);
+            joints.removeValue(rightGrabJoint,true);
+            world.destroyJoint(rightGrabJoint);
             leftCanGrabOrIsGrabbing = true;
             releasedEntity = true;
+            rightGrabJoint = null;
+            rightTarget = null;
+        }
+    }
+
+    @Override
+    public void deactivatePhysics(World world) {
+        if(grabPointL != null)
+            world.destroyBody(grabPointL);
+        if(grabPointR != null)
+            world.destroyBody(grabPointR);
+        if (leftGrabJoint != null) {
+            joints.removeValue(leftGrabJoint,true);
+            // not sure why but dont destroy these joints. it crashes the game. -trevor
+//            world.destroyJoint(leftGrabJoint);
+            leftCanGrabOrIsGrabbing = false;
+            releasedEntity = true;
+            leftGrabJoint = null;
+            leftTarget = null;
+        }
+        if (rightGrabJoint != null) {
+            joints.removeValue(rightGrabJoint,true);
+//            world.destroyJoint(rightGrabJoint);
+            leftCanGrabOrIsGrabbing = true;
+            releasedEntity = true;
+            rightGrabJoint = null;
+            rightTarget = null;
         }
         if(mostRecentlyGrabbed != null && mostRecentlyGrabbed.getBody() == getRightHand()){
             mostRecentlyGrabbed = null;
         }
         rightGrabJoint = null;
         rightTarget = null;
+        super.deactivatePhysics(world);
+
     }
 
     public void activateSlothPhysics(World world) {
-        float MN_SENSOR_HEIGHT = HAND_HEIGHT/2f;
-        float MN_SENSOR_WIDTH = HAND_WIDTH/2f;
         Vector2 sensorCenter = new Vector2(0, 0);
         FixtureDef sensorDef = new FixtureDef();
         sensorDef.density = 0.0f;
         sensorDef.isSensor = true;
         sensorShape = new PolygonShape();
-        sensorShape.setAsBox(MN_SENSOR_WIDTH, MN_SENSOR_HEIGHT, sensorCenter, 0.0f);
+        sensorShape.setAsBox(HAND_WIDTH, HAND_HEIGHT, sensorCenter, 0.0f);
         sensorDef.shape = sensorShape;
 
         Filter f = new Filter();
@@ -961,6 +994,10 @@ public class SlothModel extends ComplexObstacle  {
         partTextures[6] = new TextureRegion(managedFrontArmMoving);
         partTextures[7] = new TextureRegion(managedBackArmMoving);
         partTextures[8] = new TextureRegion(managedPowerGlow);
+
+//        for(int i = 0; i < partTextures.length; i++){
+//            partTextures[i].getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+//        }
 
         if (bodies.size == 0) {
             init();
@@ -1174,6 +1211,7 @@ public class SlothModel extends ComplexObstacle  {
             Vector2 rPos = right.getPosition();
             Vector2 bPos = body.getPosition();
             float mag;
+
             if(isActualLeftGrab() || isActualRightGrab()) {
                 if (isActualLeftGrab()) {
                     if (!isActualRightGrab() || left.getX() < right.getX()) {
@@ -1208,6 +1246,7 @@ public class SlothModel extends ComplexObstacle  {
                         }
                     }
                 }
+
 //                System.out.println("     left: "+lPos.angle()+" right: "+rPos.angle());
 //                System.out.println("lPos ("+lPos.x+","+lPos.y+")  rPos ("+rPos.x+","+rPos.y+")");
                 mag = Math.min(lPos.cpy().sub(bPos).len(),rPos.cpy().sub(bPos).len());

@@ -128,6 +128,9 @@ public class LevelEditorController extends WorldController {
 	private EntityTree entityTree;
 	private Entity selected;
 	private Entity temporary;
+	private Entity undoSelected;
+	private Entity undoDelete;
+	private Entity undoCreate;
 	private Button manip;
 	private boolean dragging = false;
 	private boolean creating = false;
@@ -276,7 +279,7 @@ public class LevelEditorController extends WorldController {
 		pressedL = false;
 		prevPressedL = false;
 		released = true;
-		if (didLoad) makeGuiWindow();
+		//if (didLoad) makeGuiWindow();
 	}
 
 	/**
@@ -335,7 +338,12 @@ public class LevelEditorController extends WorldController {
 
 		buttons.add(new Button(GUI_LEFT_BAR_MARGIN, 19 * GUI_LEFT_BAR_MARGIN,
 				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
-				"Entity", 4, "deselect"));
+				"Entity", 3, "deselect"));
+
+		buttons.add(new Button(GUI_LEFT_BAR_MARGIN, 21 * GUI_LEFT_BAR_MARGIN,
+				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
+				"Entity", 4, "undo"));
+
 
 		buttons.add(new MenuArrowButton(GUI_LEFT_BAR_WIDTH, 0,
 				GUI_EMARROW_WIDTH, GUI_LOWER_BAR_HEIGHT,
@@ -344,7 +352,6 @@ public class LevelEditorController extends WorldController {
 		buttons.add(new MenuArrowButton(canvas.getWidth()-GUI_EMARROW_WIDTH, 0,
 				GUI_EMARROW_WIDTH, GUI_LOWER_BAR_HEIGHT,
 				"EntityMenu", 0, "right", 0,false));
-
 	}
 
 	private boolean processButtons(Button b){
@@ -388,6 +395,8 @@ public class LevelEditorController extends WorldController {
 					switch(b.getName()){
 						case("edit"):
 							if (selected != null) {
+								undoSelected = selected;
+								undoCreate = selected;
 								promptTemplate(selected);
 								objects.remove(selected);
 								selected = null;
@@ -397,6 +406,9 @@ public class LevelEditorController extends WorldController {
 							break;
 						case("delete"):
 							if (selected != null) {
+								undoSelected = selected;
+								undoCreate = selected;
+								undoDelete = null;
 								objects.remove(selected);
 								selected = null;
 							}
@@ -404,13 +416,32 @@ public class LevelEditorController extends WorldController {
 							creating = false;
 							break;
 						case("duplicate"):
-							if(selected != null)
+							if(selected != null) {
+								undoSelected = selected;
+								undoCreate = null;
 								copyEntity(selected);
+							}
 							break;
 						case("deselect"):
+							undoSelected = selected;
 							selected = null;
 							dragging = false;
 							creating = false;
+							break;
+						case("undo"):
+							dragging = false;
+							creating = false;
+							selected = undoSelected;
+
+							if(undoDelete != null){
+								objects.remove(undoDelete);
+								undoDelete = null;
+							}
+							if(undoCreate != null){
+								objects.add(undoCreate);
+								undoCreate = null;
+							}
+
 							break;
 						default:
 							break;
@@ -438,6 +469,7 @@ public class LevelEditorController extends WorldController {
 			return false;
 		}
 	}
+
 
 	//region Utility Helpers
 	/**
@@ -630,6 +662,9 @@ public class LevelEditorController extends WorldController {
 				} else if (mouseY * worldScale.y <= GUI_LOWER_BAR_HEIGHT) {
 
 					int button = getEntityMenuButton(mouseX * worldScale.x, mouseY * worldScale.y);
+					if(button >= entityTree.current.children.size()){
+						button = -2;
+					}
 					if (button == -2) {
 						//do nothing
 					} else if (button == -1) {
@@ -677,7 +712,7 @@ public class LevelEditorController extends WorldController {
 
 			}else if(mouseY * worldScale.y <= GUI_LOWER_BAR_HEIGHT){
 
-			}else{
+			} else {
 				dragging = true;
 				if(selected != null){
 					selected.setPosition(adjustedMouseX, adjustedMouseY);
@@ -909,13 +944,14 @@ public class LevelEditorController extends WorldController {
 
 		float x;
 		float y;
+
 		for(int i = 0; i < entitiesPerPage; i++) {
-			if(i < (entitiesPerPage/2)+1) {
+			if(i < (entitiesPerPage/2)) {
 				x = startx + ((i + 1) * (sizex + margin));
 				y = starty - sizey;
 			}
 			else{
-				x = startx + ((i - (entitiesPerPage/2)+1) * (sizex + margin));
+				x = startx + ((i - ((entitiesPerPage/2))) * (sizex + margin));
 				y = starty - sizey - margin - sizey;
 			}
 			if (inBounds(mousex, mousey, x, y, sizex, sizey)) {
@@ -1290,7 +1326,7 @@ public class LevelEditorController extends WorldController {
 		promptTemplateCallback(stringJson);
 	}
 
-	private void promptTemplate(Entity template) {
+	private void  promptTemplate(Entity template) {
 		if (!prompting) {
 			prompting = true; //Use different constant? Can just use the same one?
 
@@ -1421,7 +1457,8 @@ public class LevelEditorController extends WorldController {
 
 	private void promptTemplateCallback(String json) {
 		Entity toAdd = jsonLoaderSaver.entityFromJson(json);
-		addObject( toAdd);
+		objects.add(toAdd);
+		undoDelete = toAdd;
 		prompting = false;
 	}
 
