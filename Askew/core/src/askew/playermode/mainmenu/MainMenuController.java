@@ -5,6 +5,7 @@ import askew.InputController;
 import askew.InputControllerManager;
 import askew.MantisAssetManager;
 import askew.playermode.WorldController;
+import askew.playermode.gamemode.GameModeController;
 import askew.util.SoundController;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
@@ -260,7 +261,7 @@ public class MainMenuController extends WorldController {
         SoundController instance = SoundController.getInstance();
         if (playingMusic) {
             if (instance.isActive("bgmusic")) instance.stop("bgmusic");
-            if (!instance.isActive("menumusic")) instance.play("menumusic", MENU_MUSIC, true);
+            if (!instance.isActive("menumusic")) instance.play("menumusic", MENU_MUSIC, true, GameModeController.MAX_MUSIC_VOLUME);
         }
     }
 
