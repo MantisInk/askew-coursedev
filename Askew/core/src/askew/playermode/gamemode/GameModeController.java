@@ -76,7 +76,9 @@ public class GameModeController extends WorldController {
 	public static final String[] GAMEPLAY_MUSIC = new String[] {
 			"sound/music/askew.ogg",
 			"sound/music/flowwantshisorherbaby.ogg",
-			"sound/music/youdidit.ogg"
+			"sound/music/youdidit.ogg",
+			"sound/music/Lauren_Track1.ogg",
+			"sound/music/Lauren_Track2.ogg"
 	};
 
 	public static final String GRAB_SOUND = "sound/effect/grab.wav";

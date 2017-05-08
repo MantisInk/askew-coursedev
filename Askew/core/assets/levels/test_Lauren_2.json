@@ -1,15 +1,15 @@
 {
-  "levelModelVersion": 2,
+  "levelModelVersion": 3,
   "goalTimeGold": 30,
   "goalTimeSilver": 45,
   "goalTimeBronze": 60,
   "recordTime": 9999999.0,
-  "maxX": 100.0,
-  "maxY": 100.0,
-  "minX": 0.0,
-  "minY": 0.0,
-  "title": "Title",
-  "background": "texture/background/background1.png",
+  "maxX": 75.0,
+  "maxY": 75.0,
+  "minX": -12.0,
+  "minY": 6.0,
+  "title": "The First One",
+  "background": "texture/background/BackgroundStuff/purple.png",
   "soundtrack": "TODO",
   "entities": [
     {
@@ -371,6 +371,7 @@
         "angle": 5.0,
         "omega": -400.0,
         "pin": false,
+        "texture": 0,
         "grabbed": false
       }
     },
@@ -453,6 +454,7 @@
         "angle": 5.0,
         "omega": -400.0,
         "pin": false,
+        "texture": 0,
         "grabbed": false
       }
     },
@@ -465,6 +467,7 @@
         "angle": 5.0,
         "omega": -400.0,
         "pin": false,
+        "texture": 0,
         "grabbed": false
       }
     },
@@ -477,6 +480,7 @@
         "angle": 5.0,
         "omega": -400.0,
         "pin": false,
+        "texture": 0,
         "grabbed": false
       }
     },
