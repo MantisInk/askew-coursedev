@@ -48,7 +48,8 @@
         "y": 15.0,
         "angle": 5.0,
         "omega": -30.0,
-        "pin": false
+        "pin": false,
+        "texture": 0
       }
     },
     {
