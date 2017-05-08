@@ -17,7 +17,9 @@ package askew.playermode;/*
 
 import askew.*;
 import askew.entity.Entity;
+import askew.entity.EyeEntity;
 import askew.entity.obstacle.Obstacle;
+import askew.entity.sloth.SlothModel;
 import askew.playermode.gamemode.GameModeController;
 import askew.playermode.gamemode.TutorialModeController;
 import askew.util.FilmStrip;
@@ -35,6 +37,7 @@ import com.badlogic.gdx.utils.Array;
 import lombok.Getter;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Base class for a world-specific controller.
@@ -199,6 +202,9 @@ public abstract class WorldController implements Screen {
 	protected static final float DEFAULT_HEIGHT = DEFAULT_WIDTH * (9.f / 16.f);
 	/** The default value of gravity (going down) */
 	protected static final float DEFAULT_GRAVITY = -4.9f;
+
+	/** Reference to the character avatar */
+	protected List<SlothModel> slothList;
 
 	/** Reference to the game canvas */
 	protected GameCanvas canvas;
@@ -549,7 +555,11 @@ public abstract class WorldController implements Screen {
 					continue;
 				}
 			}
-			ent.update(dt); // called last!
+			if (!(ent instanceof EyeEntity)) {
+				ent.update(dt); // called last!
+			} else {
+				((EyeEntity) ent).update(dt, slothList.get(0));
+			}
 		}
 	}
 	

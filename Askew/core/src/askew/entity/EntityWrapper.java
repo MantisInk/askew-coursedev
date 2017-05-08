@@ -62,6 +62,8 @@ public class EntityWrapper implements JsonSerializer<Entity>, JsonDeserializer<E
                 return JsonEntityFactory.createGhost(manager, instance);
             case ".BackgroundEntity":
                 return JsonEntityFactory.createBGEntity(manager,instance);
+            case ".EyeEntity":
+                return JsonEntityFactory.createEyeEntity(manager,instance);
             default:
                 System.err.println("Unrecognized in wrapper: " + obstacleClass);
                 Class<?> klass = null;

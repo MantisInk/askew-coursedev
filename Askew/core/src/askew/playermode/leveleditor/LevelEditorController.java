@@ -13,6 +13,7 @@ package askew.playermode.leveleditor;
 import askew.*;
 import askew.entity.BackgroundEntity;
 import askew.entity.Entity;
+import askew.entity.EyeEntity;
 import askew.entity.ghost.GhostModel;
 import askew.entity.obstacle.ComplexObstacle;
 import askew.entity.obstacle.Obstacle;
@@ -46,7 +47,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import lombok.Getter;
 import lombok.Setter;
-import org.lwjgl.Sys;
 
 import javax.swing.*;
 import java.awt.*;
@@ -336,6 +336,10 @@ public class LevelEditorController extends WorldController {
 				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
 				"Entity", 2, "duplicate"));
 
+		buttons.add(new Button(GUI_LEFT_BAR_MARGIN, 17 * GUI_LEFT_BAR_MARGIN,
+				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
+				"Entity", 5, "randomize"));
+
 		buttons.add(new Button(GUI_LEFT_BAR_MARGIN, 19 * GUI_LEFT_BAR_MARGIN,
 				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
 				"Entity", 3, "deselect"));
@@ -463,7 +467,15 @@ public class LevelEditorController extends WorldController {
 								objects.add(undoCreate);
 								undoCreate = null;
 							}
-
+							break;
+						case("randomize"):
+							if(selected != null){
+								if(selected  instanceof  Vine){
+									((Vine) selected).setAngle((float)(Math.random() -.5) * 30 );
+									((Vine) selected).setOmega((float)(Math.random() -.5) * 200 );
+									((Vine) selected).rebuild();
+								}
+							}
 							break;
 						default:
 							break;
@@ -540,6 +552,8 @@ public class LevelEditorController extends WorldController {
 			case "BackgroundEntity":
 				entity = new BackgroundEntity(xorig,yorig);
 				break;
+			case "EyeEntity":
+				entity = new EyeEntity(xorig,yorig);
 
 			default:
 				//System.err.println("UNKNOWN ENT");
@@ -854,14 +868,14 @@ public class LevelEditorController extends WorldController {
 		}
 
 		// Load
-		if(InputControllerManager.getInstance().getController(0).isLKeyPressed()) {
-			if (!loadingLevelPrompt) {
-				loadingLevelPrompt = true;
-				loadLevel(showInputDialog("What level do you want to load?"));
-				loadingLevelPrompt = false;
-			}
-			inputRateLimiter = UI_WAIT_LONG;
-		}
+//		if(InputControllerManager.getInstance().getController(0).isLKeyPressed()) {
+//			if (!loadingLevelPrompt) {
+//				loadingLevelPrompt = true;
+//				loadLevel(showInputDialog("What level do you want to load?"));
+//				loadingLevelPrompt = false;
+//			}
+//			inputRateLimiter = UI_WAIT_LONG;
+//		}
 
 		// Save
 		if(InputControllerManager.getInstance().getController(0).isSKeyPressed()) {

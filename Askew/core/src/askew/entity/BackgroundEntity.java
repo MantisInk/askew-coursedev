@@ -11,8 +11,8 @@ import lombok.Setter;
 
 public class BackgroundEntity extends Entity{
 
-    private float x;
-    private float y;
+    protected float x;
+    protected float y;
     private float width;
     private float height;
     private float depth;
@@ -24,7 +24,7 @@ public class BackgroundEntity extends Entity{
     @Getter
     private int color;
 
-    private transient TextureRegion texture;
+    protected transient TextureRegion texture;
     protected transient Vector2 origin;
     @Getter
     protected transient float aspectRatio;
@@ -35,7 +35,6 @@ public class BackgroundEntity extends Entity{
 
 
     public BackgroundEntity() {
-
         this(0,0);
     }
 
