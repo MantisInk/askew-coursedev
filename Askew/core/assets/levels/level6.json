@@ -52,7 +52,7 @@
         "angle": 15.0,
         "omega": -5.0,
         "pin": false,
-        "grabbed": false
+        "texture": 0
       }
     },
     {

@@ -141,6 +141,9 @@ public class GameModeController extends WorldController {
 	 * when this is zero. */
 	protected float coverOpacity;
 
+	protected ParticleController particleController;
+	protected static final int MAX_PARTICLES = 1000;
+
 	/**
 	 * Preloads the assets for this controller.
 	 *
@@ -234,7 +237,7 @@ public class GameModeController extends WorldController {
 		loadLevel = DEFAULT_LEVEL;
 		storeTimeRecords = GlobalConfiguration.getInstance().getAsBoolean("storeTimeRecords");
 		jsonLoaderSaver = new JSONLoaderSaver(false);
-
+		particleController = new ParticleController(MAX_PARTICLES);
 		// TODO: kill later
 		typeMovement = "Current movement is: "+"0";
 		currentMovement = 0;

@@ -29,9 +29,52 @@
         "x": 6.175001,
         "y": 13.663008,
         "angle": 5.0,
-        "omega": -400.0,
+        "omega": -30.0,
         "pin": false,
-        "grabbed": false
+        "texture": 0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.owl.OwlModel",
+      "INSTANCE": {
+        "x": 18.0,
+        "y": 10.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.wall.WallModel",
+      "INSTANCE": {
+        "x": -10.0,
+        "y": 5.0,
+        "thorn": true,
+        "points": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          35.0,
+          1.0,
+          35.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.sloth.SlothModel",
+      "INSTANCE": {
+        "x": -3.0,
+        "y": 17.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": -4.0,
+        "y": 13.0,
+        "stiffLen": 0.0,
+        "angle": 270.0,
+        "linksize": 1.0,
+        "numLinks": 3.0
       }
     }
   ]
