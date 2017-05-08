@@ -151,6 +151,8 @@ public class SlothModel extends ComplexObstacle  {
     private transient boolean didOneArmCheck;
     private transient boolean waitingForSafeRelease;
     private transient boolean tutorial = false;
+    @Getter
+    private transient Obstacle mostRecentlyGrabbed = null;
 
     /**
      * Returns the texture index for the given body part
@@ -822,6 +824,7 @@ public class SlothModel extends ComplexObstacle  {
             hand =  bodies.get(PART_RIGHT_HAND);
             otherHand = bodies.get(PART_LEFT_HAND);
         }
+        mostRecentlyGrabbed = hand;
 
         if (grabJoint != null || target == null) return;
 
@@ -874,6 +877,11 @@ public class SlothModel extends ComplexObstacle  {
             leftGrabJoint = null;
             leftTarget = null;
         }
+        if(mostRecentlyGrabbed != null && mostRecentlyGrabbed.getBody() == getLeftHand()){
+            mostRecentlyGrabbed = null;
+        }
+        leftGrabJoint = null;
+        leftTarget = null;
     }
 
     public void releaseRight(World world) {
@@ -911,7 +919,13 @@ public class SlothModel extends ComplexObstacle  {
             rightGrabJoint = null;
             rightTarget = null;
         }
+        if(mostRecentlyGrabbed != null && mostRecentlyGrabbed.getBody() == getRightHand()){
+            mostRecentlyGrabbed = null;
+        }
+        rightGrabJoint = null;
+        rightTarget = null;
         super.deactivatePhysics(world);
+
     }
 
     public void activateSlothPhysics(World world) {
