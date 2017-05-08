@@ -414,7 +414,7 @@ public class GameModeController extends WorldController {
 
 			if (slothId == 2) {
 				// Attach the sloths
-				Vine wtfVine = new Vine(initFlowX,initFlowY,6,false,90,0, false);
+				Vine wtfVine = new Vine(initFlowX,initFlowY,6,false,90,0,0,false);
 				wtfVine.setTextures(manager);
 				addObject(wtfVine);
 				objects.remove(wtfVine);
