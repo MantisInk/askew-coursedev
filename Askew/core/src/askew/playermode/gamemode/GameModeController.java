@@ -88,6 +88,7 @@ public class GameModeController extends WorldController {
 	};
 
 	public static final String GRAB_SOUND = "sound/effect/grab.wav";
+	public static final String VICTORY_SOUND = "sound/effect/realvictory.wav";
 	public static final String RELEASE_SOUND = "sound/effect/release.wav";
 	public static final String ARM_SOUND = "sound/effect/arm.wav";
 	public static final String WIND_SOUND = "sound/effect/wind.wav";
@@ -96,6 +97,7 @@ public class GameModeController extends WorldController {
 
 	Sound grabSound;
 	Sound releaseSound;
+	Sound victorySound;
 
 	@Setter
 	protected String loadLevel, DEFAULT_LEVEL;
@@ -172,6 +174,7 @@ public class GameModeController extends WorldController {
 		manager.load(ARM_SOUND, Sound.class);
 		manager.load(WIND_SOUND, Sound.class);
 
+		manager.load(VICTORY_SOUND, Sound.class);
 		manager.load(GRAB_SOUND, Sound.class);
 		manager.load(RELEASE_SOUND, Sound.class);
 
@@ -207,6 +210,7 @@ public class GameModeController extends WorldController {
 
 		grabSound = Gdx.audio.newSound(Gdx.files.internal(GRAB_SOUND));
 		releaseSound = Gdx.audio.newSound(Gdx.files.internal(RELEASE_SOUND));
+		victorySound = Gdx.audio.newSound(Gdx.files.internal(VICTORY_SOUND));
 
 		pauseTexture = manager.get("texture/background/pause.png", Texture.class);
 		victoryTexture = manager.get("texture/background/victory.png", Texture.class);
@@ -676,6 +680,8 @@ public class GameModeController extends WorldController {
 
 			if (!isFailure() && collisions.isFlowWin()) {
 				if (!owl.isDoingVictory()) {
+					victorySound.play(0.10f);
+					SoundController.getInstance().stop("bgmusic");
 					SlothModel sloth = collisions.winningSloth();
 					sloth.releaseLeft(world);
 					sloth.releaseRight(world);
