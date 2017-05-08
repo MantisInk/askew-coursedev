@@ -1,5 +1,5 @@
 {
-  "levelModelVersion": 2,
+  "levelModelVersion": 4,
   "goalTimeGold": 30,
   "goalTimeSilver": 45,
   "goalTimeBronze": 60,
@@ -9,14 +9,14 @@
   "minX": -7.0,
   "minY": 8.0,
   "title": "Vines",
-  "background": "texture/background/background1.png",
+  "background": "texture/background/BackgroundStuff/rusty.png",
   "soundtrack": "TODO",
   "entities": [
     {
       "CLASSNAME": "askew.entity.BackgroundEntity",
       "INSTANCE": {
-        "x": 18.199993,
-        "y": 9.749994,
+        "x": 24.320023,
+        "y": 7.679987,
         "width": 20.0,
         "height": 20.0,
         "depth": 20.0,
@@ -24,14 +24,14 @@
         "scalex": 1.0,
         "scaley": 1.0,
         "texturePath": "texture/background/BackgroundStuff/sil4.png",
-        "color": -1
+        "color": -1220542209
       }
     },
     {
       "CLASSNAME": "askew.entity.BackgroundEntity",
       "INSTANCE": {
-        "x": -10.0,
-        "y": 16.499992,
+        "x": -26.858013,
+        "y": 17.23801,
         "width": 15.0,
         "height": 10.0,
         "depth": 12.0,
@@ -39,17 +39,7 @@
         "scalex": 1.0,
         "scaley": 1.0,
         "texturePath": "texture/background/BackgroundStuff/sil1.png",
-        "color": -1
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.sloth.SlothModel",
-      "INSTANCE": {
-        "x": -1.8600006,
-        "y": 14.039996,
-        "lTheta": 0.0,
-        "rTheta": 0.0,
-        "grabbed": false
+        "color": -2026962689
       }
     },
     {
@@ -58,8 +48,7 @@
         "x": -4.0,
         "y": 13.0,
         "angle": -90.0,
-        "numLinks": 8.0,
-        "grabbed": false
+        "numLinks": 8.0
       }
     },
     {
@@ -68,16 +57,14 @@
         "x": 26.0,
         "y": 13.0,
         "angle": -90.0,
-        "numLinks": 5.0,
-        "grabbed": false
+        "numLinks": 5.0
       }
     },
     {
       "CLASSNAME": "askew.entity.owl.OwlModel",
       "INSTANCE": {
         "x": 29.0,
-        "y": 14.0,
-        "grabbed": false
+        "y": 14.0
       }
     },
     {
@@ -86,8 +73,7 @@
         "x": 10.0,
         "y": 12.0,
         "angle": 30.0,
-        "numLinks": 5.0,
-        "grabbed": false
+        "numLinks": 5.0
       }
     },
     {
@@ -96,8 +82,7 @@
         "x": 6.0,
         "y": 12.0,
         "angle": 0.0,
-        "numLinks": 5.0,
-        "grabbed": false
+        "numLinks": 5.0
       }
     },
     {
@@ -106,8 +91,7 @@
         "x": 16.0,
         "y": 12.0,
         "angle": 0.0,
-        "numLinks": 5.0,
-        "grabbed": false
+        "numLinks": 5.0
       }
     },
     {
@@ -116,8 +100,7 @@
         "x": -6.080001,
         "y": 10.379995,
         "angle": 0.0,
-        "numLinks": 6.0,
-        "grabbed": false
+        "numLinks": 6.0
       }
     },
     {
@@ -126,8 +109,7 @@
         "x": -9.000001,
         "y": 8.979995,
         "angle": -90.0,
-        "numLinks": 45.0,
-        "grabbed": false
+        "numLinks": 45.0
       }
     },
     {
@@ -139,8 +121,7 @@
         "angle": 15.0,
         "omega": -250.0,
         "pin": false,
-        "texture": 0,
-        "grabbed": false
+        "texture": 0
       }
     },
     {
@@ -152,8 +133,7 @@
         "angle": 15.0,
         "omega": -250.0,
         "pin": false,
-        "texture": 0,
-        "grabbed": false
+        "texture": 0
       }
     },
     {
@@ -165,38 +145,16 @@
         "angle": 15.0,
         "omega": -250.0,
         "pin": false,
-        "texture": 0,
-        "grabbed": false
+        "texture": 0
       }
     },
     {
-      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "CLASSNAME": "askew.entity.sloth.SlothModel",
       "INSTANCE": {
-        "x": -2.5899997,
-        "y": 12.699991,
-        "width": 2.0,
-        "height": 2.0,
-        "depth": 0.99,
-        "angle": 0.0,
-        "scalex": 1.0,
-        "scaley": 1.0,
-        "texturePath": "texture/background/fern.png",
-        "color": -1
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.BackgroundEntity",
-      "INSTANCE": {
-        "x": -3.3099995,
-        "y": 14.519991,
-        "width": 2.0,
-        "height": 2.0,
-        "depth": 0.99,
-        "angle": 0.0,
-        "scalex": 1.0,
-        "scaley": 1.0,
-        "texturePath": "texture/background/fern.png",
-        "color": -1
+        "x": -1.8600006,
+        "y": 14.039996,
+        "lTheta": 0.0,
+        "rTheta": 0.0
       }
     }
   ]
