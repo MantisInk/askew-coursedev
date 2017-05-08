@@ -42,8 +42,8 @@ public class Vine extends ComplexObstacle {
 	private static final String ANCHOR_NAME = "vine_pin";		/** The debug name for each anchor pin */
 	private static final float ANCHOR_RADIUS = 0.1f;			/** The radius of each anchor pin */
 	private transient float BASIC_DENSITY;						/** The density of each plank in the bridge */
-	private static final float lwidth = .15f;
-	private static final float lheight = .7f;
+	public static final float lwidth = .15f;
+	public static final float lheight = .7f;
 
 	public static final String[] VINE_TEXTURES = {"texture/vine/vine.png", "texture/vine/vine2.png"};
 	public static transient String VINE_TEXTURE; 		// default texture
@@ -59,8 +59,10 @@ public class Vine extends ComplexObstacle {
 	protected transient Vector2 planksize;						/** The size of a vine piece */
 	protected transient float linksize = 1.0f;					/** The length of each vine piece*/
 	protected transient float spacing = 0.0f;					/** The spacing between each piece */
+	private transient boolean topPin;
 	@Getter
 	private transient Obstacle endpt; 						// to help with tutorial getting vine endpt
+
 
 	//JSON
 	@Getter @Setter
@@ -79,10 +81,10 @@ public class Vine extends ComplexObstacle {
 
 
 	public Vine(float x, float y, float length, float angle, float omega, int texture){
-		this(x, y, length, false, angle, omega, texture);
+		this(x, y, length, false, angle, omega, texture, true);
 	}
 
-	public Vine(float x, float y, float length,  boolean pinned, float angle, float omega, int texture) {
+	public Vine(float x, float y, float length,  boolean pinned, float angle, float omega, int texture, boolean topPin) {
 		super(x,y);
 		this.x = x;
 		this.y = y;
@@ -90,9 +92,9 @@ public class Vine extends ComplexObstacle {
 		this.pin = pinned;
 		this.angle = angle;
 		this.omega = omega;
+		this.topPin = topPin;
 		this.texture = texture;
 		this.VINE_TEXTURE = VINE_TEXTURES[texture];
-
 		build();
 	}
 
@@ -191,14 +193,19 @@ public class Vine extends ComplexObstacle {
 		// Definition for a revolute joint
 		RevoluteJointDef jointDef = new RevoluteJointDef();
 
-		// Initial joint
-		jointDef.bodyB = start.getBody();
-		jointDef.bodyA = bodies.get(0).getBody();
-		jointDef.localAnchorB.set(anchor1);
-		jointDef.localAnchorA.set(anchor2);
-		jointDef.collideConnected = false;
-		Joint joint = world.createJoint(jointDef);
-		joints.add(joint);
+		Joint joint;
+
+		if (topPin) {
+			// Initial joint
+			jointDef.bodyB = start.getBody();
+			jointDef.bodyA = bodies.get(0).getBody();
+			jointDef.localAnchorB.set(anchor1);
+			jointDef.localAnchorA.set(anchor2);
+			jointDef.collideConnected = false;
+			joint = world.createJoint(jointDef);
+			joints.add(joint);
+		}
+
 
 		// Link the pieces together
 		anchor1.y = -linksize / 2;
