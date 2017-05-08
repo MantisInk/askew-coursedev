@@ -30,9 +30,10 @@ public class JsonEntityFactory {
         float numlinks = instance.get("numLinks").getAsFloat();
         float angle = instance.get("angle").getAsFloat();
         float omega = instance.get("omega").getAsFloat();
-        Texture managedTexture = manager.get(Vine.VINE_TEXTURE, Texture.class);
+        int texture = instance.get("texture").getAsInt();
+        Texture managedTexture = manager.get(Vine.VINE_TEXTURES[texture], Texture.class);
         //TextureRegion vineTexture = new TextureRegion(managedTexture);
-		vine = new Vine(x, y, numlinks, angle, omega);
+		vine = new Vine(x, y, numlinks, angle, omega, 0);
 		vine.setTextures(manager);
         return vine;
     }
@@ -123,8 +124,8 @@ public class JsonEntityFactory {
 
     public static ThornModel createThorn(MantisAssetManager manager, JsonObject instance) {
         ThornModel thorn;
-        float x = instance.get("x").getAsFloat();
-        float y = instance.get("y").getAsFloat();
+        float x = instance.get("realX").getAsFloat();
+        float y = instance.get("realY").getAsFloat();
         float width = instance.get("width").getAsFloat();
         float angle = instance.get("angle").getAsFloat();
         thorn = new ThornModel(x, y, width, angle);
@@ -136,9 +137,11 @@ public class JsonEntityFactory {
         GhostModel ghost;
         float x = instance.get("x").getAsFloat();
         float y = instance.get("y").getAsFloat();
-        float patroldx = instance.get("patroldx").getAsFloat();
-        float patroldy = instance.get("patroldy").getAsFloat();
-        ghost = new GhostModel(x, y, patroldx, patroldy);
+        float patroldx1 = instance.get("patroldx1").getAsFloat();
+        float patroldy1 = instance.get("patroldy1").getAsFloat();
+        float patroldx2 = instance.get("patroldx2").getAsFloat();
+        float patroldy2 = instance.get("patroldy2").getAsFloat();
+        ghost = new GhostModel(x, y, patroldx1, patroldy1, patroldx2, patroldy2);
         ghost.setTextures(manager);
         return ghost;
     }

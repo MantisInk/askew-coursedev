@@ -1,5 +1,5 @@
 {
-  "levelModelVersion": 1,
+  "levelModelVersion": 2,
   "goalTimeGold": 30,
   "goalTimeSilver": 45,
   "goalTimeBronze": 60,
@@ -8,7 +8,7 @@
   "maxY": 34.0,
   "minX": -9.0,
   "minY": 2.0,
-  "title": "Tutorial 4",
+  "title": "Flinging",
   "background": "texture/background/background1.png",
   "soundtrack": "TODO",
   "entities": [
@@ -23,7 +23,7 @@
         "angle": 0.0,
         "scalex": 1.0,
         "scaley": 1.0,
-        "texturePath": "texture/background/sil4.png",
+        "texturePath": "texture/background/BackgroundStuff/sil4.png",
         "color": -1
       }
     },
@@ -38,7 +38,7 @@
         "angle": 0.0,
         "scalex": 1.0,
         "scaley": 1.0,
-        "texturePath": "texture/background/sil1.png",
+        "texturePath": "texture/background/BackgroundStuff/sil1.png",
         "color": -1
       }
     },
@@ -48,50 +48,56 @@
         "x": -3.0,
         "y": 14.0,
         "angle": 270.0,
-        "numLinks": 5.0
+        "numLinks": 5.0,
+        "grabbed": false
       }
     },
     {
       "CLASSNAME": "askew.entity.tree.Trunk",
       "INSTANCE": {
-        "x": 11.08,
-        "y": 13.979997,
+        "x": 9.0,
+        "y": 14.0,
         "angle": -90.0,
-        "numLinks": 5.0
+        "numLinks": 5.0,
+        "grabbed": false
       }
     },
     {
       "CLASSNAME": "askew.entity.tree.Trunk",
       "INSTANCE": {
-        "x": 4.0200005,
-        "y": 15.999996,
+        "x": 3.0,
+        "y": 16.0,
         "angle": -90.0,
-        "numLinks": 5.0
+        "numLinks": 5.0,
+        "grabbed": false
       }
     },
     {
       "CLASSNAME": "askew.entity.tree.Trunk",
       "INSTANCE": {
-        "x": 19.119999,
-        "y": 14.019997,
+        "x": 17.0,
+        "y": 14.0,
         "angle": -90.0,
-        "numLinks": 5.0
+        "numLinks": 5.0,
+        "grabbed": false
       }
     },
     {
       "CLASSNAME": "askew.entity.tree.Trunk",
       "INSTANCE": {
-        "x": 29.0,
-        "y": 31.0,
+        "x": 25.0,
+        "y": 29.0,
         "angle": -90.0,
-        "numLinks": 5.0
+        "numLinks": 5.0,
+        "grabbed": false
       }
     },
     {
       "CLASSNAME": "askew.entity.owl.OwlModel",
       "INSTANCE": {
-        "x": 32.0,
-        "y": 32.0
+        "x": 29.0,
+        "y": 30.0,
+        "grabbed": false
       }
     },
     {
@@ -100,7 +106,8 @@
         "x": -1.8979998,
         "y": 13.975008,
         "lTheta": 0.0,
-        "rTheta": 0.0
+        "rTheta": 0.0,
+        "grabbed": false
       }
     },
     {
@@ -109,7 +116,8 @@
         "x": -9.0,
         "y": 7.0199976,
         "angle": -90.0,
-        "numLinks": 45.0
+        "numLinks": 45.0,
+        "grabbed": false
       }
     },
     {
@@ -118,52 +126,58 @@
         "x": -5.959999,
         "y": 9.299997,
         "angle": 0.0,
-        "numLinks": 6.0
+        "numLinks": 6.0,
+        "grabbed": false
       }
     },
     {
       "CLASSNAME": "askew.entity.tree.Trunk",
       "INSTANCE": {
-        "x": 26.0,
+        "x": 23.0,
         "y": 15.0,
         "angle": 0.0,
-        "numLinks": 4.0
+        "numLinks": 4.0,
+        "grabbed": false
       }
     },
     {
       "CLASSNAME": "askew.entity.tree.Trunk",
       "INSTANCE": {
-        "x": 30.0,
+        "x": 26.0,
         "y": 16.0,
         "angle": 0.0,
-        "numLinks": 4.0
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.tree.Trunk",
-      "INSTANCE": {
-        "x": 30.0,
-        "y": 23.0,
-        "angle": 0.0,
-        "numLinks": 4.0
+        "numLinks": 4.0,
+        "grabbed": false
       }
     },
     {
       "CLASSNAME": "askew.entity.tree.Trunk",
       "INSTANCE": {
         "x": 26.0,
+        "y": 22.0,
+        "angle": 0.0,
+        "numLinks": 4.0,
+        "grabbed": false
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 23.0,
         "y": 21.0,
         "angle": 0.0,
-        "numLinks": 4.0
+        "numLinks": 4.0,
+        "grabbed": false
       }
     },
     {
       "CLASSNAME": "askew.entity.tree.Trunk",
       "INSTANCE": {
-        "x": 26.0,
-        "y": 28.0,
+        "x": 23.0,
+        "y": 27.0,
         "angle": 0.0,
-        "numLinks": 4.0
+        "numLinks": 4.0,
+        "grabbed": false
       }
     },
     {
