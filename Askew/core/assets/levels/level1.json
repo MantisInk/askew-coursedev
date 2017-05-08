@@ -45,21 +45,6 @@
     {
       "CLASSNAME": "askew.entity.BackgroundEntity",
       "INSTANCE": {
-        "x": -4.745002,
-        "y": 17.387491,
-        "width": 10.0,
-        "height": 10.0,
-        "depth": 6.0,
-        "angle": 0.0,
-        "scalex": 1.0,
-        "scaley": 1.0,
-        "texturePath": "texture/background/BackgroundStuff/cloud.png",
-        "color": -136
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.BackgroundEntity",
-      "INSTANCE": {
         "x": -13.4387455,
         "y": 19.38625,
         "width": 3.0,

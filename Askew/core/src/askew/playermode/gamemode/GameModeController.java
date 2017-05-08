@@ -146,7 +146,9 @@ public class GameModeController extends WorldController {
 	protected float coverOpacity;
 
 	protected ParticleController particleController;
-	protected static final int MAX_PARTICLES = 1000;
+	protected static final int MAX_PARTICLES = 5000;
+	protected static final int INITIAL_FOG = 300;
+	protected float fogTime;
 
 	/**
 	 * Preloads the assets for this controller.
@@ -245,12 +247,6 @@ public class GameModeController extends WorldController {
 		storeTimeRecords = GlobalConfiguration.getInstance().getAsBoolean("storeTimeRecords");
 		jsonLoaderSaver = new JSONLoaderSaver(false);
 		particleController = new ParticleController(this, MAX_PARTICLES);
-		// TODO: kill later
-		typeMovement = "Current movement is: "+"0";
-		currentMovement = 0;
-		typeControl = "Current control is: "+"0";
-		currentControl = 0;
-
 		control_three_wait = 0;
 	}
 
@@ -297,6 +293,8 @@ public class GameModeController extends WorldController {
 
 		InputControllerManager.getInstance().inputControllers().forEach(InputController::releaseGrabs);
 
+		particleController.reset();
+		fogTime = 0;
 		for(Entity obj : objects) {
 			if( (obj instanceof Obstacle))
 				((Obstacle)obj).deactivatePhysics(world);
@@ -408,6 +406,10 @@ public class GameModeController extends WorldController {
 					owl = (OwlModel) o;
 				}
 
+			}
+
+			for(int i = 0; i < INITIAL_FOG; i++) {
+				particleController.fog(levelModel.getMaxX()-levelModel.getMinX(),levelModel.getMaxY()-levelModel.getMinY() );
 			}
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -553,40 +555,9 @@ public class GameModeController extends WorldController {
 	 * @param dt Number of seconds since last animation frame
 	 */
 	public void update(float dt) {
-		//Increment UI check
-		if(currentControl==2){
-			control_three_wait = (control_three_wait+1) % UI_WAIT;
-		}
 
-		//Check for change in grabbing movement
-		if (InputControllerManager.getInstance().getController(0).isOneKeyPressed()) {
-			sloth.setMovementMode(0);
-			currentMovement = 0;
-			typeMovement = "Current movement is: "+"0";
-		}
-		if (InputControllerManager.getInstance().getController(0).isTwoKeyPressed()) {
-			sloth.setMovementMode(1);
-			currentMovement = 1;
-			typeMovement = "Current movement is: "+"1";
-		}
-		if (InputControllerManager.getInstance().getController(0).isThreeKeyPressed()) {
-			sloth.setMovementMode(2);
-			currentMovement = 2;
-			typeMovement = "Current movement is: "+"2";
-			control_three_wait = 0;
-		}
-
-		//Check for change in arm movement
 		if (InputControllerManager.getInstance().getController(0).isZKeyPressed()) {
-			sloth.setControlMode(0);
-			currentControl = 0;
-			typeControl = "Current control is: "+"0";
 			particleController.effect1(10,18);
-		}
-		if (InputControllerManager.getInstance().getController(0).isXKeyPressed()) {
-			sloth.setControlMode(1);
-			currentControl = 1;
-			typeControl = "Current control is: "+"1";
 		}
 
 		if (!paused) {
@@ -609,8 +580,12 @@ public class GameModeController extends WorldController {
 			}
 
 			currentTime += dt;
-
+			if(currentTime - fogTime > .1f) {
+				particleController.fog(cameraX, cameraY);
+				fogTime = currentTime;
+			}
 			particleController.update(dt);
+
 
 			//#TODO Collision states check
 			if (!collisions.isFlowWin())
@@ -807,10 +782,7 @@ public class GameModeController extends WorldController {
 		canvas.begin();
 		canvas.drawTextStandard("current time:    "+currentTime, 10f, 70f);
 		canvas.drawTextStandard("record time:     "+recordTime,10f,50f);
-    
-		//Draw control schemes
-		canvas.drawTextStandard(typeMovement, 10f, 700f);
-		canvas.drawTextStandard(typeControl,10f,680f);
+
 		canvas.end();
 
 		if (debug) {

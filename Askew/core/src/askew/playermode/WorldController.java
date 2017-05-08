@@ -32,6 +32,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
+import lombok.Getter;
 
 import java.util.ArrayList;
 
@@ -209,6 +210,7 @@ public abstract class WorldController implements Screen {
 	/** The Box2D world */
 	protected World world;
 	/** The boundary of the world */
+	@Getter
 	protected Rectangle bounds;
 	/** The world scale */
 	protected Vector2 worldScale;
