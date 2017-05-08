@@ -1,5 +1,5 @@
 {
-  "levelModelVersion": 2,
+  "levelModelVersion": 3,
   "goalTimeGold": 30,
   "goalTimeSilver": 45,
   "goalTimeBronze": 60,
@@ -221,6 +221,7 @@
         "angle": 5.0,
         "omega": -400.0,
         "pin": false,
+        "texture": 0,
         "grabbed": false
       }
     },
@@ -233,6 +234,7 @@
         "angle": 5.0,
         "omega": -400.0,
         "pin": false,
+        "texture": 0,
         "grabbed": false
       }
     },
@@ -247,30 +249,36 @@
     {
       "CLASSNAME": "askew.entity.ghost.GhostModel",
       "INSTANCE": {
-        "x": 6.999577,
+        "x": 24.0,
+        "y": 10.0,
+        "patroldx1": 16.0,
+        "patroldy1": 10.0,
+        "patroldx2": 24.0,
+        "patroldy2": 10.0,
+        "grabbed": false
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.ghost.GhostModel",
+      "INSTANCE": {
+        "x": 18.0,
         "y": 17.5,
-        "patroldx": 7.0,
-        "patroldy": 17.5,
+        "patroldx1": 6.0,
+        "patroldy1": 17.5,
+        "patroldx2": 18.0,
+        "patroldy2": 17.5,
         "grabbed": false
       }
     },
     {
       "CLASSNAME": "askew.entity.ghost.GhostModel",
       "INSTANCE": {
-        "x": 14.9995775,
-        "y": 13.973013,
-        "patroldx": 15.0,
-        "patroldy": 13.973013,
-        "grabbed": false
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.ghost.GhostModel",
-      "INSTANCE": {
-        "x": 22.918705,
-        "y": 10.0425,
-        "patroldx": 25.0,
-        "patroldy": 10.0425,
+        "x": 14.0,
+        "y": 14.0,
+        "patroldx1": 14.0,
+        "patroldy1": 14.0,
+        "patroldx2": 24.0,
+        "patroldy2": 14.0,
         "grabbed": false
       }
     }
