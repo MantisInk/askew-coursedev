@@ -1,5 +1,5 @@
 texture/background/background1.png
-texture/background/BackgroundStuff/bigpalmTree.png
+texture/background/BackgroundStuff/bigPalmTree.png
 texture/background/BackgroundStuff/cloud.png
 texture/background/BackgroundStuff/cloud1.png
 texture/background/BackgroundStuff/eyes.png
@@ -49,6 +49,7 @@ texture/leveleditor/grey.png
 texture/leveleditor/placeholder.png
 texture/leveleditor/up.png
 texture/leveleditor/yellowbox.png
+texture/particle/test.png
 texture/sloth/arm.png
 texture/sloth/backarm.png
 texture/sloth/backarm_moving.png

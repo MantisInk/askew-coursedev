@@ -19,6 +19,8 @@ import askew.entity.obstacle.Obstacle;
 import askew.entity.owl.OwlModel;
 import askew.entity.sloth.SlothModel;
 import askew.playermode.WorldController;
+import askew.playermode.gamemode.Particles.Particle;
+import askew.playermode.gamemode.Particles.ParticleController;
 import askew.playermode.leveleditor.LevelModel;
 import askew.util.RecordBook;
 import askew.util.SoundController;
@@ -60,6 +62,7 @@ public class GameModeController extends WorldController {
 	/** Track asset loading from all instances and subclasses */
 	@Getter
 	protected static boolean playerIsReady = false;
+	@Getter
 	protected boolean paused = false;
 	protected boolean prevPaused = false;
 	private boolean victory = false;
@@ -204,6 +207,8 @@ public class GameModeController extends WorldController {
 		pauseTexture = manager.get("texture/background/pause.png", Texture.class);
 		victoryTexture = manager.get("texture/background/victory.png", Texture.class);
 		fern = manager.get("texture/background/fern.png");
+
+		particleController.setTextures(manager);
 
 		super.loadContent(manager);
 		platformAssetState = AssetState.COMPLETE;
@@ -574,6 +579,7 @@ public class GameModeController extends WorldController {
 			sloth.setControlMode(0);
 			currentControl = 0;
 			typeControl = "Current control is: "+"0";
+			particleController.effect1(10,18);
 		}
 		if (InputControllerManager.getInstance().getController(0).isXKeyPressed()) {
 			sloth.setControlMode(1);
@@ -601,6 +607,8 @@ public class GameModeController extends WorldController {
 			}
 
 			currentTime += dt;
+
+			particleController.update(dt);
 
 			//#TODO Collision states check
 			if (!collisions.isFlowWin())
@@ -760,6 +768,13 @@ public class GameModeController extends WorldController {
 		for(Entity obj : objects) {
 			obj.setDrawScale(worldScale);
 			obj.draw(canvas);
+		}
+
+		Particle[] particles = particleController.getSorted();
+		particleController.setDrawScale(worldScale);
+		int n = particleController.numParticles();
+		for(int i =0; i < n; i++ ){
+			particleController.draw(canvas, particles[i]);
 		}
 
 		if (!playerIsReady && !paused && coverOpacity <= 0)

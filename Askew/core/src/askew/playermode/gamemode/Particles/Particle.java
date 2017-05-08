@@ -1,7 +1,6 @@
-package askew.playermode.gamemode;
+package askew.playermode.gamemode.Particles;
 
 
-import askew.GameCanvas;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 
@@ -16,12 +15,13 @@ public class Particle implements Comparable {
     float width;
     float height;
     float depth;
+    float angle;
+    float rot;
     int drawNumber;
     float accumulator;
     float deathTime;
     Color tint;
     Texture texture;
-    float active;
 
 
     public Particle(){
@@ -45,10 +45,19 @@ public class Particle implements Comparable {
     }
 
     public Particle spawn(float x, float y){
+        this.x = x + (float)((Math.random() - .5) * 15 );
+        this.y = y + (float)((Math.random() - .5) * 15 );;
+        this.width = 1;
+        this.height = 1;
+        this.depth = 3f + (float)((Math.random() - .5) * 5 );
+        this.tint = new Color(0xFFFFFF4F);
+        this.deathTime = 4 + (float)((Math.random() - .5) * 2 );
+        this.accumulator = (float)((Math.random() - .5) * 2 );
         return this;
     }
 
-    public void update(){
+    public void update(float delta){
+        accumulator += delta;
 
     }
 
