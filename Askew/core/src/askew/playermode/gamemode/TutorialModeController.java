@@ -718,7 +718,7 @@ public class TutorialModeController extends GameModeController {
 
 	public void restart() {
 		//change back to 0
-		currentStage = 4;
+		currentStage = 1;
 	}
 
 	public void printVector(Vector2 v) {
