@@ -17,6 +17,7 @@ import askew.MantisAssetManager;
 import askew.entity.Entity;
 import askew.entity.FilterGroup;
 import askew.entity.obstacle.Obstacle;
+import askew.entity.owl.OwlModel;
 import askew.entity.tree.Trunk;
 import askew.entity.vine.Vine;
 import com.badlogic.gdx.Gdx;
@@ -178,7 +179,7 @@ public class TutorialModeController extends GameModeController {
 	private final int ebbVine1 = 4;
 	private final int ebbVine2 = 5;
 	private int ebbLvl = ebbGrabPts;
-	private final int[] ebbTrunkNum = {2,2,5,6,7,8};
+	private final int[] ebbTrunkNum = {2,2,5,6,7,8,8};
 	private float grabs = 0;
 
 
@@ -294,8 +295,8 @@ public class TutorialModeController extends GameModeController {
 		if(currentStage == STAGE_EBB){
 			Filter f = new Filter();
 			f.maskBits = FilterGroup.NOCOLLIDE;
-			f.categoryBits = FilterGroup.VINE;
 			for(Entity obj : objects) {
+				f.categoryBits = FilterGroup.VINE;
 				if (obj instanceof Trunk) {
 					for (Obstacle plank : ((Trunk)obj).getBodies()) {
 						plank.setFilterData(f);
@@ -305,6 +306,10 @@ public class TutorialModeController extends GameModeController {
 					for(Obstacle plank: ((Vine)obj).getBodies()) {
 						plank.setFilterData(f);
 					}
+				}
+				if (obj instanceof OwlModel) {
+					f.categoryBits = FilterGroup.WALL;
+					((OwlModel)obj).setFilterData(f);
 				}
 			}
 		}
@@ -436,7 +441,7 @@ public class TutorialModeController extends GameModeController {
 				Vector2 lhPos = slothList.get(0).getLeftHand().getPosition();
 				Vector2 rhPos = slothList.get(0).getRightHand().getPosition();
 				omega = lhPos.sub(rhPos).angle();
-				if (Math.abs(omega-omega_0) < 1 && (Math.abs(omega_0)%180 < 5 || 180-(Math.abs(omega_0)%180) < 5)) {
+				if (Math.abs(omega-omega_0) < 3 && (Math.abs(omega_0)%180 < 15 || 180-(Math.abs(omega_0)%180) < 15)) {
 					if((getSloth().getLeftTarget() == null && getSloth().getRightTarget() != null)
 							|| (getSloth().getLeftTarget() != null && getSloth().getRightTarget() == null))
 					grabs += dt;
@@ -444,7 +449,7 @@ public class TutorialModeController extends GameModeController {
 					omega_0 = omega;
 					grabs = 0;
 				}
-				if (grabs > 3) {
+				if (grabs > 2.5) {
 					ebbLvl++;
 				}
 				System.out.print("time "+grabs+"   ");
@@ -494,40 +499,78 @@ public class TutorialModeController extends GameModeController {
 					for(Obstacle plank: t.getBodies()){
 						if(plank.getBody().getUserData() instanceof Obstacle && ((Obstacle)plank.getBody().getUserData()).isGrabbed()) {
 							ind = trunkEntities.indexOf(t);
+							trunkGrabbed.set(ind,true);
 							if(ind != 6) {
 								flingGrabbed[0] = false;
+								trunkGrabbed.set(6,false);
 							}
-							trunkGrabbed.set(ind,true);
 						}
 					}
 				}
 				for(Vine v : vineEntities) {
 					ind = vineEntities.indexOf(v);
-//					System.out.print(";aliej;owihtr;uhtojse;rle"+ ind+"   ");
 					for (Obstacle plank : v.getBodies()) {
-//						try {
-//						System.out.println(plank.getName());
 						if (plank.getBody().getUserData() instanceof Obstacle) {
 							if(((Obstacle) plank.getBody().getUserData()).isGrabbed()) {
-								if (ind != 0) {
-									trunkGrabbed.set(6, false);
-								}
 								flingGrabbed[ind] = true;
+								trunkGrabbed.set(6, false);
+								if (ind != 0) {
+									flingGrabbed[0] = false;
+								}
 							}
 						}
-//						} catch (NullPointerException e) {
-//							;
-//						}
-//					}
 					}
 				}
 				swing = flingGrabbed[0];
 				back = trunkGrabbed.get(6);
 				System.out.print(swing + "   " + back + "   " + ind + "   " + trunkGrabbed.get(6) + "   ");
 				if (swing && back) {
+					for(int i = 0; i < trunkGrabbed.size(); i++)
+						trunkGrabbed.set(i, false);
+					for(int i = 0; i < flingGrabbed.length; i++)
+						flingGrabbed[i] = false;
 					ebbLvl++;
 				}
+				break;
 			case ebbVine2:
+				System.out.println("in stage 5");
+				for(Trunk t : trunkEntities) {
+					for(Obstacle plank: t.getBodies()){
+						if(plank.getBody().getUserData() instanceof Obstacle && ((Obstacle)plank.getBody().getUserData()).isGrabbed()) {
+							ind = trunkEntities.indexOf(t);
+							trunkGrabbed.set(ind,true);
+							if(ind != 7) {
+								flingGrabbed[1] = false;
+								flingGrabbed[2] = false;
+								trunkGrabbed.set(7,false);
+							}
+						}
+					}
+				}
+				for(Vine v : vineEntities) {
+					ind = vineEntities.indexOf(v);
+					for (Obstacle plank : v.getBodies()) {
+						if (plank.getBody().getUserData() instanceof Obstacle) {
+							if(((Obstacle) plank.getBody().getUserData()).isGrabbed()) {
+								flingGrabbed[ind] = true;
+								if (ind == 0) {
+									flingGrabbed[1] = false;
+									flingGrabbed[2] = false;
+								}
+								if (ind == 1) {
+									flingGrabbed[2] = false;
+								}
+								trunkGrabbed.set(7, false);
+							}
+						}
+					}
+				}
+				swing = flingGrabbed[1];
+				back = flingGrabbed[2];
+				System.out.print(swing + "   " + back + "   " + ind + "   " + trunkGrabbed.get(7) + "   ");
+				if (swing && back && trunkGrabbed.get(7)) {
+					ebbLvl++;
+				}
 				break;
 		}
 		Filter f = new Filter();
@@ -551,6 +594,11 @@ public class TutorialModeController extends GameModeController {
 			for(Obstacle plank: vineEntities.get(2).getBodies()) {
 				plank.setFilterData(f);
 			}
+		}
+		if (ebbLvl > ebbVine2) {
+			f.maskBits = FilterGroup.SLOTH | FilterGroup.HAND;
+			f.categoryBits = FilterGroup.WALL;
+			owl.setFilterData(f);
 		}
 		return;
 	}
@@ -1049,7 +1097,7 @@ public class TutorialModeController extends GameModeController {
 				}
 			} else if (currentStage != STAGE_EBB) {
 				obj.draw(canvas);
-			} else if (!(obj instanceof Trunk || obj instanceof Vine)) {
+			} else if (!(obj instanceof Trunk || obj instanceof Vine || obj instanceof OwlModel)) {
 				obj.draw(canvas);
 			}
 		}
@@ -1074,6 +1122,9 @@ public class TutorialModeController extends GameModeController {
 			if (ebbLvl >= ebbVine2) {
 				vineEntities.get(1).draw(canvas);
 				vineEntities.get(2).draw(canvas);
+			}
+			if (ebbLvl > ebbVine2) {
+				owl.draw(canvas);
 			}
 		}
 
