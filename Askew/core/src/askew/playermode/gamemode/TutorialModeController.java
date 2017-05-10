@@ -51,9 +51,10 @@ public class TutorialModeController extends GameModeController {
 
 	private final int STAGE_PINNED = 1;
 	private final int STAGE_GRAB = 2;
-	private final int STAGE_SHIMMY = 3;
-	private final int STAGE_FLING = 4;
-	private final int STAGE_VINE = 5;
+	private final int STAGE_EBB = 3;
+	private final int STAGE_SHIMMY = 4;
+	private final int STAGE_FLING = 5;
+	private final int STAGE_VINE = 6;
 	private int currentStage = STAGE_PINNED;
 	private boolean next = false;
 

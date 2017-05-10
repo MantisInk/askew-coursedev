@@ -12,7 +12,6 @@ public class EyeEntity extends BackgroundEntity{
 
     private transient Vector2 pupilOffset;
     private transient TextureRegion texture2;
-    private final float PUPIL_OFFSET = 0.08f;
     private final String pathEyes = "texture/eye/eyes.png";
     private final String pathPupils = "texture/eye/pupils.png";
 
@@ -35,24 +34,14 @@ public class EyeEntity extends BackgroundEntity{
     }
 
     public void update(float delta, SlothModel sloth) {
-        //TODO draw moving eyes
-//        SlothModel sloth = slothlist.get(0);
         Vector2 sPos = sloth.getMainBody().getPosition();
-        if (sPos.x < this.x) {
-            pupilOffset.x = -PUPIL_OFFSET;
-        } else if (sPos.x == this.x) {
-            pupilOffset.x = PUPIL_OFFSET;
-        } else {
-            pupilOffset.x = 0;
-        }
-
-        if(sPos.y < this.y) {
-            pupilOffset.y = -PUPIL_OFFSET;
-        } else if (sPos.y > this.y) {
-            pupilOffset.y = PUPIL_OFFSET;
-        } else {
-            pupilOffset.y = 0;
-        }
+        float diffx = sPos.x - this.x;
+        diffx = (diffx < -0.2) ? -0.2f : diffx;
+        diffx = (diffx > 0.2) ? 0.2f : diffx;
+        float diffy = sPos.y - this.y;
+        diffy = (diffy < -0.15) ? -0.15f : diffy;
+        diffy = (diffy > 0.17) ? 0.17f : diffy;
+        pupilOffset.set(diffx,diffy);
     }
 
     @Override
