@@ -18,6 +18,7 @@ import askew.entity.Entity;
 import askew.entity.FilterGroup;
 import askew.entity.obstacle.Obstacle;
 import askew.entity.owl.OwlModel;
+import askew.entity.sloth.SlothModel;
 import askew.entity.tree.Trunk;
 import askew.entity.vine.Vine;
 import com.badlogic.gdx.Gdx;
@@ -95,7 +96,22 @@ public class TutorialModeController extends GameModeController {
 	Texture rPressed;
 	Texture lUp;
 	Texture rUp;
-//	Texture container;
+	Texture holdUp;
+	private String holdUpPath = "texture/background/tutorial/holdUp.png";
+	private String holdDownPath = "texture/background/tutorial/holdDown.png";
+	private String holdLeftPath = "texture/background/tutorial/holdLeft.png";
+	private String holdRightPath = "texture/background/tutorial/holdRight.png";
+	private String swing0Path = "texture/background/tutorial/swing0.png";
+	private String swing1Path = "texture/background/tutorial/swing1.png";
+	private String swing2Path = "texture/background/tutorial/swing2.png";
+	private String swing3Path = "texture/background/tutorial/swing3.png";
+	Texture holdDown;
+	Texture holdLeft;
+	Texture holdRight;
+	Texture swing0;
+	Texture swing1;
+	Texture swing2;
+	Texture swing3;
 
 	// list of objects for stage of tutorial
 	private ArrayList<Boolean> trunkGrabbed = new ArrayList<Boolean>();
@@ -156,10 +172,10 @@ public class TutorialModeController extends GameModeController {
 			new Vector2(29f, 14f) 		// owl
 	};
 	private Vector2[] ebbSetPoints = {
-			new Vector2(2f, 11f),
-			new Vector2(4f, 9f),
-			new Vector2(6f, 11f),
-			new Vector2(4f, 13f)
+			new Vector2(2f, 11f),		// W
+			new Vector2(4f, 9f),		// S
+			new Vector2(6f, 11f),		// E
+			new Vector2(4f, 13f) 		// N
 	};
 	private ArrayList<Integer> vineInds = new ArrayList<>(Arrays.asList(3,5,6));
 	// list of instructions
@@ -209,6 +225,16 @@ public class TutorialModeController extends GameModeController {
 		rPressed = manager.get(rPressedPath);
 		lUp = manager.get(lUpPath);
 		rUp = manager.get(rUpPath);
+
+		holdUp = manager.get(holdUpPath);
+		holdDown = manager.get(holdDownPath);
+		holdLeft = manager.get(holdLeftPath);
+		holdRight = manager.get(holdRightPath);
+		swing0 = manager.get(swing0Path);
+		swing1 = manager.get(swing1Path);
+		swing2 = manager.get(swing2Path);
+		swing3 = manager.get(swing3Path);
+
 		DEFAULT_LEVEL = "tutorial1";
 		loadLevel = DEFAULT_LEVEL;
 
@@ -1109,19 +1135,43 @@ public class TutorialModeController extends GameModeController {
 		for(Entity obj : objects) {
 			obj.setDrawScale(worldScale);
 			// if stage 2, tint trunks if already grabbed
-			if(currentStage == STAGE_GRAB && obj instanceof Trunk) {
-				Trunk trunk = (Trunk) obj;
-				int ind = trunkEntities.indexOf(obj);
+			if(!(obj instanceof SlothModel)) {
+				if (currentStage == STAGE_GRAB && obj instanceof Trunk) {
+					Trunk trunk = (Trunk) obj;
+					int ind = trunkEntities.indexOf(obj);
 
-				for(Obstacle plank: trunk.getBodies()){
-					if(plank.getBody().getUserData() instanceof Obstacle && ((Obstacle)plank.getBody().getUserData()).isGrabbed()) {
-						trunkGrabbed.set(ind,true);
+					for (Obstacle plank : trunk.getBodies()) {
+						if (plank.getBody().getUserData() instanceof Obstacle && ((Obstacle) plank.getBody().getUserData()).isGrabbed()) {
+							trunkGrabbed.set(ind, true);
+						}
 					}
+				} else if (currentStage != STAGE_EBB) {
+					obj.draw(canvas);
+				} else if (!(obj instanceof Trunk || obj instanceof Vine || obj instanceof OwlModel)) {
+					obj.draw(canvas);
 				}
-			} else if (currentStage != STAGE_EBB) {
-				obj.draw(canvas);
-			} else if (!(obj instanceof Trunk || obj instanceof Vine || obj instanceof OwlModel)) {
-				obj.draw(canvas);
+			}
+		}
+
+		if(currentStage == STAGE_EBB) {
+			switch(ebbLvl) {
+				case ebbGrabPts:
+					if(!ebbGrabbed[0]) {
+						canvas.draw(holdLeft, new Color(0x7f7f7fB0), holdLeft.getWidth(), holdRight.getHeight()/2, 425, 1100, 0, 1, 1);
+					}
+					if(!ebbGrabbed[1]) {
+						canvas.draw(holdDown, new Color(0x7f7f7fB0), holdDown.getWidth() / 2, holdDown.getHeight(), 405, 1110, 0, 1, 1);
+					}
+					if(!ebbGrabbed[2]) {
+						canvas.draw(holdRight, new Color(0x7f7f7fB0), 0, holdRight.getHeight()/2, 375, 1090, 0, 1, 1);
+					}
+					if(!ebbGrabbed[3]) {
+						canvas.draw(holdUp, new Color(0x7f7f7fB0), holdUp.getWidth() / 2, 0, 405, 1090, 0, 1, 1);
+					}
+					break;
+				case ebbFlag:
+					canvas.draw(holdRight, new Color(0x7f7f7fB0), 0, holdRight.getHeight()/2, 375, 1290, 0, 1, 1);
+					break;
 			}
 		}
 
@@ -1149,6 +1199,10 @@ public class TutorialModeController extends GameModeController {
 			if (ebbLvl > ebbVine2) {
 				owl.draw(canvas);
 			}
+		}
+
+		for(SlothModel s : slothList) {
+			s.draw(canvas);
 		}
 
 		if (!playerIsReady && !paused && coverOpacity <= 0)
