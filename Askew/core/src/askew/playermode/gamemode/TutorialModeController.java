@@ -215,7 +215,7 @@ public class TutorialModeController extends GameModeController {
 		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("font/ReginaFree.ttf"));
 		FreeTypeFontGenerator.FreeTypeFontParameter param = new FreeTypeFontGenerator.FreeTypeFontParameter();
 		param.size = 56;
-		param.color = Color.BLUE;
+		param.color = Color.YELLOW;
 		param.shadowColor = Color.LIGHT_GRAY;
 		param.shadowOffsetX = 1;
 		param.shadowOffsetY = 1;
@@ -452,7 +452,7 @@ public class TutorialModeController extends GameModeController {
 				if (grabs > 2.5) {
 					ebbLvl++;
 				}
-				System.out.print("time "+grabs+"   ");
+//				System.out.print("time "+grabs+"   ");
 				break;
 			case ebbFling:
 				for(Trunk t : trunkEntities) {
@@ -469,7 +469,7 @@ public class TutorialModeController extends GameModeController {
 				}
 				swing = trunkGrabbed.get(2);
 				back = trunkGrabbed.get(3);
-				System.out.print(swing+"   "+back+"   "+ind);
+//				System.out.print(swing+"   "+back+"   "+ind);
 				if((swing && ind == 3) || back && ind == 2) {
 					ebbLvl++;
 				}
@@ -489,7 +489,7 @@ public class TutorialModeController extends GameModeController {
 				}
 				swing = trunkGrabbed.get(2);
 				back = trunkGrabbed.get(3);
-				System.out.print(swing+"   "+back+"   "+ind+"   "+trunkGrabbed.get(5)+"   ");
+//				System.out.print(swing+"   "+back+"   "+ind+"   "+trunkGrabbed.get(5)+"   ");
 				if((swing && ind == 5) || back && ind == 5) {
 					ebbLvl++;
 				}
@@ -523,7 +523,7 @@ public class TutorialModeController extends GameModeController {
 				}
 				swing = flingGrabbed[0];
 				back = trunkGrabbed.get(6);
-				System.out.print(swing + "   " + back + "   " + ind + "   " + trunkGrabbed.get(6) + "   ");
+//				System.out.print(swing + "   " + back + "   " + ind + "   " + trunkGrabbed.get(6) + "   ");
 				if (swing && back) {
 					for(int i = 0; i < trunkGrabbed.size(); i++)
 						trunkGrabbed.set(i, false);
@@ -533,7 +533,6 @@ public class TutorialModeController extends GameModeController {
 				}
 				break;
 			case ebbVine2:
-				System.out.println("in stage 5");
 				for(Trunk t : trunkEntities) {
 					for(Obstacle plank: t.getBodies()){
 						if(plank.getBody().getUserData() instanceof Obstacle && ((Obstacle)plank.getBody().getUserData()).isGrabbed()) {
@@ -567,7 +566,7 @@ public class TutorialModeController extends GameModeController {
 				}
 				swing = flingGrabbed[1];
 				back = flingGrabbed[2];
-				System.out.print(swing + "   " + back + "   " + ind + "   " + trunkGrabbed.get(7) + "   ");
+//				System.out.print(swing + "   " + back + "   " + ind + "   " + trunkGrabbed.get(7) + "   ");
 				if (swing && back && trunkGrabbed.get(7)) {
 					ebbLvl++;
 				}
@@ -1005,6 +1004,30 @@ public class TutorialModeController extends GameModeController {
 			canvas.drawTextCentered("Try to fling from branch to branch", instrFont, 250f);
 		} else if (currentStage == STAGE_VINE) {
 			canvas.drawTextCentered("Learn to swing on the vines", instrFont, 250f);
+		} else if (currentStage == STAGE_EBB) {
+			switch(ebbLvl) {
+				case ebbGrabPts:
+					canvas.drawTextCentered("Try to grab all 4 endpoints", instrFont, 250f);
+					break;
+				case ebbFlag:
+					canvas.drawTextCentered("Try to hold Flow's arms horizontally \nwithout grabbing for 2.5s", instrFont, 250f);
+					canvas.drawText("time held: "+((int)(grabs*100))/100.0, instrFont, 0.4f*canvas.getWidth(), 0.3f*canvas.getHeight());
+					break;
+				case ebbFling:
+					canvas.drawTextCentered("Try to fling from one short \ntrunk to the other", instrFont, 250f);
+					break;
+				case ebbFlingUp:
+					canvas.drawTextCentered("Now try flinging upwards", instrFont, 250f);
+					break;
+				case ebbVine1:
+					canvas.drawTextCentered("Use the vine to reach \nthe next trunk", instrFont, 250f);
+					break;
+				case ebbVine2:
+					canvas.drawTextCentered("Use the next 2 vines \nto reach the following trunk", instrFont, 250f);
+					break;
+				default:
+					canvas.drawTextCentered("Reach Cherry the owl \nto complete the tutorial", instrFont, 250f);
+			}
 		}
 		if (currentStage >= STAGE_GRAB) {
 			if(slothList.get(0).isActualRightGrab()) {
@@ -1112,7 +1135,7 @@ public class TutorialModeController extends GameModeController {
 				}
 			}
 		} else {
-			System.out.println("ebblvl: "+ebbLvl);
+//			System.out.println("ebblvl: "+ebbLvl);
 			for (int i = 0; i < ebbTrunkNum[ebbLvl]; i++) {
 				trunkEntities.get(i).draw(canvas);
 			}
@@ -1183,7 +1206,7 @@ public class TutorialModeController extends GameModeController {
 
 	public void restart() {
 		//change back to 1
-		currentStage = 3;
+		currentStage = 1;
 	}
 
 	public void printVector(Vector2 v) {
