@@ -95,8 +95,8 @@ public class GlobalConfiguration {
     public void setGraphicsQuality(boolean mode) {
         dataBlob.remove("graphics");
         if (mode)
-            dataBlob.addProperty("graphics",0);
+            dataBlob.addProperty("graphics", 0);
         else
-            dataBlob.addProperty("graphics",1);
+            dataBlob.addProperty("graphics", 1);
     }
 }

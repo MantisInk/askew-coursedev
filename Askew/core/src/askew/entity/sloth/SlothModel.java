@@ -41,11 +41,11 @@ public class SlothModel extends ComplexObstacle {
     public static final int MINUS_30 = 9;
     public static final int PLUS_10 = 10;
     public static final int MINUS_10 = 11;
+    public static final float BODY_MASS = 0.5903138f;
     /**
      * Constants for tuning sloth behaviour
      */
     private static final float HAND_DENSITY = 10.0f;
-    public static final float BODY_MASS = 0.5903138f;
     private static final boolean BODY_FIXED_ROTATION = true;
     private static final boolean HANDS_FIXED_ROTATION = true;
     /**
@@ -854,7 +854,7 @@ public class SlothModel extends ComplexObstacle {
         }
         // set data as grabbed for pinned to shade grabbed stuff
         if (target.getUserData() instanceof Obstacle) {
-            ((Obstacle)target.getUserData()).setGrabbed(true);
+            ((Obstacle) target.getUserData()).setGrabbed(true);
         }
 
         joints.add(grabJoint);
@@ -870,7 +870,7 @@ public class SlothModel extends ComplexObstacle {
             releasedEntity = true;
             leftGrabJoint = null;
             if (leftTarget.getUserData() instanceof Obstacle) {
-                ((Obstacle)leftTarget.getUserData()).setGrabbed(false);
+                ((Obstacle) leftTarget.getUserData()).setGrabbed(false);
             }
             leftTarget = null;
         }
@@ -890,7 +890,7 @@ public class SlothModel extends ComplexObstacle {
             releasedEntity = true;
             rightGrabJoint = null;
             if (rightTarget.getUserData() instanceof Obstacle) {
-                ((Obstacle)rightTarget.getUserData()).setGrabbed(false);
+                ((Obstacle) rightTarget.getUserData()).setGrabbed(false);
             }
             rightTarget = null;
         }
@@ -1026,7 +1026,7 @@ public class SlothModel extends ComplexObstacle {
                 float lower_threshold = 3.0f;
 
                 // Different textures for flow's body
-                TextureRegion old_texture=texture;
+                TextureRegion old_texture = texture;
 
                 if (body_ind == PART_BODY) {
                     if (currentCooldown < 0) {
@@ -1248,7 +1248,9 @@ public class SlothModel extends ComplexObstacle {
         this.movingLeftArm = movingLeftArm;
     }
 
-    public void setTutorial() {tutorial = true;}
+    public void setTutorial() {
+        tutorial = true;
+    }
 
     public void drawHelpLines(GameCanvas canvas, Affine2 camTrans, int mode, float angleDiff) {
         if (tutorial) {

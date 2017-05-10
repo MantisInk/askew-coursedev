@@ -980,6 +980,6 @@ public abstract class Obstacle extends Entity {
 
 
     public void setGrabbed(boolean b) {
-    	this.grabbed = b;
+        this.grabbed = b;
     }
 }

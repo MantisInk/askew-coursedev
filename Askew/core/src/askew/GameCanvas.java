@@ -90,6 +90,7 @@ public class GameCanvas {
      * Cache object to handle raw texture
      */
     private TextureRegion holder;
+
     /**
      * Creates a new askew.GameCanvas determined by the application configuration.
      * <p>
