@@ -13,6 +13,6 @@
   "storeTimeRecords": false,
   "maxLevel": 9,
   "currentLevel": 1,
-  "enableMusic": true,
+  "enableMusic": false,
   "maxTutorial": 5
 }

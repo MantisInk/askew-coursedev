@@ -35,11 +35,9 @@ import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
-import com.badlogic.gdx.utils.ObjectSet;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -53,11 +51,12 @@ import java.util.List;
  * This is the purpose of our AssetState variable; it ensures that multiple instances
  * place nicely with the static assets.
  */
+@SuppressWarnings({"FieldCanBeLocal", "WeakerAccess"})
 public class GameModeController extends WorldController {
 
 
 	public static final float MAX_MUSIC_VOLUME = 0.15f;
-	Affine2 camTrans = new Affine2();
+	final Affine2 camTrans = new Affine2();
 
 	/** Track asset loading from all instances and subclasses */
 	private AssetState platformAssetState = AssetState.EMPTY;
@@ -67,19 +66,19 @@ public class GameModeController extends WorldController {
 	protected static boolean playerIsReady = false;
 	@Getter
 	protected boolean paused = false;
-	protected boolean prevPaused = false;
+	private boolean prevPaused = false;
 	private boolean victory = false;
 	// fern selection indicator locations for pause menu options
-	protected Vector2[] pause_locs = {
+	final Vector2[] pause_locs = {
 			new Vector2(0.68f,0.53f),
 			new Vector2(0.55f,0.43f),
 			new Vector2(0.68f,0.33f)};
-	protected Vector2[] victory_locs = {
+	private final Vector2[] victory_locs = {
 			new Vector2(0.08f,0.53f),
 			new Vector2(0.22f,0.43f),
 			new Vector2(0.12f,0.33f)};
 
-	public static final String[] GAMEPLAY_MUSIC = new String[] {
+	private static final String[] GAMEPLAY_MUSIC = new String[] {
 			"sound/music/askew.ogg",
 			"sound/music/flowwantshisorherbaby.ogg",
 			"sound/music/youdidit.ogg",
@@ -87,48 +86,49 @@ public class GameModeController extends WorldController {
 			"sound/music/Lauren_Track2.ogg"
 	};
 
-	public static final String GRAB_SOUND = "sound/effect/grab.wav";
-	public static final String VICTORY_SOUND = "sound/effect/realvictory.wav";
-	public static final String RELEASE_SOUND = "sound/effect/release.wav";
-	public static final String ARM_SOUND = "sound/effect/arm.wav";
-	public static final String WIND_SOUND = "sound/effect/wind.wav";
-	public static final String FALL_MUSIC = "sound/music/fallingtoyourdeath" +
+	private static final String GRAB_SOUND = "sound/effect/grab.wav";
+	private static final String VICTORY_SOUND = "sound/effect/realvictory.wav";
+	private static final String RELEASE_SOUND = "sound/effect/release.wav";
+	private static final String ARM_SOUND = "sound/effect/arm.wav";
+	private static final String WIND_SOUND = "sound/effect/wind.wav";
+	private static final String FALL_MUSIC = "sound/music/fallingtoyourdeath" +
 			".wav";
 
-	Sound grabSound;
-	Sound releaseSound;
-	Sound victorySound;
+	private Sound grabSound;
+	private Sound releaseSound;
+	private Sound victorySound;
 
 	@Setter
 	protected String loadLevel, DEFAULT_LEVEL;
-	protected LevelModel levelModel; 				// LevelModel for the level the player is currently on
-	private int numLevel, MAX_LEVEL; 	// track int val of lvl #
+	LevelModel levelModel; 				// LevelModel for the level the player is currently on
+	private final int MAX_LEVEL; 	// track int val of lvl #
 
-	protected float currentTime, recordTime;	// track current and record time to complete level
-	private boolean storeTimeRecords;
-	private RecordBook records = RecordBook.getInstance();
+	private float currentTime;
+	private float recordTime;	// track current and record time to complete level
+	private final boolean storeTimeRecords;
+	private final RecordBook records = RecordBook.getInstance();
 
-	protected PhysicsController collisions;
+	private PhysicsController collisions;
 
-	private JSONLoaderSaver jsonLoaderSaver;
+	private final JSONLoaderSaver jsonLoaderSaver;
 	private float initFlowX;
 	private float initFlowY;
-	private int PAUSE_RESUME = 0;
-	private int PAUSE_RESTART = 1;
-	private int PAUSE_MAINMENU = 2;
-	protected int pause_mode = PAUSE_RESUME;
-	private int VICTORY_NEXT = 0;
-	private int VICTORY_RESTART = 1;
-	private int VICTORY_MAINMENU = 2;
+	private final int PAUSE_RESUME = 0;
+	private final int PAUSE_RESTART = 1;
+	private final int PAUSE_MAINMENU = 2;
+	int pause_mode = PAUSE_RESUME;
+	private final int VICTORY_NEXT = 0;
+	private final int VICTORY_RESTART = 1;
+	private final int VICTORY_MAINMENU = 2;
 	private int victory_mode = VICTORY_NEXT;
-	protected Texture background;
-	protected Texture pauseTexture;
-	protected Texture victoryTexture;
-	protected Texture fern;
-	protected Texture edgefade;
+	Texture background;
+	Texture pauseTexture;
+	private Texture victoryTexture;
+	Texture fern;
+	private Texture edgefade;
 	private static final float NEAR_FALL_DEATH_DISTANCE = 9;
 	private static final float LOWEST_ENTITY_FALL_DEATH_THRESHOLD = 12;
-	protected static final float CYCLES_OF_INTRO = 50f;
+	static final float CYCLES_OF_INTRO = 50f;
 	private float fallDeathHeight;
 	private String selectedTrack;
 	private String lastLevel;
@@ -146,12 +146,12 @@ public class GameModeController extends WorldController {
 
 	/** The opacity of the black text covering the screen. Game can start
 	 * when this is zero. */
-	protected float coverOpacity;
+	float coverOpacity;
 
-	protected ParticleController particleController;
-	protected static final int MAX_PARTICLES = 5000;
-	protected static final int INITIAL_FOG = 300;
-	protected float fogTime;
+	private final ParticleController particleController;
+	private static final int MAX_PARTICLES = 5000;
+	private static final int INITIAL_FOG = 300;
+	private float fogTime;
 
 	/**
 	 * Preloads the assets for this controller.
@@ -228,11 +228,8 @@ public class GameModeController extends WorldController {
 	/** The new heavier gravity for this world (so it is not so floaty) */
 	private static final float  DEFAULT_GRAVITY = -12.5f;//-15.7f;
 
-	// Physics objects for the game
-	protected static OwlModel owl;
-
-	/** Mark set to handle more sophisticated collision callbacks */
-	protected ObjectSet<Fixture> sensorFixtures;
+	// Physics entities for the game
+	static OwlModel owl;
 
 	/**
 	 * Creates and initialize a new instance of the platformer game
@@ -240,10 +237,9 @@ public class GameModeController extends WorldController {
 	 * The game has default gravity and other settings
 	 */
 	public GameModeController() {
-		super(DEFAULT_WIDTH,DEFAULT_HEIGHT,DEFAULT_GRAVITY);
+		super(DEFAULT_GRAVITY);
 		collisions = new PhysicsController();
 		world.setContactListener(collisions);
-		sensorFixtures = new ObjectSet<Fixture>();
 		DEFAULT_LEVEL = GlobalConfiguration.getInstance().getAsString("defaultLevel");
 		MAX_LEVEL = GlobalConfiguration.getInstance().getAsInt("maxLevel");
 		loadLevel = DEFAULT_LEVEL;
@@ -298,12 +294,9 @@ public class GameModeController extends WorldController {
 
 		particleController.reset();
 		fogTime = 0;
-		for(Entity obj : objects) {
-			if( (obj instanceof Obstacle))
-				((Obstacle)obj).deactivatePhysics(world);
-		}
+		entities.stream().filter(obj -> (obj instanceof Obstacle)).forEachOrdered(obj -> ((Obstacle) obj).deactivatePhysics(world));
 
-		objects.clear();
+		entities.clear();
 		world.dispose();
 		world = new World(gravity,false);
 		if(collisions == null){
@@ -325,7 +318,7 @@ public class GameModeController extends WorldController {
 		populateLevel();
 		// set death height
 //		fallDeathHeight = Float.MAX_VALUE;
-//		for(Entity obj: objects) {
+//		for(Entity obj: entities) {
 //			float potentialFallDeath = obj.getY() -
 //					LOWEST_ENTITY_FALL_DEATH_THRESHOLD;
 //			if (potentialFallDeath < fallDeathHeight) {
@@ -373,98 +366,94 @@ public class GameModeController extends WorldController {
 	/**
 	 * Lays out the game geography.
 	 */
-	protected void populateLevel() {
+	void populateLevel() {
 		// Are we loading a new level?
 		if (lastLevel == null || !lastLevel.equals(loadLevel)) {
 			selectedTrack = GAMEPLAY_MUSIC[(int)Math.floor(GAMEPLAY_MUSIC.length * Math.random())];
 		}
 		lastLevel = loadLevel;
-		try {
-			levelModel = jsonLoaderSaver.loadLevel(loadLevel);
-			if (levelModel != null) {
-				background = manager.get(levelModel.getBackground(), Texture.class);
-				recordTime = records.getRecord(loadLevel);
-			}
+		levelModel = jsonLoaderSaver.loadLevel(loadLevel);
+		if (levelModel != null) {
+			background = manager.get(levelModel.getBackground(), Texture.class);
+			recordTime = records.getRecord(loadLevel);
+		}
 
-			if (levelModel == null) {
-				levelModel = new LevelModel();
-			}
+		if (levelModel == null) {
+			levelModel = new LevelModel();
+		}
 
-			int slothId = 0;
+		int slothId = 0;
 
-			for (Entity o : levelModel.getEntities()) {
-				// drawing
+		for (Entity o : levelModel.getEntities()) {
+			// drawing
 
-				addObject(o);
-				if (o instanceof SlothModel) {
-					SlothModel sloth = (SlothModel) o;
-					sloth.activateSlothPhysics(world);
-					collisions.addSloth(sloth);
-					if (slothId == 0) {
-						initFlowX = sloth.getX();
-						initFlowY = sloth.getY();
-						cameraX = sloth.getX();
-						cameraY = sloth.getY();
-					}
-
-					sloth.setControlMode(currentControl);
-					sloth.setMovementMode(currentMovement);
-					sloth.setId(slothId++);
-					slothList.add(sloth);
-				}
-				if (o instanceof OwlModel) {
-					owl = (OwlModel) o;
+			addObject(o);
+			if (o instanceof SlothModel) {
+				SlothModel sloth = (SlothModel) o;
+				sloth.activateSlothPhysics(world);
+				collisions.addSloth(sloth);
+				if (slothId == 0) {
+					initFlowX = sloth.getX();
+					initFlowY = sloth.getY();
+					cameraX = sloth.getX();
+					cameraY = sloth.getY();
 				}
 
+				sloth.setControlMode(currentControl);
+				sloth.setMovementMode(currentMovement);
+				sloth.setId(slothId++);
+				slothList.add(sloth);
+			}
+			if (o instanceof OwlModel) {
+				owl = (OwlModel) o;
 			}
 
-			if (slothId == 2) {
-				// Attach the sloths
-				Vine wtfVine = new Vine(initFlowX, initFlowY, 6, false, 90, 0, 0, false);
-				wtfVine.setTextures(manager);
-				addObject(wtfVine);
-				objects.remove(wtfVine);
-				objects.add(0, wtfVine);
+		}
 
-				List<Obstacle> lazy = new ArrayList<>();
-				wtfVine.getBodies().forEach(lazy::add);
-				Filter f = new Filter();
-				f.maskBits = 0;
-				f.categoryBits = 0;
-				wtfVine.getBodies().forEach(body -> body.setFilterData(f));
-				Obstacle left = lazy.get(0);
+		if (slothId == 2) {
+			// Attach the sloths
+			Vine wtfVine = new Vine(initFlowX, initFlowY, 6, 90, 0, 0, false);
+			wtfVine.setTextures(manager);
+			addObject(wtfVine);
+			entities.remove(wtfVine);
+			entities.add(0, wtfVine);
 
-				// Definition for a revolute joint
-				RevoluteJointDef jointDef = new RevoluteJointDef();
+			List<Obstacle> lazy = new ArrayList<>();
+			wtfVine.getBodies().forEach(lazy::add);
+			Filter f = new Filter();
+			f.maskBits = 0;
+			f.categoryBits = 0;
+			wtfVine.getBodies().forEach(body -> body.setFilterData(f));
+			Obstacle left = lazy.get(0);
 
-				// Initial joint
-				jointDef.bodyB = slothList.get(0).getMainBody();
-				jointDef.bodyA = left.getBody();
-				jointDef.localAnchorB.set(new Vector2(0, 0.2f));
-				jointDef.localAnchorA.set(new Vector2(0, Vine.lheight / 2));
-				jointDef.collideConnected = false;
-				Joint joint = world.createJoint(jointDef);
+			// Definition for a revolute joint
+			RevoluteJointDef jointDef = new RevoluteJointDef();
 
-				// Definition for a revolute joint
-				jointDef = new RevoluteJointDef();
+			// Initial joint
+			jointDef.bodyB = slothList.get(0).getMainBody();
+			jointDef.bodyA = left.getBody();
+			jointDef.localAnchorB.set(new Vector2(0, 0.2f));
+			jointDef.localAnchorA.set(new Vector2(0, Vine.lheight / 2));
+			jointDef.collideConnected = false;
+			world.createJoint(jointDef);
 
-				// Initial joint
-				jointDef.bodyB = slothList.get(1).getMainBody();
-				jointDef.bodyA = lazy.get(lazy.size() - 1).getBody();
-				jointDef.localAnchorB.set(new Vector2(0, 0.2f));
-				jointDef.localAnchorA.set(new Vector2(0, -Vine.lheight / 2));
-				jointDef.collideConnected = false;
-				joint = world.createJoint(jointDef);
-			}
-			for(int i = 0; i < INITIAL_FOG; i++) {
-				particleController.fog(levelModel.getMaxX()-levelModel.getMinX(),levelModel.getMaxY()-levelModel.getMinY() );
-			}
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			// Definition for a revolute joint
+			jointDef = new RevoluteJointDef();
+
+			// Initial joint
+			jointDef.bodyB = slothList.get(1).getMainBody();
+			jointDef.bodyA = lazy.get(lazy.size() - 1).getBody();
+			jointDef.localAnchorB.set(new Vector2(0, 0.2f));
+			jointDef.localAnchorA.set(new Vector2(0, -Vine.lheight / 2));
+			jointDef.collideConnected = false;
+			world.createJoint(jointDef);
+		}
+		for(int i = 0; i < INITIAL_FOG; i++) {
+			particleController.fog(levelModel.getMaxX()-levelModel.getMinX(),levelModel.getMaxY()-levelModel.getMinY() );
 		}
 		currentTime = 0f;
-
 	}
+
 
 	/**For drawing force lines*/
 	public SlothModel getSloth(){return slothList.get(0);}
@@ -568,7 +557,7 @@ public class GameModeController extends WorldController {
 	 *
 	 * @return whether the player has pressed a button
 	 */
-	public boolean checkReady(){
+	private boolean checkReady(){
 		if (paused) return false;
 
 		return InputControllerManager.getInstance().inputControllers().parallelStream()
@@ -576,7 +565,7 @@ public class GameModeController extends WorldController {
 				.reduce(false,(acc,el)->acc || el);
 	}
 
-	public void printHelp(){
+	void printHelp(){
 		//Display waiting text if not ready
 		displayFont.setColor(Color.YELLOW);
 		canvas.drawText("Hold RB/LB \n to start!", displayFont, initFlowX * worldScale.x, initFlowY * worldScale.y + 150f);
@@ -588,7 +577,7 @@ public class GameModeController extends WorldController {
 	 * This method contains the specific update code for this mini-game. It does
 	 * not handle collisions, as those are managed by the parent class askew.playermode.WorldController.
 	 * This method is called after input is read, but before collisions are resolved.
-	 * The very last thing that it should do is apply forces to the appropriate objects.
+	 * The very last thing that it should do is apply forces to the appropriate entities.
 	 *
 	 * @param dt Number of seconds since last animation frame
 	 */
@@ -659,9 +648,9 @@ public class GameModeController extends WorldController {
 
 					if (isFailure()) {
 						if (sloth.dismember(world)) {
-                            grabSound.play();
-                            fallDeathHeight = sloth.getPosition().y - NEAR_FALL_DEATH_DISTANCE;
-                        }
+							grabSound.play();
+							fallDeathHeight = sloth.getPosition().y - NEAR_FALL_DEATH_DISTANCE;
+						}
 					}
 				}
 			}
@@ -789,24 +778,30 @@ public class GameModeController extends WorldController {
 
 		canvas.begin(camTrans);
 
-		Collections.sort(objects);
+		//noinspection unchecked
+		Collections.sort(entities);
 		Particle[] particles = particleController.getSorted();
 		particleController.setDrawScale(worldScale);
 		int n = particleController.numParticles();
-		int total = objects.size() + n;
+		int total = entities.size() + n;
 		int i = 0;
 		int j = 0;
-		Particle p = null;
-		Entity ent = null;
+		Particle p;
+		Entity ent;
 		while( i + j < total){
 			p = null;
 			ent = null;
 			if( i < n){
-				 p = particles[i];
+				p = particles[i];
 			}
-			if( j < objects.size()) {
-				ent = objects.get(j);
+			if( j < entities.size()) {
+				ent = entities.get(j);
 			}
+			// FIXME: I think there is an issue with the logic here. or at
+			// least semantics. You normally shouldnt do a null compareTo,
+			// but it looks like that's whats happening here -
+			// trevor
+			//noinspection ConstantConditions
 			if(ent != null && ent.compareTo(p) < 0){
 				ent.setDrawScale(worldScale);
 				ent.draw(canvas);
@@ -832,11 +827,7 @@ public class GameModeController extends WorldController {
 
 		if (debug) {
 			canvas.beginDebug(camTrans);
-			for(Entity obj : objects) {
-				if( obj instanceof  Obstacle){
-					((Obstacle)obj).drawDebug(canvas);
-				}
-			}
+			entities.stream().filter(obj -> obj instanceof Obstacle).forEachOrdered(obj -> ((Obstacle) obj).drawDebug(canvas));
 			canvas.endDebug();
 			canvas.begin();
 			// text

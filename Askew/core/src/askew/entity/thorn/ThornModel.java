@@ -4,7 +4,6 @@ import askew.GameCanvas;
 import askew.MantisAssetManager;
 import askew.entity.FilterGroup;
 import askew.entity.obstacle.BoxObstacle;
-import askew.entity.obstacle.PolygonObstacle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -23,43 +22,13 @@ public class ThornModel extends BoxObstacle {
     private transient float x;
     @Getter @Setter
     private transient float y;
-    private float width;
-    private float angle;
+    private final float width;
+    private final float angle;
     private static final float HEIGHT = 0.5f;
 
-    public static final float EPSILON = 0.2f;
-
-    TextureRegion wrapper;
+    private TextureRegion wrapper;
     private float realX;
     private float realY;
-
-    private static float[] xywhaToPoints(float width, float angle) {
-        float[] points = new float[8];
-        angle = (float) Math.toRadians(angle);
-        // origin is x,y, rotate everything else. Height is always 1.
-        points[0] = 0;
-        points[1] = 0;
-        points[2] = 0;
-        points[3] = HEIGHT;
-        points[4] = width;
-        points[5] = HEIGHT;
-        points[6] = width;
-        points[7] = 0;
-//        float lx = (float) -(Math.sin(angle));
-//        float ly = (float) (Math.cos(angle));
-//        points[2] = lx;
-//        points[3] = ly;
-//        points[4] = lx + width * (float)(Math.cos(angle));
-//        points[5] = ly + width * (float)(Math.sin(angle));
-//        points[6] = width * (float)(Math.cos(angle));
-//        points[7] = width * (float)(Math.sin(angle));
-//        if (Math.abs(points[6] / width) < EPSILON) {
-//            points[4] = lx;
-//            points[6] = 0;
-//        }
-
-        return points;
-    }
 
     /**
      * Creates a new ragdoll with its head at the given position.

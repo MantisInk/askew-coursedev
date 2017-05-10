@@ -34,22 +34,23 @@ import com.badlogic.gdx.physics.box2d.joints.*;
  * by adjusting the force.  However, larger forces can cause artifacts when dragging 
  * an obstacle through other obstacles.
  */
-public class ObstacleSelector implements QueryCallback  {
+@SuppressWarnings("FieldCanBeLocal")
+class ObstacleSelector implements QueryCallback  {
 	/** The default size of the mouse selector */
-	private static float DEFAULT_MSIZE = 0.2f;
+	private static final float DEFAULT_MSIZE = 0.2f;
 	/** The default update frequence (in Hz) of the joint */
-	private static float DEFAULT_FREQUENCY = 10.0f;
+	private static final float DEFAULT_FREQUENCY = 10.0f;
 	/** The default damping force of the joint */
-	private static float DEFAULT_DAMPING = 0.7f;
+	private static final float DEFAULT_DAMPING = 0.7f;
 	/** The default force multiplier of the selector */
-	private static float DEFAULT_FORCE = 1000.0f;
+	private static final float DEFAULT_FORCE = 1000.0f;
 
     /** The World associated with this selection */
-    private World world;
+    private final World world;
     /** The current fixture selected by this tool (may be nullptr) */
     private Fixture selection;
     /** A default body used as the other half of the mouse joint */
-    private Body ground;
+    private final Body ground;
 	/** The width and height of the box */
 	private Vector2 dimension;
 	
@@ -58,22 +59,22 @@ public class ObstacleSelector implements QueryCallback  {
 	/** The texture origin (in the center) */
 	private Vector2 origin;
 	/** The drawing scale for this selector */
-	private Vector2 drawScale;
+	private final Vector2 drawScale;
     
     /** A reusable definition for creating a mouse joint */
-    private MouseJointDef mouseJointDef;
+    private final MouseJointDef mouseJointDef;
     /** The current mouse joint, if an item is selected */
     private MouseJoint mouseJoint;
     
     /** The region of world space to select an object from */
-    private Rectangle  pointer;
+    private final Rectangle  pointer;
     /** The amount to multiply by the mass to move the object */
     private float force;
     
     /** Position cache for moving mouse */
-    private Vector2 position = new Vector2();
+    private final Vector2 position = new Vector2();
     /** Size cache for the draw scale */
-    private Vector2 scaleCache = new Vector2();
+    private final Vector2 scaleCache = new Vector2();
     
 	/**
      * Returns the response speed of the mouse joint
@@ -171,37 +172,21 @@ public class ObstacleSelector implements QueryCallback  {
     	pointer.width  = width; 
     	pointer.height = height;
     }
- 
-    /**
-     * Creates a new ObstacleSelector for the given World
-     *
-     * This world can never change.  If you want a selector for a different world,
-     * make a new instance.
-     *
-     * This constructor uses the default mouse size.
-     *
-     * @param  world   the physics world
-     */
-    public ObstacleSelector(World world) {
-		this(world,DEFAULT_MSIZE,DEFAULT_MSIZE);	
-    }
 
     /**
      * Creates a new ObstacleSelector for the given World and mouse size.
      *
      * This world can never change.  If you want a selector for a different world,
      * make a new instance.  However, the mouse size can be changed at any time.
+	 * @param  world   the physics world
      *
-     * @param  world   the physics world
-     * @param  width   the width of the mouse pointer
-     * @param  height  the height of the mouse pointer
-     */
-    public ObstacleSelector(World world, float width, float height) {
+	 */
+    private ObstacleSelector(World world) {
 	    this.world = world;
     
 	    pointer = new Rectangle();
-    	pointer.width  = width;
-    	pointer.height = height;
+    	pointer.width  = ObstacleSelector.DEFAULT_MSIZE;
+    	pointer.height = ObstacleSelector.DEFAULT_MSIZE;
     
     	mouseJointDef = new MouseJointDef();
     	
@@ -216,13 +201,11 @@ public class ObstacleSelector implements QueryCallback  {
 		ground = world.createBody(groundDef);
 		ground.createFixture(groundShape,0);
 
-	    if (ground != null) {
-	        FixtureDef groundFixture = new FixtureDef();
-        	groundFixture.shape = groundShape;
-        	ground.createFixture(groundFixture);
-    	}
-	    
-	    drawScale = new Vector2(1,1);
+		FixtureDef groundFixture = new FixtureDef();
+		groundFixture.shape = groundShape;
+		ground.createFixture(groundFixture);
+
+		drawScale = new Vector2(1,1);
     }
 
     /**
@@ -246,10 +229,7 @@ public class ObstacleSelector implements QueryCallback  {
     public Obstacle getObstacle() {   
     	if (selection != null) {
         	Object data = selection.getBody().getUserData();
-        	try {
-        		return (Obstacle)data;
-        	} catch (Exception e) {
-        	}
+			return (Obstacle)data;
         }
         return null;
     }
@@ -346,7 +326,7 @@ public class ObstacleSelector implements QueryCallback  {
      * Returns the drawing scale for this obstacle selector
      *
      * The drawing scale is the number of pixels to draw before Box2D unit. Because
-     * mass is a function of area in Box2D, we typically want the physics objects
+     * mass is a function of area in Box2D, we typically want the physics entities
      * to be small.  So we decouple that scale from the physics object.  However,
      * we must track the scale difference to communicate with the scene graph.
      *
@@ -367,7 +347,7 @@ public class ObstacleSelector implements QueryCallback  {
      * Sets the drawing scale for this obstacle selector
      *
      * The drawing scale is the number of pixels to draw before Box2D unit. Because
-     * mass is a function of area in Box2D, we typically want the physics objects
+     * mass is a function of area in Box2D, we typically want the physics entities
      * to be small.  So we decouple that scale from the physics object.  However,
      * we must track the scale difference to communicate with the scene graph.
      *
@@ -383,7 +363,7 @@ public class ObstacleSelector implements QueryCallback  {
      * Sets the drawing scale for this physics object
      *
      * The drawing scale is the number of pixels to draw before Box2D unit. Because
-     * mass is a function of area in Box2D, we typically want the physics objects
+     * mass is a function of area in Box2D, we typically want the physics entities
      * to be small.  So we decouple that scale from the physics object.  However,
      * we must track the scale difference to communicate with the scene graph.
      *
@@ -392,7 +372,7 @@ public class ObstacleSelector implements QueryCallback  {
      * @param x  the x-axis scale for this physics object
      * @param y  the y-axis scale for this physics object
      */
-    public void setDrawScale(float x, float y) {
+    private void setDrawScale(float x, float y) {
     	drawScale.set(x,y);
     }
     

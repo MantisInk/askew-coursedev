@@ -66,7 +66,7 @@ public class EntityWrapper implements JsonSerializer<Entity>, JsonDeserializer<E
                 return JsonEntityFactory.createEyeEntity(manager,instance);
             default:
                 System.err.println("Unrecognized in wrapper: " + obstacleClass);
-                Class<?> klass = null;
+                Class<?> klass;
                 try {
                     klass = Class.forName(className);
                 } catch (ClassNotFoundException e) {

@@ -38,13 +38,14 @@ import com.badlogic.gdx.utils.Array;
  * To move the other bodies, they should either be iterated over directly, or attached
  * to the root via a joint.
  */
+@SuppressWarnings("ALL")
 public abstract class ComplexObstacle extends Obstacle {
     /** A root body for this box 2d. */
-    protected Body body;
+	private Body body;
 	/** A complex physics object has multiple bodies */
-	protected transient Array<Obstacle> bodies; //Changed to static to draw lines
+	protected final transient Array<Obstacle> bodies; //Changed to static to draw lines
 	/** Potential joints for connecting the multiple bodies */
-	protected transient Array<Joint> joints;
+	protected final transient Array<Joint> joints;
 	
 	/// BodyDef Methods
 	/**
@@ -486,7 +487,7 @@ public abstract class ComplexObstacle extends Obstacle {
 	 * a high speed bullet at a stack of dynamic bricks. Without CCD, the bullet might
 	 * tunnel through the bricks.
 	 *
-	 * Fast moving objects in Box2D can be labeled as bullets. Bullets will perform CCD 
+	 * Fast moving entities in Box2D can be labeled as bullets. Bullets will perform CCD
 	 * with both static and dynamic bodies. You should decide what bodies should be 
 	 * bullets based on your game design.
 	 *
@@ -509,7 +510,7 @@ public abstract class ComplexObstacle extends Obstacle {
 	 * a high speed bullet at a stack of dynamic bricks. Without CCD, the bullet might
 	 * tunnel through the bricks.
 	 *
-	 * Fast moving objects in Box2D can be labeled as bullets. Bullets will perform CCD 
+	 * Fast moving entities in Box2D can be labeled as bullets. Bullets will perform CCD
 	 * with both static and dynamic bodies. You should decide what bodies should be 
 	 * bullets based on your game design.
 	 *
@@ -561,7 +562,7 @@ public abstract class ComplexObstacle extends Obstacle {
 	/**
 	 * Returns the gravity scale to apply to this body
 	 *
-	 * This allows isolated objects to float.  Be careful with this, since increased 
+	 * This allows isolated entities to float.  Be careful with this, since increased
 	 * gravity can decrease stability.
 	 *
 	 * This method affects the root body of this composite structure only.  If you want
@@ -576,7 +577,7 @@ public abstract class ComplexObstacle extends Obstacle {
 	/**
 	 * Sets the gravity scale to apply to this body
 	 *
-	 * This allows isolated objects to float.  Be careful with this, since increased 
+	 * This allows isolated entities to float.  Be careful with this, since increased
 	 * gravity can decrease stability.
 	 *
 	 * This method affects the root body of this composite structure only.  If you want
@@ -728,7 +729,7 @@ public abstract class ComplexObstacle extends Obstacle {
 	/**
 	 * Sets the restitution of this body
 	 *
-	 * Restitution is used to make objects bounce. The restitution value is usually set 
+	 * Restitution is used to make entities bounce. The restitution value is usually set
 	 * to be between 0 and 1. Consider dropping a ball on a table. A value of zero means 
 	 * the ball won't bounce. This is called an inelastic collision. A value of one means 
 	 * the ball's velocity will be exactly reflected. This is called a perfectly elastic 
@@ -920,12 +921,12 @@ public abstract class ComplexObstacle extends Obstacle {
 	}
 	
 	/** 
-	 * Returns the collection of component physics objects.
+	 * Returns the collection of component physics entities.
 	 *
 	 * While the iterable does not allow you to modify the list, it is possible to
-	 * modify the individual objects.
+	 * modify the individual entities.
 	 *
-	 * @return the collection of component physics objects.
+	 * @return the collection of component physics entities.
 	 */
 	 public Iterable<Obstacle> getBodies() {
 	 	return bodies;
@@ -970,7 +971,7 @@ public abstract class ComplexObstacle extends Obstacle {
 	 * This method invokes ActivatePhysics for the individual PhysicsObjects
 	 * in the list. It also calls the internal method createJoints() to 
 	 * link them all together. You should override that method, not this one, 
-	 * for specific physics objects.
+	 * for specific physics entities.
 	 *
 	 * @param world Box2D world to store body
 	 *
@@ -1018,12 +1019,13 @@ public abstract class ComplexObstacle extends Obstacle {
 	 * Creates the joints for this object.
 	 * 
 	 * This method is executed as part of activePhysics. This is the primary method to 
-	 * override for custom physics objects.
+	 * override for custom physics entities.
 	 *
 	 * @param world Box2D world to store joints
 	 *
 	 * @return true if object allocation succeeded
 	 */
+	@SuppressWarnings("SameReturnValue")
 	protected abstract boolean createJoints(World world);
 
 	/**
@@ -1047,7 +1049,7 @@ public abstract class ComplexObstacle extends Obstacle {
      * Sets the drawing scale for this physics object
      *
      * The drawing scale is the number of pixels to draw before Box2D unit. Because
-     * mass is a function of area in Box2D, we typically want the physics objects
+     * mass is a function of area in Box2D, we typically want the physics entities
      * to be small.  So we decouple that scale from the physics object.  However,
      * we must track the scale difference to communicate with the scene graph.
      *
@@ -1075,6 +1077,7 @@ public abstract class ComplexObstacle extends Obstacle {
 		}
 	}
 
+	@SuppressWarnings("SameParameterValue")
 	public void draw(GameCanvas canvas, Color tint) {
 		for(Obstacle obj : bodies) {
 			((SimpleObstacle)obj).draw(canvas, tint);

@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 public class EntityTree {
 
-    ETNode root;
+    private final ETNode root;
     ETNode current;
     boolean isBackground;
 
@@ -51,13 +51,13 @@ public class EntityTree {
 
     public void setCurrent(ETNode e){
         current = e;
-        if(current.name == "Background"){
+        if(current.name.equals("Background")){
             isBackground = true;
         }
     }
 
     public void upFolder(){
-        if(current.name == "Background"){
+        if(current.name.equals("Background")){
             isBackground = false;
         }
         current = current.parent;
@@ -110,12 +110,12 @@ public class EntityTree {
 
     public class ETNode {
 
-        String name;
-        String texturePath;//maybe string
+        final String name;
+        final String texturePath;//maybe string
         Texture texture = null;
-        ETNode parent;
+        final ETNode parent;
         ArrayList<ETNode> children;
-        boolean isLeaf;
+        final boolean isLeaf;
 
         public ETNode(ETNode parent, String name, String texturePath, boolean isLeaf){
             this.name = name;
@@ -123,7 +123,7 @@ public class EntityTree {
             this.parent = parent;
             this.isLeaf = isLeaf;
             if(!isLeaf){
-                children = new ArrayList<ETNode>();
+                children = new ArrayList<>();
             }
             if(parent != null)
                 parent.add(this);

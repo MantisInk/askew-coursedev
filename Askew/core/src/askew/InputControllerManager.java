@@ -6,11 +6,11 @@ import java.util.List;
 
 public class InputControllerManager {
 
-    public static final int NUM_CONTROLLERS = 2;
+    private static final int NUM_CONTROLLERS = 2;
 
     private static InputControllerManager instance;
 
-    private List<InputController> inputControllerList;
+    private final List<InputController> inputControllerList;
 
     public static InputControllerManager getInstance() {
         if (instance == null) {

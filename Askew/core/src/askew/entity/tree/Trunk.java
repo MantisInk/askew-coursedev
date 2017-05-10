@@ -31,10 +31,11 @@ import lombok.Setter;
  * Note that this class returns to static loading.  That is because there are
  * no other subclasses that we might loop through.
  */
+@SuppressWarnings("FieldCanBeLocal")
 public class Trunk extends TreeParent{
 
 	/** The spacing between each link */
-	protected transient Vector2 dimension;						/** The size of the entire bridge */
+	private transient Vector2 dimension;						/** The size of the entire bridge */
 
 	@Getter @Setter
 	private float x;
@@ -46,9 +47,9 @@ public class Trunk extends TreeParent{
 	private float numLinks;									// param for json constructor
 
 
-	public transient Vector2 final_norm = null;					/** coords for starting branch off this trunk */
+	private transient Vector2 final_norm = null;					/** coords for starting branch off this trunk */
 	public transient static final float DAMPING_ROTATION = 5f;	/** Set damping constant for joint rotation in vines */
-	protected transient Vector2 planksize;						/** The size of a single plank */
+	private transient Vector2 planksize;						/** The size of a single plank */
 	// TODO: Fix this from being public (refactor artifact) ?
 	private transient float spacing = 0.0f;						/** The spacing between each link */
 
@@ -113,7 +114,7 @@ public class Trunk extends TreeParent{
 	 * Creates the joints for this object.
 	 *
 	 * This method is executed as part of activePhysics. This is the primary method to
-	 * override for custom physics objects.
+	 * override for custom physics entities.
 	 *
 	 * @param world Box2D world to store joints
 	 *
@@ -122,10 +123,8 @@ public class Trunk extends TreeParent{
 	protected boolean createJoints(World world) {
 		assert bodies.size > 0;
 
-		Vector2 pos = bodies.get(0).getPosition();
-
 		// Definition for a revolute joint
-		WeldJointDef jointDef = new WeldJointDef();
+		WeldJointDef jointDef;
 
 		Joint joint;
 

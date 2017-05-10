@@ -40,9 +40,9 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader;
  */
 public class GDXRoot extends Game implements ScreenListener {
 	/** AssetManager to load game assets (texture, sounds, etc.) */
-	private MantisAssetManager manager;
+	private final MantisAssetManager manager;
 	/** AssetTraversalController tells manager what to load */
-	private AssetTraversalController assetTraversalController;
+	private final AssetTraversalController assetTraversalController;
 	/** Drawing context to display graphics (VIEW CLASS) */
 	private GameCanvas canvas;
 	/** Player mode for the asset loading screen (CONTROLLER CLASS) */
@@ -52,9 +52,9 @@ public class GDXRoot extends Game implements ScreenListener {
 	/** List of all WorldControllers */
 	private WorldController[] controllers;
 	public static final int CON_MM = 0;
-	public static final int CON_GM = 1;
-	public static final int CON_LE = 2;
-	public static final int CON_TL = 3;
+	private static final int CON_GM = 1;
+	private static final int CON_LE = 2;
+	private static final int CON_TL = 3;
 
 	
 	/**
@@ -92,9 +92,9 @@ public class GDXRoot extends Game implements ScreenListener {
 				controllers[1]); // pass
 		// gamemode for playtesting
 		controllers[3] = new TutorialModeController();
-		for(int ii = 0; ii < controllers.length; ii++) {
-			controllers[ii].setWorldScale(canvas);
-			controllers[ii].preLoadContent(manager);
+		for (WorldController controller : controllers) {
+			controller.setWorldScale(canvas);
+			controller.preLoadContent(manager);
 		}
 
 		assetTraversalController.preLoadEverything(manager);
@@ -112,9 +112,9 @@ public class GDXRoot extends Game implements ScreenListener {
 	public void dispose() {
 		// Call dispose on our children
 		setScreen(null);
-		for(int ii = 0; ii < controllers.length; ii++) {
-			controllers[ii].unloadContent(manager);
-			controllers[ii].dispose();
+		for (WorldController controller : controllers) {
+			controller.unloadContent(manager);
+			controller.dispose();
 		}
 
 		canvas.dispose();
@@ -148,8 +148,6 @@ public class GDXRoot extends Game implements ScreenListener {
 	 * game -> LE
 	 * LE -> MM
 	 * LE -> game
-	 * */
-	/**
 	 * The given screen has made a request to exit its player mode.
 	 *
 	 * The value exitCode can be used to implement menu options.
@@ -159,10 +157,10 @@ public class GDXRoot extends Game implements ScreenListener {
 	 */
 	public void exitScreen(Screen screen, int exitCode) {
 		if (screen == loading) {
-			for(int ii = 0; ii < controllers.length; ii++) {
-				controllers[ii].loadContent(manager);
-				controllers[ii].setScreenListener(this);
-				controllers[ii].setCanvas(canvas);
+			for (WorldController controller : controllers) {
+				controller.loadContent(manager);
+				controller.setScreenListener(this);
+				controller.setCanvas(canvas);
 			}
 			current = 0;
 			controllers[current].reset();

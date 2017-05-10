@@ -33,6 +33,7 @@ import lombok.Setter;
  * drawing.  It also supports a debug mode that draws polygonal outlines.  However,
  * that mode must be done in a separate begin/end pass.
  */
+@SuppressWarnings("SameParameterValue")
 public class GameCanvas {
 
 	/** Enumeration to track which pass we are in */
@@ -67,11 +68,9 @@ public class GameCanvas {
 	/** Drawing context to handle texture AND POLYGONS as sprites */
 	private PolygonSpriteBatch spriteBatch;
 
-	private SpriteBatch batch;
-
 
 	/** Rendering context for the debug outlines */
-	private ShapeRenderer debugRender;
+	private final ShapeRenderer debugRender;
 
 	/** Track whether or not we are active (for error checking) */
 	private DrawPass active;
@@ -80,16 +79,16 @@ public class GameCanvas {
 	private BlendState blend;
 
 	/** Camera for the underlying SpriteBatch */
-	private OrthographicCamera camera;
+	private final OrthographicCamera camera;
 
-	public BitmapFont font;
+	public final BitmapFont font;
 
-	private ShapeRenderer shapeRenderer;
+	private final ShapeRenderer shapeRenderer;
 
 	/** Value to cache window width (if we are currently full screen) */
-	int width;
+	private int width;
 	/** Value to cache window height (if we are currently full screen) */
-	int height;
+	private int height;
 
 	// CACHE OBJECTS
 	/** Affine cache for current sprite to draw */
@@ -107,12 +106,12 @@ public class GameCanvas {
 	 *
 	 * Width, height, and fullscreen are taken from the LWGJApplicationConfig
 	 * object used to start the application.  This constructor initializes all
-	 * of the necessary graphics objects.
+	 * of the necessary graphics entities.
 	 */
 	public GameCanvas() {
 		active = DrawPass.INACTIVE;
 		spriteBatch = new PolygonSpriteBatch();
-		batch = new SpriteBatch();
+		SpriteBatch batch = new SpriteBatch();
 		debugRender = new ShapeRenderer();
 
 		// Set the projection matrix (for proper scaling)
@@ -123,7 +122,7 @@ public class GameCanvas {
 		batch.setProjectionMatrix(camera.combined);
 
 
-		// Initialize the cache objects
+		// Initialize the cache entities
 		holder = new TextureRegion();
 		local  = new Affine2();
 		global = new Matrix4();
@@ -250,7 +249,8 @@ public class GameCanvas {
 	 *
 	 * @return whether this canvas is currently fullscreen.
 	 */
-	public boolean isFullscreen() {
+	@SuppressWarnings("BooleanMethodIsAlwaysInverted")
+	private boolean isFullscreen() {
 		return Gdx.graphics.isFullscreen();
 	}
 
@@ -266,9 +266,8 @@ public class GameCanvas {
 	 * active (e.g. in-between a begin-end pair).
 	 *
 	 * //@param fullscreen Whether this canvas should change to fullscreen.
-	 * @param desktop 	 Whether to use the current desktop resolution
 	 */
-	public void setFullscreen(boolean value, boolean desktop) {
+	public void setFullscreen(boolean value) {
 		if (active != DrawPass.INACTIVE) {
 			Gdx.app.error("askew.GameCanvas", "Cannot alter property while drawing active", new IllegalStateException());
 			return;
@@ -313,7 +312,7 @@ public class GameCanvas {
 	 *
 	 * @param state the color blending rule
 	 */
-	public void setBlendState(BlendState state) {
+	private void setBlendState(BlendState state) {
 		if (state == blend) {
 			return;
 		}
@@ -454,7 +453,7 @@ public class GameCanvas {
 	 * @param width	The texture width
 	 * @param height The texture height
 	 */
-	public void draw(Texture image, Color tint, float x, float y, float width, float height) {
+	private void draw(Texture image, Color tint, float x, float y, float width, float height) {
 		if (active != DrawPass.STANDARD) {
 			Gdx.app.error("askew.GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
 			return;
@@ -711,7 +710,7 @@ public class GameCanvas {
 	 * @param oy 	The y-coordinate of texture origin (in pixels)
 	 //* @param transform  The image transform
 	 */
-	public void draw(TextureRegion region, Color tint, float ox, float oy, Affine2 affine) {
+	private void draw(TextureRegion region, Color tint, float ox, float oy, Affine2 affine) {
 		if (active != DrawPass.STANDARD) {
 			Gdx.app.error("askew.GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
 			return;
@@ -1112,7 +1111,7 @@ public class GameCanvas {
      * @param y  The y-coordinate of the shape position
      * @param angle  The shape angle of rotation
      * @param sx The amount to scale the x-axis
-     * @param sx The amount to scale the y-axis
+     * @param sy The amount to scale the y-axis
      */
     public void drawPhysics(PolygonShape shape, Color color, float x, float y, float angle, float sx, float sy) {
 		if (active != DrawPass.DEBUG) {
@@ -1177,7 +1176,7 @@ public class GameCanvas {
      * @param x  The x-coordinate of the shape position
      * @param y  The y-coordinate of the shape position
      * @param sx The amount to scale the x-axis
-     * @param sx The amount to scale the y-axis
+     * @param sy The amount to scale the y-axis
      */
     public void drawPhysics(CircleShape shape, Color color, float x, float y, float sx, float sy) {
 		if (active != DrawPass.DEBUG) {

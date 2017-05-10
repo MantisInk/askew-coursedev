@@ -28,7 +28,7 @@ import lombok.Getter;
  * Base model class to support collisions.
  *
  * Instances represents a body and/or a group of bodies.
- * There should be NO game controlling logic code in a physics objects, 
+ * There should be NO game controlling logic code in a physics entities,
  * that should reside in the Controllers.
  *
  * This abstract class has no Body or Shape information and should never 
@@ -37,16 +37,17 @@ import lombok.Getter;
  * to unify common functionality. In particular, it wraps the body and 
  * and fixture information into a single interface.
  */
+@SuppressWarnings("WeakerAccess")
 public abstract class Obstacle extends Entity {
 	/// Initialization structures to store body information
 	/** Stores the body information for this shape */
-	protected transient BodyDef bodyinfo;
+	final transient BodyDef bodyinfo;
 	/** Stores the fixture information for this shape */
-	protected transient FixtureDef fixture;
+	final transient FixtureDef fixture;
 	/** The mass data of this shape (which may override the fixture) */
-	protected transient MassData massdata;
+	final transient MassData massdata;
 	/** Whether or not to use the custom mass data */
-	protected transient boolean masseffect;
+	transient boolean masseffect;
     /** A tag for debugging purposes */
     private transient String nametag;
 	/// Track garbage collection status
@@ -55,15 +56,15 @@ public abstract class Obstacle extends Entity {
 	/** Whether the object has changed shape and needs a new fixture */
 	private transient boolean isDirty;
 
-	protected transient Vector2 customScale;
+	protected final transient Vector2 customScale;
 	
-	/// Caching objects
+	/// Caching entities
 	/** A cache value for when the user wants to access the body position */
-	protected transient  Vector2 positionCache = new Vector2();
+	final transient  Vector2 positionCache = new Vector2();
 	/** A cache value for when the user wants to access the linear velocity */
-	protected transient Vector2 velocityCache = new Vector2();
+	final transient Vector2 velocityCache = new Vector2();
 	/** A cache value for when the user wants to access the center of mass */
-	protected transient Vector2 centroidCache = new Vector2();
+	private final transient Vector2 centroidCache = new Vector2();
 	@Getter
 	private transient boolean grabbed;
 	/// BodyDef Methods
@@ -76,7 +77,7 @@ public abstract class Obstacle extends Entity {
 	 *
 	 * @return the body type for Box2D physics
 	 */
-	public BodyType getBodyType() {
+    BodyType getBodyType() {
 		return bodyinfo.type;
 	}
 	
@@ -86,10 +87,8 @@ public abstract class Obstacle extends Entity {
 	 * If you want to lock a body in place (e.g. a platform) set this value to STATIC.
 	 * KINEMATIC allows the object to move (and some limited collisions), but ignores 
 	 * external forces (e.g. gravity). DYNAMIC makes this is a full-blown physics object.
-	 *
-	 * @return the body type for Box2D physics
 	 */
-	public void setBodyType(BodyType value) {
+    void setBodyType(BodyType value) {
 		bodyinfo.type = value;
 	}
 	
@@ -170,7 +169,7 @@ public abstract class Obstacle extends Entity {
 	 *
 	 * @return the angle of rotation for this body
 	 */
-	public float getAngle() {
+    public float getAngle() {
 		return bodyinfo.angle;
 	}
 	
@@ -203,7 +202,7 @@ public abstract class Obstacle extends Entity {
 	 *
 	 * @param value  the linear velocity for this physics body
 	 */
-	public void setLinearVelocity(Vector2 value) {
+    void setLinearVelocity(Vector2 value) {
 		bodyinfo.linearVelocity.set(value);
 	}
 	
@@ -212,7 +211,7 @@ public abstract class Obstacle extends Entity {
 	 *
 	 * @return the x-velocity for this physics body
 	 */
-	public float getVX() {
+    float getVX() {
 		return bodyinfo.linearVelocity.x;
 	}
 	
@@ -221,7 +220,7 @@ public abstract class Obstacle extends Entity {
 	 *
 	 * @param value  the x-velocity for this physics body
 	 */
-	public void setVX(float value) {
+    void setVX(float value) {
 		bodyinfo.linearVelocity.x = value;
 	}
 	
@@ -230,7 +229,7 @@ public abstract class Obstacle extends Entity {
 	 *
 	 * @return the y-velocity for this physics body
 	 */
-	public float getVY() {
+    float getVY() {
 		return bodyinfo.linearVelocity.y;
 	}
 	
@@ -239,7 +238,7 @@ public abstract class Obstacle extends Entity {
 	 *
 	 * @param value  the y-velocity for this physics body
 	 */
-	public void setVY(float value) {
+    void setVY(float value) {
 		bodyinfo.linearVelocity.y = value;
 	}
 	
@@ -259,7 +258,7 @@ public abstract class Obstacle extends Entity {
 	 *
 	 * @param value the angular velocity for this physics body (in radians)
 	 */
-	public void setAngularVelocity(float value) {
+    void setAngularVelocity(float value) {
 		bodyinfo.angularVelocity = value;
 	}
 	
@@ -273,7 +272,7 @@ public abstract class Obstacle extends Entity {
 	 *
 	 * @return true if the body is active
 	 */
-	public boolean isActive() {
+    boolean isActive() {
 		return bodyinfo.active;
 	}
 	
@@ -287,7 +286,7 @@ public abstract class Obstacle extends Entity {
 	 *
 	 * @param value  whether the body is active
 	 */
-	public void setActive(boolean value) {
+    void setActive(boolean value) {
 		bodyinfo.active = value;
 	}
 	
@@ -301,7 +300,7 @@ public abstract class Obstacle extends Entity {
 	 *
 	 * @return true if the body is awake
 	 */
-	public boolean isAwake() {
+    boolean isAwake() {
 		return bodyinfo.awake;
 	}
 	
@@ -315,7 +314,7 @@ public abstract class Obstacle extends Entity {
 	 *
 	 * @param value  whether the body is awake
 	 */
-	public void setAwake(boolean value) {
+    void setAwake(boolean value) {
 		bodyinfo.awake = value;
 	}
 	
@@ -329,7 +328,7 @@ public abstract class Obstacle extends Entity {
 	 *
 	 * @return false if this body should never fall asleep
 	 */
-	public boolean isSleepingAllowed() {
+    boolean isSleepingAllowed() {
 		return bodyinfo.allowSleep;
 	}
 	
@@ -343,7 +342,7 @@ public abstract class Obstacle extends Entity {
 	 *
 	 * @param value  whether the body should ever fall asleep
 	 */
-	public void setSleepingAllowed(boolean value) {
+    void setSleepingAllowed(boolean value) {
 		bodyinfo.allowSleep = value;
 	}
 	
@@ -357,13 +356,13 @@ public abstract class Obstacle extends Entity {
 	 * a high speed bullet at a stack of dynamic bricks. Without CCD, the bullet might
 	 * tunnel through the bricks.
 	 *
-	 * Fast moving objects in Box2D can be labeled as bullets. Bullets will perform CCD 
+	 * Fast moving entities in Box2D can be labeled as bullets. Bullets will perform CCD
 	 * with both static and dynamic bodies. You should decide what bodies should be 
 	 * bullets based on your game design.
 	 *
 	 * @return true if this body is a bullet 
 	 */
-	public boolean isBullet() {
+    boolean isBullet() {
 		return bodyinfo.bullet;
 	}
 	
@@ -377,13 +376,13 @@ public abstract class Obstacle extends Entity {
 	 * a high speed bullet at a stack of dynamic bricks. Without CCD, the bullet might
 	 * tunnel through the bricks.
 	 *
-	 * Fast moving objects in Box2D can be labeled as bullets. Bullets will perform CCD 
+	 * Fast moving entities in Box2D can be labeled as bullets. Bullets will perform CCD
 	 * with both static and dynamic bodies. You should decide what bodies should be 
 	 * bullets based on your game design.
 	 *
 	 * @param value  whether this body is a bullet 
 	 */
-	public void setBullet(boolean value) {
+    void setBullet(boolean value) {
 		bodyinfo.bullet = value;
 	}
 	
@@ -394,7 +393,7 @@ public abstract class Obstacle extends Entity {
 	 *
 	 * @return true if this body be prevented from rotating
 	 */
-	public boolean isFixedRotation() {
+    boolean isFixedRotation() {
 		return bodyinfo.fixedRotation;
 	}
 	
@@ -412,24 +411,24 @@ public abstract class Obstacle extends Entity {
 	/**
 	 * Returns the gravity scale to apply to this body
 	 *
-	 * This allows isolated objects to float.  Be careful with this, since increased 
+	 * This allows isolated entities to float.  Be careful with this, since increased
 	 * gravity can decrease stability.
 	 *
 	 * @return the gravity scale to apply to this body
 	 */
-	public float getGravityScale() {
+    float getGravityScale() {
 		return bodyinfo.gravityScale;
 	}
 	
 	/**
 	 * Sets the gravity scale to apply to this body
 	 *
-	 * This allows isolated objects to float.  Be careful with this, since increased 
+	 * This allows isolated entities to float.  Be careful with this, since increased
 	 * gravity can decrease stability.
 	 *
 	 * @param value  the gravity scale to apply to this body
 	 */
-	public void setGravityScale(float value) {
+    void setGravityScale(float value) {
 		bodyinfo.gravityScale = value;
 	}
 	
@@ -446,7 +445,7 @@ public abstract class Obstacle extends Entity {
 	 *
 	 * @return the linear damping for this body.
 	 */
-	public float getLinearDamping() {
+    float getLinearDamping() {
 		return bodyinfo.linearDamping;
 	}
 	
@@ -463,7 +462,7 @@ public abstract class Obstacle extends Entity {
 	 *
 	 * @param value  the linear damping for this body.
 	 */
-	public void setLinearDamping(float value) {
+    void setLinearDamping(float value) {
 		bodyinfo.linearDamping = value;
 	}
 	
@@ -480,7 +479,7 @@ public abstract class Obstacle extends Entity {
 	 *
 	 * @return the angular damping for this body.
 	 */
-	public float getAngularDamping() {
+    float getAngularDamping() {
 		return bodyinfo.angularDamping;
 	}
 
@@ -497,7 +496,7 @@ public abstract class Obstacle extends Entity {
 	 *
 	 * @param value  the angular damping for this body.
 	 */
-	public void setAngularDamping(float value) {
+    void setAngularDamping(float value) {
 		bodyinfo.angularDamping = value;
 	}
 	
@@ -507,7 +506,7 @@ public abstract class Obstacle extends Entity {
 	 * This is important if you want to save the state of the body before removing
 	 * it from the world.
 	 */
-	protected void setBodyState(Body body) {
+    void setBodyState(Body body) {
 		bodyinfo.type   = body.getType();
 		bodyinfo.angle  = body.getAngle();
 		bodyinfo.active = body.isActive();
@@ -545,7 +544,7 @@ public abstract class Obstacle extends Entity {
 	 *
 	 * @param value  the density of this body
 	 */
-	public void setDensity(float value) {
+    void setDensity(float value) {
 		fixture.density = value;
 	}
 	
@@ -575,14 +574,14 @@ public abstract class Obstacle extends Entity {
 	 *
 	 * @param value  the friction coefficient of this body
 	 */
-	public void setFriction(float value) {
+    void setFriction(float value) {
 		fixture.friction = value;
 	}
 	
 	/**
 	 * Returns the restitution of this body
 	 *
-	 * Restitution is used to make objects bounce. The restitution value is usually set 
+	 * Restitution is used to make entities bounce. The restitution value is usually set
 	 * to be between 0 and 1. Consider dropping a ball on a table. A value of zero means 
 	 * the ball won't bounce. This is called an inelastic collision. A value of one means 
 	 * the ball's velocity will be exactly reflected. This is called a perfectly elastic 
@@ -597,7 +596,7 @@ public abstract class Obstacle extends Entity {
 	/**
 	 * Sets the restitution of this body
 	 *
-	 * Restitution is used to make objects bounce. The restitution value is usually set 
+	 * Restitution is used to make entities bounce. The restitution value is usually set
 	 * to be between 0 and 1. Consider dropping a ball on a table. A value of zero means 
 	 * the ball won't bounce. This is called an inelastic collision. A value of one means 
 	 * the ball's velocity will be exactly reflected. This is called a perfectly elastic 
@@ -605,7 +604,7 @@ public abstract class Obstacle extends Entity {
 	 *
 	 * @param value  the restitution of this body
 	 */
-	public void setRestitution(float value) {
+    void setRestitution(float value) {
 		fixture.restitution = value;
 	}
 	
@@ -631,7 +630,7 @@ public abstract class Obstacle extends Entity {
 	 *
 	 * @param value  whether this object is a sensor.
 	 */
-	public void setSensor(boolean value) {
+    void setSensor(boolean value) {
 		fixture.isSensor = value;
 	}
 	
@@ -685,7 +684,7 @@ public abstract class Obstacle extends Entity {
 	 *
 	 * @return the center of mass for this physics body
 	 */
-	public Vector2 getCentroid() {
+    Vector2 getCentroid() {
 		return centroidCache.set(massdata.center);
 	}
 	
@@ -696,7 +695,7 @@ public abstract class Obstacle extends Entity {
 	 *
 	 * @param value  the center of mass for this physics body
 	 */
-	public void setCentroid(Vector2 value) {
+    void setCentroid(Vector2 value) {
 		if (!masseffect) {
 			masseffect = true;
 			massdata.I = getInertia();
@@ -725,7 +724,7 @@ public abstract class Obstacle extends Entity {
 	 *
 	 * @param value  the rotational inertia of this body
 	 */
-	public void setInertia(float value) {
+    void setInertia(float value) {
 		if (!masseffect) {
 			masseffect = true;
 			massdata.center.set(getCentroid());
@@ -764,7 +763,7 @@ public abstract class Obstacle extends Entity {
 	/**
 	 * Resets this body to use the mass computed from the its shape and density
 	 */
-	public void resetMass() {
+    void resetMass() {
 		masseffect = false;
 	}
 	
@@ -802,7 +801,7 @@ public abstract class Obstacle extends Entity {
 	 *
 	 * @return true if the shape information must be updated.
 	 */
-	public boolean isDirty() {
+    boolean isDirty() {
 		return isDirty;
 	}
 	
@@ -815,7 +814,7 @@ public abstract class Obstacle extends Entity {
 	 *
 	 * @param value  whether the shape information must be updated.
 	 */
-	public void markDirty(boolean value) {
+    void markDirty(boolean value) {
 		isDirty = value;
 	}
 		
@@ -850,7 +849,7 @@ public abstract class Obstacle extends Entity {
      *
      * @param  value    the physics object tag
      */
-    public void setName(String value) {
+	public void setName(String value) {
      	nametag = value; 
 	}
 
@@ -860,14 +859,14 @@ public abstract class Obstacle extends Entity {
 	public void setCustomScale(Vector2 value) {
 		setCustomScale(value.x,value.y);
 	}
-	public void setCustomScale(float x, float y) {
+	void setCustomScale(float x, float y) {
 		customScale.set(x,y);
 	}
 	
 	/**
 	 * Create a new physics object at the origin.
 	 */
-	protected Obstacle() { 
+    Obstacle() {
 		this(0,0);
 	}
 
@@ -877,7 +876,7 @@ public abstract class Obstacle extends Entity {
 	 * @param x Initial x position in world coordinates
 	 * @param y Initial y position in world coordinates
 	 */
-	protected Obstacle(float x, float y) {
+    Obstacle(float x, float y) {
 		// Object has yet to be deactivated
 		toRemove = false;
 		
@@ -888,7 +887,7 @@ public abstract class Obstacle extends Entity {
 		bodyinfo.gravityScale = 1.0f;
 		bodyinfo.position.set(x,y);
 		bodyinfo.fixedRotation = false;
-		// Objects are physics objects unless otherwise noted
+		// Objects are physics entities unless otherwise noted
 		bodyinfo.type = BodyType.DynamicBody;
 		
 		// Allocate the fixture information
@@ -955,7 +954,7 @@ public abstract class Obstacle extends Entity {
 	public abstract void drawDebug(GameCanvas canvas);
 
 
-    public void setGrabbed() {
+	public void setGrabbed() {
     	this.grabbed = true;
     }
 }

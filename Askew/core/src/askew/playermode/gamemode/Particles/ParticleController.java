@@ -14,12 +14,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 
+@SuppressWarnings({"FieldCanBeLocal", "SameParameterValue"})
 public class ParticleController {
 
-    GameModeController gmc;
-    LinkedList<Particle> unspawned = new LinkedList<Particle>();
-    LinkedList<Particle> spawned = new LinkedList<Particle>();
-    Particle[] tempArray;
+    private final GameModeController gmc;
+    private final LinkedList<Particle> unspawned = new LinkedList<>();
+    private final LinkedList<Particle> spawned = new LinkedList<>();
+    private final Particle[] tempArray;
     @Setter
     Vector2 drawScale;
 
@@ -33,6 +34,7 @@ public class ParticleController {
     }
 
     public Particle[] getSorted(){
+        //noinspection unchecked
         Collections.sort(spawned);
         return spawned.toArray(tempArray);
     }
@@ -107,8 +109,8 @@ public class ParticleController {
     }
 
 
-    private int effect1_num = 15;
-    private String effect1_texturePath = "texture/particle/test.png";
+    private final int effect1_num = 15;
+    private final String effect1_texturePath = "texture/particle/test.png";
     private TextureRegion effect1_texture;
 
 
@@ -124,10 +126,10 @@ public class ParticleController {
             }
     }
 
-    private int fog_num = 3;
-    private String fog_texturePath1 = "texture/particle/cloud.png";
-    private String fog_texturePath2 = "texture/particle/cloud1.png";
-    private ArrayList<TextureRegion> fog_textures = new ArrayList<TextureRegion>();
+    private final int fog_num = 3;
+    private final String fog_texturePath1 = "texture/particle/cloud.png";
+    private final String fog_texturePath2 = "texture/particle/cloud1.png";
+    private final ArrayList<TextureRegion> fog_textures = new ArrayList<>();
 
 
 

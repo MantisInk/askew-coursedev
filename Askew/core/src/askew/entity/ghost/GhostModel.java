@@ -19,12 +19,9 @@ import lombok.Setter;
  */
 public class GhostModel extends BoxObstacle  {
 
-    public static final float GHOST_SPEED = 1f;
-    public static final float GHOST_WIDTH = 0.8f;
-    public static final float GHOST_HEIGHT = GHOST_WIDTH * (523f / 290f);
-
-    // determined at runtime to preserve aspect ratio from designers
-    private transient float ghostHeight;
+    private static final float GHOST_SPEED = 1f;
+    private static final float GHOST_WIDTH = 0.8f;
+    private static final float GHOST_HEIGHT = GHOST_WIDTH * (523f / 290f);
 
     //JSON
     @Getter @Setter
@@ -49,7 +46,6 @@ public class GhostModel extends BoxObstacle  {
     private transient float elapseTime;
 
     private transient boolean faceRight;
-    private transient boolean lastFace;
 
     /**
      * Creates a new ragdoll with its head at the given position.
@@ -78,11 +74,6 @@ public class GhostModel extends BoxObstacle  {
         elapseTime = 1;
     }
 
-    public void drawDebug(GameCanvas canvas) {
-        super.drawDebug(canvas);
-        // TODO
-    }
-
     public void setPosition(float x, float y){
         super.setPosition(x,y);
         this.x = x;
@@ -96,7 +87,6 @@ public class GhostModel extends BoxObstacle  {
         if (walkAnimation.getKeyFrames().length == 0)
             System.err.println("did not find ghost");
         TextureRegion ghostTextureRegion = walkAnimation.getKeyFrame(0);
-        this.ghostHeight = getWidth() * ((float) ghostTextureRegion.getRegionHeight() / (float) ghostTextureRegion.getRegionWidth()) / 2;
         setTexture(ghostTextureRegion);
     }
 

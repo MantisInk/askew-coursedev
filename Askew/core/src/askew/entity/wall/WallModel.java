@@ -16,10 +16,11 @@ import com.badlogic.gdx.physics.box2d.Filter;
  *
  * We're building a wall and making libgdx pay for it
  */
+@SuppressWarnings("FieldCanBeLocal")
 public class WallModel extends PolygonObstacle {
 
-    public static final float WALL_FRICTION = 1.0f;
-    public static final float WALL_RESTITUTION = 0.1f;
+    private static final float WALL_FRICTION = 1.0f;
+    private static final float WALL_RESTITUTION = 0.1f;
     private transient TextureRegion circleTextureRegion;
     private transient TextureRegion edgeTextureRegion;
 
@@ -27,8 +28,8 @@ public class WallModel extends PolygonObstacle {
     private float x;
     private float y;
 
-    private int color;
-    protected transient Color tint;
+    private final int color;
+    private final transient Color tint;
 
     /** The points that define the convex hull of the wall. Must be an even number (2n) of points representing (x1,y1) ... (xn,yn) */
     private float[] points;
@@ -49,10 +50,6 @@ public class WallModel extends PolygonObstacle {
         f.maskBits = FilterGroup.SLOTH | FilterGroup.VINE;
         f.categoryBits = FilterGroup.WALL;
         this.setFilterData(f);
-    }
-
-    public void setDrawScale(float x, float y) {
-        super.setDrawScale(x,y);
     }
 
     @Override

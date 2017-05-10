@@ -6,12 +6,13 @@ import askew.MantisAssetManager;
 import askew.playermode.gamemode.Particles.Particle;
 import com.badlogic.gdx.math.Vector2;
 
+@SuppressWarnings("WeakerAccess")
 public abstract class Entity implements Comparable{
     protected transient Vector2 drawScale;
     protected transient Vector2 objectScale;
 
-    protected transient Vector2 drawScaleCache = new Vector2();
-    protected transient Vector2 objectScaleCache = new Vector2();
+    private final transient Vector2 drawScaleCache = new Vector2();
+    private final transient Vector2 objectScaleCache = new Vector2();
 
     protected transient int drawNumber = 0;
 
@@ -24,7 +25,7 @@ public abstract class Entity implements Comparable{
     public abstract float getY();
     public abstract void setY(float y);
 
-    public int getDrawNumber(){
+    private int getDrawNumber(){
         return drawNumber;
     }
 
@@ -41,6 +42,7 @@ public abstract class Entity implements Comparable{
     public void setDrawScale(Vector2 value) {
         setDrawScale(value.x,value.y);
     }
+
     public void setDrawScale(float x, float y) {
         drawScale.set(x,y);
     }
@@ -49,10 +51,10 @@ public abstract class Entity implements Comparable{
         objectScaleCache.set(objectScale);
         return objectScaleCache;
     }
-    public void setObjectScale(Vector2 value) {
+    protected void setObjectScale(Vector2 value) {
         setObjectScale(value.x,value.y);
     }
-    public void setObjectScale(float x, float y) {
+    protected void setObjectScale(float x, float y) {
         objectScale.set(x,y);
     }
 
@@ -84,6 +86,7 @@ public abstract class Entity implements Comparable{
 
     @Override
     public int compareTo(Object o) {
+        //noinspection ConstantConditions
         if(o == null){
             return -1;
         }

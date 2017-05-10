@@ -25,13 +25,14 @@ import lombok.Getter;
  * detected the X-Box controller on start-up.  This class allows us to hot-swap in
  * a controller via the new XBox360Controller class.
  */
+@SuppressWarnings("unused")
 public class InputController {
 	// Sensitivity for moving crosshair with gameplay
 	private static final float GP_ACCELERATE = 1.0f;
 	private static final float GP_MAX_SPEED  = 10.0f;
 	private static final float GP_THRESHOLD  = 0.01f;
 
-	private int id;
+	private final int id;
 
 	@Getter
 	private boolean rightClickPressed;
@@ -98,9 +99,6 @@ public class InputController {
 	private boolean hKeyPrevious;
 	private boolean bKeyPrevious;
 	private boolean vKeyPrevious;
-	private boolean lShiftKeyPrevious;
-	private boolean rShiftKeyPrevious;
-
 
 	// Fields to manage buttons
 	private boolean startButtonPressed;
@@ -163,15 +161,15 @@ public class InputController {
 	private float rightVertical;
 
 	/** The crosshair position (for raddoll) */
-	private Vector2 crosshair;
+	private final Vector2 crosshair;
 	/** The crosshair cache (for using as a return value) */
-	private Vector2 crosscache;
+	private final Vector2 crosscache;
 	/** For the gamepad crosshair control */
 	private float momentum;
 
 	/** An X-Box controller (if it is connected) */
 	@Getter
-	private XBox360Controller xbox;
+	private final XBox360Controller xbox;
 	@Getter
 	private boolean altKeyPressed;
 	@Getter
@@ -399,8 +397,6 @@ public class InputController {
 		hKeyPrevious = isHKeyPressed();
 		bKeyPrevious = isBKeyPressed();
 		vKeyPrevious = isVKeyPressed();
-		lShiftKeyPrevious = isLShiftKeyPressed();
-		rShiftKeyPrevious = isRShiftKeyPressed();
 		upKeyPrevious = isUpKeyPressed();
 		downKeyPrevious = isDownKeyPressed();
 
@@ -410,12 +406,8 @@ public class InputController {
 			if (id ==0)
 				readKeyboard(bounds, scale, true); // Read as a back-up
 		} else {
-//			System.err.println("no 360 controller connected");
 			if (id ==0)
 				readKeyboard(bounds, scale, false);
-			else {
-//				System.err.println("No second controller detected");
-			}
 		}
 	}
 
@@ -490,8 +482,8 @@ public class InputController {
 		// Give priority to gamepad results
 		startButtonPressed = (secondary && startButtonPressed) || (Gdx.input.isKeyPressed(Input.Keys.R));
 		topButtonPressed = (secondary && topButtonPressed) || Gdx.input.isKeyPressed(Input.Keys.U);
-		bottomButtonPressed = (secondary && bottomButtonPressed) || Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) || Gdx.input.isKeyPressed(Input.Keys.K);;
-		rightButtonPressed = (secondary && rightButtonPressed) || (Gdx.input.isKeyPressed(Input.Keys.P));
+		bottomButtonPressed = (secondary && bottomButtonPressed) || Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) || Gdx.input.isKeyPressed(Input.Keys.K);
+        rightButtonPressed = (secondary && rightButtonPressed) || (Gdx.input.isKeyPressed(Input.Keys.P));
 		leftButtonPressed = (secondary && leftButtonPressed) ;//(Gdx.input.isKeyPressed(Input.Keys.N));
 		backButtonPressed = (secondary && backButtonPressed) || (Gdx.input.isKeyPressed(Input.Keys.ESCAPE));
 		rightGrabPressed = (secondary && rightGrabPressed) || ((Gdx.input.isKeyPressed(Input.Keys.SPACE))) || Gdx.input.isKeyPressed(Input.Keys.J);

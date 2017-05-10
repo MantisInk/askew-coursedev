@@ -19,6 +19,7 @@ import com.badlogic.gdx.math.Vector2;
 import lombok.Getter;
 import lombok.Setter;
 
+@SuppressWarnings("FieldCanBeLocal")
 public class MainMenuController extends WorldController {
     @Getter @Setter
     private int selected = 1;
@@ -27,9 +28,9 @@ public class MainMenuController extends WorldController {
     @Getter @Setter
     private int maxLevel = 10;
 
-    private int MAX_LEVEL;
+    private final int MAX_LEVEL;
 
-    public final Color fontcolor = new Color(.984f,.545f,.384f,1);
+    private final Color fontcolor = new Color(.984f,.545f,.384f,1);
 
     // main menu modes
     private final int HOME_SCREEN = 0;
@@ -45,14 +46,14 @@ public class MainMenuController extends WorldController {
     private final int SETTINGS_BUTTON = 3;
     private final int QUIT_BUTTON = 4;
     private int home_button = PLAY_BUTTON;
-    private String[] home_text = {"Play", "Tutorial", "Level Select", "Settings", "Quit"};
-    private Vector2[] home_text_locs = {
+    private final String[] home_text = {"Play", "Tutorial", "Level Select", "Settings", "Quit"};
+    private final Vector2[] home_text_locs = {
             new Vector2(0.6f, 0.54f),
             new Vector2(0.6f, 0.47f),
             new Vector2(0.6f, 0.40f),
             new Vector2(0.6f,0.33f),
             new Vector2(0.6f, 0.26f)};
-    private Vector2[] home_button_locs = {
+    private final Vector2[] home_button_locs = {
             new Vector2(0.65f,0.53f),
             new Vector2(0.65f,0.46f),
             new Vector2(0.65f,0.39f),
@@ -63,7 +64,7 @@ public class MainMenuController extends WorldController {
     private final int CHOOSE_LEVEL = 0;
     private final int RETURN_HOME = 1;
     private int select_button = CHOOSE_LEVEL;
-    private Vector2[] select_button_locs = {new Vector2(10f, 3.8f), new Vector2(10f, 2.8f)};
+    private final Vector2[] select_button_locs = {new Vector2(10f, 3.8f), new Vector2(10f, 2.8f)};
 
     // settings mode options
     private final int CONTROL_SCHEME = 0;
@@ -72,13 +73,13 @@ public class MainMenuController extends WorldController {
     private int settings_button = CONTROL_SCHEME;
     private boolean control = false;        // false means one arm control scheme
     private boolean grab = false;           // false means hold to grab
-    private String[] settings_text = {"Control Scheme", "One Arm", "Two Arm", "Grab Scheme", "Hold to Grab", "Release to Grab", "Main Menu"};
-    private Vector2[] settings_text_locs = {
+    private final String[] settings_text = {"Control Scheme", "One Arm", "Two Arm", "Grab Scheme", "Hold to Grab", "Release to Grab", "Main Menu"};
+    private final Vector2[] settings_text_locs = {
             new Vector2(0.4f, 0.54f),   new Vector2(0.45f, 0.54f), new Vector2(0.7f, 0.54f),
             new Vector2(0.4f, 0.44f),   new Vector2(0.45f, 0.44f), new Vector2(0.7f, 0.44f),
             new Vector2(0.4f, 0.34f)
     };
-    private Vector2[] settings_button_locs = {
+    private final Vector2[] settings_button_locs = {
             new Vector2(0.43f, 0.53f), new Vector2(0.68f, 0.53f),
             new Vector2(0.43f, 0.43f), new Vector2(0.68f, 0.43f),
             new Vector2(0.43f, 0.33f)
@@ -90,13 +91,15 @@ public class MainMenuController extends WorldController {
     private static final String MENU_BACKGROUND_TEXTURE = "texture/background/menu_background.png";
     private boolean prevLeftUp, prevLeftDown,prevLeftLeft,prevLeftRight;        // keep track of previous joystick positions
     private boolean leftUp, leftDown,leftLeft,leftRight;                        // track current joystick positions
-    public static final String MENU_MUSIC = "sound/music/levelselect.ogg";
+    private static final String MENU_MUSIC = "sound/music/levelselect.ogg";
 
     @Getter
     private String nextCon = "";
 
-    FileHandle fontFile = Gdx.files.internal("font/ReginaFree.ttf");
-    BitmapFont regina, regina1, regina2;
+    private final FileHandle fontFile = Gdx.files.internal("font/ReginaFree.ttf");
+    private BitmapFont regina;
+    private BitmapFont regina1;
+    private BitmapFont regina2;
 
     private Texture fern, menu1, menu2, menu;
 

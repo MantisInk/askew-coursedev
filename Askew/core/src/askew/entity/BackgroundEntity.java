@@ -9,10 +9,11 @@ import com.badlogic.gdx.math.Vector2;
 import lombok.Getter;
 import lombok.Setter;
 
+@SuppressWarnings({"WeakerAccess", "unused"})
 public class BackgroundEntity extends Entity{
 
-    protected float x;
-    protected float y;
+    float x;
+    float y;
     private float width;
     private float height;
     private float depth;
@@ -24,17 +25,17 @@ public class BackgroundEntity extends Entity{
     @Getter
     private int color;
 
-    protected transient TextureRegion texture;
-    protected transient Vector2 origin;
+    transient TextureRegion texture;
+    final transient Vector2 origin;
     @Getter
     protected transient float aspectRatio;
 
-    protected transient  Vector2 positionCache = new Vector2();
+    private final transient  Vector2 positionCache = new Vector2();
     private transient Vector2 sizeCache = new Vector2();
-    protected transient Color tint;
+    final transient Color tint;
 
 
-    public BackgroundEntity() {
+    BackgroundEntity() {
         this(0,0);
     }
 
@@ -116,7 +117,7 @@ public class BackgroundEntity extends Entity{
         setPosition(x,y);
     }
 
-    public float getAngle(){
+    float getAngle(){
         return angle;
     }
 
@@ -124,7 +125,7 @@ public class BackgroundEntity extends Entity{
         angle = rads;
     }
 
-    public float getWidth(){
+    float getWidth(){
         return width;
     }
 
@@ -132,7 +133,7 @@ public class BackgroundEntity extends Entity{
         width = w;
     }
 
-    public float getHeight(){
+    float getHeight(){
         return height;
     }
 
@@ -181,7 +182,7 @@ public class BackgroundEntity extends Entity{
         draw(canvas, tint);
     }
 
-    public void draw(GameCanvas canvas, Color tint) {
+    void draw(GameCanvas canvas, Color tint) {
         if (texture != null) {
             canvas.drawBackgroundEntity(texture,tint,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y, getDepth(), getAngle(),
                     (1.0f/texture.getRegionWidth()) *   getWidth() * getDrawScale().x * objectScale.x * aspectRatio,

@@ -8,9 +8,9 @@ import askew.GameCanvas;
  */
 public class TrevorObstacle extends BoxObstacle {
 
-    Color tint = Color.WHITE;
+    private Color tint = Color.WHITE;
 
-    public TrevorObstacle(float x, float y, float width, float height) {
+    private TrevorObstacle(float x, float y, float width, float height) {
         super(x, y, width, height);
         fixture.shape = shape;
         // Disable collisions

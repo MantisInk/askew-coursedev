@@ -19,12 +19,12 @@ import lombok.Setter;
  *
  * This should be a good example of a basic dumb entity.
  */
+@SuppressWarnings("FieldCanBeLocal")
 public class OwlModel extends BoxObstacle  {
 
-    public static final String OWL_TEXTURE = "texture/owl/owl.png";
-    public static final float OWL_DRAW_WIDTH = 2.2f;
-    public static final float OWL_WIDTH = 1.8f;
-    public static final float VICTORY_SPEED = 0.15f;
+    private static final float OWL_DRAW_WIDTH = 2.2f;
+    private static final float OWL_WIDTH = 1.8f;
+    private static final float VICTORY_SPEED = 0.15f;
     private static final float VICTORY_DISTANCE = 13f;
 
     // determined at runtime to preserve aspect ratio from designers
@@ -52,6 +52,7 @@ public class OwlModel extends BoxObstacle  {
      * @param y  Initial y position of the ragdoll head
      */
     public OwlModel(float x, float y) {
+        //noinspection SuspiciousNameCombination
         super(x,y, OWL_WIDTH, OWL_WIDTH);
         this.x = x;
         this.y = y;

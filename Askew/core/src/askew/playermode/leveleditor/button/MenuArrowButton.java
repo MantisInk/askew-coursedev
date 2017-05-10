@@ -5,13 +5,14 @@ import askew.MantisAssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
+@SuppressWarnings("SameParameterValue")
 public class MenuArrowButton extends Button{
 
-    boolean isLeft;
-    TextureRegion textureRegion;
+    private final boolean isLeft;
+    private TextureRegion textureRegion;
 
-    public MenuArrowButton(float x, float y, float width, float height, String group, int index, String name, int priority, boolean left){
-        super(x,y,width,height,group,index,name,priority);
+    public MenuArrowButton(float x, float y, float width, float height, String group, int index, String name, boolean left){
+        super(x,y,width,height,group,index,name);
         isLeft = left;
     }
 

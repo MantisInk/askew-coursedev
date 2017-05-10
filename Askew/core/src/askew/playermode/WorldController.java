@@ -43,7 +43,7 @@ import java.util.List;
  * Base class for a world-specific controller.
  *
  *
- * A world has its own objects, assets, and input controller.  Thus this is 
+ * A world has its own entities, assets, and input controller.  Thus this is
  * really a mini-GameEngine in its own right.  The only thing that it does
  * not do is create a askew.GameCanvas; that is shared with the main application.
  *
@@ -53,6 +53,7 @@ import java.util.List;
  * This is the purpose of our AssetState variable; it ensures that multiple instances
  * place nicely with the static assets.
  */
+@SuppressWarnings("FieldCanBeLocal")
 public abstract class WorldController implements Screen {
 	
 	/** 
@@ -68,14 +69,14 @@ public abstract class WorldController implements Screen {
 	}
 
 	/** Track asset loading from all instances and subclasses */
-	protected AssetState worldAssetState = AssetState.EMPTY;
+	private AssetState worldAssetState = AssetState.EMPTY;
 	/** Track all loaded assets (for unloading purposes) */
-	protected Array<String> assets;	
+	private final Array<String> assets;
 	// Pathnames to shared assets
 	/** Retro font for displaying messages */
-	protected boolean playingMusic;
-	private static String FONT_FILE = "shared/ReginaFree.ttf";
-	private static int FONT_SIZE = 56;
+	protected final boolean playingMusic;
+	private static final String FONT_FILE = "shared/ReginaFree.ttf";
+	private static final int FONT_SIZE = 56;
 
 	/** The font for giving messages to the player */
 	protected BitmapFont displayFont;
@@ -187,29 +188,29 @@ public abstract class WorldController implements Screen {
 	public static final int EXIT_TL_TL = 10;
 
 	/** How many frames after winning/losing do we continue? */
-	public static final int EXIT_COUNT = 120;
+	private static final int EXIT_COUNT = 120;
 
 	/** The amount of time for a physics engine step. */
-	public static final float WORLD_STEP = 1/60.0f;
+	private static final float WORLD_STEP = 1/60.0f;
 	/** Number of velocity iterations for the constrain solvers */
-	public static final int WORLD_VELOC = 6;
+	private static final int WORLD_VELOC = 6;
 	/** Number of position iterations for the constrain solvers */
-	public static final int WORLD_POSIT = 2;
+	private static final int WORLD_POSIT = 2;
 	
 	/** Width of the game world in Box2d units */
-	protected static final float DEFAULT_WIDTH  = 16.0f * 1.3f;
+	private static final float DEFAULT_WIDTH  = 16.0f * 1.3f;
 	/** Height of the game world in Box2d units */
-	protected static final float DEFAULT_HEIGHT = DEFAULT_WIDTH * (9.f / 16.f);
+	private static final float DEFAULT_HEIGHT = DEFAULT_WIDTH * (9.f / 16.f);
 	/** The default value of gravity (going down) */
-	protected static final float DEFAULT_GRAVITY = -4.9f;
+	private static final float DEFAULT_GRAVITY = -4.9f;
 
 	/** Reference to the character avatar */
 	protected List<SlothModel> slothList;
 
 	/** Reference to the game canvas */
 	protected GameCanvas canvas;
-	/** All the objects in the world. */
-	protected ArrayList<Entity> objects  = new ArrayList<Entity>();
+	/** All the entities in the world. */
+	protected ArrayList<Entity> entities = new ArrayList<>();
 	/** Listener that will update the player mode when we are done */
 	protected ScreenListener listener;
 
@@ -235,7 +236,7 @@ public abstract class WorldController implements Screen {
 	/**
 	 * Returns true if debug mode is active.
 	 *
-	 * If true, all objects will display their physics bodies.
+	 * If true, all entities will display their physics bodies.
 	 *
 	 * @return true if debug mode is active.
 	 */
@@ -246,7 +247,7 @@ public abstract class WorldController implements Screen {
 	/**
 	 * Sets whether debug mode is active.
 	 *
-	 * If true, all objects will display their physics bodies.
+	 * If true, all entities will display their physics bodies.
 	 *
 	 * @param value whether debug mode is active.
 	 */
@@ -261,7 +262,7 @@ public abstract class WorldController implements Screen {
 	 *
 	 * @return true if the level is completed.
 	 */
-	public boolean isComplete( ) {
+	protected boolean isComplete() {
 		return complete;
 	}
 
@@ -272,7 +273,7 @@ public abstract class WorldController implements Screen {
 	 *
 	 * @param value whether the level is completed.
 	 */
-	public void setComplete(boolean value) {
+	protected void setComplete(boolean value) {
 		if (value) {
 			countdown = EXIT_COUNT;
 		}
@@ -286,7 +287,7 @@ public abstract class WorldController implements Screen {
 	 *
 	 * @return true if the level is failed.
 	 */
-	public boolean isFailure( ) {
+	protected boolean isFailure() {
 		return failed;
 	}
 
@@ -297,7 +298,7 @@ public abstract class WorldController implements Screen {
 	 *
 	 * @param value whether the level is failed.
 	 */
-	public void setFailure(boolean value) {
+	protected void setFailure(boolean value) {
 		if (value) {
 			countdown = EXIT_COUNT;
 		}
@@ -334,8 +335,8 @@ public abstract class WorldController implements Screen {
 	 */
 	public void setCanvas(GameCanvas canvas) {
 		this.canvas = canvas;
-		this.worldScale.x = 1.3f * (float)canvas.getWidth()/(float)bounds.getWidth();
-		this.worldScale.y = 1.3f * (float)canvas.getHeight()/(float)bounds.getHeight();
+		this.worldScale.x = 1.3f * (float)canvas.getWidth()/ bounds.getWidth();
+		this.worldScale.y = 1.3f * (float)canvas.getHeight()/ bounds.getHeight();
 	}
 	
 	/**
@@ -356,13 +357,10 @@ public abstract class WorldController implements Screen {
 	 * The game world is scaled so that the screen coordinates do not agree
 	 * with the Box2d coordinates.  The bounds are in terms of the Box2d
 	 * world, not the screen.
-	 *
-	 * @param width  	The width in Box2d coordinates
-	 * @param height	The height in Box2d coordinates
-	 * @param gravity	The downward gravity
+	 * @param gravity    The downward gravity
 	 */
-	protected WorldController(float width, float height, float gravity) {
-		this(new Rectangle(0,0,width,height), new Vector2(0,gravity));
+	protected WorldController(float gravity) {
+		this(new Rectangle(0,0, WorldController.DEFAULT_WIDTH, WorldController.DEFAULT_HEIGHT), new Vector2(0,gravity));
 	}
 
 	/**
@@ -375,10 +373,10 @@ public abstract class WorldController implements Screen {
 	 * @param bounds	The game bounds in Box2d coordinates
 	 * @param gravity	The gravitational force on this Box2d world
 	 */
-	protected WorldController(Rectangle bounds, Vector2 gravity) {
+	private WorldController(Rectangle bounds, Vector2 gravity) {
 		// Reload global configs
 		GlobalConfiguration.update();
-		assets = new Array<String>();
+		assets = new Array<>();
 		world = new World(gravity,false);
 		this.bounds = new Rectangle(bounds);
 		this.worldScale = new Vector2(1,1);
@@ -395,14 +393,10 @@ public abstract class WorldController implements Screen {
 	 * Dispose of all (non-static) resources allocated to this mode.
 	 */
 	public void dispose() {
-		for(Entity ent : objects) {
-			if(ent instanceof Obstacle) {
-				((Obstacle)ent).deactivatePhysics(world);
-			}
-		}
-		objects.clear();
+		entities.stream().filter(ent -> ent instanceof Obstacle).forEachOrdered(ent -> ((Obstacle) ent).deactivatePhysics(world));
+		entities.clear();
 		world.dispose();
-		objects = null;
+		entities = null;
 		bounds = null;
 		worldScale = null;
 		world  = null;
@@ -417,7 +411,7 @@ public abstract class WorldController implements Screen {
 	 */
 	protected void addObject(Entity obj) {
 		//assert inBounds(obj) : "Object is not in bounds";
-		objects.add(obj);
+		entities.add(obj);
 		if(obj instanceof Obstacle) {
 			((Obstacle)obj).activatePhysics(world);
 		}
@@ -456,7 +450,7 @@ public abstract class WorldController implements Screen {
 	 * 
 	 * @return whether to process the update loop
 	 */
-	public boolean preUpdate(float dt) {
+	protected boolean preUpdate(float dt) {
 
 		InputControllerManager.getInstance().inputControllers().forEach(input->input.readInput(bounds, worldScale));
 
@@ -474,9 +468,9 @@ public abstract class WorldController implements Screen {
 		// Handle resets
 		if (input.didStartPress()) {
 			if(this instanceof GameModeController)
-				((GameModeController) this).pause();
+				this.pause();
 			else if(this instanceof TutorialModeController)
-				((TutorialModeController) this).pause();
+				this.pause();
 			else
 				reset();
 		}
@@ -523,11 +517,11 @@ public abstract class WorldController implements Screen {
 	 * This method contains the specific update code for this mini-game. It does
 	 * not handle collisions, as those are managed by the parent class askew.playermode.WorldController.
 	 * This method is called after input is read, but before collisions are resolved.
-	 * The very last thing that it should do is apply forces to the appropriate objects.
+	 * The very last thing that it should do is apply forces to the appropriate entities.
 	 *
 	 *  delta Number of seconds since last animation frame
 	 */
-	public abstract void update(float dt);
+	protected abstract void update(float dt);
 	
 	/**
 	 * Processes physics
@@ -538,20 +532,20 @@ public abstract class WorldController implements Screen {
 	 *
 	 *  Number of seconds since last animation frame
 	 */
-	public void postUpdate(float dt) {
+	protected void postUpdate(float dt) {
 		// Turn the physics engine crank.
 		world.step(WORLD_STEP,WORLD_VELOC,WORLD_POSIT);
 
-		// Garbage collect the deleted objects.
+		// Garbage collect the deleted entities.
 		// Note how we use the linked list nodes to delete O(1) in place.
 		// This is O(n) without copying.
-		for (Entity ent :objects){
+		for (Entity ent : entities){
 
 			if(ent instanceof Obstacle){
 				Obstacle obj  = (Obstacle)ent;
 				if (obj.isRemoved()) {
 					obj.deactivatePhysics(world);
-					objects.remove(ent);
+					entities.remove(ent);
 					continue;
 				}
 			}
@@ -564,31 +558,27 @@ public abstract class WorldController implements Screen {
 	}
 	
 	/**
-	 * Draw the physics objects to the canvas
+	 * Draw the physics entities to the canvas
 	 *
 	 * For simple worlds, this method is enough by itself.  It will need
 	 * to be overriden if the world needs fancy backgrounds or the like.
 	 *
-	 * The method draws all objects in the order that they were added.
+	 * The method draws all entities in the order that they were added.
 	 *
 	 *  canvas The drawing context
 	 */
-	public void draw(float delta) {
+	protected void draw(float delta) {
 		canvas.clear();
 		
 		canvas.begin();
-		for(Entity obj : objects) {
+		for(Entity obj : entities) {
 			obj.draw(canvas);
 		}
 		canvas.end();
 		
 		if (debug) {
 			canvas.beginDebug();
-			for(Entity obj : objects) {
-				if( obj instanceof Obstacle) {
-					((Obstacle)obj).drawDebug(canvas);
-				}
-			}
+			entities.stream().filter(obj -> obj instanceof Obstacle).forEachOrdered(obj -> ((Obstacle) obj).drawDebug(canvas));
 			canvas.endDebug();
 		}
 		
@@ -626,8 +616,8 @@ public abstract class WorldController implements Screen {
 	public void setWorldScale(GameCanvas canvas) {
 		//System.out.println("IN SET SCALE");
 		//System.out.println("pre set ("+scale.x+","+scale.y+")");
-		this.worldScale.x = 1.0f * (float)canvas.getWidth()/(float)bounds.getWidth();
-		this.worldScale.y = 1.0f * (float)canvas.getHeight()/(float)bounds.getHeight();
+		this.worldScale.x = 1.0f * (float)canvas.getWidth()/ bounds.getWidth();
+		this.worldScale.y = 1.0f * (float)canvas.getHeight()/ bounds.getHeight();
 		//System.out.println("post set ("+scale.x+","+scale.y+")");
 	}
 

@@ -7,6 +7,7 @@ import com.google.gson.JsonObject;
  * A model class containing variables which we set as configurable for faster prototyping and modding.
  * Uses the singleton pattern.
  */
+@SuppressWarnings("SameParameterValue")
 public class GlobalConfiguration {
 
     private static final String CONFIG_PATH = "data/config.json";

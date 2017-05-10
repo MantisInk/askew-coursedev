@@ -21,22 +21,22 @@ import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
-import com.badlogic.gdx.utils.ObjectSet;
 import lombok.Getter;
 import lombok.Setter;
 
+@SuppressWarnings({"FieldCanBeLocal", "SuspiciousNameCombination"})
 public class SlothModel extends ComplexObstacle  {
 
     /** Constants for tuning sloth behaviour */
     private static final float HAND_DENSITY = 10.0f;
-    private transient float ARM_DENSITY;
+    private final transient float ARM_DENSITY;
     private static final float BODY_MASS = 0.5903138f;
-    private transient float TORQUE;
+    private final transient float TORQUE;
     private static final boolean BODY_FIXED_ROTATION = true;
     private static final boolean HANDS_FIXED_ROTATION = true;
-    private transient float GRAVITY_SCALE;
-    private transient boolean GRABBING_HAND_HAS_TORQUE;
-    private transient float OMEGA_NORMALIZER;
+    private final transient float GRAVITY_SCALE;
+    private final transient boolean GRABBING_HAND_HAS_TORQUE;
+    private final transient float OMEGA_NORMALIZER;
     @Getter
     private transient int id;
 
@@ -47,14 +47,14 @@ public class SlothModel extends ComplexObstacle  {
      */
     private static final float FLOW_RESISTANCE_DAMPING_LAMBDA = 23f;
 
-    public static final int GRAB_ORIGINAL = 0;
-    public static final int GRAB_REVERSE = 1;
-    public static final int GRAB_TOGGLE = 2;
+    private static final int GRAB_ORIGINAL = 0;
+    private static final int GRAB_REVERSE = 1;
+    private static final int GRAB_TOGGLE = 2;
 
-    public static final int CONTROLS_ORIGINAL = 0;
-    public static final int CONTROLS_ONE_ARM = 1;
+    private static final int CONTROLS_ORIGINAL = 0;
+    private static final int CONTROLS_ONE_ARM = 1;
 
-    public static final int CAN_DOUBLE_GRAB = 1;
+    private static final int CAN_DOUBLE_GRAB = 1;
 
     /** Indices for the body parts in the bodies array */
     private static final int PART_NONE = -1;
@@ -107,10 +107,10 @@ public class SlothModel extends ComplexObstacle  {
     private transient Body grabPointR;
     private transient Body grabPointL;
 
-    private transient Vector2 forceL = new Vector2();
-    private transient Vector2 forceR = new Vector2();
+    private final transient Vector2 forceL = new Vector2();
+    private final transient Vector2 forceR = new Vector2();
 
-    private transient CircleShape grabGlow = new CircleShape();
+    private final transient CircleShape grabGlow = new CircleShape();
 
     private transient WheelObstacle pin;
 
@@ -166,7 +166,7 @@ public class SlothModel extends ComplexObstacle  {
      *
      * As some body parts are symmetrical, we reuse texture.
      *
-     * @returns the texture index for the given body part
+     * @return the texture index for the given body part
      */
     private static int partToAsset(int part) {
         switch (part) {
@@ -219,7 +219,7 @@ public class SlothModel extends ComplexObstacle  {
     private transient TextureRegion[] partTextures;
 
     /** Cache vector for organizing body parts */
-    private transient Vector2 partCache = new Vector2();
+    private final transient Vector2 partCache = new Vector2();
 
     /**
      * Creates a new ragdoll with its head at the given position.
@@ -296,23 +296,6 @@ public class SlothModel extends ComplexObstacle  {
     }
 
     /**
-     * Sets the drawing scale for this physics object
-     *
-     * The drawing scale is the number of pixels to draw before Box2D unit. Because
-     * mass is a function of area in Box2D, we typically want the physics objects
-     * to be small.  So we decouple that scale from the physics object.  However,
-     * we must track the scale difference to communicate with the scene graph.
-     *
-     * We allow for the scaling factor to be non-uniform.
-     *
-     * @param x  the x-axis scale for this physics object
-     * @param y  the y-axis scale for this physics object
-     */
-    public void setDrawScale(float x, float y) {
-        super.setDrawScale(x,y);
-    }
-
-    /**
      * Helper method to make a single body part
      *
      * While it looks like this method "connects" the pieces, it does not really.  It
@@ -351,7 +334,7 @@ public class SlothModel extends ComplexObstacle  {
             body = new BoxObstacle(partCache.x, partCache.y, dWidth, dHeight);
             body.setFriction(.4f);
             Filter f = new Filter();
-            f.maskBits = FilterGroup.NOCOLLIDE | FilterGroup.THORN;
+            f.maskBits = FilterGroup.THORN;
             f.categoryBits = FilterGroup.ARM;
             body.setFilterData(f);
         }
@@ -382,19 +365,19 @@ public class SlothModel extends ComplexObstacle  {
         assert bodies.size > 0;
 
         // BODY TO ARM WOW
-        createJoint(world, PART_BODY, PART_RIGHT_ARM, SHOULDER_XOFFSET/2, SHOULDER_YOFFSET, -ARM_XOFFSET/2, 0);
-        createJoint(world, PART_BODY, PART_LEFT_ARM, SHOULDER_XOFFSET/2, SHOULDER_YOFFSET, -ARM_XOFFSET/2, 0);
+        createJoint(world, PART_BODY, PART_RIGHT_ARM, SHOULDER_XOFFSET/2, SHOULDER_YOFFSET, -ARM_XOFFSET/2);
+        createJoint(world, PART_BODY, PART_LEFT_ARM, SHOULDER_XOFFSET/2, SHOULDER_YOFFSET, -ARM_XOFFSET/2);
 
         // HANDS
-        createJoint(world, PART_LEFT_ARM, PART_LEFT_HAND, HAND_XOFFSET, 0, 0, 0);
-        createJoint(world, PART_RIGHT_ARM, PART_RIGHT_HAND, HAND_XOFFSET, 0, 0, 0);
+        createJoint(world, PART_LEFT_ARM, PART_LEFT_HAND, HAND_XOFFSET, 0, 0);
+        createJoint(world, PART_RIGHT_ARM, PART_RIGHT_HAND, HAND_XOFFSET, 0, 0);
 
         return true;
     }
 
-    private void createJoint(World world, int partA, int partB, float ox1, float oy1, float ox2, float oy2) {
+    private void createJoint(World world, int partA, int partB, float ox1, float oy1, float ox2) {
         Vector2 anchorA = new com.badlogic.gdx.math.Vector2(ox1, oy1);
-        Vector2 anchorB = new com.badlogic.gdx.math.Vector2(ox2, oy2);
+        Vector2 anchorB = new com.badlogic.gdx.math.Vector2(ox2, (float) 0);
 
         RevoluteJointDef jointDef = new RevoluteJointDef();
         jointDef.bodyA = bodies.get(partA).getBody(); // barrier
@@ -433,7 +416,7 @@ public class SlothModel extends ComplexObstacle  {
     public Body getMainBody() {return bodies.get(0).getBody();}
 
     //theta is in radians between 0 and pi
-    public float calculateTorque(float deltaTheta, float omega){
+    private float calculateTorque(float deltaTheta, float omega){
         //return (float) Math.max(-1.0f,Math.min(1.0f, 1.2 * Math.sin(deltaTheta)));
         return (float)((10.0 / (1 + Math.exp(omega + (deltaTheta *4)))) - 5);//#MAGIC 4, DELTA THETA NORMALIZER
     }
@@ -442,7 +425,7 @@ public class SlothModel extends ComplexObstacle  {
      * DOES EVERYTHING!!
      */
 
-    public float angleDiff(float goal, float current){
+    private float angleDiff(float goal, float current){
         float diff = goal - current;
         if(diff > PI){ diff -= (PI + PI);}
         if(diff < -PI){ diff += (PI + PI);}
@@ -485,54 +468,40 @@ public class SlothModel extends ComplexObstacle  {
 
         //TODO REDUCE MAGIC NUMBERS ( HENRY )
         // Apply forces
-        float lcTheta = (float)Math.atan2(leftVert,leftHori);
+        @SuppressWarnings("SuspiciousNameCombination") float lcTheta = (float)Math.atan2(leftVert,leftHori);
         lTheta = (-leftArm.getAngle()) + PI;
         lTheta = ((lTheta%(2*PI)) + (2*PI)) % (2*PI) - PI;
         float leftAngularVelocity = leftArm.getAngularVelocity() * 2;
         float lLength = (float)Math.sqrt((leftVert * leftVert) + (leftHori * leftHori));
         float dLTheta = angleDiff(lcTheta,lTheta);
 
-        float rcTheta = (float)Math.atan2(rightVert,rightHori);
+        @SuppressWarnings("SuspiciousNameCombination") float rcTheta = (float)Math.atan2(rightVert,rightHori);
         rTheta = -rightArm.getAngle() + PI;
         rTheta = ((rTheta%(2*PI)) + (2*PI)) % (2*PI) - PI;
         float rightAngularVelocity = rightArm.getAngularVelocity() * 2;
         float rLength = (float)Math.sqrt((rightVert * rightVert) + (rightHori * rightHori));
         float dRTheta = angleDiff(rcTheta,rTheta);
 
-        //antiwobble
+        // antiwobble
+        float angleChangeLeft = angleDiff(lcTheta, previousAngleLeft);
+        float angleChangeRight = angleDiff(rcTheta,previousAngleRight);
 
-        float currentAngleLeft = lcTheta;
-        float currentAngleRight = rcTheta;
-
-        float angleChangeLeft = angleDiff(currentAngleLeft, previousAngleLeft);
-        float angleChangeRight = angleDiff(currentAngleRight,previousAngleRight);
         if(Math.abs(angleChangeRight) > .03f){
             cummulativeAngleRight += angleChangeRight;
         }
         else{
-
-            if(Math.abs(cummulativeAngleRight) > 15) {
-                //System.out.print("Right angle reset");
-            }
             cummulativeAngleRight = 0;
         }
+
         if(Math.abs(angleChangeLeft) > .03f){
             cummulativeAngleLeft += angleChangeLeft;
         }
         else{
-
-            if(Math.abs(cummulativeAngleLeft) > 15){
-                //System.out.print("Left angle reset");
-            }
             cummulativeAngleLeft = 0;
         }
 
-        //System.out.println("Left delta: " + angleChangeLeft +"    : Right delta: "+ angleChangeRight);
-        //if(Math.abs(cummulativeAngleLeft) > 15 || Math.abs(cummulativeAngleRight) > 15) {
-            //System.out.println("Left delta: " + cummulativeAngleLeft + "    : Right delta: " + cummulativeAngleRight);
-        //}
-        previousAngleRight = currentAngleRight;
-        previousAngleLeft = currentAngleLeft;
+        previousAngleRight = rcTheta;
+        previousAngleLeft = lcTheta;
 
         float impulseL = 0;
         float nextLTheta = -leftArm.getAngle() + PI - leftArm.getAngularVelocity() / 20f;
@@ -564,12 +533,12 @@ public class SlothModel extends ComplexObstacle  {
         }
 
         //countertorque left stick on right arm
-        float dLcRTheta = 0f; // How much left controller affects right arm
+        float dLcRTheta; // How much left controller affects right arm
         float invlcTheta = (float)Math.atan2(-leftVert,-leftHori);
         dLcRTheta = angleDiff(invlcTheta, rTheta);
 
         //countertorque right stick on left arm
-        float dRcLTheta = 0f; // How much right controller affects left arm
+        float dRcLTheta; // How much right controller affects left arm
         float invrcTheta = (float)Math.atan2(-rightVert,-rightHori);
         dRcLTheta = angleDiff(invrcTheta, lTheta);
 
@@ -662,11 +631,6 @@ public class SlothModel extends ComplexObstacle  {
         Obstacle left = bodies.get(PART_LEFT_HAND);
 
         Gdx.gl.glLineWidth(3);
-        float left_x = left.getX();
-        float left_y = left.getY();
-        float right_x = right.getX();
-        float right_y = right.getY();
-
 
         canvas.beginDebug(camTrans);
         canvas.drawLine(left.getX()*drawScale.x,left.getY() * drawScale.y, left.getX()*drawScale.x+(forceL.x*2),left.getY() * drawScale.y+(forceL.y*2),Color.BLUE, Color.BLUE);
@@ -719,12 +683,7 @@ public class SlothModel extends ComplexObstacle  {
             else if (movementMode == GRAB_REVERSE)
                 this.rightGrab = !rightGrab;
             else if (movementMode == GRAB_TOGGLE && rightGrab) {
-                if (!rightGrabbing) {
-                    rightGrabbing = true;
-                }
-                else {
-                    rightGrabbing = false;
-                }
+                rightGrabbing = !rightGrabbing;
                 this.rightGrab = rightGrabbing;
             }
         } else {
@@ -846,11 +805,9 @@ public class SlothModel extends ComplexObstacle  {
         if (grabJoint != null || target == null) return;
 
         Vector2 pos = hand.getPosition();
-        if(CAN_DOUBLE_GRAB == 1){
-            if(otherGrabJoint != null){
-                if((otherHand.getPosition().dst(hand.getPosition()) ) < .3f){
-                    pos = otherHand.getPosition();
-                }
+        if(otherGrabJoint != null){
+            if((otherHand.getPosition().dst(hand.getPosition()) ) < .3f){
+                pos = otherHand.getPosition();
             }
         }
         Vector2 anchorHand = new com.badlogic.gdx.math.Vector2(0, 0);
@@ -1151,7 +1108,6 @@ public class SlothModel extends ComplexObstacle  {
             if (active) {
                 part.draw(canvas, getDrawTint());
                 // draw power halo
-                power = this.power;
 
                 Color tint = new Color(0,0,power,power / 2.5f);
                 Vector2 origin = part.getOrigin();
@@ -1243,8 +1199,6 @@ public class SlothModel extends ComplexObstacle  {
             joints.removeValue(jointB,true);
             world.destroyJoint(jointA);
             world.destroyJoint(jointB);
-            jointA = null;
-            jointB = null;
             bodies.get(0).setFixedRotation(false);
             bodies.get(0).getBody().applyAngularImpulse(0.5f,true);
             for (Obstacle b : bodies) {

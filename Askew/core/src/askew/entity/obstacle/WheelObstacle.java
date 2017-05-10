@@ -13,7 +13,6 @@ package askew.entity.obstacle;
 
 import askew.GameCanvas;
 import askew.MantisAssetManager;
-import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.physics.box2d.*;
 
@@ -24,7 +23,7 @@ import com.badlogic.gdx.physics.box2d.*;
  */
 public class WheelObstacle extends SimpleObstacle {
 	/** Shape information for this circle */
-	protected CircleShape shape;
+    private final CircleShape shape;
 	/** A cache value for the fixture (for resizing) */
 	private Fixture geometry;
 	
@@ -80,7 +79,7 @@ public class WheelObstacle extends SimpleObstacle {
 	/**
 	 * Create new fixtures for this body, defining the shape
 	 *
-	 * This is the primary method to override for custom physics objects
+	 * This is the primary method to override for custom physics entities
 	 */
 	protected void createFixtures() {
 		if (body == null) {
@@ -98,7 +97,7 @@ public class WheelObstacle extends SimpleObstacle {
 	/**
 	 * Release the fixtures for this body, reseting the shape
 	 *
-	 * This is the primary method to override for custom physics objects
+	 * This is the primary method to override for custom physics entities
 	 */
 	protected void releaseFixtures() {
 	    if (geometry != null) {

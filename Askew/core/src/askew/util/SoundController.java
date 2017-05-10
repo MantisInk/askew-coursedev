@@ -22,9 +22,6 @@ import com.badlogic.gdx.assets.*;
 import com.badlogic.gdx.audio.*;
 import com.badlogic.gdx.utils.*;
 
-import java.util.IdentityHashMap;
-import java.util.Map;
-
 /**
  * A singleton class for controlling sound effects in LibGDX
  * 
@@ -52,6 +49,7 @@ import java.util.Map;
  * volume to 0 and allow it to be garbage collected when done.  This is why
  * we never allow you to access a sound object directly.
  */
+@SuppressWarnings({"FieldCanBeLocal", "SameParameterValue"})
 public class SoundController {
 
 	/**
@@ -65,11 +63,11 @@ public class SoundController {
 	 */
 	private class ActiveSound {
 		/** Reference to the sound resource */
-		public Sound sound;
+		public final Sound sound;
 		/** The id number representing the sound instance */
-		public long  id;
+		public final long  id;
 		/** Is the sound looping (so no garbage collection) */
-		public boolean loop;
+		public final boolean loop;
 		/** How long this sound has been running */
 		public long lifespan;
 		
@@ -99,13 +97,13 @@ public class SoundController {
 	private static SoundController controller;
 	
 	/** Keeps track of all of the allocated sound resources */
-	private IdentityMap<String,Sound> soundbank;
+	private final IdentityMap<String,Sound> soundbank;
 	/** Keeps track of all of the "active" sounds */
-	private IdentityMap<String,ActiveSound> actives;
+	private final IdentityMap<String,ActiveSound> actives;
 	/** Support class for garbage collection */
-	private Array<String> collection;
+	private final Array<String> collection;
 
-	private IdentityMap<String,Sound> customVolumes;
+	private final IdentityMap<String,Sound> customVolumes;
 	
 	
 	/** The number of animation frames before a key can be reused */
@@ -121,10 +119,10 @@ public class SoundController {
 	 * Creates a new SoundController with the default settings.
 	 */
 	private SoundController() {
-		soundbank = new IdentityMap<String,Sound>();
-		actives = new IdentityMap<String,ActiveSound>();
-		collection = new Array<String>();
-		customVolumes = new IdentityMap<String,Sound>();
+		soundbank = new IdentityMap<>();
+		actives = new IdentityMap<>();
+		collection = new Array<>();
+		customVolumes = new IdentityMap<>();
 		cooldown = DEFAULT_COOL;
 		timeLimit = DEFAULT_LIMIT;
 		frameLimit = DEFAULT_FRAME;
@@ -270,6 +268,7 @@ public class SoundController {
 	 * 
 	 * @return True if the sound was successfully played
 	 */
+	@SuppressWarnings("UnusedReturnValue")
 	public boolean play(String key, String filename, boolean loop) {
 		return play(key,filename,loop,1.0f);
 	}

@@ -3,37 +3,43 @@ package askew.playermode.leveleditor.button;
 
 import askew.GameCanvas;
 import askew.MantisAssetManager;
+import askew.playermode.leveleditor.LevelEditorController;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import lombok.Getter;
-
-import javax.xml.soap.Text;
 
 public class Button {
 
-    public static final String BUTTON_TEXTURE = "texture/leveleditor/button.png";
+    private static final String BUTTON_TEXTURE = "texture/leveleditor/button.png";
     //bottom left corner is 0,0
-    float x;
-    float y;
+    final float x;
+    final float y;
     //width and height in pixels. Box2d Coords * worldscale.
-    float width;
-    float height;
+    final float width;
+    final float height;
     @Getter
+    final
     String group;
     @Getter
+    final
     int index;
     @Getter
+    final
     String name;
-    int priority;
 
     Texture texture;
     Texture yellowbox;
 
-    public Button(float x, float y, float width, float height, String group, int index, String name){
-        this(x,y,width,height,group,index,name,0);
+    public Button(float y, float width, String group, int index, String name){
+        //noinspection SuspiciousNameCombination
+        this(LevelEditorController.GUI_LEFT_BAR_MARGIN,y,width,
+                LevelEditorController.GUI_LEFT_BAR_MARGIN,group,index,
+                name);
     }
-    public Button(float x, float y, float width, float height, String group, int index, String name, int priority){
+
+    Button(float x, float y, float width, float height, String group,
+           int index,
+           String name){
         this.x = x;
         this.y = y;
         this.width = width;
@@ -41,7 +47,6 @@ public class Button {
         this.group = group;
         this.index = index;
         this.name = name;
-        this.priority = priority;
     }
 
     public boolean inBounds(float mousex, float mousey){

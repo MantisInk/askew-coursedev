@@ -9,11 +9,11 @@ import java.util.ArrayList;
 
 public class ButtonList {
 
-    private ArrayList<Button> buttons;
+    private final ArrayList<Button> buttons;
     private MantisAssetManager manager;
 
     public ButtonList(){
-        buttons = new ArrayList<Button>();
+        buttons = new ArrayList<>();
     }
 
 
@@ -28,6 +28,7 @@ public class ButtonList {
 
     }
 
+    @SuppressWarnings("unused")
     public Button buttonByName(String s, int i){
         Button ans = null;
         for(Button b : buttons){
@@ -60,11 +61,7 @@ public class ButtonList {
     }
 
     public void setTextures(MantisAssetManager manager){
-        for(Button b: buttons){
-            if(b.texture == null) {
-                b.setTextures(manager);
-            }
-        }
+        buttons.stream().filter(b -> b.texture == null).forEachOrdered(b -> b.setTextures(manager));
     }
 
 

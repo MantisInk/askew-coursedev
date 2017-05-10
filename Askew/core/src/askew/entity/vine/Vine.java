@@ -35,6 +35,7 @@ import lombok.Setter;
  * Note that this class returns to static loading.  That is because there are
  * no other subclasses that we might loop through.
  */
+@SuppressWarnings({"FieldCanBeLocal", "SameParameterValue"})
 public class Vine extends ComplexObstacle {
 
 	private static final String VINE_NAME = "vine";				/** The debug name for the entire obstacle */
@@ -42,24 +43,24 @@ public class Vine extends ComplexObstacle {
 	private static final String ANCHOR_NAME = "vine_pin";		/** The debug name for each anchor pin */
 	private static final float ANCHOR_RADIUS = 0.1f;			/** The radius of each anchor pin */
 	private transient float BASIC_DENSITY;						/** The density of each plank in the bridge */
-	public static final float lwidth = .15f;
+	private static final float lwidth = .15f;
 	public static final float lheight = .7f;
 
 	public static final String[] VINE_TEXTURES = {"texture/vine/vine.png", "texture/vine/vine2.png"};
-	public static transient String VINE_TEXTURE; 		// default texture
+	private static transient String VINE_TEXTURE; 		// default texture
 
-	// Invisible anchor objects
+	// Invisible anchor entities
 	private transient WheelObstacle start = null;				// anchor point of vine (top)
 	private transient WheelObstacle finish = null;				// optional bottom anchor (bottom)
 
 	public static final float DAMPING_ROTATION = 5f;			/** Set damping constant for joint rotation in vines */
 
 	// Dimension information
-	protected transient Vector2 dimension;						/** The length of the entire vine */
-	protected transient Vector2 planksize;						/** The size of a vine piece */
-	protected transient float linksize = 1.0f;					/** The length of each vine piece*/
-	protected transient float spacing = 0.0f;					/** The spacing between each piece */
-	private transient boolean topPin;
+	private transient Vector2 dimension;						/** The length of the entire vine */
+	private transient Vector2 planksize;						/** The size of a vine piece */
+	private transient float linksize = 1.0f;					/** The length of each vine piece*/
+	private transient float spacing = 0.0f;					/** The spacing between each piece */
+	private final transient boolean topPin;
 	@Getter
 	private transient Obstacle endpt; 						// to help with tutorial getting vine endpt
 
@@ -77,24 +78,24 @@ public class Vine extends ComplexObstacle {
 	protected float omega = -400f;										/** starting angular velocity of vine */
 	@Getter @Setter
 	private boolean pin = false; 								// default no bottom anchor
-	protected int texture = 0; 										// default texture index
+	private int texture = 0; 										// default texture index
 
 
 	public Vine(float x, float y, float length, float angle, float omega, int texture){
-		this(x, y, length, false, angle, omega, texture, true);
+		this(x, y, length, angle, omega, texture, true);
 	}
 
-	public Vine(float x, float y, float length,  boolean pinned, float angle, float omega, int texture, boolean topPin) {
+	public Vine(float x, float y, float length, float angle, float omega, int texture, boolean topPin) {
 		super(x,y);
 		this.x = x;
 		this.y = y;
 		this.numLinks = length;
-		this.pin = pinned;
+		this.pin = false;
 		this.angle = angle;
 		this.omega = omega;
 		this.topPin = topPin;
 		this.texture = texture;
-		this.VINE_TEXTURE = VINE_TEXTURES[texture];
+		VINE_TEXTURE = VINE_TEXTURES[texture];
 		build();
 	}
 
@@ -167,7 +168,7 @@ public class Vine extends ComplexObstacle {
 	 * Creates the joints for this object.
 	 *
 	 * This method is executed as part of activePhysics. This is the primary method to
-	 * override for custom physics objects.
+	 * override for custom physics entities.
 	 *
 	 * @param world Box2D world to store joints
 	 *

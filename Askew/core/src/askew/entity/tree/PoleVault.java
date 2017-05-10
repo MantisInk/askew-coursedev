@@ -30,23 +30,30 @@ import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
  * Note that this class returns to static loading.  That is because there are
  * no other subclasses that we might loop through.
  */
+@SuppressWarnings("FieldCanBeLocal")
 public class PoleVault extends TreeParent {
 
-	public transient static final float DAMPING_ROTATION = 5f;	/** Set damping constant for joint rotation in vines */
-	private static final String TRUNK_PIN_NAME = "pin";			/** The debug name for each anchor pin */
-	private static final float TRUNK_PIN_RADIUS = 0.1f;			/** The radius of each anchor pin */
-	private transient WheelObstacle start = null;							/** pin the bottom of the pole vault */
+	/** Set damping constant for joint rotation in vines */
+	public static final float DAMPING_ROTATION = 5f;
+	/** The debug name for each anchor pin */
+	private static final String TRUNK_PIN_NAME = "pin";
+	/** The radius of each anchor pin */
+	private static final float TRUNK_PIN_RADIUS = 0.1f;
+	/** pin the bottom of the pole vault */
+	private transient WheelObstacle start = null;
 
 	/** starting coords of bottom anchor and length for branch */
-	protected transient Vector2 dimension;						/** The size of the entire bridge */
-	protected float linksize;									/** The length of each link */
-	public transient Vector2 final_norm = null;					/** coords for starting branch off this trunk */
-	protected transient Vector2 planksize;						/** The size of a single plank */
+	private transient Vector2 dimension;						/** The size of the entire bridge */
+	private float linksize;									/** The length of each link */
+	private transient Vector2 final_norm = null;					/** coords for starting branch off this trunk */
+	private transient Vector2 planksize;						/** The size of a single plank */
 	// TODO: Fix this from being public (refactor artifact) ?
 	private transient float spacing = 0.0f;						/** The spacing between each link */
-	protected float numLinks;									// param for json constructor
+	private final float numLinks;									// param for json constructor
 
-	private float x,y,angle;
+	private float x;
+	private float y;
+	private final float angle;
 
 	/**
 	 * Creates a new tree trunk at the given position.
@@ -123,7 +130,7 @@ public class PoleVault extends TreeParent {
 	 * Creates the joints for this object.
 	 *
 	 * This method is executed as part of activePhysics. This is the primary method to
-	 * override for custom physics objects.
+	 * override for custom physics entities.
 	 *
 	 * @param world Box2D world to store joints
 	 *

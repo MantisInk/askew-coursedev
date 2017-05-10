@@ -8,9 +8,10 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
+@SuppressWarnings({"FieldCanBeLocal", "WeakerAccess"})
 public class EyeEntity extends BackgroundEntity{
 
-    private transient Vector2 pupilOffset;
+    private final transient Vector2 pupilOffset;
     private transient TextureRegion texture2;
     private final float PUPIL_OFFSET = 0.08f;
     private final String pathEyes = "texture/eye/eyes.png";

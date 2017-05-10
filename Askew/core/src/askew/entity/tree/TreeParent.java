@@ -31,11 +31,11 @@ import com.badlogic.gdx.physics.box2d.World;
  */
 public abstract class TreeParent extends ComplexObstacle {
 
-	protected static final String TRUNK_NAME = "trunk";			/** The debug name for the entire obstacle */
-	protected static final String PLANK_NAME = "driftwood";		/** The debug name for each plank */
-	protected static final float BASIC_DENSITY = 13f;				/** The density of each plank in the bridge */
-	protected static final float lwidth = .25f;
-	protected static final float lheight = 1.0f;
+	static final String TRUNK_NAME = "trunk";			/** The debug name for the entire obstacle */
+	static final String PLANK_NAME = "driftwood";		/** The debug name for each plank */
+	static final float BASIC_DENSITY = 13f;				/** The density of each plank in the bridge */
+	static final float lwidth = .25f;
+	static final float lheight = 1.0f;
 
 	/** The spacing between each link */
 	protected transient Vector2 dimension;						/** The size of the entire bridge */
@@ -57,9 +57,7 @@ public abstract class TreeParent extends ComplexObstacle {
 	private transient float spacing = 0.0f;						/** The spacing between each link */
 
 
-
-
-	public TreeParent(float x, float y) {
+    TreeParent(float x, float y) {
 //		setName(TRUNK_NAME);
 //		numLinks = length;
 //		this.x = x;
@@ -80,7 +78,7 @@ public abstract class TreeParent extends ComplexObstacle {
 	 * Creates the joints for this object.
 	 *
 	 * This method is executed as part of activePhysics. This is the primary method to
-	 * override for custom physics objects.
+	 * override for custom physics entities.
 	 *
 	 * @param world Box2D world to store joints
 	 *

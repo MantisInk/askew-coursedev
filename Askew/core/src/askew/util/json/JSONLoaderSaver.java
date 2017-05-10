@@ -12,6 +12,7 @@ import com.google.gson.*;
 import java.io.*;
 import java.util.Optional;
 
+@SuppressWarnings("SameParameterValue")
 public class JSONLoaderSaver {
 
     private Gson gson;
@@ -29,7 +30,7 @@ public class JSONLoaderSaver {
         }
     }
 
-    public LevelModel loadLevel(String levelName) throws FileNotFoundException {
+    public LevelModel loadLevel(String levelName)  {
         FileHandle fileHandle = Gdx.files.internal("levels/" + levelName + ".json");
         if (fileHandle.exists() && !fileHandle.isDirectory()) {
             String contents = fileHandle.readString();
@@ -65,6 +66,7 @@ public class JSONLoaderSaver {
         return gson.fromJson(olm, LevelModel.class);
     }
 
+    @SuppressWarnings("unused")
     public String gsonToJson(Entity o) {
         return gson.toJson(o, Entity.class);
     }
@@ -126,8 +128,8 @@ public class JSONLoaderSaver {
 
     /**
      * Converts a level object to the latest version by version patch functions
-     * @param levelObject
-     * @return
+     * @param levelObject lol
+     * @return The level's json string
      */
     private String convertLevel(JsonObject levelObject) {
         switch(levelObject.get("levelModelVersion").getAsInt()) {

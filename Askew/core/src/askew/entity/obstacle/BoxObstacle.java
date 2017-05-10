@@ -13,7 +13,6 @@ package askew.entity.obstacle;
 
 import askew.GameCanvas;
 import askew.MantisAssetManager;
-import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.physics.box2d.*;
@@ -23,17 +22,18 @@ import com.badlogic.gdx.physics.box2d.*;
  *
  * Unless otherwise specified, the center of mass is as the center.
  */
+@SuppressWarnings("unused")
 public class BoxObstacle extends SimpleObstacle {
 	/** Shape information for this box */
-	protected transient PolygonShape shape;
+	final transient PolygonShape shape;
 	/** The width and height of the box */
-	private transient Vector2 dimension;
+	private final transient Vector2 dimension;
 	/** A cache value for when the user wants to access the dimensions */
-	private transient Vector2 sizeCache;
+	private final transient Vector2 sizeCache;
 	/** A cache value for the fixture (for resizing) */
-	protected transient Fixture geometry;
+	transient Fixture geometry;
 	/** Cache of the polygon vertices (for resizing) */
-	private transient float[] vertices;
+	private final transient float[] vertices;
 	
 	/** 
 	 * Returns the dimensions of this box
@@ -55,7 +55,7 @@ public class BoxObstacle extends SimpleObstacle {
 	 *
 	 * @param value  the dimensions of this box
 	 */
-	public void setDimension(Vector2 value) {
+    private void setDimension(Vector2 value) {
 		setDimension(value.x, value.y);
 	}
 	
@@ -65,7 +65,7 @@ public class BoxObstacle extends SimpleObstacle {
 	 * @param width   The width of this box
 	 * @param height  The height of this box
 	 */
-	public void setDimension(float width, float height) {
+    private void setDimension(float width, float height) {
 		dimension.set(width, height);
 		markDirty(true);
 		resize(width, height);
@@ -166,7 +166,7 @@ public class BoxObstacle extends SimpleObstacle {
 	/**
 	 * Create new fixtures for this body, defining the shape
 	 *
-	 * This is the primary method to override for custom physics objects
+	 * This is the primary method to override for custom physics entities
 	 */
 	protected void createFixtures() {
 		if (body == null) {
@@ -184,7 +184,7 @@ public class BoxObstacle extends SimpleObstacle {
 	/**
 	 * Release the fixtures for this body, reseting the shape
 	 *
-	 * This is the primary method to override for custom physics objects
+	 * This is the primary method to override for custom physics entities
 	 */
 	protected void releaseFixtures() {
 	    if (geometry != null) {

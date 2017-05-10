@@ -23,7 +23,7 @@ public class RecordBook {
     }
 
     /* Creates a new instance populated with the current values of the records.json. */
-    public static void update() {
+    private static void update() {
         JsonObject newBlob = JSONLoaderSaver.loadArbitrary(CONFIG_PATH).orElseThrow(RuntimeException::new);
         instance = new RecordBook();
         instance.dataBlob = newBlob;

@@ -14,7 +14,6 @@ package askew.entity.obstacle;
 
 import askew.GameCanvas;
 import askew.MantisAssetManager;
-import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.physics.box2d.*;
@@ -24,6 +23,7 @@ import com.badlogic.gdx.physics.box2d.*;
  *
  * Unless otherwise specified, the center of mass is as the center.
  */
+@SuppressWarnings("ALL")
 public class CapsuleObstacle extends SimpleObstacle {
 	/** Epsilon factor to prevent issues with the fixture seams */
 	private static final float DEFAULT_EPSILON = 0.01f;
@@ -47,21 +47,21 @@ public class CapsuleObstacle extends SimpleObstacle {
         HORIZONTAL,
         /** A half-capsule with a rounded end at the right */
         RIGHT
-    };
-    
-	/** Shape information for this box */
-	protected PolygonShape shape;
+    }
+
+    /** Shape information for this box */
+    private final PolygonShape shape;
 	/** Shape information for the end cap */
-    protected CircleShape end1;
+    private final CircleShape end1;
 	/** Shape information for the end cap */
-    protected CircleShape end2;
+    private final CircleShape end2;
     /** Rectangle representation of capsule core for fast computation */
-    protected Rectangle center;
+    private final Rectangle center;
 
 	/** The width and height of the box */
-	private Vector2 dimension;
+	private final Vector2 dimension;
 	/** A cache value for when the user wants to access the dimensions */
-	private Vector2 sizeCache;
+	private final Vector2 sizeCache;
     /** A cache value for the center fixture (for resizing) */
 	private Fixture core;
     /** A cache value for the first end cap fixture (for resizing) */
@@ -71,10 +71,10 @@ public class CapsuleObstacle extends SimpleObstacle {
     /** The capsule orientation */
     private Orientation orient;
 	/** Cache of the polygon vertices (for resizing) */
-	private float[] vertices;
+	private final float[] vertices;
 	
 	/** A cache value for computing fixtures */
-	private Vector2 posCache = new Vector2();
+	private final Vector2 posCache = new Vector2();
     /** The seam offset of the core rectangle */
     private float seamEpsilon;
 
@@ -98,7 +98,7 @@ public class CapsuleObstacle extends SimpleObstacle {
 	 *
 	 * @param value  the dimensions of this box
 	 */
-	public void setDimension(Vector2 value) {
+    private void setDimension(Vector2 value) {
 		setDimension(value.x, value.y);
 	}
 	
@@ -108,7 +108,7 @@ public class CapsuleObstacle extends SimpleObstacle {
 	 * @param width   The width of this box
 	 * @param height  The height of this box
 	 */
-	public void setDimension(float width, float height) {
+    private void setDimension(float width, float height) {
 		dimension.set(width, height);
 		markDirty(true);
 		resize(width, height);
@@ -273,7 +273,7 @@ public class CapsuleObstacle extends SimpleObstacle {
 	 * @param width		The object width in physics units
 	 * @param height	The object width in physics units
 	 */
-	public CapsuleObstacle(float x, float y, float width, float height, Orientation o) {
+    private CapsuleObstacle(float x, float y, float width, float height, Orientation o) {
 		super(x,y);
 		dimension = new Vector2();
 		sizeCache = new Vector2();
@@ -393,7 +393,7 @@ public class CapsuleObstacle extends SimpleObstacle {
 	/**
 	 * Create new fixtures for this body, defining the shape
 	 *
-	 * This is the primary method to override for custom physics objects
+	 * This is the primary method to override for custom physics entities
 	 */
 	protected void createFixtures() {
 		if (body == null) {
@@ -465,7 +465,7 @@ public class CapsuleObstacle extends SimpleObstacle {
 	/**
 	 * Release the fixtures for this body, reseting the shape
 	 *
-	 * This is the primary method to override for custom physics objects
+	 * This is the primary method to override for custom physics entities
 	 */
 	protected void releaseFixtures() {
 	    if (core != null) {

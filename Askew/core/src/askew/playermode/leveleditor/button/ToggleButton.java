@@ -6,26 +6,24 @@ import com.badlogic.gdx.graphics.Color;
 import lombok.Getter;
 import lombok.Setter;
 
+import static askew.playermode.leveleditor.LevelEditorController.GUI_LEFT_BAR_MARGIN;
+import static askew.playermode.leveleditor.LevelEditorController.GUI_LEFT_BAR_WIDTH;
+
 public class ToggleButton extends Button{
 
-    public static final float DEFAULT_WIDTH = 64;
-    public static final float DEFAULT_HEIGHT = 16;
+    private static final float DEFAULT_WIDTH = GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN);
+    private static final float DEFAULT_HEIGHT = 16;
 
     @Getter @Setter
     public boolean on;
 
-    public ToggleButton(float x, float y, float width, float height, String group, int index, String name, int priority, boolean on){
-        super(x,y,width,height,group,index,name,priority);
-        this.on = on;
-
+    private ToggleButton(float x, float y, float width, float height, int index, String name){
+        super(x,y,width,height, "LEOptions",index,name);
+        this.on = false;
     }
 
-    public ToggleButton(float x, float y, float width, float height, String group, int index, String name){
-        this(x,y,width,height,group,index, name,0,false);
-    }
-
-    public ToggleButton(float x, float y, String group, int index, String name) {
-        this(x,y,DEFAULT_WIDTH,DEFAULT_HEIGHT,group,index,name,0,false);
+    public ToggleButton(float x, float y, int index, String name) {
+        this(x,y,DEFAULT_WIDTH,DEFAULT_HEIGHT, index,name);
     }
 
     @Override

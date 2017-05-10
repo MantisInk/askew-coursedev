@@ -33,16 +33,17 @@ import lombok.Getter;
  *
  * This class does not provide Shape information, and cannot be instantiated directly.
  */
+@SuppressWarnings("WeakerAccess")
 public abstract class SimpleObstacle extends Obstacle {
 	/** The physics body for Box2D. */
-	protected transient Body body;
+	transient Body body;
 
 	/** The texture for the shape. */
 	protected transient TextureRegion texture;
 
 	/** The texture origin for drawing */
 	@Getter
-	protected transient Vector2 origin;
+	protected final transient Vector2 origin;
 	
 	/// BodyDef Methods
 	/**
@@ -64,8 +65,6 @@ public abstract class SimpleObstacle extends Obstacle {
 	 * If you want to lock a body in place (e.g. a platform) set this value to STATIC.
 	 * KINEMATIC allows the object to move (and some limited collisions), but ignores 
 	 * external forces (e.g. gravity). DYNAMIC makes this is a full-blown physics object.
-	 *
-	 * @return the body type for Box2D physics
 	 */
 	public void setBodyType(BodyType value) {
 		if (body != null) {
@@ -393,7 +392,7 @@ public abstract class SimpleObstacle extends Obstacle {
 	 * a high speed bullet at a stack of dynamic bricks. Without CCD, the bullet might
 	 * tunnel through the bricks.
 	 *
-	 * Fast moving objects in Box2D can be labeled as bullets. Bullets will perform CCD 
+	 * Fast moving entities in Box2D can be labeled as bullets. Bullets will perform CCD
 	 * with both static and dynamic bodies. You should decide what bodies should be 
 	 * bullets based on your game design.
 	 *
@@ -413,7 +412,7 @@ public abstract class SimpleObstacle extends Obstacle {
 	 * a high speed bullet at a stack of dynamic bricks. Without CCD, the bullet might
 	 * tunnel through the bricks.
 	 *
-	 * Fast moving objects in Box2D can be labeled as bullets. Bullets will perform CCD 
+	 * Fast moving entities in Box2D can be labeled as bullets. Bullets will perform CCD
 	 * with both static and dynamic bodies. You should decide what bodies should be 
 	 * bullets based on your game design.
 	 *
@@ -456,7 +455,7 @@ public abstract class SimpleObstacle extends Obstacle {
 	/**
 	 * Returns the gravity scale to apply to this body
 	 *
-	 * This allows isolated objects to float.  Be careful with this, since increased 
+	 * This allows isolated entities to float.  Be careful with this, since increased
 	 * gravity can decrease stability.
 	 *
 	 * @return the gravity scale to apply to this body
@@ -468,7 +467,7 @@ public abstract class SimpleObstacle extends Obstacle {
 	/**
 	 * Sets the gravity scale to apply to this body
 	 *
-	 * This allows isolated objects to float.  Be careful with this, since increased 
+	 * This allows isolated entities to float.  Be careful with this, since increased
 	 * gravity can decrease stability.
 	 *
 	 * @param value  the gravity scale to apply to this body
@@ -599,7 +598,7 @@ public abstract class SimpleObstacle extends Obstacle {
 	/**
 	 * Sets the restitution of this body
 	 *
-	 * Restitution is used to make objects bounce. The restitution value is usually set 
+	 * Restitution is used to make entities bounce. The restitution value is usually set
 	 * to be between 0 and 1. Consider dropping a ball on a table. A value of zero means 
 	 * the ball won't bounce. This is called an inelastic collision. A value of one means 
 	 * the ball's velocity will be exactly reflected. This is called a perfectly elastic 
@@ -808,7 +807,7 @@ public abstract class SimpleObstacle extends Obstacle {
 	 * 
 	 * REMEMBER: The size is in physics units, not pixels.
 	 */
-	protected SimpleObstacle() {
+    SimpleObstacle() {
 		this(0,0);
 	}
 	
@@ -818,7 +817,7 @@ public abstract class SimpleObstacle extends Obstacle {
 	 * @param x  Initial x position in world coordinates
 	 * @param y  Initial y position in world coordinates
 	 */
-	protected SimpleObstacle(float x, float y) {
+    SimpleObstacle(float x, float y) {
 		super(x,y);
 		origin = new Vector2();
 		body = null;
@@ -870,14 +869,14 @@ public abstract class SimpleObstacle extends Obstacle {
 	/**
 	 * Create new fixtures for this body, defining the shape
 	 *
-	 * This is the primary method to override for custom physics objects
+	 * This is the primary method to override for custom physics entities
 	 */
 	protected abstract void createFixtures();
 
     /**
      * Release the fixtures for this body, reseting the shape
      *
-     * This is the primary method to override for custom physics objects.
+     * This is the primary method to override for custom physics entities.
      */
 	protected abstract void releaseFixtures();
     

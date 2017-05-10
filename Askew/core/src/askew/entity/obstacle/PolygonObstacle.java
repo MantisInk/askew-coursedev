@@ -17,7 +17,6 @@ package askew.entity.obstacle;
 
 import askew.GameCanvas;
 import askew.MantisAssetManager;
-import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.graphics.*;
@@ -37,7 +36,7 @@ public class PolygonObstacle extends SimpleObstacle {
 	private static final EarClippingTriangulator TRIANGULATOR = new EarClippingTriangulator();
 	
 	/** Shape information for this physics object */
-	protected transient PolygonShape[] shapes;
+	private transient PolygonShape[] shapes;
 	/** Texture information for this object */
 	protected transient PolygonRegion region;
 	
@@ -75,7 +74,7 @@ public class PolygonObstacle extends SimpleObstacle {
 	 *
 	 * @param value  the dimensions of this box
 	 */
-	public void setDimension(Vector2 value) {
+    private void setDimension(Vector2 value) {
 		setDimension(value.x, value.y);
 	}
 	
@@ -85,7 +84,7 @@ public class PolygonObstacle extends SimpleObstacle {
 	 * @param width   The width of this box
 	 * @param height  The height of this box
 	 */
-	public void setDimension(float width, float height) {
+    private void setDimension(float width, float height) {
 		resize(width, height);
 		markDirty(true);
 	}
@@ -154,7 +153,7 @@ public class PolygonObstacle extends SimpleObstacle {
 	 * @param x  Initial x position of the polygon center
 	 * @param y  Initial y position of the polygon center
 	 */
-	public PolygonObstacle(float[] points, float x, float y) {
+    protected PolygonObstacle(float[] points, float x, float y) {
 		super(x, y);
 		assert points.length % 2 == 0;
 		
@@ -288,7 +287,7 @@ public class PolygonObstacle extends SimpleObstacle {
 	/**
 	 * Create new fixtures for this body, defining the shape
 	 *
-	 * This is the primary method to override for custom physics objects
+	 * This is the primary method to override for custom physics entities
 	 */
 	protected void createFixtures() {
 		if (body == null) {
@@ -308,7 +307,7 @@ public class PolygonObstacle extends SimpleObstacle {
 	/**
 	 * Release the fixtures for this body, reseting the shape
 	 *
-	 * This is the primary method to override for custom physics objects
+	 * This is the primary method to override for custom physics entities
 	 */
 	protected void releaseFixtures() {
 		if (geoms[0] != null) {
@@ -335,7 +334,7 @@ public class PolygonObstacle extends SimpleObstacle {
      * Sets the drawing scale for this physics object
      *
      * The drawing scale is the number of pixels to draw before Box2D unit. Because
-     * mass is a function of area in Box2D, we typically want the physics objects
+     * mass is a function of area in Box2D, we typically want the physics entities
      * to be small.  So we decouple that scale from the physics object.  However,
      * we must track the scale difference to communicate with the scene graph.
      *

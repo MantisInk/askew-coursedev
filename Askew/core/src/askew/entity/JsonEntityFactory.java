@@ -21,7 +21,7 @@ import java.util.List;
  * Since we cannot create a static method on Entity to create an instance of a particular entity from a JSON instance,
  * we use the factory pattern to create such entities
  */
-public class JsonEntityFactory {
+class JsonEntityFactory {
 
     public static Vine createVine(MantisAssetManager manager, JsonObject instance) {
         Vine vine;
@@ -31,6 +31,7 @@ public class JsonEntityFactory {
         float angle = instance.get("angle").getAsFloat();
         float omega = instance.get("omega").getAsFloat();
         int texture = instance.get("texture").getAsInt();
+        // FIXME: Pretty sure this is a bug. -trevor
         Texture managedTexture = manager.get(Vine.VINE_TEXTURES[texture], Texture.class);
         //TextureRegion vineTexture = new TextureRegion(managedTexture);
 		vine = new Vine(x, y, numlinks, angle, omega, 0);

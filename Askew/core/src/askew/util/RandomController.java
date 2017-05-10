@@ -20,9 +20,9 @@ import java.util.Random;
 /**
  * Static class for producing random numbers.
  */
-public class RandomController {
+class RandomController {
 	/** Pseudo-random number generator */
-	private static Random generator = new Random(0); // Make it deterministic
+	private static final Random generator = new Random(0); // Make it deterministic
 
 	/**
 	 * Returns a random int between min and max (inclusive).

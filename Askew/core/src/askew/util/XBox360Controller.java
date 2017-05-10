@@ -43,9 +43,10 @@ import com.badlogic.gdx.controllers.*;
  * The constructor DOES NOT verify that the controller is indeed an XBox 360 
  * controller.
  */
+@SuppressWarnings("JavaDoc")
 public class XBox360Controller implements ControllerListener {
 	/** The controller id number */
-	private int deviceid;
+	private final int deviceid;
 	/** Reference to base controller object wrapped by this instance. */
 	private Controller controller;
 	/** Whether this controller is currently running with the Mac OS X driver */
@@ -137,7 +138,7 @@ public class XBox360Controller implements ControllerListener {
 	 *
 	 * @param controller The base controller to wrap
 	 */
-	protected void initialize(Controller controller) {
+    private void initialize(Controller controller) {
 		System.out.println(controller.getName());
 		if (!controller.getName().toLowerCase().contains("xbox") &&
 			!controller.getName().contains("360")) {
@@ -588,7 +589,7 @@ public class XBox360Controller implements ControllerListener {
 		return value;
 	}
 
-	public boolean notWindows() {
+	private boolean notWindows() {
 		return macosx || gnuSlashLinux;
 	}
 
@@ -660,7 +661,7 @@ public class XBox360Controller implements ControllerListener {
 	/** 
 	 * A Controller got disconnected.
 	 *
-	 * @param controller 
+	 * @param controller
 	 */
 	public void disconnected (Controller controller) {
 		if (this.controller == controller) {

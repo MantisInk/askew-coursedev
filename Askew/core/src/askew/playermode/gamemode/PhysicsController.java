@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Objects;
 
 
-public class PhysicsController implements ContactListener {
+class PhysicsController implements ContactListener {
     @Getter
     private boolean isFlowKill;
     @Getter @Setter
@@ -23,8 +23,6 @@ public class PhysicsController implements ContactListener {
     @Getter
     private boolean isFlowWin;
 
-    private SlothModel winningSloth;
-
     /**
      * This function deals with collisions.
      * Fixture collision mask groups:
@@ -32,7 +30,7 @@ public class PhysicsController implements ContactListener {
      *
      *
      */
-    public PhysicsController() {
+    PhysicsController() {
         this.slothList = new ArrayList<>();
         reset();
     }
@@ -51,7 +49,7 @@ public class PhysicsController implements ContactListener {
     /**
      * Callback method for the start of a collision
      *
-     * This method is called when we first get a collision between two objects.  We use
+     * This method is called when we first get a collision between two entities.  We use
      * this method to test if it is the "right" kind of collision.
      *
      * @param contact The two bodies that collided
@@ -99,7 +97,7 @@ public class PhysicsController implements ContactListener {
     /**
      * Callback method for the start of a collision
      *
-     * This method is called when two objects cease to touch.
+     * This method is called when two entities cease to touch.
      */
     public void endContact(Contact contact) {}
 

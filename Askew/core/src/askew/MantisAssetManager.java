@@ -8,7 +8,6 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.xml.soap.Text;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,6 +15,7 @@ import java.util.Map;
  * In addition to being the actual asset manager, this holds references to certain textures which require
  * processing on the openGL thread.
  */
+@SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
 public class MantisAssetManager extends AssetManager {
 
     public static final String WALL_TEXTURE = "texture/wall/wall.png";
@@ -28,7 +28,7 @@ public class MantisAssetManager extends AssetManager {
     private String[] texturePaths;
 
     @Getter
-    private Map<String,TextureRegion> processedTextureMap;
+    private final Map<String,TextureRegion> processedTextureMap;
 
     @Getter
     private TextureAtlas textureAtlas;
@@ -51,9 +51,9 @@ public class MantisAssetManager extends AssetManager {
 
     public void loadProcess() {
         if (!loaded) {
-            createTexture(WALL_TEXTURE,true);
-            createTexture(THORN_TEXTURE,true);
-            createTexture(EDGE_TEXTURE,true);
+            createTexture(WALL_TEXTURE);
+            createTexture(THORN_TEXTURE);
+            createTexture(EDGE_TEXTURE);
             textureAtlas = new TextureAtlas(Gdx.files.internal("texture/packed/packed.atlas"));
         }
         loaded = true;
@@ -66,20 +66,12 @@ public class MantisAssetManager extends AssetManager {
      * This helper methods is used to set texture settings (such as scaling, and
      * whether or not the texture should repeat) after loading.
      *
-     * @param file		The texture (region) file
-     * @param repeat	Whether the texture should be repeated
-     *
-     * @return a newly loaded texture region for the given file.
+     * @param file        The texture (region) file
      */
-    protected void createTexture(String file, boolean repeat) {
-//        if (isLoaded(file)) {
-            TextureRegion region = new TextureRegion(get(file, Texture.class));
-            region.getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
-            if (repeat) {
-                region.getTexture().setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
-            }
-            processedTextureMap.put(file,region);
-//        }
-//        System.err.println("ERROR: Nonloaded: " + file);
+    private void createTexture(String file) {
+        TextureRegion region = new TextureRegion(get(file, Texture.class));
+        region.getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        region.getTexture().setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
+        processedTextureMap.put(file,region);
     }
 }

@@ -2,23 +2,23 @@ package askew.playermode.gamemode.Particles;
 
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
 import lombok.Getter;
 
+@SuppressWarnings("UnusedParameters")
 public class Particle implements Comparable {
 
     float x;
     float y;
-    float vx;
-    float vy;
-    float fx;
-    float fy;
+    private float vx;
+    private float vy;
+    private float fx;
+    private float fy;
     float width;
     float height;
     @Getter
     float depth;
     float angle;
-    float rot;
+    private float rot;
     @Getter
     int drawNumber;
     float accumulator;
@@ -51,9 +51,9 @@ public class Particle implements Comparable {
     }
 
 
-    public Particle spawnFog( float x, float y, float boundsx, float boundsy){
+    public void spawnFog( float x, float y, float boundsx, float boundsy){
         this.type = 1;
-        this.depth = 6f + (float)((Math.random() - .5) * 2 * 4.9 );;
+        this.depth = 6f + (float)((Math.random() - .5) * 2 * 4.9 );
         this.x = (x + (float)((Math.random() - .7) * boundsx )) * depth;
         this.y = (y + (float)((Math.random() - .5) * boundsy * 2)) * depth;
         this.vx = 4 + (float)((Math.random() - .5) * 2);
@@ -69,11 +69,9 @@ public class Particle implements Comparable {
         this.textureNum = (int)(Math.random() * 2);
         this.deathTime = 7 + (float)((Math.random() - .5) * 6 );
         this.accumulator = (float)((Math.random() - .5) * 2 );
-
-        return this;
     }
 
-    public Particle spawnDefault(float x, float y){
+    public void spawnDefault(float x, float y){
         this.x = x + (float)((Math.random() - .5) * 15 );
         this.y = y + (float)((Math.random() - .5) * 15 );
         this.width = 1;
@@ -83,7 +81,6 @@ public class Particle implements Comparable {
         this.deathTime = 4 + (float)((Math.random() - .5) * 2 );
         this.accumulator = (float)((Math.random() - .5) * 2 );
         this.type = 0;
-        return this;
     }
 
 

@@ -6,7 +6,7 @@
  *
  * While we were doing that, we decided to turn this class into a teaching moment.
  * This class uses a LibGDX memory pool to allocate all of its internal entry nodes.
- * A memory pool does not delete old objects, but instead allows us to reused them
+ * A memory pool does not delete old entities, but instead allows us to reused them
  * later.  This helps us cut down on pesky calls to the garbage collector.
  *
  * Author: Walker M. White
@@ -24,6 +24,7 @@ import com.badlogic.gdx.utils.*;
  * This class supports O(1) deletion for internal nodes.  Simply use the entryIterator()
  * method to access the Entry nodes directly.
  */
+@SuppressWarnings("ConstantConditions")
 public class PooledList<E> extends AbstractSequentialList<E> implements Iterable<E> {
 	
 	/**
@@ -83,9 +84,9 @@ public class PooledList<E> extends AbstractSequentialList<E> implements Iterable
 	}
 	
 	/** 
-	 * Allocator for Entry objects
+	 * Allocator for Entry entities
 	 *
-	 * This class does no preallocate, but will reuse objects that have
+	 * This class does no preallocate, but will reuse entities that have
 	 * been freed.
 	 */
 	private class EntryPool extends Pool<Entry> {
@@ -109,8 +110,8 @@ public class PooledList<E> extends AbstractSequentialList<E> implements Iterable
 		}
 	}
 
-	/** Memory pool for reallocating deleted objects */
-	private Pool<Entry> memory;
+	/** Memory pool for reallocating deleted entities */
+	private final Pool<Entry> memory;
 	
 	/** The queue head */
 	private Entry head;
@@ -198,7 +199,7 @@ public class PooledList<E> extends AbstractSequentialList<E> implements Iterable
 	 *
 	 * @return the element removed 
 	 */
-	public E removeHead() {
+    private E removeHead() {
 		if (size == 0) {
 			throw new IndexOutOfBoundsException();
 		}
@@ -219,7 +220,7 @@ public class PooledList<E> extends AbstractSequentialList<E> implements Iterable
 	 *
 	 * @return the element removed 
 	 */
-	public E removeTail() {
+    private E removeTail() {
 		if (size == 0) {
 			throw new IndexOutOfBoundsException();
 		}
@@ -266,8 +267,6 @@ public class PooledList<E> extends AbstractSequentialList<E> implements Iterable
 	 *
 	 * @param index the position to add the element
 	 * @param element the element to add
-	 *
-	 * @return whether the addition succeeeded
 	 */
 	// Inserts the specified element at the specified position in this list (optional operation).
 	public void add(int index, E element) {
@@ -353,7 +352,9 @@ public class PooledList<E> extends AbstractSequentialList<E> implements Iterable
 			if (size > 1) {
 				head.prev = null;
 			}
-		} else if (index == size) {
+		}
+		// FIXME: WTf is this condition? - trevor
+		else if (index == size) {
 			last = tail;
 			value = last.value;
 			tail = tail.prev;
@@ -392,7 +393,9 @@ public class PooledList<E> extends AbstractSequentialList<E> implements Iterable
 		if (index == 0) {
 			value = head.value;
 			head.value = element;
-		} else if (index == size) {
+		}
+		// FIXME: wtf is this condition? - trevor
+		else if (index == size) {
 			value = tail.value;
 			tail.value = element;
 		} else {	
@@ -407,9 +410,9 @@ public class PooledList<E> extends AbstractSequentialList<E> implements Iterable
 	}
 	
 	/** Cached reference to the value iterator */
-	private ValueIterator values  = new ValueIterator();
+	private final ValueIterator values  = new ValueIterator();
 	/** Cached reference to the entry iterator */
-	private EntryIterator entries = new EntryIterator();
+	private final EntryIterator entries = new EntryIterator();
 
 	/**
 	 * Returns an iterator over the list values
@@ -648,6 +651,7 @@ public class PooledList<E> extends AbstractSequentialList<E> implements Iterable
 	/**
 	 * A standard list iterator for entries
 	 */
+	@SuppressWarnings("JavadocReference")
 	private class EntryIterator implements ListIterator<Entry> {
 		/** The next entry to return */
 		private Entry next;

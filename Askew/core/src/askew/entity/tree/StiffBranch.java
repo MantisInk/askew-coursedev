@@ -31,27 +31,42 @@ import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
  * Note that this class returns to static loading.  That is because there are
  * no other subclasses that we might loop through.
  */
+@SuppressWarnings("FieldCanBeLocal")
 public class StiffBranch extends TreeParent {
 
-	private static final String BRANCH_NAME = "branch";				/** The debug name for the entire obstacle */
-	private static final String BRANCH_PIN_NAME = "pin";			/** The debug name for each anchor pin */
-	private static final float BRANCH_PIN_RADIUS = 0.1f;			/** The radius of each anchor pin */
-	private static final float LOWER_LIMIT = 0-(float)Math.PI/3;	/** lower limit of rotation in radians */
-	private static final float UPPER_LIMIT = (float)Math.PI/3;		/** upper limit of rotation in radians */
+	/** The debug name for the entire obstacle */
+	private static final String BRANCH_NAME = "branch";
+	/** The debug name for each anchor pin */
+	private static final String BRANCH_PIN_NAME = "pin";
+	/** The radius of each anchor pin */
+	private static final float BRANCH_PIN_RADIUS = 0.1f;
+	/** lower limit of rotation in radians */
+	private static final float LOWER_LIMIT = 0-(float)Math.PI/3;
+	/** upper limit of rotation in radians */
+	private static final float UPPER_LIMIT = (float)Math.PI/3;
 
-	// Invisible anchor objects
-	private transient WheelObstacle start = null;					/** The bottom pin of the branch (rotation pt) */
-	public static final float DAMPING_ROTATION = 5f;				/** Set damping constant for joint rotation in vines */
+	// Invisible anchor entities
+	/** The bottom pin of the branch (rotation pt) */
+	private transient WheelObstacle start = null;
+	/** Set damping constant for joint rotation in vines */
+	public static final float DAMPING_ROTATION = 5f;
 
 	// Dimension information
-	protected transient Vector2 dimension;							/** The size of the entire bridge */
-	protected transient Vector2 planksize;							/** The size of a single plank */
-	protected transient float linksize = 1.0f;						/* The length of each link */
-	protected transient float spacing = 0.0f;						/** The spacing between each link */
+	/** The size of the entire bridge */
+	private transient Vector2 dimension;
+	/** The size of a single plank */
+	private transient Vector2 planksize;
+	/** The length of each link */
+	private transient float linksize = 1.0f;
+	/** The spacing between each link */
+	private transient float spacing = 0.0f;
 
-	private float angle;											/** The starting angle of the branch (within joint limit) */
-	private float numLinks;											/** The number of planks in the branch */
-	private float x, y;												/** The starting coords (bottom) of the branch */
+	/** The starting angle of the branch (within joint limit) */
+	private final float angle;
+	/** The number of planks in the branch */
+	private final float numLinks;
+	/** The starting coords (bottom) of the branch */
+	private float x, y;
 
 	/**
 	 * Creates a new tree branch at the given position.
@@ -121,7 +136,7 @@ public class StiffBranch extends TreeParent {
 	 * Creates the joints for this object.
 	 *
 	 * This method is executed as part of activePhysics. This is the primary method to
-	 * override for custom physics objects.
+	 * override for custom physics entities.
 	 *
 	 * @param world Box2D world to store joints
 	 *
@@ -145,7 +160,7 @@ public class StiffBranch extends TreeParent {
 		start.activatePhysics(world);
 
 		// Definition for a revolute joint
-		WeldJointDef jointDef = new WeldJointDef();
+		WeldJointDef jointDef;
 
 		// Initial joint
 		// uncomment section to stand up

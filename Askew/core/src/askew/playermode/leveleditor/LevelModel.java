@@ -31,7 +31,7 @@ class LevelModel {
     List<Entity> entities;
 
     public LevelModel() {
-        this.entities = new ArrayList<Entity>();
+        this.entities = new ArrayList<>();
         this.levelModelVersion = LATEST_LEVEL_MODEL_VERSION;
         this.goalTimeGold = 30;
         this.goalTimeSilver = 45;

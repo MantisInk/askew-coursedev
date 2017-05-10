@@ -23,7 +23,7 @@ import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
  * This class sets the window size and launches the game.  Aside from modifying
  * the window size, you should almost never need to modify this class.
  */
-public class DesktopLauncher {
+class DesktopLauncher {
 	
 	/**
 	 * Classic main method that all Java programmers know.

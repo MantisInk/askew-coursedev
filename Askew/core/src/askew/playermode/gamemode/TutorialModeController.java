@@ -42,9 +42,10 @@ import static askew.entity.sloth.SlothModel.*;
  * This is the purpose of our AssetState variable; it ensures that multiple instances
  * place nicely with the static assets.
  */
+@SuppressWarnings("FieldCanBeLocal")
 public class TutorialModeController extends GameModeController {
 
-	private int MAX_TUTORIAL;
+	private final int MAX_TUTORIAL;
 
 	private final int STAGE_PINNED = 1;
 	private final int STAGE_GRAB = 2;
@@ -70,19 +71,19 @@ public class TutorialModeController extends GameModeController {
 	private float count;
 
 	// selected animation textures to be drawn
-	TextureRegion joystickNeutralTexture;
-	TextureRegion joystickTexture;
-	TextureRegion bumperLTexture;
-	TextureRegion bumperRTexture;
-	Texture container;
+	private TextureRegion joystickNeutralTexture;
+	private TextureRegion joystickTexture;
+	private TextureRegion bumperLTexture;
+	private TextureRegion bumperRTexture;
+	private Texture container;
 
-	// list of objects for stage of tutorial
-	protected ArrayList<Trunk> trunkEntities = new ArrayList<Trunk>();
-	private ArrayList<Boolean> trunkGrabbed = new ArrayList<Boolean>();
-	protected  ArrayList<Vine> vineEntities = new ArrayList<Vine>();
+	// list of entities for stage of tutorial
+	private final ArrayList<Trunk> trunkEntities = new ArrayList<>();
+	private final ArrayList<Boolean> trunkGrabbed = new ArrayList<>();
+	private final ArrayList<Vine> vineEntities = new ArrayList<>();
 
 	// margin allowance for measuring distance from setpoints
-	private float[] inRangeAllowance = {0.02f, 0.02f, 0.02f, ARMSPAN/2, 0.05f};
+	private final float[] inRangeAllowance = {0.02f, 0.02f, 0.02f, ARMSPAN/2, 0.05f};
 	// list of setpoints for drawing helplines & other vars
 	private int inRangeSetPt = -1;			// step progression within tutorial level
 	private final int MINUS30 = -2;			// constant as signal for drawing help lines -30 degrees from moving arm
@@ -99,31 +100,31 @@ public class TutorialModeController extends GameModeController {
 	private final float omega_0 = 0.15f;
 	private boolean swing = false;
 	private boolean back = false;
-	private float[] grabSetPoints = {14.019997f, 11.73999f, 9.399997f, 7.0199966f, 4.720001f};
-	private Vector2[] shimmySetPoints = {
+	private final float[] grabSetPoints = {14.019997f, 11.73999f, 9.399997f, 7.0199966f, 4.720001f};
+	private final Vector2[] shimmySetPoints = {
 			new Vector2(12f,13f),
 			new Vector2(12f,9f),
 			new Vector2(17f,9f),
 			new Vector2(17f,14f),
 			new Vector2(22.5f,14f) };
-	private Vector2[] flingSetPoints = {
+	private final Vector2[] flingSetPoints = {
 			new Vector2(2f,14f),
 			new Vector2(8f,16f),
 			new Vector2(14f, 14f),
 			new Vector2(22f, 14f)  };
-	private Vector2[] flingLandPoints0 = {
+	private final Vector2[] flingLandPoints0 = {
 			new Vector2(-2f, 12f),
 			new Vector2(4f, 14f),
 			new Vector2(10f, 12f),
 			new Vector2(18f, 11.5f)
 	};
-	private Vector2[] flingLandPointsf = {
+	private final Vector2[] flingLandPointsf = {
 			new Vector2(5.5f, 16f),
 			new Vector2(11.5f, 14f),
 			new Vector2(19.5f, 14f),
 			new Vector2(23f, 16f)
 	};
-	private Vector2[] vineSetPoints = {
+	private final Vector2[] vineSetPoints = {
 			new Vector2(4f, 13f),
 			new Vector2(6f, 16.5f),
 			new Vector2(9.6f, 12.7f),
@@ -133,14 +134,14 @@ public class TutorialModeController extends GameModeController {
 			new Vector2(23f, 12f), 	// vine
 			new Vector2(29f, 14f) 		// owl
 	};
-	private ArrayList<Integer> vineInds = new ArrayList<>(Arrays.asList(3,5,6));
+	private final ArrayList<Integer> vineInds = new ArrayList<>(Arrays.asList(3,5,6));
 	// list of instructions
-	private boolean[] shimmyGrabbed = {false, false, false, false, false};
-	private int[] shimmyDir = {SHIMMY_S, SHIMMY_E, SHIMMY_N, SHIMMY_E, SHIMMY_SE};
-	private boolean[] flingGrabbed = {false, false, false, false};
+	private final boolean[] shimmyGrabbed = {false, false, false, false, false};
+	private final int[] shimmyDir = {SHIMMY_S, SHIMMY_E, SHIMMY_N, SHIMMY_E, SHIMMY_SE};
+	private final boolean[] flingGrabbed = {false, false, false, false};
 	private int[] flingDir = {SHIMMY_NE, SHIMMY_SE, SHIMMY_E, SHIMMY_SE};
-	private boolean[] vineGrabbed = {false, false, false, false, false, false, false, false};
-	private int[] vineDir = {SHIMMY_E, SHIMMY_SE, SHIMMY_E, SHIMMY_E, SHIMMY_N, SHIMMY_E, SHIMMY_E, SHIMMY_NE};
+	private final boolean[] vineGrabbed = {false, false, false, false, false, false, false, false};
+	private final int[] vineDir = {SHIMMY_E, SHIMMY_SE, SHIMMY_E, SHIMMY_E, SHIMMY_N, SHIMMY_E, SHIMMY_E, SHIMMY_NE};
 
 	/**
 	 * Load the assets for this controller.
@@ -165,7 +166,7 @@ public class TutorialModeController extends GameModeController {
 		loadLevel = DEFAULT_LEVEL;
 	}
 
-	// Physics objects for the game
+	// Physics entities for the game
 	/** Reference to the character avatar */
 
 	public TutorialModeController() {
@@ -213,7 +214,7 @@ public class TutorialModeController extends GameModeController {
 	@Override
 	protected void populateLevel() {
 		super.populateLevel();
-		for(Entity e: objects) {
+		for(Entity e: entities) {
 			if(e instanceof Trunk) {
 				trunkEntities.add((Trunk)e);
 				trunkGrabbed.add(false);
@@ -272,7 +273,7 @@ public class TutorialModeController extends GameModeController {
 	 * This method contains the specific update code for this mini-game. It does
 	 * not handle collisions, as those are managed by the parent class askew.playermode.WorldController.
 	 * This method is called after input is read, but before collisions are resolved.
-	 * The very last thing that it should do is apply forces to the appropriate objects.
+	 * The very last thing that it should do is apply forces to the appropriate entities.
 	 *
 	 * @param dt Number of seconds since last animation frame
 	 */
@@ -294,8 +295,8 @@ public class TutorialModeController extends GameModeController {
 					break;
 				case STAGE_GRAB:
 					grabbedAll = trunkGrabbed.get(0);
-					for (int i = 0; i < trunkGrabbed.size(); i++) {
-						grabbedAll = trunkGrabbed.get(i) && grabbedAll;
+					for (Boolean aTrunkGrabbed : trunkGrabbed) {
+						grabbedAll = aTrunkGrabbed && grabbedAll;
 					}
 					if(inRangeSetPt+1 >= grabSetPoints.length) { break; }
 					Vector2 setpt = new Vector2(slothList.get(0).getX(),grabSetPoints[inRangeSetPt+1]);
@@ -441,7 +442,7 @@ public class TutorialModeController extends GameModeController {
 		}
 	}
 
-	public boolean checkGrabbedPt(Vector2 setpt, int dir) {
+	private boolean checkGrabbedPt(Vector2 setpt, int dir) {
 //		System.out.print("   setpt: ("+setpt.x+","+setpt.y+")   ");
 		Body rTarget, lTarget, tTarget, bTarget;
 		Vector2 rtPos, ltPos, ttPos, btPos;
@@ -494,29 +495,25 @@ public class TutorialModeController extends GameModeController {
 		return xrange && yrange;
 	}
 
-	public boolean reachedBackPt(Vector2 backpt) {
+	private boolean reachedBackPt(Vector2 backpt) {
 		try {
 			Vector2 handPos = slothList.get(0).getMostRecentlyGrabbed().getPosition();
 			Vector2 diff = handPos.cpy().sub(backpt);
 //			System.out.print("   len "+diff.len());
 //			System.out.print("   backpt: "); printVector(backpt);
 //			System.out.print("   hand: "); printVector(handPos);
-			if(diff.len() < ARMSPAN) {
-				return true;
-			}
-			else
-				return false;
+            return diff.len() < ARMSPAN;
 		} catch (NullPointerException e) {
 			return false;
 		}
 	}
 
-	public boolean inRange(Vector2 setpt) {
+	private boolean inRange(Vector2 setpt) {
 		return inRange(setpt, inRangeAllowance[currentStage-1]);
 	}
 
 	// checks if next set point is in range for changing arm help
-	public boolean inRange(Vector2 setpt, float allowance) {
+	private boolean inRange(Vector2 setpt, float allowance) {
 		Body lTarget = slothList.get(0).getLeftTarget();
 		Body rTarget = slothList.get(0).getRightTarget();
 		Body lHand = slothList.get(0).getLeftHand();
@@ -592,7 +589,7 @@ public class TutorialModeController extends GameModeController {
 		return xrange && yrange;
 	}
 
-	public void setTarget(Vine v) {
+	private void setTarget(Vine v) {
 		Obstacle sHand = slothList.get(0).getMostRecentlyGrabbed();
 		if (sHand == null) {
 			return;
@@ -618,15 +615,15 @@ public class TutorialModeController extends GameModeController {
 
 	}
 
-	public void checkCloseToCorner(Vector2 setpt, Vector2 grabpt) {
-		float xrange = (float) Math.abs(setpt.x - grabpt.x);
-		float yrange = (float) Math.abs(setpt.y - grabpt.y);
+	private void checkCloseToCorner(Vector2 setpt, Vector2 grabpt) {
+		float xrange = Math.abs(setpt.x - grabpt.x);
+		float yrange = Math.abs(setpt.y - grabpt.y);
 		if(xrange < 0.08 && yrange < 0.08) {
 			shimmyGrabbed[inRangeSetPt+1] = true;
 		}
 	}
 
-	public boolean moveToNextStage() {
+	private boolean moveToNextStage() {
 		if(currentStage == STAGE_PINNED) {
 			return (time > 1.5f && pressedA);
 		} else if (currentStage == STAGE_GRAB) {
@@ -637,7 +634,7 @@ public class TutorialModeController extends GameModeController {
 		return false;
 	}
 
-	public void drawHelpLines() {
+	private void drawHelpLines() {
 		switch (currentStage) {
 			case STAGE_PINNED:
 				break;
@@ -730,9 +727,6 @@ public class TutorialModeController extends GameModeController {
 		canvas.draw(background);
 		canvas.end();
 
-//		System.out.println("stage " + currentStage);
-		InputController input =  InputControllerManager.getInstance().getController(0);
-
 		camTrans.setToTranslation(-1 * slothList.get(0).getBody().getPosition().x * worldScale.x
 				, -1 * slothList.get(0).getBody().getPosition().y * worldScale.y);
 		camTrans.translate(canvas.getWidth()/2,canvas.getHeight()/2);
@@ -740,9 +734,10 @@ public class TutorialModeController extends GameModeController {
 				, slothList.get(0).getBody().getPosition().y * worldScale.y);
 
 		canvas.begin(camTrans);
-		Collections.sort(objects);
+		//noinspection unchecked
+		Collections.sort(entities);
 		slothList.get(0).setTutorial();
-		for(Entity obj : objects) {
+		for(Entity obj : entities) {
 			obj.setDrawScale(worldScale);
 			// if stage 2, tint trunks if already grabbed
 			if(currentStage == STAGE_GRAB && obj instanceof Trunk) {
@@ -779,11 +774,7 @@ public class TutorialModeController extends GameModeController {
 
 		if (debug) {
 			canvas.beginDebug(camTrans);
-			for(Entity obj : objects) {
-				if( obj instanceof Obstacle){
-					((Obstacle)obj).drawDebug(canvas);
-				}
-			}
+			entities.stream().filter(obj -> obj instanceof Obstacle).forEachOrdered(obj -> ((Obstacle) obj).drawDebug(canvas));
 			canvas.endDebug();
 			canvas.begin();
 			// text
