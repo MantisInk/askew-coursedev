@@ -35,10 +35,10 @@ public class EyeEntity extends BackgroundEntity{
 
     public void update(float delta, SlothModel sloth) {
         Vector2 sPos = sloth.getMainBody().getPosition();
-        float diffx = sPos.x - this.x;
+        float diffx = (sPos.x - this.x)/2;
         diffx = (diffx < -0.2) ? -0.2f : diffx;
         diffx = (diffx > 0.2) ? 0.2f : diffx;
-        float diffy = sPos.y - this.y;
+        float diffy = (sPos.y - this.y)/2;
         diffy = (diffy < -0.15) ? -0.15f : diffy;
         diffy = (diffy > 0.17) ? 0.17f : diffy;
         pupilOffset.set(diffx,diffy);

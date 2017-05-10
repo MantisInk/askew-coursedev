@@ -163,7 +163,16 @@
         "x": 6.0,
         "y": 13.0,
         "angle": -90.0,
-        "numLinks": 3.0
+        "numLinks": 4.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 13.0,
+        "y": 13.0,
+        "angle": -90.0,
+        "numLinks": 4.0
       }
     },
     {
@@ -173,15 +182,6 @@
         "y": 12.0,
         "angle": -90.0,
         "numLinks": 12.0
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.tree.Trunk",
-      "INSTANCE": {
-        "x": 14.0,
-        "y": 13.0,
-        "angle": -90.0,
-        "numLinks": 3.0
       }
     },
     {

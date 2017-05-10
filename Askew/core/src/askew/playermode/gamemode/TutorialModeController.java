@@ -257,7 +257,7 @@ public class TutorialModeController extends GameModeController {
 		swing = false;
 		back = false;
 //		ebbLvl = ebbGrabPts;
-		ebbLvl = ebbFlingUp;
+		ebbLvl = ebbGrabPts;
 		for(int i = 0; i < shimmyGrabbed.length; i++)
 			shimmyGrabbed[i] = false;
 		for(int i = 0; i < flingGrabbed.length; i++)
@@ -453,17 +453,17 @@ public class TutorialModeController extends GameModeController {
 						if(plank.getBody().getUserData() instanceof Obstacle && ((Obstacle)plank.getBody().getUserData()).isGrabbed()) {
 							ind = trunkEntities.indexOf(t);
 							trunkGrabbed.set(ind,true);
-							if(ind != 2 && ind != 4) {
+							if(ind != 2 && ind != 3) {
 								trunkGrabbed.set(2,false);
-								trunkGrabbed.set(4,false);
+								trunkGrabbed.set(3,false);
 							}
 						}
 					}
 				}
 				swing = trunkGrabbed.get(2);
-				back = trunkGrabbed.get(4);
+				back = trunkGrabbed.get(3);
 				System.out.print(swing+"   "+back+"   "+ind);
-				if((swing && ind == 4) || back && ind == 2) {
+				if((swing && ind == 3) || back && ind == 2) {
 					ebbLvl++;
 				}
 				break;
@@ -474,14 +474,14 @@ public class TutorialModeController extends GameModeController {
 							ind = trunkEntities.indexOf(t);
 							if(ind !=5) {
 								trunkGrabbed.set(2,false);
-								trunkGrabbed.set(4,false);
+								trunkGrabbed.set(3,false);
 							}
 							trunkGrabbed.set(ind,true);
 						}
 					}
 				}
 				swing = trunkGrabbed.get(2);
-				back = trunkGrabbed.get(4);
+				back = trunkGrabbed.get(3);
 				System.out.print(swing+"   "+back+"   "+ind+"   "+trunkGrabbed.get(5)+"   ");
 				if((swing && ind == 5) || back && ind == 5) {
 					ebbLvl++;
@@ -1130,7 +1130,7 @@ public class TutorialModeController extends GameModeController {
 
 	public void restart() {
 		//change back to 1
-		currentStage = 3;
+		currentStage = 1;
 	}
 
 	public void printVector(Vector2 v) {
