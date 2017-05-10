@@ -45,7 +45,7 @@ public class SlothModel extends ComplexObstacle {
      * Constants for tuning sloth behaviour
      */
     private static final float HAND_DENSITY = 10.0f;
-    private static final float BODY_MASS = 0.5903138f;
+    public static final float BODY_MASS = 0.5903138f;
     private static final boolean BODY_FIXED_ROTATION = true;
     private static final boolean HANDS_FIXED_ROTATION = true;
     /**
@@ -417,6 +417,10 @@ public class SlothModel extends ComplexObstacle {
 
     public Body getMainBody() {
         return bodies.get(0).getBody();
+    }
+
+    public Obstacle getMainObstacle() {
+        return bodies.get(0);
     }
 
     //theta is in radians between 0 and pi

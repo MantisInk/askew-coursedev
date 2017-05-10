@@ -75,12 +75,12 @@ public class GameModeController extends WorldController {
             ".wav";
     private static final float NEAR_FALL_DEATH_DISTANCE = 9;
     private static final float LOWEST_ENTITY_FALL_DEATH_THRESHOLD = 12;
-    private static final int MAX_PARTICLES = 5000;
-    private static final int INITIAL_FOG = 300;
+    private static final int MAX_PARTICLES = 0;
+    private static final int INITIAL_FOG = 0;
     /**
      * The new heavier gravity for this world (so it is not so floaty)
      */
-    private static final float DEFAULT_GRAVITY = -12.5f;//-15.7f;
+    private static final float DEFAULT_GRAVITY = -10.5f;//-15.7f;
     /**
      * Track asset loading from all instances and subclasses
      */
@@ -441,6 +441,9 @@ public class GameModeController extends WorldController {
             jointDef.localAnchorA.set(new Vector2(0, -Vine.lheight / 2));
             jointDef.collideConnected = false;
             world.createJoint(jointDef);
+
+            slothList.forEach(x->x.getMainObstacle().setMass(SlothModel
+                    .BODY_MASS/2));
         }
         for (int i = 0; i < INITIAL_FOG; i++) {
             particleController.fog(levelModel.getMaxX() - levelModel.getMinX(), levelModel.getMaxY() - levelModel.getMinY());
