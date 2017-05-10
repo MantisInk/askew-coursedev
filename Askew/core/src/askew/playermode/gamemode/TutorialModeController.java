@@ -369,7 +369,7 @@ public class TutorialModeController extends GameModeController {
 		}
 		return;
 	}
-	
+
 	public void updateSHIMMY(InputController input) {
 		if(inRangeSetPt+1 >= shimmySetPoints.length) { return; }
 		if (inRange(shimmySetPoints[inRangeSetPt+1])) {
@@ -802,11 +802,39 @@ public class TutorialModeController extends GameModeController {
 
 		InputController input =  InputControllerManager.getInstance().getController(0);
 
-		camTrans.setToTranslation(-1 * slothList.get(0).getBody().getPosition().x * worldScale.x
-				, -1 * slothList.get(0).getBody().getPosition().y * worldScale.y);
+		float slothX = slothList.stream().map(sloth->sloth.getBody().getPosition().x).reduce((x,y)->x+y).orElse(0f) / slothList.size();
+		float slothY = slothList.stream().map(sloth->sloth.getBody().getPosition().y).reduce((x,y)->x+y).orElse(0f) / slothList.size();
+
+		cameraVelocityX = cameraVelocityX * 0.4f + (slothX - cameraX) * 0.18f;
+		cameraVelocityY = cameraVelocityY * 0.4f + (slothY - cameraY) * 0.18f;
+		cameraX += cameraVelocityX;
+		cameraY +=  cameraVelocityY;
+
+		// Check for camera in bounds
+		// Y Checks
+		if (cameraY - bounds.height /2f < levelModel.getMinY()) {
+			cameraY = levelModel.getMinY() + bounds.height/2f ;
+		}
+
+		if (cameraY + bounds.height / 2f > levelModel.getMaxY()) {
+			cameraY = levelModel.getMaxY() - bounds.height/2f;
+		}
+
+		// X Checks
+		if (cameraX - bounds.width/2 < levelModel.getMinX()) {
+			cameraX = levelModel.getMinX() + bounds.width / 2f;
+		}
+
+		if (cameraX + bounds.width/2f > levelModel.getMaxX()) {
+			cameraX = levelModel.getMaxX() - bounds.width / 2f;
+		}
+
+		camTrans.setToTranslation(-1 * cameraX * worldScale.x
+				, -1 * cameraY * worldScale.y);
+
 		camTrans.translate(canvas.getWidth()/2,canvas.getHeight()/2);
-		canvas.getCampos().set( slothList.get(0).getBody().getPosition().x * worldScale.x
-				, slothList.get(0).getBody().getPosition().y * worldScale.y);
+		canvas.getCampos().set( cameraX * worldScale.x
+				, cameraY * worldScale.y);
 
 		canvas.begin(camTrans);
 		Collections.sort(objects);
