@@ -8,7 +8,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import lombok.Setter;
-import org.lwjgl.Sys;
 
 import java.util.ArrayList;
 import java.util.Collections;

@@ -306,7 +306,7 @@ public class TutorialModeController extends GameModeController {
 		super.populateLevel();
 		trunkEntities.clear();
 		vineEntities.clear();
-		for(Entity e: objects) {
+		for(Entity e: entities) {
 			if(e instanceof Trunk) {
 				trunkEntities.add((Trunk)e);
 				trunkGrabbed.add(false);
@@ -322,7 +322,7 @@ public class TutorialModeController extends GameModeController {
 		if(currentStage == STAGE_EBB){
 			Filter f = new Filter();
 			f.maskBits = FilterGroup.NOCOLLIDE;
-			for(Entity obj : objects) {
+			for(Entity obj : entities) {
 				f.categoryBits = FilterGroup.VINE;
 				if (obj instanceof Trunk) {
 					for (Obstacle plank : ((Trunk)obj).getBodies()) {
@@ -1149,9 +1149,9 @@ public class TutorialModeController extends GameModeController {
 				, cameraY * worldScale.y);
 
 		canvas.begin(camTrans);
-		Collections.sort(objects);
+		Collections.sort(entities);
 
-		for(Entity obj : objects) {
+		for(Entity obj : entities) {
 			obj.setDrawScale(worldScale);
 			// if stage 2, tint trunks if already grabbed
 			if(!(obj instanceof SlothModel)) {
@@ -1233,7 +1233,7 @@ public class TutorialModeController extends GameModeController {
 
 		if (debug) {
 			canvas.beginDebug(camTrans);
-			for(Entity obj : objects) {
+			for(Entity obj : entities) {
 				if( obj instanceof Obstacle){
 					((Obstacle)obj).drawDebug(canvas);
 				}

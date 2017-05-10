@@ -134,10 +134,10 @@ public class GameModeController extends WorldController {
 	private String selectedTrack;
 	private String lastLevel;
 	private MantisAssetManager manager;
-	private float cameraX;
-	private float cameraY;
-	private float cameraVelocityX;
-	private float cameraVelocityY;
+	protected float cameraX;
+	protected float cameraY;
+	protected float cameraVelocityX;
+	protected float cameraVelocityY;
 
 	//For playtesting control schemes
 	private int currentMovement;
@@ -232,19 +232,15 @@ public class GameModeController extends WorldController {
 	// Physics objects for the game
 	protected static OwlModel owl;
 
-	/** Mark set to handle more sophisticated collision callbacks */
-	protected ObjectSet<Fixture> sensorFixtures;
-
 	/**
 	 * Creates and initialize a new instance of the platformer game
 	 *
 	 * The game has default gravity and other settings
 	 */
 	public GameModeController() {
-		super(DEFAULT_WIDTH,DEFAULT_HEIGHT,DEFAULT_GRAVITY);
+		super(DEFAULT_GRAVITY);
 		collisions = new PhysicsController();
 		world.setContactListener(collisions);
-		sensorFixtures = new ObjectSet<Fixture>();
 		DEFAULT_LEVEL = GlobalConfiguration.getInstance().getAsString("defaultLevel");
 		MAX_LEVEL = GlobalConfiguration.getInstance().getAsInt("maxLevel");
 		loadLevel = DEFAULT_LEVEL;
@@ -299,12 +295,12 @@ public class GameModeController extends WorldController {
 
 		particleController.reset();
 		fogTime = 0;
-		for(Entity obj : objects) {
+		for(Entity obj : entities) {
 			if( (obj instanceof Obstacle))
 				((Obstacle)obj).deactivatePhysics(world);
 		}
 
-		objects.clear();
+		entities.clear();
 		world.dispose();
 		world = new World(gravity,false);
 		if(collisions == null){
@@ -377,10 +373,9 @@ public class GameModeController extends WorldController {
 	protected void populateLevel() {
 		// Are we loading a new level?
 		if (lastLevel == null || !lastLevel.equals(loadLevel)) {
-			selectedTrack = GAMEPLAY_MUSIC[(int)Math.floor(GAMEPLAY_MUSIC.length * Math.random())];
+			selectedTrack = GAMEPLAY_MUSIC[(int) Math.floor(GAMEPLAY_MUSIC.length * Math.random())];
 		}
 		lastLevel = loadLevel;
-		try {
 			levelModel = jsonLoaderSaver.loadLevel(loadLevel);
 			if (levelModel != null) {
 				background = manager.get(levelModel.getBackground(), Texture.class);
@@ -421,11 +416,11 @@ public class GameModeController extends WorldController {
 
 			if (slothId == 2) {
 				// Attach the sloths
-				Vine wtfVine = new Vine(initFlowX, initFlowY, 6, false, 90, 0, 0, false);
+				Vine wtfVine = new Vine(initFlowX, initFlowY, 90, 0, 6, 0, false);
 				wtfVine.setTextures(manager);
 				addObject(wtfVine);
-				objects.remove(wtfVine);
-				objects.add(0, wtfVine);
+				entities.remove(wtfVine);
+				entities.add(0, wtfVine);
 
 				List<Obstacle> lazy = new ArrayList<>();
 				wtfVine.getBodies().forEach(lazy::add);
@@ -444,7 +439,7 @@ public class GameModeController extends WorldController {
 				jointDef.localAnchorB.set(new Vector2(0, 0.2f));
 				jointDef.localAnchorA.set(new Vector2(0, Vine.lheight / 2));
 				jointDef.collideConnected = false;
-				Joint joint = world.createJoint(jointDef);
+				world.createJoint(jointDef);
 
 				// Definition for a revolute joint
 				jointDef = new RevoluteJointDef();
@@ -455,16 +450,12 @@ public class GameModeController extends WorldController {
 				jointDef.localAnchorB.set(new Vector2(0, 0.2f));
 				jointDef.localAnchorA.set(new Vector2(0, -Vine.lheight / 2));
 				jointDef.collideConnected = false;
-				joint = world.createJoint(jointDef);
+				world.createJoint(jointDef);
 			}
-			for(int i = 0; i < INITIAL_FOG; i++) {
-				particleController.fog(levelModel.getMaxX()-levelModel.getMinX(),levelModel.getMaxY()-levelModel.getMinY() );
+			for (int i = 0; i < INITIAL_FOG; i++) {
+				particleController.fog(levelModel.getMaxX() - levelModel.getMinX(), levelModel.getMaxY() - levelModel.getMinY());
 			}
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-		currentTime = 0f;
-
+			currentTime = 0f;
 	}
 
 	/**For drawing force lines*/

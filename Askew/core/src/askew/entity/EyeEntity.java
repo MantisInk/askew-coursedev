@@ -12,7 +12,6 @@ import com.badlogic.gdx.math.Vector2;
 public class EyeEntity extends BackgroundEntity {
 
     private transient Vector2 pupilOffset;
-    private transient TextureRegion texture2;
     private final String pathEyes = "texture/eye/eyes.png";
     private final String pathPupils = "texture/eye/pupils.png";
     private transient TextureRegion texture2;

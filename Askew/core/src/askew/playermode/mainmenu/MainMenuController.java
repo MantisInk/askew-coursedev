@@ -54,7 +54,6 @@ public class MainMenuController extends WorldController {
     // level select mode options
     private final int CHOOSE_LEVEL = 0;
     private final int RETURN_HOME = 1;
-    private int select_button = CHOOSE_LEVEL;
     private Vector2[] select_button_locs = {
             new Vector2(0.65f, 0.45f),
             new Vector2(0.65f, 0.35f)
@@ -65,9 +64,6 @@ public class MainMenuController extends WorldController {
     private final int GRAB_CONTROL = 1;
     private final int GRAPHICS_QUALITY = 2;
     private final int SETTINGS_RETURN_HOME = 3;
-    private int settings_button = CONTROL_SCHEME;
-    private boolean control = false;        // false means one arm control scheme
-    private boolean grab = false;           // false means hold to grab
     private boolean graphics = false;       // false means low graphics
     private final int NUM_SETTINGS = 3;
     private String[] settings_text = {"Control Scheme", "One Arm", "Two Arm", "Grab Scheme", "Hold to Grab", "Release to Grab", "Graphics", "Low", "High", "Main Menu"};
@@ -109,21 +105,6 @@ public class MainMenuController extends WorldController {
     private BitmapFont regina2;
 
     private Texture fern, menu1, menu2, menu;
-
-    public MainMenuController() {
-        mode = PLAY_BUTTON;
-        prevLeftUp = false;
-        prevLeftDown = false;
-        prevLeftLeft = false;
-        prevLeftRight = false;
-        leftUp = false;
-        leftDown = false;
-        leftLeft = false;
-        leftRight = false;
-        MAX_LEVEL = GlobalConfiguration.getInstance().getAsInt("maxLevel");
-        control = GlobalConfiguration.getInstance().getAsInt("flowControlMode") != 1;
-        grab = GlobalConfiguration.getInstance().getAsInt("flowMovementMode") != 1;
-    }
 
     // player selected another mode
     public void preLoadContent(MantisAssetManager manager) {

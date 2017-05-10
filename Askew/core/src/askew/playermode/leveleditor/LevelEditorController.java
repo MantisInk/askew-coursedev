@@ -161,7 +161,7 @@ public class LevelEditorController extends WorldController {
      */
     public LevelEditorController(GameModeController gmc) {
 //		super(36,18,0); I want this scale but for the sake of alpha:
-		super(DEFAULT_WIDTH,DEFAULT_HEIGHT,0);
+		super(0);
 		jsonLoaderSaver = new JSONLoaderSaver(false);
 		entityTree = new EntityTree();
 		buttons = new ButtonList();
@@ -188,12 +188,12 @@ public class LevelEditorController extends WorldController {
 		Gdx.input.setCursorCatched(false);
 		Vector2 gravity = new Vector2(world.getGravity());
 
-		for(Entity obj : objects) {
+		for(Entity obj : entities) {
 			if( (obj instanceof Obstacle))
 				((Obstacle)obj).deactivatePhysics(world);
 		}
 
-		objects.clear();
+		entities.clear();
 		buttons.clear();
 		world.dispose();
 
@@ -217,89 +217,85 @@ public class LevelEditorController extends WorldController {
 	 * Lays out the game geography.
 	 */
 	private void populateLevel() {
-		try {
 			levelModel = jsonLoaderSaver.loadLevel(currentLevel);
 			System.out.println(levelModel);
 			if (levelModel != null)
 				background = mantisAssetManager.get(levelModel.getBackground(), Texture.class);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
 
 		if (levelModel == null) {
 			levelModel = new LevelModel();
 		}
 
 		for (Entity o : levelModel.getEntities()) {
-			objects.add(o);
+			entities.add(o);
 		}
 	}
 
 	private void populateButtons(){
-		buttons.add(new Button(GUI_LEFT_BAR_MARGIN, GUI_LEFT_BAR_MARGIN,
-				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
+		buttons.add(new Button( GUI_LEFT_BAR_MARGIN,
+				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN),
 				"JSON", 0, "levelgui"));
 
-		buttons.add(new Button(GUI_LEFT_BAR_MARGIN, 3 * GUI_LEFT_BAR_MARGIN,
-				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
+		buttons.add(new Button( 3 * GUI_LEFT_BAR_MARGIN,
+				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN),
 				"JSON", 1, "globalconfig"));
 
-		buttons.add(new ToggleButton(GUI_LEFT_BAR_MARGIN, 5 * GUI_LEFT_BAR_MARGIN,
-				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
-				"LEOptions", 0, "snapping"));
+		buttons.add(new ToggleButton( 5 * GUI_LEFT_BAR_MARGIN,
+				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN),
+				 0, "snapping"));
 
-		buttons.add(new ToggleButton(GUI_LEFT_BAR_MARGIN, 7 * GUI_LEFT_BAR_MARGIN,
-				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
-				"LEOptions", 1, "move far"));
+		buttons.add(new ToggleButton( 7 * GUI_LEFT_BAR_MARGIN,
+				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN),
+				 1, "move far"));
 
-		buttons.add(new ToggleButton(GUI_LEFT_BAR_MARGIN, 9 * GUI_LEFT_BAR_MARGIN,
-				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
-				"LEOptions", 2, "drag mode"));
+		buttons.add(new ToggleButton( 9 * GUI_LEFT_BAR_MARGIN,
+				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN),
+				 2, "drag mode"));
 
-		buttons.add(new Button(GUI_LEFT_BAR_MARGIN, 11 * GUI_LEFT_BAR_MARGIN,
-				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
+		buttons.add(new Button( 11 * GUI_LEFT_BAR_MARGIN,
+				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN),
 				"Entity", 0, "edit"));
 
-		buttons.add(new Button(GUI_LEFT_BAR_MARGIN, 13 * GUI_LEFT_BAR_MARGIN,
-				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
+		buttons.add(new Button( 13 * GUI_LEFT_BAR_MARGIN,
+				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN),
 				"Entity", 1, "delete"));
 
-		buttons.add(new Button(GUI_LEFT_BAR_MARGIN, 15 * GUI_LEFT_BAR_MARGIN,
-				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
+		buttons.add(new Button( 15 * GUI_LEFT_BAR_MARGIN,
+				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN),
 				"Entity", 2, "duplicate"));
 
-		buttons.add(new Button(GUI_LEFT_BAR_MARGIN, 17 * GUI_LEFT_BAR_MARGIN,
-				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
+		buttons.add(new Button( 17 * GUI_LEFT_BAR_MARGIN,
+				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN),
 				"Entity", 5, "randomize"));
 
-		buttons.add(new Button(GUI_LEFT_BAR_MARGIN, 19 * GUI_LEFT_BAR_MARGIN,
-				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
+		buttons.add(new Button( 19 * GUI_LEFT_BAR_MARGIN,
+				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN),
 				"Entity", 3, "deselect"));
 
-		buttons.add(new Button(GUI_LEFT_BAR_MARGIN, 21 * GUI_LEFT_BAR_MARGIN,
-				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
+		buttons.add(new Button( 21 * GUI_LEFT_BAR_MARGIN,
+				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN),
 				"Entity", 4, "undo"));
 
-		buttons.add(new Button(GUI_LEFT_BAR_MARGIN, 21 * GUI_LEFT_BAR_MARGIN,
-				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
+		buttons.add(new Button( 21 * GUI_LEFT_BAR_MARGIN,
+				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN),
 				"LEOptions", 5, "debug"));
 
-		buttons.add(new Button(GUI_LEFT_BAR_MARGIN, 23 * GUI_LEFT_BAR_MARGIN,
-				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
+		buttons.add(new Button( 23 * GUI_LEFT_BAR_MARGIN,
+				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN),
 				"LEOptions", 6, "zoom in"));
 
-		buttons.add(new Button(GUI_LEFT_BAR_MARGIN, 25 * GUI_LEFT_BAR_MARGIN,
-				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
+		buttons.add(new Button( 25 * GUI_LEFT_BAR_MARGIN,
+				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN),
 				"LEOptions", 7, "zoom out"));
 
 
 		buttons.add(new MenuArrowButton(GUI_LEFT_BAR_WIDTH, 0,
 				GUI_EMARROW_WIDTH, GUI_LOWER_BAR_HEIGHT,
-				"EntityMenu", 0, "left", 0,true));
+				"EntityMenu", 0, "left", true));
 
 		buttons.add(new MenuArrowButton(canvas.getWidth()-GUI_EMARROW_WIDTH, 0,
 				GUI_EMARROW_WIDTH, GUI_LOWER_BAR_HEIGHT,
-				"EntityMenu", 0, "right", 0,false));
+				"EntityMenu", 0, "right", false));
 	}
 
 	private boolean processButtons(Button b){
@@ -356,7 +352,7 @@ public class LevelEditorController extends WorldController {
 								undoSelected = selected;
 								undoCreate = selected;
 								promptTemplate(selected);
-								objects.remove(selected);
+								entities.remove(selected);
 								selected = null;
 							}
 							dragging = false;
@@ -367,7 +363,7 @@ public class LevelEditorController extends WorldController {
 								undoSelected = selected;
 								undoCreate = selected;
 								undoDelete = null;
-								objects.remove(selected);
+								entities.remove(selected);
 								selected = null;
 							}
 							dragging = false;
@@ -392,11 +388,11 @@ public class LevelEditorController extends WorldController {
 							selected = undoSelected;
 
 							if(undoDelete != null){
-								objects.remove(undoDelete);
+								entities.remove(undoDelete);
 								undoDelete = null;
 							}
 							if(undoCreate != null){
-								objects.add(undoCreate);
+								entities.add(undoCreate);
 								undoCreate = null;
 							}
 							break;
@@ -505,7 +501,7 @@ public class LevelEditorController extends WorldController {
 	}
 
 	private void deleteEntity(Entity target){
-		objects.remove(target);
+		entities.remove(target);
 	}
 
 	public Entity entityQuery() {
@@ -513,7 +509,7 @@ public class LevelEditorController extends WorldController {
 		Entity found = null;
 		Vector2 mouse = new Vector2(adjustedMouseX, adjustedMouseY);
 		float minDistance = Float.MAX_VALUE;
-		for (Entity e : objects) {
+		for (Entity e : entities) {
 			Vector2 pos = e.getPosition();
 			if(movefar){
 				pos = e.getModifiedPosition(adjustedCxCamera,adjustedCyCamera);
@@ -701,7 +697,7 @@ public class LevelEditorController extends WorldController {
 					WallModel wm = null;
 					float bdx = 0;
 					float bdy = 0;
-					for (Entity e : objects) {
+					for (Entity e : entities) {
 						if (e instanceof WallModel) {
 							WallModel eWall = (WallModel) e;
 							float dx = (eWall.getModelX() - adjustedMouseX);
@@ -848,13 +844,13 @@ public class LevelEditorController extends WorldController {
 		// Turn the physics engine crank.
 		//world.step(WORLD_STEP,WORLD_VELOC,WORLD_POSIT);
 
-		for (Entity ent :objects){
+		for (Entity ent :entities){
 
 			if(ent instanceof Obstacle){
 				Obstacle obj  = (Obstacle)ent;
 				if (obj.isRemoved()) {
 					obj.deactivatePhysics(world);
-					objects.remove(ent);
+					entities.remove(ent);
 					continue;
 				}
 			}
