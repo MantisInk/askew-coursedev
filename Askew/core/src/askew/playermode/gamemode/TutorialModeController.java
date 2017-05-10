@@ -319,156 +319,23 @@ public class TutorialModeController extends GameModeController {
 			time = time+dt ;
 			// TODO: move sloth movement in slothmodel
 			slothList.get(0).setTutorial();
-			Vector2 set;
 			InputController input = InputControllerManager.getInstance().getController(0);
 
 			switch(currentStage) {
 				case STAGE_PINNED:
-					if(input.getLeftGrab()){
-						moveLeftArm = true;
-					} else if (input.getRightGrab()) {
-						moveLeftArm = false;
-					}
-					slothList.get(0).removeArm(moveLeftArm);
+					updatePINNED(input);
 					break;
 				case STAGE_GRAB:
-					grabbedAll = trunkGrabbed.get(0);
-					for (int i = 0; i < trunkGrabbed.size(); i++) {
-						grabbedAll = trunkGrabbed.get(i) && grabbedAll;
-					}
-					if(inRangeSetPt+1 >= grabSetPoints.length) { break; }
-					Vector2 setpt = new Vector2(slothList.get(0).getX(),grabSetPoints[inRangeSetPt+1]);
-					if (inRange(setpt)) {
-						inRangeSetPt++;
-					}
+					updateGRAB(input);
 					break;
 				case STAGE_SHIMMY:
-					if(inRangeSetPt+1 >= shimmySetPoints.length) { break; }
-					if (inRange(shimmySetPoints[inRangeSetPt+1])) {
-						inRangeSetPt++;
-					}
-					if (inRangeSetPt >= 0 && !shimmyGrabbed[inRangeSetPt]) {
-						shimmyGrabbed[inRangeSetPt] = checkGrabbedPt(shimmySetPoints[inRangeSetPt], shimmyDir[inRangeSetPt]);
-					}
+					updateSHIMMY(input);
 					break;
 				case STAGE_FLING:
-					// if done with setpoints
-//					System.out.println("\n progression "+inRangeSetPt);
-					if(inRangeSetPt+1 >= flingSetPoints.length) {
-						angleDiff = 0f;
-						targetLine = NEUTRAL;
-						break;
-					}
-					set = flingSetPoints[inRangeSetPt+1];
-					Vector2 backpt = flingLandPoints0[inRangeSetPt+1];
-					Vector2 landpt = flingLandPointsf[inRangeSetPt+1];
-					inRange(set);
-					if(inRangeSetPt+2 < flingSetPoints.length && inRange(flingSetPoints[inRangeSetPt+2])){
-						inRangeSetPt++;
-					}
-					if (inRange(flingSetPoints[inRangeSetPt+1])) {
-						// update omega
-						try {
-							omega = slothList.get(0).getMostRecentlyGrabbed().getLinearVelocity().len();
-						} catch (NullPointerException e) {
-							omega = 0;
-						}
-						// set new target to land0
-//						System.out.println("swing "+swing);
-//						System.out.print("\n  omega: "+omega);
-//						System.out.println("   thresh: "+(omega>=omega_0));
-						if ((omega_0-omega) < 0.05) {
-//							System.out.print("   back "+back);
-							if(!back) {
-								inRange(backpt);
-//								targetLine = MINUS30;
-								back = reachedBackPt(backpt);
-								count = 0;
-							}
-							else {
-								inRange(landpt);
-//								targetLine = NEUTRAL;
-								count++;
-								if (count > 120) {
-									count = 0;
-									back = false;
-									swing = false;
-								}
-							}
-						}
-						// if enough momentum, set new target to landf
-						else {
-							swing = true;
-						}
-						if(inRange(landpt)) {
-							targetLine = NEUTRAL;
-							count++;
-							if (count > 120) {
-								count = 0;
-								back = false;
-								swing = false;
-							}
-							inRangeSetPt++;
-							break;
-						}
-					}
-					if (swing && flingGrabbed[inRangeSetPt+1]) {
-						//reset
-						count = 0;
-						back = false;
-						swing = false;
-						inRangeSetPt++;
-					}
+					updateFLING(input);
 					break;
 				case STAGE_VINE:
-//					System.out.print("\n progression "+inRangeSetPt);
-					if (inRangeSetPt == -1) {
-						targetLine = EAST;
-					}
-					if (inRangeSetPt+1 > vineSetPoints.length) {
-						angleDiff = 0f;
-						targetLine = NEUTRAL;
-						break;
-					}
-//					System.out.print("   targetLINE "+targetLine);
-//					System.out.print("   setpt ");
-//					printVector(vineSetPoints[inRangeSetPt+1]);
-//					System.out.print("   grabpt ");
-//					try {
-//						printVector(sloth.getMostRecentlyGrabbed().getPosition());
-//					} catch (NullPointerException e) {
-//						printVector(new Vector2());
-//					}
-//					System.out.print("   inRange "+inRange(vineSetPoints[inRangeSetPt+1]));
-					if (inRange(vineSetPoints[inRangeSetPt+1]) && vineGrabbed[inRangeSetPt+1]) {
-						inRangeSetPt++;
-						if (!swing) {
-							ind = vineInds.indexOf(inRangeSetPt + 1);
-						}
-						if (nextSetPt) {
-							nextSetPt = false;
-							swing = false;
-						}
-					}
-//					System.out.print("   ind "+ind);
-					if (ind != -1) {
-						swing = true;
-//						ind = vineInds.indexOf(inRangeSetPt+1);
-						Vine v = vineEntities.get(ind);
-						vineSetPoints[inRangeSetPt+1] = v.getEndpt().getPosition();
-						inRange(vineSetPoints[inRangeSetPt+1]);
-						setTarget(vineEntities.get(ind));
-					}
-//					System.out.print("   swing "+swing);
-					if (!vineGrabbed[inRangeSetPt+1]) {
-						if (!swing) {
-							inRange(vineSetPoints[inRangeSetPt + 1]);
-						}
-						vineGrabbed[inRangeSetPt+1] = checkGrabbedPt(vineSetPoints[inRangeSetPt+1], vineDir[inRangeSetPt+1]);
-						if (vineGrabbed[inRangeSetPt+1]) {
-							nextSetPt = true;
-						}
-					}
+					updateVINE(input);
 					break;
 				default:
 					System.err.println(currentStage);
@@ -478,6 +345,163 @@ public class TutorialModeController extends GameModeController {
 			prevLeftGrab = slothList.get(0).isActualLeftGrab();
 			prevRightGrab = slothList.get(0).isActualRightGrab();
 		}
+	}
+
+	public void updatePINNED(InputController input) {
+		if(input.getLeftGrab()){
+			moveLeftArm = true;
+		} else if (input.getRightGrab()) {
+			moveLeftArm = false;
+		}
+		slothList.get(0).removeArm(moveLeftArm);
+		return;
+	}
+
+	public void updateGRAB(InputController input) {
+		grabbedAll = trunkGrabbed.get(0);
+		for (int i = 0; i < trunkGrabbed.size(); i++) {
+			grabbedAll = trunkGrabbed.get(i) && grabbedAll;
+		}
+		if(inRangeSetPt+1 >= grabSetPoints.length) { return; }
+		Vector2 setpt = new Vector2(slothList.get(0).getX(),grabSetPoints[inRangeSetPt+1]);
+		if (inRange(setpt)) {
+			inRangeSetPt++;
+		}
+		return;
+	}
+	
+	public void updateSHIMMY(InputController input) {
+		if(inRangeSetPt+1 >= shimmySetPoints.length) { return; }
+		if (inRange(shimmySetPoints[inRangeSetPt+1])) {
+			inRangeSetPt++;
+		}
+		if (inRangeSetPt >= 0 && !shimmyGrabbed[inRangeSetPt]) {
+			shimmyGrabbed[inRangeSetPt] = checkGrabbedPt(shimmySetPoints[inRangeSetPt], shimmyDir[inRangeSetPt]);
+		}
+		return;
+	}
+
+	public void updateFLING(InputController input) {
+		//	System.out.println("\n progression "+inRangeSetPt);
+		Vector2 set;
+		if(inRangeSetPt+1 >= flingSetPoints.length) {
+			// if done with setpoints
+			angleDiff = 0f;
+			targetLine = NEUTRAL;
+			return;
+		}
+		set = flingSetPoints[inRangeSetPt+1];
+		Vector2 backpt = flingLandPoints0[inRangeSetPt+1];
+		Vector2 landpt = flingLandPointsf[inRangeSetPt+1];
+		inRange(set);
+		if(inRangeSetPt+2 < flingSetPoints.length && inRange(flingSetPoints[inRangeSetPt+2])){
+			inRangeSetPt++;
+		}
+		if (inRange(flingSetPoints[inRangeSetPt+1])) {
+			// update omega
+			try {
+				omega = slothList.get(0).getMostRecentlyGrabbed().getLinearVelocity().len();
+			} catch (NullPointerException e) {
+				omega = 0;
+			}
+			// set new target to land0
+//						System.out.println("swing "+swing);
+//						System.out.print("\n  omega: "+omega);
+//						System.out.println("   thresh: "+(omega>=omega_0));
+			if ((omega_0-omega) < 0.05) {
+				//	System.out.print("   back "+back);
+				if(!back) {
+					inRange(backpt);
+					//	targetLine = MINUS30;
+					back = reachedBackPt(backpt);
+					count = 0;
+				}
+				else {
+					inRange(landpt);
+					//	targetLine = NEUTRAL;
+					count++;
+					if (count > 120) {
+						count = 0;
+						back = false;
+						swing = false;
+					}
+				}
+			}
+			// if enough momentum, set new target to landf
+			else {
+				swing = true;
+			}
+			if(inRange(landpt)) {
+				targetLine = NEUTRAL;
+				count++;
+				if (count > 120) {
+					count = 0;
+					back = false;
+					swing = false;
+				}
+				inRangeSetPt++;
+				return;
+			}
+		}
+		if (swing && flingGrabbed[inRangeSetPt+1]) {
+			//reset
+			count = 0;
+			back = false;
+			swing = false;
+			inRangeSetPt++;
+		}
+		return;
+	}
+
+	public void updateVINE(InputController input) {
+		//	System.out.print("\n progression "+inRangeSetPt);
+		if (inRangeSetPt == -1) {
+			targetLine = EAST;
+		}
+		if (inRangeSetPt+1 > vineSetPoints.length) {
+			angleDiff = 0f;
+			targetLine = NEUTRAL;
+			return;
+		}
+		//	System.out.print("   targetLINE "+targetLine);
+		//	System.out.print("   setpt ");
+		//	printVector(vineSetPoints[inRangeSetPt+1]);
+		//	System.out.print("   grabpt ");
+		//	try {
+		//		printVector(sloth.getMostRecentlyGrabbed().getPosition());
+		//	} catch (NullPointerException e) {
+		//		printVector(new Vector2());
+		//	}
+		//	System.out.print("   inRange "+inRange(vineSetPoints[inRangeSetPt+1]));
+		if (inRange(vineSetPoints[inRangeSetPt+1]) && vineGrabbed[inRangeSetPt+1]) {
+			inRangeSetPt++;
+			if (!swing) {
+				ind = vineInds.indexOf(inRangeSetPt + 1);
+			}
+			if (nextSetPt) {
+				nextSetPt = false;
+				swing = false;
+			}
+		}
+		//	System.out.print("   ind "+ind);
+		if (ind != -1) {
+			swing = true;
+			Vine v = vineEntities.get(ind);
+			vineSetPoints[inRangeSetPt+1] = v.getEndpt().getPosition();
+			inRange(vineSetPoints[inRangeSetPt+1]);
+			setTarget(vineEntities.get(ind));
+		}
+		//	System.out.print("   swing "+swing);
+		if (!vineGrabbed[inRangeSetPt+1]) {
+			if (!swing) {
+				inRange(vineSetPoints[inRangeSetPt + 1]);
+			}
+			vineGrabbed[inRangeSetPt+1] = checkGrabbedPt(vineSetPoints[inRangeSetPt+1], vineDir[inRangeSetPt+1]);
+			if (vineGrabbed[inRangeSetPt+1]) {
+				nextSetPt = true;
+			}
+		}
+		return;
 	}
 
 	public boolean checkGrabbedPt(Vector2 setpt, int dir) {
