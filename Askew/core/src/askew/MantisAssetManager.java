@@ -24,11 +24,12 @@ public class MantisAssetManager extends AssetManager {
     private boolean loaded;
     private boolean preloaded;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private String[] texturePaths;
 
     @Getter
-    private final Map<String,TextureRegion> processedTextureMap;
+    private final Map<String, TextureRegion> processedTextureMap;
 
     @Getter
     private TextureAtlas textureAtlas;
@@ -62,16 +63,16 @@ public class MantisAssetManager extends AssetManager {
     /**
      * (originally from WorldController)
      * Returns a newly loaded texture region for the given file.
-     *
+     * <p>
      * This helper methods is used to set texture settings (such as scaling, and
      * whether or not the texture should repeat) after loading.
      *
-     * @param file        The texture (region) file
+     * @param file The texture (region) file
      */
     private void createTexture(String file) {
         TextureRegion region = new TextureRegion(get(file, Texture.class));
         region.getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
         region.getTexture().setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
-        processedTextureMap.put(file,region);
+        processedTextureMap.put(file, region);
     }
 }

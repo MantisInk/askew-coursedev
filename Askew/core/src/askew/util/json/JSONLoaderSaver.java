@@ -9,7 +9,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.google.gson.*;
 
-import java.io.*;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Optional;
 
 @SuppressWarnings("SameParameterValue")
@@ -30,7 +31,7 @@ public class JSONLoaderSaver {
         }
     }
 
-    public LevelModel loadLevel(String levelName)  {
+    public LevelModel loadLevel(String levelName) {
         FileHandle fileHandle = Gdx.files.internal("levels/" + levelName + ".json");
         if (fileHandle.exists() && !fileHandle.isDirectory()) {
             String contents = fileHandle.readString();
@@ -90,6 +91,7 @@ public class JSONLoaderSaver {
     /**
      * Loads an arbitrary file into a generic JSON object. Note- this must be run _after_ GDX init.
      * So don't try to grab any config for the desktop loader.
+     *
      * @param assetPath the path in assets referencing the file
      * @return the JsonObject optional
      */
@@ -128,34 +130,35 @@ public class JSONLoaderSaver {
 
     /**
      * Converts a level object to the latest version by version patch functions
+     *
      * @param levelObject lol
      * @return The level's json string
      */
     private String convertLevel(JsonObject levelObject) {
-        switch(levelObject.get("levelModelVersion").getAsInt()) {
+        switch (levelObject.get("levelModelVersion").getAsInt()) {
             case 1:
-                levelObject.addProperty("levelModelVersion",2);
+                levelObject.addProperty("levelModelVersion", 2);
                 for (JsonElement ent : levelObject.getAsJsonArray("entities")) {
                     if (ent.getAsJsonObject().getAsJsonPrimitive("CLASSNAME").getAsString().equals("askew.entity.BackgroundEntity")) {
                         if (ent.getAsJsonObject().getAsJsonObject("INSTANCE").get("texturePath").getAsString().equals("texture/background/sil4.png")) {
-                            ent.getAsJsonObject().getAsJsonObject("INSTANCE").addProperty("texturePath","texture/background/BackgroundStuff/sil4.png");
+                            ent.getAsJsonObject().getAsJsonObject("INSTANCE").addProperty("texturePath", "texture/background/BackgroundStuff/sil4.png");
                         }
                         if (ent.getAsJsonObject().getAsJsonObject("INSTANCE").get("texturePath").getAsString().equals("texture/background/sil1.png")) {
-                            ent.getAsJsonObject().getAsJsonObject("INSTANCE").addProperty("texturePath","texture/background/BackgroundStuff/sil1.png");
+                            ent.getAsJsonObject().getAsJsonObject("INSTANCE").addProperty("texturePath", "texture/background/BackgroundStuff/sil1.png");
                         }
                     }
                 }
                 return convertLevel(levelObject);
             case 2:
-                levelObject.addProperty("levelModelVersion",3);
+                levelObject.addProperty("levelModelVersion", 3);
                 for (JsonElement ent : levelObject.getAsJsonArray("entities")) {
                     if (ent.getAsJsonObject().getAsJsonPrimitive("CLASSNAME").getAsString().equals("askew.entity.ghost.GhostModel")) {
                         JsonObject inst = ent.getAsJsonObject().getAsJsonObject("INSTANCE");
                         if (inst.has("patroldx")) {
-                            inst.addProperty("patroldx1",inst.get("patroldx").getAsString());
-                            inst.addProperty("patroldy1",inst.get("patroldy").getAsString());
-                            inst.addProperty("patroldx2",inst.get("x").getAsString());
-                            inst.addProperty("patroldy2",inst.get("y").getAsString());
+                            inst.addProperty("patroldx1", inst.get("patroldx").getAsString());
+                            inst.addProperty("patroldy1", inst.get("patroldy").getAsString());
+                            inst.addProperty("patroldx2", inst.get("x").getAsString());
+                            inst.addProperty("patroldy2", inst.get("y").getAsString());
                             inst.remove("patroldx");
                             inst.remove("patroldy");
                         }
@@ -163,12 +166,12 @@ public class JSONLoaderSaver {
                 }
                 return convertLevel(levelObject);
             case 3:
-                levelObject.addProperty("levelModelVersion",4);
+                levelObject.addProperty("levelModelVersion", 4);
                 for (JsonElement ent : levelObject.getAsJsonArray("entities")) {
                     if (ent.getAsJsonObject().getAsJsonPrimitive("CLASSNAME").getAsString().equals("askew.entity.vine.Vine")) {
                         JsonObject inst = ent.getAsJsonObject().getAsJsonObject("INSTANCE");
                         if (!inst.has("texture")) {
-                            inst.addProperty("texture",0);
+                            inst.addProperty("texture", 0);
                         }
                     }
                 }

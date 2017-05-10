@@ -4,7 +4,6 @@ package askew.playermode.gamemode.Particles;
 import askew.GameCanvas;
 import askew.MantisAssetManager;
 import askew.playermode.gamemode.GameModeController;
-import askew.playermode.gamemode.Particles.Particle;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
@@ -33,26 +32,26 @@ public class ParticleController {
         }
     }
 
-    public Particle[] getSorted(){
+    public Particle[] getSorted() {
         //noinspection unchecked
         Collections.sort(spawned);
         return spawned.toArray(tempArray);
     }
 
-    public int numParticles(){
+    public int numParticles() {
         return spawned.size();
     }
 
-    public void reset(){
+    public void reset() {
         int counter = 0;
-        while (counter < spawned.size()){
+        while (counter < spawned.size()) {
             Particle p = spawned.getFirst();
             unspawned.add(p);
             spawned.removeFirst();
         }
     }
 
-    public void setTextures(MantisAssetManager manager){
+    public void setTextures(MantisAssetManager manager) {
         Texture tex = manager.get(effect1_texturePath);
         effect1_texture = new TextureRegion(tex);
 
@@ -66,27 +65,26 @@ public class ParticleController {
     }
 
 
-    public void update(float delta){
-        if (gmc.isPaused()){
+    public void update(float delta) {
+        if (gmc.isPaused()) {
             return;
         }
         int counter = 0;
-        while (counter < spawned.size()){
+        while (counter < spawned.size()) {
             Particle curParticle = spawned.get(counter);
-            if(curParticle.accumulator < curParticle.deathTime){
+            if (curParticle.accumulator < curParticle.deathTime) {
                 curParticle.update(delta);
                 counter += 1;
-            }
-            else{
+            } else {
                 unspawned.add(curParticle);
                 spawned.remove(counter);
             }
         }
     }
 
-    public void draw(GameCanvas canvas, Particle p){
+    public void draw(GameCanvas canvas, Particle p) {
 
-        if(p.accumulator > 0) {
+        if (p.accumulator > 0) {
             if (p.type == 0) {
                 if (effect1_texture != null) {
                     TextureRegion tex = effect1_texture;
@@ -95,9 +93,8 @@ public class ParticleController {
                             (1.0f / tex.getRegionWidth()) * p.width * drawScale.x, (1.0f / tex.getRegionHeight() * p.height * drawScale.y),
                             1);
                 }
-            }
-            else if(p.type == 1){
-                if(fog_textures.get(p.textureNum) != null) {
+            } else if (p.type == 1) {
+                if (fog_textures.get(p.textureNum) != null) {
                     TextureRegion tex = fog_textures.get(p.textureNum);
                     canvas.drawBackgroundEntity(tex, p.tint, tex.getRegionWidth() / 2, tex.getRegionHeight() / 2,
                             p.x * drawScale.x, p.y * drawScale.y, p.depth, p.angle,
@@ -114,16 +111,16 @@ public class ParticleController {
     private TextureRegion effect1_texture;
 
 
-    public void effect1(float x, float y){
+    public void effect1(float x, float y) {
         Particle current;
-            for(int i = 0; i < effect1_num; i++){
-                if(unspawned.size() > 0) {
-                    current = unspawned.getFirst();
-                    unspawned.removeFirst();
-                    current.spawnDefault( x, y);
-                    spawned.add(current);
-                }
+        for (int i = 0; i < effect1_num; i++) {
+            if (unspawned.size() > 0) {
+                current = unspawned.getFirst();
+                unspawned.removeFirst();
+                current.spawnDefault(x, y);
+                spawned.add(current);
             }
+        }
     }
 
     private final int fog_num = 3;
@@ -132,21 +129,18 @@ public class ParticleController {
     private final ArrayList<TextureRegion> fog_textures = new ArrayList<>();
 
 
-
-    public void fog(float x, float y){
+    public void fog(float x, float y) {
         Particle current;
-        for(int i = 0; i < fog_num; i++){
-            if(unspawned.size() > 0) {
+        for (int i = 0; i < fog_num; i++) {
+            if (unspawned.size() > 0) {
                 current = unspawned.getFirst();
                 unspawned.removeFirst();
-                current.spawnFog( x, y, gmc.getBounds().getWidth(), gmc.getBounds().getHeight());
+                current.spawnFog(x, y, gmc.getBounds().getWidth(), gmc.getBounds().getHeight());
                 spawned.add(current);
             }
         }
 
     }
-
-
 
 
 }

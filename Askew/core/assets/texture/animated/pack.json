@@ -31,6 +31,10 @@
   useIndexes: true,
   limitMemory: true,
   grid: false,
-  scale: [ 1 ],
-  scaleSuffix: [ "" ]
+  scale: [
+    1
+  ],
+  scaleSuffix: [
+    ""
+  ]
 }

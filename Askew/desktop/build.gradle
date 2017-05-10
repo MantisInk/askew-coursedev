@@ -2,7 +2,7 @@ apply plugin: "java"
 
 //noinspection GroovyUnusedAssignment
 sourceCompatibility = 1.8
-sourceSets.main.java.srcDirs = [ "src/" ]
+sourceSets.main.java.srcDirs = ["src/"]
 
 project.ext.mainClassName = "physics.desktop.DesktopLauncher"
 project.ext.assetsDir = new File("../core/assets");
@@ -21,10 +21,10 @@ task dist(type: Jar) {
     from files(sourceSets.main.output.classesDir)
     //noinspection GroovyAssignabilityCheck
     from files(sourceSets.main.output.resourcesDir)
-    from {configurations.compile.collect {zipTree(it)}}
+    from { configurations.compile.collect { zipTree(it) } }
     //noinspection GroovyAssignabilityCheck
     from files(project.assetsDir);
- 
+
     manifest {
         //noinspection GroovyAssignabilityCheck
         attributes 'Main-Class': project.mainClassName
@@ -42,13 +42,13 @@ eclipse {
 }
 
 task afterEclipseImport(description: "Post processing after project generation", group: "IDE") {
-  doLast {
-    def classpath = new XmlParser().parse(file(".classpath"))
-      //noinspection GroovyResultOfObjectAllocationIgnored
-      new Node(classpath, "classpathentry", [ kind: 'src', path: 'assets' ]);
-    def writer = new FileWriter(file(".classpath"))
-    def printer = new XmlNodePrinter(new PrintWriter(writer))
-    printer.setPreserveWhitespace(true)
-    printer.print(classpath)
-  }
+    doLast {
+        def classpath = new XmlParser().parse(file(".classpath"))
+        //noinspection GroovyResultOfObjectAllocationIgnored
+        new Node(classpath, "classpathentry", [kind: 'src', path: 'assets']);
+        def writer = new FileWriter(file(".classpath"))
+        def printer = new XmlNodePrinter(new PrintWriter(writer))
+        printer.setPreserveWhitespace(true)
+        printer.print(classpath)
+    }
 }

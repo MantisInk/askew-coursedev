@@ -12,7 +12,7 @@ import java.lang.reflect.Type;
 public class EntityWrapper implements JsonSerializer<Entity>, JsonDeserializer<Entity> {
 
     private static final String CLASSNAME = "CLASSNAME";
-    private static final String INSTANCE  = "INSTANCE";
+    private static final String INSTANCE = "INSTANCE";
 
     @Setter
     private MantisAssetManager manager;
@@ -33,7 +33,7 @@ public class EntityWrapper implements JsonSerializer<Entity>, JsonDeserializer<E
 
     @Override
     public Entity deserialize(JsonElement json, Type typeOfT,
-                               JsonDeserializationContext context) throws JsonParseException  {
+                              JsonDeserializationContext context) throws JsonParseException {
         JsonObject jsonObject = json.getAsJsonObject();
         JsonPrimitive prim = (JsonPrimitive) jsonObject.get(CLASSNAME);
         String className = prim.getAsString();
@@ -41,7 +41,7 @@ public class EntityWrapper implements JsonSerializer<Entity>, JsonDeserializer<E
         // Interpret the class, construct as appropriate
         String obstacleClass = className.substring(className.lastIndexOf("."));
         JsonObject instance = jsonObject.get("INSTANCE").getAsJsonObject();
-        switch(obstacleClass) {
+        switch (obstacleClass) {
             case ".SlothModel":
                 return JsonEntityFactory.createSloth(manager, instance);
             case ".Vine":
@@ -61,9 +61,9 @@ public class EntityWrapper implements JsonSerializer<Entity>, JsonDeserializer<E
             case ".GhostModel":
                 return JsonEntityFactory.createGhost(manager, instance);
             case ".BackgroundEntity":
-                return JsonEntityFactory.createBGEntity(manager,instance);
+                return JsonEntityFactory.createBGEntity(manager, instance);
             case ".EyeEntity":
-                return JsonEntityFactory.createEyeEntity(manager,instance);
+                return JsonEntityFactory.createEyeEntity(manager, instance);
             default:
                 System.err.println("Unrecognized in wrapper: " + obstacleClass);
                 Class<?> klass;

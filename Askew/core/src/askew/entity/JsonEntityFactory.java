@@ -34,8 +34,8 @@ class JsonEntityFactory {
         // FIXME: Pretty sure this is a bug. -trevor
         Texture managedTexture = manager.get(Vine.VINE_TEXTURES[texture], Texture.class);
         //TextureRegion vineTexture = new TextureRegion(managedTexture);
-		vine = new Vine(x, y, numlinks, angle, omega, 0);
-		vine.setTextures(manager);
+        vine = new Vine(x, y, numlinks, angle, omega, 0);
+        vine.setTextures(manager);
         return vine;
     }
 
@@ -56,7 +56,7 @@ class JsonEntityFactory {
         float y = instance.get("y").getAsFloat();
         float angle = instance.get("angle").getAsFloat();
         float numlinks = instance.get("numLinks").getAsFloat();
-        poleVault = new PoleVault(x, y, numlinks, new Vector2(1,1), angle);
+        poleVault = new PoleVault(x, y, numlinks, new Vector2(1, 1), angle);
         poleVault.setTextures(manager);
         return poleVault;
     }
@@ -74,7 +74,7 @@ class JsonEntityFactory {
         float y = instance.get("y").getAsFloat();
         float stiff = instance.get("numLinks").getAsFloat();
         float angle = instance.get("angle").getAsFloat();
-        branch = new StiffBranch(x, y, stiff, new Vector2(1,1), angle);
+        branch = new StiffBranch(x, y, stiff, new Vector2(1, 1), angle);
         branch.setTextures(manager);
         return branch;
     }
@@ -93,15 +93,16 @@ class JsonEntityFactory {
         float x = instance.get("x").getAsFloat();
         float y = instance.get("y").getAsFloat();
         List<Float> points = new ArrayList<>();
-        instance.get("points").getAsJsonArray().forEach(pt->points.add(pt.getAsFloat()));
+        instance.get("points").getAsJsonArray().forEach(pt -> points.add(pt.getAsFloat()));
         Float[] arrayPoints = points.toArray(new Float[points.size()]);
         float[] copy = new float[arrayPoints.length];
         for (int i = 0; i < arrayPoints.length; i++) {
             copy[i] = arrayPoints[i];
         }
         String colorString;
-        try {colorString = instance.get("color").getAsString();}
-        catch(NullPointerException e){
+        try {
+            colorString = instance.get("color").getAsString();
+        } catch (NullPointerException e) {
             colorString = "0xffffffff";
         }
         int intColor;
@@ -117,7 +118,7 @@ class JsonEntityFactory {
                 intColor = (int) color;
             }
         }
-        wall = new WallModel(x, y, copy,intColor);
+        wall = new WallModel(x, y, copy, intColor);
         wall.setTextures(manager);
         return wall;
     }
@@ -158,8 +159,9 @@ class JsonEntityFactory {
         float scalex = instance.get("scalex").getAsFloat();
         float scaley = instance.get("scaley").getAsFloat();
         String colorString;
-        try {colorString = instance.get("color").getAsString();}
-        catch(NullPointerException e){
+        try {
+            colorString = instance.get("color").getAsString();
+        } catch (NullPointerException e) {
             colorString = "0xffffffff";
         }
         int intColor;
@@ -177,10 +179,11 @@ class JsonEntityFactory {
         }
         String tex = instance.get("texturePath").getAsString();
 
-        bge = new BackgroundEntity(x,y,width,height,depth,angle,scalex,scaley,tex,intColor);
+        bge = new BackgroundEntity(x, y, width, height, depth, angle, scalex, scaley, tex, intColor);
         bge.setTextures(manager);
         return bge;
     }
+
     public static BackgroundEntity createEyeEntity(MantisAssetManager manager, JsonObject instance) {
         EyeEntity ee;
         float x = instance.get("x").getAsFloat();
@@ -190,8 +193,9 @@ class JsonEntityFactory {
         float scalex = instance.get("scalex").getAsFloat();
         float scaley = instance.get("scaley").getAsFloat();
         String colorString;
-        try {colorString = instance.get("color").getAsString();}
-        catch(NullPointerException e){
+        try {
+            colorString = instance.get("color").getAsString();
+        } catch (NullPointerException e) {
             colorString = "0xffffffff";
         }
         int intColor;
@@ -208,7 +212,7 @@ class JsonEntityFactory {
             }
         }
 
-        ee = new EyeEntity(x,y,depth,angle,scalex,scaley,intColor);
+        ee = new EyeEntity(x, y, depth, angle, scalex, scaley, intColor);
         ee.setTextures(manager);
         return ee;
     }

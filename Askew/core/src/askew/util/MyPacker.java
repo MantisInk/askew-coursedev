@@ -3,7 +3,7 @@ package askew.util;
 import com.badlogic.gdx.tools.texturepacker.TexturePacker;
 
 class MyPacker {
-    public static void main (String[] args) throws Exception {
+    public static void main(String[] args) throws Exception {
         System.out.println("inputDir");
         String inputDir = "texture/animated";
         System.out.println("outputDir");

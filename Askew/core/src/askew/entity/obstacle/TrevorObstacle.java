@@ -1,7 +1,7 @@
 package askew.entity.obstacle;
 
-import com.badlogic.gdx.graphics.Color;
 import askew.GameCanvas;
+import com.badlogic.gdx.graphics.Color;
 
 /**
  * Box obstacle but with no collisions
@@ -18,7 +18,7 @@ public class TrevorObstacle extends BoxObstacle {
     }
 
     public TrevorObstacle(float x, float y, float width, float height, Color t) {
-        this(x,y,width,height);
+        this(x, y, width, height);
         tint = t;
 
     }
@@ -39,7 +39,7 @@ public class TrevorObstacle extends BoxObstacle {
 
     public void draw(GameCanvas canvas) {
         if (texture != null) {
-            canvas.draw(texture, tint, origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y,getAngle(),1,1);
+            canvas.draw(texture, tint, origin.x, origin.y, getX() * drawScale.x, getY() * drawScale.y, getAngle(), 1, 1);
         }
     }
 }

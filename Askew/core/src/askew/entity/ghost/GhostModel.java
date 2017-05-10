@@ -17,26 +17,34 @@ import lombok.Setter;
 /**
  * A ghost which patrols between two points and murders Flow.
  */
-public class GhostModel extends BoxObstacle  {
+public class GhostModel extends BoxObstacle {
 
     private static final float GHOST_SPEED = 1f;
     private static final float GHOST_WIDTH = 0.8f;
     private static final float GHOST_HEIGHT = GHOST_WIDTH * (523f / 290f);
 
     //JSON
-    @Getter @Setter
+    @Getter
+    @Setter
     private float x;
-    @Getter @Setter
+    @Getter
+    @Setter
     private float y;
 
-    /** Patrol points. */
-    @Getter @Setter
+    /**
+     * Patrol points.
+     */
+    @Getter
+    @Setter
     private float patroldx1;
-    @Getter @Setter
+    @Getter
+    @Setter
     private float patroldy1;
-    @Getter @Setter
+    @Getter
+    @Setter
     private float patroldx2;
-    @Getter @Setter
+    @Getter
+    @Setter
     private float patroldy2;
 
     private transient boolean secondDestination;
@@ -50,11 +58,11 @@ public class GhostModel extends BoxObstacle  {
     /**
      * Creates a new ragdoll with its head at the given position.
      *
-     * @param x  Initial x position of the ragdoll head
-     * @param y  Initial y position of the ragdoll head
+     * @param x Initial x position of the ragdoll head
+     * @param y Initial y position of the ragdoll head
      */
     public GhostModel(float x, float y, float patroldx1, float patroldy1, float patroldx2, float patroldy2) {
-        super(x,y, GHOST_WIDTH, GHOST_HEIGHT);
+        super(x, y, GHOST_WIDTH, GHOST_HEIGHT);
         this.x = x;
         this.y = y;
         this.patroldx1 = patroldx1;
@@ -74,8 +82,8 @@ public class GhostModel extends BoxObstacle  {
         elapseTime = 1;
     }
 
-    public void setPosition(float x, float y){
-        super.setPosition(x,y);
+    public void setPosition(float x, float y) {
+        super.setPosition(x, y);
         this.x = x;
         this.y = y;
     }
@@ -99,14 +107,14 @@ public class GhostModel extends BoxObstacle  {
         TextureRegion drawFrame = walkAnimation.getKeyFrame(elapseTime, true);
         if (faceRight) {
             if (!drawFrame.isFlipX())
-                drawFrame.flip(true,false);
+                drawFrame.flip(true, false);
         } else {
             if (drawFrame.isFlipX())
-                drawFrame.flip(true,false);
+                drawFrame.flip(true, false);
         }
-        canvas.draw(drawFrame, Color.WHITE, origin.x, origin.y,getPosition().x * drawScale.x,getPosition().y * drawScale.y, getAngle(),
-                (1.0f/texture.getRegionWidth()) * getWidth() * getDrawScale().x * objectScale.x,
-                (1.0f/texture.getRegionHeight() * getHeight()* getDrawScale().y * objectScale.y));
+        canvas.draw(drawFrame, Color.WHITE, origin.x, origin.y, getPosition().x * drawScale.x, getPosition().y * drawScale.y, getAngle(),
+                (1.0f / texture.getRegionWidth()) * getWidth() * getDrawScale().x * objectScale.x,
+                (1.0f / texture.getRegionHeight() * getHeight() * getDrawScale().y * objectScale.y));
 
     }
 

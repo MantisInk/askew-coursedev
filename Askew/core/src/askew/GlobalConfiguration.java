@@ -38,6 +38,7 @@ public class GlobalConfiguration {
 
     /**
      * Returns the boolean represented by a key.
+     *
      * @param key The unique key at the top level of the config.json
      * @return The object or null if it does not exist.
      */
@@ -72,7 +73,7 @@ public class GlobalConfiguration {
 
     public void setCurrentLevel(int lvl) {
         dataBlob.remove("currentLevel");
-        dataBlob.addProperty("currentLevel",lvl);
+        dataBlob.addProperty("currentLevel", lvl);
     }
 
     public void setFlowControlMode(boolean mode) {
@@ -86,8 +87,8 @@ public class GlobalConfiguration {
     public void setFlowMovementMode(boolean mode) {
         dataBlob.remove("flowMovementMode");
         if (mode)
-            dataBlob.addProperty("flowMovementMode",0);
+            dataBlob.addProperty("flowMovementMode", 0);
         else
-            dataBlob.addProperty("flowMovementMode",1);
+            dataBlob.addProperty("flowMovementMode", 1);
     }
 }

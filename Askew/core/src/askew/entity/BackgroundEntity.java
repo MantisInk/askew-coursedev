@@ -10,7 +10,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @SuppressWarnings({"WeakerAccess", "unused"})
-public class BackgroundEntity extends Entity{
+public class BackgroundEntity extends Entity {
 
     float x;
     float y;
@@ -30,26 +30,26 @@ public class BackgroundEntity extends Entity{
     @Getter
     protected transient float aspectRatio;
 
-    private final transient  Vector2 positionCache = new Vector2();
+    private final transient Vector2 positionCache = new Vector2();
     private transient Vector2 sizeCache = new Vector2();
     final transient Color tint;
 
 
     BackgroundEntity() {
-        this(0,0);
+        this(0, 0);
     }
 
-    public BackgroundEntity(float x, float y){
-        this(x,y,1,1,1.5f,0,1,1,"texture/background/fern.png",0xFFFFFFFF);
+    public BackgroundEntity(float x, float y) {
+        this(x, y, 1, 1, 1.5f, 0, 1, 1, "texture/background/fern.png", 0xFFFFFFFF);
     }
 
-    public BackgroundEntity(float x, float y, String path){
-        this(x,y,1,1,1.5f,0,1,1,path, 0xFFFFFFFF);
+    public BackgroundEntity(float x, float y, String path) {
+        this(x, y, 1, 1, 1.5f, 0, 1, 1, path, 0xFFFFFFFF);
     }
 
 
     public BackgroundEntity(float x, float y, float width, float height, float depth,
-                            float angle,  float scalex, float scaley, String path, int color){
+                            float angle, float scalex, float scaley, String path, int color) {
         this.x = x;
         this.y = y;
         this.width = width;
@@ -61,19 +61,18 @@ public class BackgroundEntity extends Entity{
         this.texturePath = path;
         this.color = color;
 
-        drawScale = new Vector2(1,1);
-        objectScale = new Vector2(1,1);
-        setObjectScale(scalex,scaley);
-        origin = new Vector2(1,1);
+        drawScale = new Vector2(1, 1);
+        objectScale = new Vector2(1, 1);
+        setObjectScale(scalex, scaley);
+        origin = new Vector2(1, 1);
         tint = new Color(color);
 
     }
 
 
-
     @Override
     public Vector2 getPosition() {
-        return positionCache.set(x,y);
+        return positionCache.set(x, y);
     }
 
     @Override
@@ -108,36 +107,36 @@ public class BackgroundEntity extends Entity{
         this.y = y;
     }
 
-    public float getDepth(){
+    public float getDepth() {
         return depth;
     }
 
-    public void setDepth(float d){
+    public void setDepth(float d) {
         depth = d;
-        setPosition(x,y);
+        setPosition(x, y);
     }
 
-    float getAngle(){
+    float getAngle() {
         return angle;
     }
 
-    public void setAngle(float rads){
+    public void setAngle(float rads) {
         angle = rads;
     }
 
-    float getWidth(){
+    float getWidth() {
         return width;
     }
 
-    public void setWidth(float w){
+    public void setWidth(float w) {
         width = w;
     }
 
-    float getHeight(){
+    float getHeight() {
         return height;
     }
 
-    public void setHeight(float h){
+    public void setHeight(float h) {
         height = h;
     }
 
@@ -154,22 +153,22 @@ public class BackgroundEntity extends Entity{
         scalex = value.x;
         scaley = value.y;
     }
-    public String getTexturePath(){
+
+    public String getTexturePath() {
         return texturePath;
     }
 
-    public void setTexturePath(String path){
+    public void setTexturePath(String path) {
         texturePath = path;
     }
-
 
 
     @Override
     public void setTextures(MantisAssetManager manager) {
         Texture tex = manager.get(texturePath);
         texture = new TextureRegion(tex);
-        origin.set(texture.getRegionWidth()/2.0f, texture.getRegionHeight()/2.0f);
-        aspectRatio =(float)tex.getWidth()/(float)tex.getHeight();
+        origin.set(texture.getRegionWidth() / 2.0f, texture.getRegionHeight() / 2.0f);
+        aspectRatio = (float) tex.getWidth() / (float) tex.getHeight();
     }
 
     @Override
@@ -184,9 +183,9 @@ public class BackgroundEntity extends Entity{
 
     void draw(GameCanvas canvas, Color tint) {
         if (texture != null) {
-            canvas.drawBackgroundEntity(texture,tint,origin.x,origin.y,getX()*drawScale.x,getY()*drawScale.y, getDepth(), getAngle(),
-                    (1.0f/texture.getRegionWidth()) *   getWidth() * getDrawScale().x * objectScale.x * aspectRatio,
-                    (1.0f/texture.getRegionHeight()  * getHeight()* getDrawScale().y * objectScale.y), 1);
+            canvas.drawBackgroundEntity(texture, tint, origin.x, origin.y, getX() * drawScale.x, getY() * drawScale.y, getDepth(), getAngle(),
+                    (1.0f / texture.getRegionWidth()) * getWidth() * getDrawScale().x * objectScale.x * aspectRatio,
+                    (1.0f / texture.getRegionHeight() * getHeight() * getDrawScale().y * objectScale.y), 1);
         }
     }
 

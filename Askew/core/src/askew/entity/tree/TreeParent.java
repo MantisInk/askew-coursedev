@@ -25,20 +25,34 @@ import com.badlogic.gdx.physics.box2d.World;
 
 /**
  * A tree trunk with planks connected by weld joints.
- *
+ * <p>
  * Note that this class returns to static loading.  That is because there are
  * no other subclasses that we might loop through.
  */
 public abstract class TreeParent extends ComplexObstacle {
 
-	static final String TRUNK_NAME = "trunk";			/** The debug name for the entire obstacle */
-	static final String PLANK_NAME = "driftwood";		/** The debug name for each plank */
-	static final float BASIC_DENSITY = 13f;				/** The density of each plank in the bridge */
-	static final float lwidth = .25f;
-	static final float lheight = 1.0f;
+    static final String TRUNK_NAME = "trunk";
+    /**
+     * The debug name for the entire obstacle
+     */
+    static final String PLANK_NAME = "driftwood";
+    /**
+     * The debug name for each plank
+     */
+    static final float BASIC_DENSITY = 13f;
+    /**
+     * The density of each plank in the bridge
+     */
+    static final float lwidth = .25f;
+    static final float lheight = 1.0f;
 
-	/** The spacing between each link */
-	protected transient Vector2 dimension;						/** The size of the entire bridge */
+    /**
+     * The spacing between each link
+     */
+    protected transient Vector2 dimension;
+    /**
+     * The size of the entire bridge
+     */
 
 //	@Getter @Setter
 //	private transient float x;
@@ -50,11 +64,24 @@ public abstract class TreeParent extends ComplexObstacle {
 //	private transient float numLinks;									// param for json constructor
 
 
-	public transient Vector2 final_norm = null;					/** coords for starting branch off this trunk */
-	public transient static final float DAMPING_ROTATION = 5f;	/** Set damping constant for joint rotation in vines */
-	protected transient Vector2 planksize;						/** The size of a single plank */
-	// TODO: Fix this from being public (refactor artifact) ?
-	private transient float spacing = 0.0f;						/** The spacing between each link */
+    public transient Vector2 final_norm = null;
+    /**
+     * coords for starting branch off this trunk
+     */
+    public transient static final float DAMPING_ROTATION = 5f;
+    /**
+     * Set damping constant for joint rotation in vines
+     */
+    protected transient Vector2 planksize;
+    /**
+     * The size of a single plank
+     */
+    // TODO: Fix this from being public (refactor artifact) ?
+    private transient float spacing = 0.0f;
+
+    /**
+     * The spacing between each link
+     */
 
 
     TreeParent(float x, float y) {
@@ -65,45 +92,44 @@ public abstract class TreeParent extends ComplexObstacle {
 //		this.angle = angle;
 //		setPosition(x,y);
 //		build();
-	}
+    }
 
-	public abstract void build();
+    public abstract void build();
 
-	public void rebuild(){
-		bodies.clear();
-		build();
-	}
+    public void rebuild() {
+        bodies.clear();
+        build();
+    }
 
-	/**
-	 * Creates the joints for this object.
-	 *
-	 * This method is executed as part of activePhysics. This is the primary method to
-	 * override for custom physics entities.
-	 *
-	 * @param world Box2D world to store joints
-	 *
-	 * @return true if object allocation succeeded
-	 */
-	protected abstract boolean createJoints(World world);
+    /**
+     * Creates the joints for this object.
+     * <p>
+     * This method is executed as part of activePhysics. This is the primary method to
+     * override for custom physics entities.
+     *
+     * @param world Box2D world to store joints
+     * @return true if object allocation succeeded
+     */
+    protected abstract boolean createJoints(World world);
 
-	/**
-	 * Returns the texture for the individual planks
-	 *
-	 * @return the texture for the individual planks
-	 */
-	public TextureRegion getTexture() {
-		if (bodies.size == 0) {
-			return null;
-		}
-		return ((BoxObstacle) bodies.get(0)).getTexture();
-	}
+    /**
+     * Returns the texture for the individual planks
+     *
+     * @return the texture for the individual planks
+     */
+    public TextureRegion getTexture() {
+        if (bodies.size == 0) {
+            return null;
+        }
+        return ((BoxObstacle) bodies.get(0)).getTexture();
+    }
 
-	@Override
-	public void setTextures(MantisAssetManager manager) {
-		Texture managedTexture = manager.get("texture/branch/branch.png", Texture.class);
-		TextureRegion regionTexture = new TextureRegion(managedTexture);
-		for(Obstacle body : bodies) {
-			((BoxObstacle)body).setTexture(regionTexture);
-		}
-	}
+    @Override
+    public void setTextures(MantisAssetManager manager) {
+        Texture managedTexture = manager.get("texture/branch/branch.png", Texture.class);
+        TextureRegion regionTexture = new TextureRegion(managedTexture);
+        for (Obstacle body : bodies) {
+            ((BoxObstacle) body).setTexture(regionTexture);
+        }
+    }
 }
