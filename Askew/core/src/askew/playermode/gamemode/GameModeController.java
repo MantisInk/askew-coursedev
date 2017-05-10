@@ -150,7 +150,7 @@ public class GameModeController extends WorldController {
 
 	protected ParticleController particleController;
 	protected static final int MAX_PARTICLES = 5000;
-	protected static final int INITIAL_FOG = 300;
+	protected static final int INITIAL_FOG = 100;
 	protected float fogTime;
 
 	/**
@@ -578,8 +578,8 @@ public class GameModeController extends WorldController {
 
 	public void printHelp(){
 		//Display waiting text if not ready
-		displayFont.setColor(Color.YELLOW);
-		canvas.drawText("Hold RB/LB \n to start!", displayFont, initFlowX * worldScale.x, initFlowY * worldScale.y + 150f);
+		//displayFont.setColor(Color.YELLOW);
+		//canvas.drawText("Hold RB/LB \n to start!", displayFont, initFlowX * worldScale.x, initFlowY * worldScale.y + 150f);
 	}
 
 	/**

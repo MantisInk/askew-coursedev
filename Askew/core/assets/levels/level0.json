@@ -8,7 +8,7 @@
   "maxY": 20.0,
   "minX": -12.0,
   "minY": 4.0,
-  "title": "The First One",
+  "title": "Follow Ebb",
   "background": "texture/background/BackgroundStuff/purple.png",
   "soundtrack": "TODO",
   "entities": [
@@ -175,23 +175,6 @@
         "scaley": 1.0,
         "texturePath": "texture/background/BackgroundStuff/zebraPlant.png",
         "color": -1
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.EyeEntity",
-      "INSTANCE": {
-        "pathEyes": "texture/eye/eyes.png",
-        "pathPupils": "texture/eye/pupils.png",
-        "x": 2.0020008,
-        "y": 14.261007,
-        "width": 1.0,
-        "height": 1.0,
-        "depth": 1.5,
-        "angle": 0.0,
-        "scalex": 2.0,
-        "scaley": 2.0,
-        "texturePath": "texture/eye/eyes.png",
-        "color": -96
       }
     },
     {

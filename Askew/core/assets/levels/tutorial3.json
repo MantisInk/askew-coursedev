@@ -1,161 +1,260 @@
 {
-  "levelModelVersion": 1,
+  "levelModelVersion": 4,
   "goalTimeGold": 30,
   "goalTimeSilver": 45,
   "goalTimeBronze": 60,
   "recordTime": 9999999.0,
-  "title": "Shimmy",
-  "background": "texture/background/background1.png",
+  "maxX": 38.0,
+  "maxY": 23.0,
+  "minX": -7.0,
+  "minY": 0.0,
+  "title": "Grabbing",
+  "background": "texture/background/BackgroundStuff/rusty.png",
   "soundtrack": "TODO",
   "entities": [
     {
       "CLASSNAME": "askew.entity.BackgroundEntity",
       "INSTANCE": {
-        "x": 18.199993,
-        "y": 9.749994,
+        "x": 14.820009,
+        "y": 14.82,
         "width": 20.0,
         "height": 20.0,
         "depth": 20.0,
         "angle": 0.0,
-        "alpha": 1.0,
         "scalex": 1.0,
         "scaley": 1.0,
-        "texturePath": "texture/background/sil4.png"
+        "texturePath": "texture/background/BackgroundStuff/sil4.png",
+        "color": 1276641535
       }
     },
     {
       "CLASSNAME": "askew.entity.BackgroundEntity",
       "INSTANCE": {
-        "x": -10.0,
-        "y": 16.499992,
+        "x": -22.099985,
+        "y": 17.524023,
         "width": 15.0,
         "height": 10.0,
         "depth": 12.0,
         "angle": 0.0,
-        "alpha": 1.0,
         "scalex": 1.0,
         "scaley": 1.0,
-        "texturePath": "texture/background/sil1.png"
+        "texturePath": "texture/background/BackgroundStuff/sil1.png",
+        "color": -1387986689
       }
     },
     {
-      "CLASSNAME": "askew.entity.tree.Trunk",
+      "CLASSNAME": "askew.entity.BackgroundEntity",
       "INSTANCE": {
-        "x": 21.519989,
-        "y": 11.999997,
-        "angle": -90.0,
-        "numLinks": 5.0
+        "x": 4.0,
+        "y": 6.0,
+        "width": 12.0,
+        "height": 12.0,
+        "depth": 6.0,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/palmTree1.png",
+        "color": -1
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": -18.563997,
+        "y": 6.2920017,
+        "width": 14.0,
+        "height": 14.0,
+        "depth": 4.0,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/foregroundtree.png",
+        "color": -1
       }
     },
     {
       "CLASSNAME": "askew.entity.owl.OwlModel",
       "INSTANCE": {
-        "x": 23.599989,
-        "y": 13.019998
+        "x": 33.0,
+        "y": 17.0
       }
     },
     {
-      "CLASSNAME": "askew.entity.tree.Trunk",
+      "CLASSNAME": "askew.entity.BackgroundEntity",
       "INSTANCE": {
-        "x": 11.959994,
-        "y": 9.059998,
+        "x": -1.8719997,
+        "y": 0.27299953,
+        "width": 6.0,
+        "height": 6.0,
+        "depth": 1.0,
         "angle": 0.0,
-        "numLinks": 5.0
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/palms.png",
+        "color": -1
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 2.1450014,
+        "y": 1.7420001,
+        "width": 6.0,
+        "height": 6.0,
+        "depth": 1.0,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/palms.png",
+        "color": -1
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": -6.538999,
+        "y": 1.1569998,
+        "width": 6.0,
+        "height": 6.0,
+        "depth": 1.0,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/palms.png",
+        "color": -1
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 6.7470007,
+        "y": 0.8579998,
+        "width": 6.0,
+        "height": 6.0,
+        "depth": 1.0,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/palms.png",
+        "color": -1
       }
     },
     {
       "CLASSNAME": "askew.entity.tree.Trunk",
       "INSTANCE": {
-        "x": 12.019994,
-        "y": 9.039998,
+        "x": 2.0,
+        "y": 11.0,
+        "angle": -90.0,
+        "numLinks": 4.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 4.0,
+        "y": 9.0,
+        "angle": 0.0,
+        "numLinks": 4.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 6.0,
+        "y": 13.0,
+        "angle": -90.0,
+        "numLinks": 4.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 13.0,
+        "y": 13.0,
+        "angle": -90.0,
+        "numLinks": 4.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 7.0,
+        "y": 12.0,
+        "angle": -90.0,
+        "numLinks": 12.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 8.0,
+        "y": 16.0,
+        "angle": -90.0,
+        "numLinks": 7.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "numLinks": 4.0,
+        "x": 16.0,
+        "y": 20.0,
+        "angle": 10.0,
+        "omega": -200.0,
+        "pin": false,
+        "texture": 0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 19.0,
+        "y": 16.0,
+        "angle": -90.0,
+        "numLinks": 4.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "numLinks": 4.0,
+        "x": 24.0,
+        "y": 20.0,
+        "angle": 10.0,
+        "omega": -200.0,
+        "pin": false,
+        "texture": 0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "numLinks": 4.0,
+        "x": 27.0,
+        "y": 20.0,
+        "angle": 10.0,
+        "omega": -200.0,
+        "pin": false,
+        "texture": 0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 29.0,
+        "y": 16.0,
         "angle": -90.0,
         "numLinks": 5.0
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.tree.Trunk",
-      "INSTANCE": {
-        "x": 16.979996,
-        "y": 14.019998,
-        "angle": -90.0,
-        "numLinks": 5.0
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.tree.Trunk",
-      "INSTANCE": {
-        "x": 16.999992,
-        "y": 8.999998,
-        "angle": 0.0,
-        "numLinks": 5.0
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.tree.Trunk",
-      "INSTANCE": {
-        "x": -3.0,
-        "y": 14.0,
-        "angle": 270.0,
-        "numLinks": 15.0
       }
     },
     {
       "CLASSNAME": "askew.entity.sloth.SlothModel",
       "INSTANCE": {
-        "x": -1.5200005,
-        "y": 13.999996,
+        "x": 2.9380007,
+        "y": 10.933008,
         "lTheta": 0.0,
         "rTheta": 0.0,
-        "setLastGrabX": false,
-        "lastGrabX": 0.0
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.tree.Trunk",
-      "INSTANCE": {
-        "x": -8.999999,
-        "y": 4.999999,
-        "angle": -90.0,
-        "numLinks": 45.0
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.tree.Trunk",
-      "INSTANCE": {
-        "x": -5.999999,
-        "y": 6.039999,
-        "angle": 0.0,
-        "numLinks": 9.0
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.BackgroundEntity",
-      "INSTANCE": {
-        "x": -2.5899997,
-        "y": 12.699991,
-        "width": 2.0,
-        "height": 2.0,
-        "depth": 0.99,
-        "angle": 0.0,
-        "alpha": 1.0,
-        "scalex": 1.0,
-        "scaley": 1.0,
-        "texturePath": "texture/background/fern.png"
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.BackgroundEntity",
-      "INSTANCE": {
-        "x": -3.3099995,
-        "y": 14.519991,
-        "width": 2.0,
-        "height": 2.0,
-        "depth": 0.99,
-        "angle": 0.0,
-        "alpha": 1.0,
-        "scalex": 1.0,
-        "scaley": 1.0,
-        "texturePath": "texture/background/fern.png"
+        "airTime": 0
       }
     }
   ]
