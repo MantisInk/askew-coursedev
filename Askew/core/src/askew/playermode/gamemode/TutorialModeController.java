@@ -256,8 +256,8 @@ public class TutorialModeController extends GameModeController {
 		ind = -1;
 		swing = false;
 		back = false;
-//		ebbLvl = ebbGrabPts;
 		ebbLvl = ebbGrabPts;
+//		ebbLvl = ebbFling;
 		for(int i = 0; i < shimmyGrabbed.length; i++)
 			shimmyGrabbed[i] = false;
 		for(int i = 0; i < flingGrabbed.length; i++)
@@ -276,6 +276,8 @@ public class TutorialModeController extends GameModeController {
 	@Override
 	protected void populateLevel() {
 		super.populateLevel();
+		trunkEntities.clear();
+		vineEntities.clear();
 		for(Entity e: objects) {
 			if(e instanceof Trunk) {
 				trunkEntities.add((Trunk)e);
@@ -1130,7 +1132,7 @@ public class TutorialModeController extends GameModeController {
 
 	public void restart() {
 		//change back to 1
-		currentStage = 1;
+		currentStage = 3;
 	}
 
 	public void printVector(Vector2 v) {
