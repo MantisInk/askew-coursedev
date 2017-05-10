@@ -159,6 +159,8 @@ public class SlothModel extends ComplexObstacle  {
     private transient boolean movingLeftArm = false;
     @Getter
     private transient Obstacle mostRecentlyGrabbed = null;
+    @Getter
+    private transient Body mostRecentTarget = null;
     private int airTime;
 
     /**
@@ -871,13 +873,15 @@ public class SlothModel extends ComplexObstacle  {
         if (leftHand) {
             leftGrabJoint = grabJoint;
             leftTarget = target;
+            mostRecentTarget = target;
         } else {
             rightGrabJoint = grabJoint;
             rightTarget = target;
+            mostRecentTarget = target;
         }
         // set data as grabbed for pinned to shade grabbed stuff
         if (target.getUserData() instanceof Obstacle) {
-            ((Obstacle)target.getUserData()).setGrabbed();
+            ((Obstacle)target.getUserData()).setGrabbed(true);
         }
 
         joints.add(grabJoint);
@@ -892,6 +896,9 @@ public class SlothModel extends ComplexObstacle  {
             leftCanGrabOrIsGrabbing = false;
             releasedEntity = true;
             leftGrabJoint = null;
+            if (leftTarget.getUserData() instanceof Obstacle) {
+                ((Obstacle)leftTarget.getUserData()).setGrabbed(false);
+            }
             leftTarget = null;
         }
         if(mostRecentlyGrabbed != null && mostRecentlyGrabbed.getBody() == getLeftHand()){
@@ -909,6 +916,9 @@ public class SlothModel extends ComplexObstacle  {
             leftCanGrabOrIsGrabbing = true;
             releasedEntity = true;
             rightGrabJoint = null;
+            if (rightTarget.getUserData() instanceof Obstacle) {
+                ((Obstacle)rightTarget.getUserData()).setGrabbed(false);
+            }
             rightTarget = null;
         }
     }

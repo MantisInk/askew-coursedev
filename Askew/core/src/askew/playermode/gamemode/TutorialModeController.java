@@ -29,6 +29,7 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
+import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -55,6 +56,7 @@ public class TutorialModeController extends GameModeController {
 	private final int STAGE_SHIMMY = 4;
 	private final int STAGE_FLING = 5;
 	private final int STAGE_VINE = 6;
+	@Getter
 	private int currentStage = STAGE_PINNED;
 	private boolean next = false;
 
@@ -93,8 +95,8 @@ public class TutorialModeController extends GameModeController {
 //	Texture container;
 
 	// list of objects for stage of tutorial
-	protected ArrayList<Trunk> trunkEntities = new ArrayList<Trunk>();
 	private ArrayList<Boolean> trunkGrabbed = new ArrayList<Boolean>();
+	protected ArrayList<Trunk> trunkEntities = new ArrayList<Trunk>();
 	protected  ArrayList<Vine> vineEntities = new ArrayList<Vine>();
 
 	// stuff for vector prediction
@@ -113,7 +115,7 @@ public class TutorialModeController extends GameModeController {
 	private boolean nextSetPt = false;
 	private int ind = -1;
 	private float omega = 0;
-	private final float omega_0 = 0.15f;
+	private float omega_0 = 0.15f;
 	private boolean swing = false;
 	private boolean back = false;
 	private float[] grabSetPoints = {14.019997f, 11.73999f, 9.399997f, 7.0199966f, 4.720001f};
@@ -150,6 +152,12 @@ public class TutorialModeController extends GameModeController {
 			new Vector2(23f, 12f), 	// vine
 			new Vector2(29f, 14f) 		// owl
 	};
+	private Vector2[] ebbSetPoints = {
+			new Vector2(2f, 11f),
+			new Vector2(4f, 9f),
+			new Vector2(6f, 11f),
+			new Vector2(4f, 13f)
+	};
 	private ArrayList<Integer> vineInds = new ArrayList<>(Arrays.asList(3,5,6));
 	// list of instructions
 	private boolean[] shimmyGrabbed = {false, false, false, false, false};
@@ -158,6 +166,19 @@ public class TutorialModeController extends GameModeController {
 	private int[] flingDir = {SHIMMY_NE, SHIMMY_SE, SHIMMY_E, SHIMMY_SE};
 	private boolean[] vineGrabbed = {false, false, false, false, false, false, false, false};
 	private int[] vineDir = {SHIMMY_E, SHIMMY_SE, SHIMMY_E, SHIMMY_E, SHIMMY_N, SHIMMY_E, SHIMMY_E, SHIMMY_NE};
+	private boolean[] ebbGrabbed = flingGrabbed; //reuse the arraylist
+
+	// stuff for follow ebb
+	private final int ebbGrabPts = 0;
+	private final int ebbFlag = 1;
+	private final int ebbFling = 2;
+	private final int ebbFlingUp = 3;
+	private final int ebbVine1 = 4;
+	private final int ebbVine2 = 5;
+	private int ebbLvl = ebbGrabPts;
+	private final int[] ebbTrunkNum = {2,2,5,6,7,8};
+	private float grabs = 0;
+
 
 	public void preLoadContent(MantisAssetManager manager) {
 		super.preLoadContent(manager);
@@ -222,15 +243,18 @@ public class TutorialModeController extends GameModeController {
 		super.reset();
 		time = 0;
 		moveLeftArm = false;
+		grabs = 0;
 		inRangeSetPt = -1;
 		targetLine = NEUTRAL;
 		angleDiff = 0f;
 		nextSetPt = false;
 		omega = 0;
+		omega_0 = 0.15f;
 		count = 0f;
 		ind = -1;
 		swing = false;
 		back = false;
+		ebbLvl = ebbGrabPts;
 		for(int i = 0; i < shimmyGrabbed.length; i++)
 			shimmyGrabbed[i] = false;
 		for(int i = 0; i < flingGrabbed.length; i++)
@@ -258,7 +282,6 @@ public class TutorialModeController extends GameModeController {
 				vineEntities.add((Vine) e);
 			}
 		}
-
 		if(currentStage == STAGE_PINNED) {
 			slothList.get(0).pin(world);
 			slothList.get(0).setPinned();
@@ -328,6 +351,8 @@ public class TutorialModeController extends GameModeController {
 				case STAGE_GRAB:
 					updateGRAB(input);
 					break;
+				case STAGE_EBB:
+					updateEBB(input, dt);
 				case STAGE_SHIMMY:
 					updateSHIMMY(input);
 					break;
@@ -366,6 +391,82 @@ public class TutorialModeController extends GameModeController {
 		Vector2 setpt = new Vector2(slothList.get(0).getX(),grabSetPoints[inRangeSetPt+1]);
 		if (inRange(setpt)) {
 			inRangeSetPt++;
+		}
+		return;
+	}
+
+	public void updateEBB(InputController input, float dt) {
+//		System.out.println("ebblvl: "+ebbLvl);
+		switch(ebbLvl) {
+			case ebbGrabPts:
+				for(int i = 0; i < ebbGrabbed.length; i++) {
+					if (!ebbGrabbed[i]) {
+						ebbGrabbed[i] = checkGrabbedPt(ebbSetPoints[i]);
+						if(ebbGrabbed[i]) {
+							grabs += 1;
+						}
+					}
+				}
+				if(grabs == 4) {
+					ebbLvl++;
+				}
+				break;
+			case ebbFlag:
+				Vector2 lhPos = slothList.get(0).getLeftHand().getPosition();
+				Vector2 rhPos = slothList.get(0).getRightHand().getPosition();
+				omega = lhPos.sub(rhPos).angle();
+				if (Math.abs(omega-omega_0) < 1 && (Math.abs(omega_0)%180 < 5 || 180-(Math.abs(omega_0)%180) < 5)) {
+					if((getSloth().getLeftTarget() == null && getSloth().getRightTarget() != null)
+							|| (getSloth().getLeftTarget() != null && getSloth().getRightTarget() == null))
+					grabs += dt;
+				} else {
+					omega_0 = omega;
+					grabs = 0;
+				}
+				if (grabs > 3) {
+					ebbLvl++;
+				}
+				System.out.print("time "+grabs+"   ");
+				break;
+			case ebbFling:
+				for(Trunk t : trunkEntities) {
+					for(Obstacle plank: t.getBodies()){
+						if(plank.getBody().getUserData() instanceof Obstacle && ((Obstacle)plank.getBody().getUserData()).isGrabbed()) {
+							ind = trunkEntities.indexOf(t);
+							trunkGrabbed.set(ind,true);
+							if(ind != 2 && ind != 4) {
+								trunkGrabbed.set(2,false);
+								trunkGrabbed.set(4,false);
+							}
+						}
+					}
+				}
+				swing = trunkGrabbed.get(2);
+				back = trunkGrabbed.get(4);
+				System.out.print(swing+"   "+back+"   "+ind);
+				if((swing && ind == 4) || back && ind == 2) {
+					ebbLvl++;
+				}
+				break;
+			case ebbFlingUp:
+				for(Trunk t : trunkEntities) {
+					for(Obstacle plank: t.getBodies()){
+						if(plank.getBody().getUserData() instanceof Obstacle && ((Obstacle)plank.getBody().getUserData()).isGrabbed()) {
+							ind = trunkEntities.indexOf(t);
+							if(ind !=5) {
+								trunkGrabbed.set(2,false);
+								trunkGrabbed.set(4,false);
+							}
+							trunkGrabbed.set(ind,true);
+						}
+					}
+				}
+				swing = trunkGrabbed.get(2);
+				back = trunkGrabbed.get(4);
+				System.out.print(swing+"   "+back+"   "+ind+"   "+trunkGrabbed.get(5)+"   ");
+				if((swing && ind == 5) || back && ind == 5) {
+					ebbLvl++;
+				}
 		}
 		return;
 	}
@@ -502,6 +603,17 @@ public class TutorialModeController extends GameModeController {
 			}
 		}
 		return;
+	}
+
+	public boolean checkGrabbedPt(Vector2 setpt) {
+		try {
+			Vector2 tPos = slothList.get(0).getMostRecentTarget().getPosition();
+			boolean xrange = Math.abs(tPos.x - setpt.x) <= 0.5;
+			boolean yrange = Math.abs(tPos.y - setpt.y) <= 0.5;
+			return xrange && yrange;
+		} catch (NullPointerException e) {
+			return false;
+		}
 	}
 
 	public boolean checkGrabbedPt(Vector2 setpt, int dir) {
@@ -850,17 +962,33 @@ public class TutorialModeController extends GameModeController {
 						trunkGrabbed.set(ind,true);
 					}
 				}
-			} else {
+			} else if (currentStage != STAGE_EBB) {
+				obj.draw(canvas);
+			} else if (!(obj instanceof Trunk || obj instanceof Vine)) {
 				obj.draw(canvas);
 			}
 		}
 
-		// trunk tinting done here
-		for (int i = 0; i <trunkEntities.size(); i++) {
-			if (trunkGrabbed.get(i)) {
-				(trunkEntities.get(i)).draw(canvas, Color.GRAY);
-			} else {
+		if(currentStage != STAGE_EBB) {
+			// trunk tinting done here
+			for (int i = 0; i < trunkEntities.size(); i++) {
+				if (trunkGrabbed.get(i)) {
+					(trunkEntities.get(i)).draw(canvas, Color.GRAY);
+				} else {
+					trunkEntities.get(i).draw(canvas);
+				}
+			}
+		} else {
+			System.out.println("ebblvl: "+ebbLvl);
+			for (int i = 0; i < ebbTrunkNum[ebbLvl]; i++) {
 				trunkEntities.get(i).draw(canvas);
+			}
+			if (ebbLvl >= ebbVine1) {
+				vineEntities.get(0).draw(canvas);
+			}
+			if (ebbLvl >= ebbVine2) {
+				vineEntities.get(1).draw(canvas);
+				vineEntities.get(2).draw(canvas);
 			}
 		}
 
@@ -919,7 +1047,7 @@ public class TutorialModeController extends GameModeController {
 
 	public void restart() {
 		//change back to 1
-		currentStage = 1;
+		currentStage = 3;
 	}
 
 	public void printVector(Vector2 v) {
