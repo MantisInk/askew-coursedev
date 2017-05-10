@@ -45,7 +45,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Gameplay specific controller for the platformer game.
+ * Gameplay specific controller for Askew.
  * <p>
  * You will notice that asset loading is not done with static methods this time.
  * Instance asset loading makes it easier to process our game modes in a loop, which
