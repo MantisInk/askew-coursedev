@@ -41,10 +41,6 @@ import com.badlogic.gdx.utils.Array;
 @SuppressWarnings("ALL")
 public abstract class ComplexObstacle extends Obstacle {
     /**
-     * A root body for this box 2d.
-     */
-    private Body body;
-    /**
      * A complex physics object has multiple bodies
      */
     protected final transient Array<Obstacle> bodies; //Changed to static to draw lines
@@ -52,8 +48,33 @@ public abstract class ComplexObstacle extends Obstacle {
      * Potential joints for connecting the multiple bodies
      */
     protected final transient Array<Joint> joints;
+    /**
+     * A root body for this box 2d.
+     */
+    private Body body;
 
     /// BodyDef Methods
+
+    /**
+     * Creates a new complex physics object at the origin.
+     */
+    protected ComplexObstacle() {
+        this(0, 0);
+    }
+
+    /**
+     * Creates a new complex physics object
+     * <p>
+     * The position is the position of the root object.
+     *
+     * @param x Initial x position in world coordinates
+     * @param y Initial y position in world coordinates
+     */
+    protected ComplexObstacle(float x, float y) {
+        super(x, y);
+        bodies = new Array<Obstacle>();
+        joints = new Array<Joint>();
+    }
 
     /**
      * Returns the body type for Box2D physics
@@ -646,6 +667,8 @@ public abstract class ComplexObstacle extends Obstacle {
         }
     }
 
+    /// FixtureDef Methods
+
     /**
      * Returns the angular damping for this body.
      * <p>
@@ -689,8 +712,6 @@ public abstract class ComplexObstacle extends Obstacle {
             super.setAngularDamping(value);
         }
     }
-
-    /// FixtureDef Methods
 
     /**
      * Sets the density of this body
@@ -759,6 +780,8 @@ public abstract class ComplexObstacle extends Obstacle {
         }
     }
 
+    /// MassData Methods
+
     /**
      * Sets whether this object is a sensor.
      * <p>
@@ -804,8 +827,6 @@ public abstract class ComplexObstacle extends Obstacle {
             }
         }
     }
-
-    /// MassData Methods
 
     /**
      * Returns the center of mass of this body
@@ -887,6 +908,8 @@ public abstract class ComplexObstacle extends Obstacle {
         return (body != null ? body.getMass() : super.getMass());
     }
 
+    /// Physics Bodies
+
     /**
      * Sets the mass of this body
      * <p>
@@ -916,8 +939,6 @@ public abstract class ComplexObstacle extends Obstacle {
             body.resetMassData();
         }
     }
-
-    /// Physics Bodies
 
     /**
      * Returns the Box2D body for this object.
@@ -953,27 +974,6 @@ public abstract class ComplexObstacle extends Obstacle {
      */
     public Iterable<Joint> getJoints() {
         return joints;
-    }
-
-    /**
-     * Creates a new complex physics object at the origin.
-     */
-    protected ComplexObstacle() {
-        this(0, 0);
-    }
-
-    /**
-     * Creates a new complex physics object
-     * <p>
-     * The position is the position of the root object.
-     *
-     * @param x Initial x position in world coordinates
-     * @param y Initial y position in world coordinates
-     */
-    protected ComplexObstacle(float x, float y) {
-        super(x, y);
-        bodies = new Array<Obstacle>();
-        joints = new Array<Joint>();
     }
 
     /**

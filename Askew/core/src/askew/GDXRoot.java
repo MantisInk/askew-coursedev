@@ -39,6 +39,10 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader;
  * and you would draw it as a root class in an architecture specification.
  */
 public class GDXRoot extends Game implements ScreenListener {
+    public static final int CON_MM = 0;
+    private static final int CON_GM = 1;
+    private static final int CON_LE = 2;
+    private static final int CON_TL = 3;
     /**
      * AssetManager to load game assets (texture, sounds, etc.)
      */
@@ -63,10 +67,6 @@ public class GDXRoot extends Game implements ScreenListener {
      * List of all WorldControllers
      */
     private WorldController[] controllers;
-    public static final int CON_MM = 0;
-    private static final int CON_GM = 1;
-    private static final int CON_LE = 2;
-    private static final int CON_TL = 3;
 
 
     /**

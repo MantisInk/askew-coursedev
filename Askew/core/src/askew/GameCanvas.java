@@ -42,81 +42,28 @@ import lombok.Setter;
 @SuppressWarnings("SameParameterValue")
 public class GameCanvas {
 
-    /**
-     * Enumeration to track which pass we are in
-     */
-    private enum DrawPass {
-        /**
-         * We are not drawing
-         */
-        INACTIVE,
-        /**
-         * We are drawing sprites
-         */
-        STANDARD,
-        /**
-         * We are drawing outlines
-         */
-        DEBUG
-    }
-
-    /**
-     * Enumeration of supported BlendStates.
-     * <p>
-     * For reasons of convenience, we do not allow user-defined blend functions.
-     * 99% of the time, we find that the following blend modes are sufficient
-     * (particularly with 2D games).
-     */
-    public enum BlendState {
-        /**
-         * Alpha blending on, assuming the colors have pre-multipled alpha (DEFAULT)
-         */
-        ALPHA_BLEND,
-        /**
-         * Alpha blending on, assuming the colors have no pre-multipled alpha
-         */
-        NO_PREMULT,
-        /**
-         * Color values are added together, causing a white-out effect
-         */
-        ADDITIVE,
-        /**
-         * Color values are draw on top of one another with no transparency support
-         */
-        OPAQUE
-    }
-
-
-    /**
-     * Drawing context to handle texture AND POLYGONS as sprites
-     */
-    private PolygonSpriteBatch spriteBatch;
-
-
+    public final BitmapFont font;
     /**
      * Rendering context for the debug outlines
      */
     private final ShapeRenderer debugRender;
-
-    /**
-     * Track whether or not we are active (for error checking)
-     */
-    private DrawPass active;
-
-    /**
-     * The current color blending mode
-     */
-    private BlendState blend;
-
     /**
      * Camera for the underlying SpriteBatch
      */
     private final OrthographicCamera camera;
-
-    public final BitmapFont font;
-
     private final ShapeRenderer shapeRenderer;
-
+    /**
+     * Drawing context to handle texture AND POLYGONS as sprites
+     */
+    private PolygonSpriteBatch spriteBatch;
+    /**
+     * Track whether or not we are active (for error checking)
+     */
+    private DrawPass active;
+    /**
+     * The current color blending mode
+     */
+    private BlendState blend;
     /**
      * Value to cache window width (if we are currently full screen)
      */
@@ -125,8 +72,6 @@ public class GameCanvas {
      * Value to cache window height (if we are currently full screen)
      */
     private int height;
-
-    // CACHE OBJECTS
     /**
      * Affine cache for current sprite to draw
      */
@@ -135,6 +80,8 @@ public class GameCanvas {
      * Affine cache for all sprites this drawing pass
      */
     private Matrix4 global;
+
+    // CACHE OBJECTS
     private Vector2 vertex;
     @Getter
     @Setter
@@ -143,7 +90,6 @@ public class GameCanvas {
      * Cache object to handle raw texture
      */
     private TextureRegion holder;
-
     /**
      * Creates a new askew.GameCanvas determined by the application configuration.
      * <p>
@@ -768,7 +714,6 @@ public class GameCanvas {
         spriteBatch.draw(region, region.getRegionWidth(), region.getRegionHeight(), local);
     }
 
-
     /**
      * Draws the polygonal region with the given transformations
      * <p>
@@ -1295,5 +1240,49 @@ public class GameCanvas {
         local.rotate(180.0f * angle / (float) Math.PI);
         local.scale(sx, sy);
         local.translate(-ox, -oy);
+    }
+
+    /**
+     * Enumeration to track which pass we are in
+     */
+    private enum DrawPass {
+        /**
+         * We are not drawing
+         */
+        INACTIVE,
+        /**
+         * We are drawing sprites
+         */
+        STANDARD,
+        /**
+         * We are drawing outlines
+         */
+        DEBUG
+    }
+
+    /**
+     * Enumeration of supported BlendStates.
+     * <p>
+     * For reasons of convenience, we do not allow user-defined blend functions.
+     * 99% of the time, we find that the following blend modes are sufficient
+     * (particularly with 2D games).
+     */
+    public enum BlendState {
+        /**
+         * Alpha blending on, assuming the colors have pre-multipled alpha (DEFAULT)
+         */
+        ALPHA_BLEND,
+        /**
+         * Alpha blending on, assuming the colors have no pre-multipled alpha
+         */
+        NO_PREMULT,
+        /**
+         * Color values are added together, causing a white-out effect
+         */
+        ADDITIVE,
+        /**
+         * Color values are draw on top of one another with no transparency support
+         */
+        OPAQUE
     }
 }

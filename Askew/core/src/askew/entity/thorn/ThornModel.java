@@ -17,6 +17,9 @@ import lombok.Setter;
  */
 public class ThornModel extends BoxObstacle {
 
+    private static final float HEIGHT = 0.5f;
+    private final float width;
+    private final float angle;
     //JSON
     @Getter
     @Setter
@@ -24,10 +27,6 @@ public class ThornModel extends BoxObstacle {
     @Getter
     @Setter
     private transient float y;
-    private final float width;
-    private final float angle;
-    private static final float HEIGHT = 0.5f;
-
     private TextureRegion wrapper;
     private float realX;
     private float realY;

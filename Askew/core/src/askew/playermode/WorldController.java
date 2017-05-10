@@ -57,45 +57,166 @@ import java.util.List;
 public abstract class WorldController implements Screen {
 
     /**
-     * Tracks the asset state.  Otherwise subclasses will try to load assets
+     * Exit code for quitting the game
      */
-    protected enum AssetState {
-        /**
-         * No assets loaded
-         */
-        EMPTY,
-        /**
-         * Still loading assets
-         */
-        LOADING,
-        /**
-         * Assets are complete
-         */
-        COMPLETE
-    }
+    public static final int EXIT_QUIT = 0;
+    public static final int EXIT_MM_GM = 1;
+    public static final int EXIT_MM_LE = 2;
+    // Pathnames to shared assets
+    public static final int EXIT_GM_MM = 3;
+    public static final int EXIT_GM_LE = 4;
+    public static final int EXIT_LE_MM = 5;
+    public static final int EXIT_LE_GM = 6;
 
+    //Loading content functions
+    public static final int EXIT_GM_GM = 7;
+    public static final int EXIT_MM_TL = 8;
+    public static final int EXIT_TL_GM = 9;
+    public static final int EXIT_TL_TL = 10;
+    private static final String FONT_FILE = "shared/ReginaFree.ttf";
+    private static final int FONT_SIZE = 56;
+    /**
+     * How many frames after winning/losing do we continue?
+     */
+    private static final int EXIT_COUNT = 120;
+    /**
+     * The amount of time for a physics engine step.
+     */
+    private static final float WORLD_STEP = 1 / 60.0f;
+    /**
+     * Number of velocity iterations for the constrain solvers
+     */
+    private static final int WORLD_VELOC = 6;
+    /**
+     * Number of position iterations for the constrain solvers
+     */
+    private static final int WORLD_POSIT = 2;
+    /**
+     * Width of the game world in Box2d units
+     */
+    private static final float DEFAULT_WIDTH = 16.0f * 1.3f;
+    /**
+     * Height of the game world in Box2d units
+     */
+    private static final float DEFAULT_HEIGHT = DEFAULT_WIDTH * (9.f / 16.f);
+    /**
+     * The default value of gravity (going down)
+     */
+    private static final float DEFAULT_GRAVITY = -4.9f;
+    /**
+     * Retro font for displaying messages
+     */
+    protected final boolean playingMusic;
+    /**
+     * Track all loaded assets (for unloading purposes)
+     */
+    private final Array<String> assets;
+    /**
+     * The font for giving messages to the player
+     */
+    protected BitmapFont displayFont;
+    /**
+     * Reference to the character avatar
+     */
+    protected List<SlothModel> slothList;
+    /**
+     * Reference to the game canvas
+     */
+    protected GameCanvas canvas;
+    /**
+     * All the entities in the world.
+     */
+    protected ArrayList<Entity> entities = new ArrayList<>();
+    /**
+     * Listener that will update the player mode when we are done
+     */
+    protected ScreenListener listener;
+    /**
+     * The Box2D world
+     */
+    protected World world;
+    /**
+     * The boundary of the world
+     */
+    @Getter
+    protected Rectangle bounds;
+    /**
+     * The world scale
+     */
+    protected Vector2 worldScale;
+    /**
+     * Whether or not debug mode is active
+     */
+    protected boolean debug;
     /**
      * Track asset loading from all instances and subclasses
      */
     private AssetState worldAssetState = AssetState.EMPTY;
     /**
-     * Track all loaded assets (for unloading purposes)
+     * Whether or not this is an active controller
      */
-    private final Array<String> assets;
-    // Pathnames to shared assets
+    private boolean active;
     /**
-     * Retro font for displaying messages
+     * Whether we have completed this level
      */
-    protected final boolean playingMusic;
-    private static final String FONT_FILE = "shared/ReginaFree.ttf";
-    private static final int FONT_SIZE = 56;
+    private boolean complete;
+    /**
+     * Whether we have failed at this world (and need a reset)
+     */
+    private boolean failed;
+    /**
+     * Countdown active for winning or losing
+     */
+    private int countdown;
 
     /**
-     * The font for giving messages to the player
+     * Creates a new game world with the default values.
+     * <p>
+     * The game world is scaled so that the screen coordinates do not agree
+     * with the Box2d coordinates.  The bounds are in terms of the Box2d
+     * world, not the screen.
      */
-    protected BitmapFont displayFont;
-
-    //Loading content functions
+    protected WorldController() {
+        this(new Rectangle(0, 0, DEFAULT_WIDTH, DEFAULT_HEIGHT),
+                new Vector2(0, DEFAULT_GRAVITY));
+    }
+    /**
+     * Creates a new game world
+     * <p>
+     * The game world is scaled so that the screen coordinates do not agree
+     * with the Box2d coordinates.  The bounds are in terms of the Box2d
+     * world, not the screen.
+     *
+     * @param gravity The downward gravity
+     */
+    protected WorldController(float gravity) {
+        this(new Rectangle(0, 0, WorldController.DEFAULT_WIDTH, WorldController.DEFAULT_HEIGHT), new Vector2(0, gravity));
+    }
+    /**
+     * Creates a new game world
+     * <p>
+     * The game world is scaled so that the screen coordinates do not agree
+     * with the Box2d coordinates.  The bounds are in terms of the Box2d
+     * world, not the screen.
+     *
+     * @param bounds  The game bounds in Box2d coordinates
+     * @param gravity The gravitational force on this Box2d world
+     */
+    private WorldController(Rectangle bounds, Vector2 gravity) {
+        // Reload global configs
+        GlobalConfiguration.update();
+        assets = new Array<>();
+        world = new World(gravity, false);
+        this.bounds = new Rectangle(bounds);
+        this.worldScale = new Vector2(1, 1);
+        complete = false;
+        failed = false;
+        debug = false;
+        active = false;
+        countdown = -1;
+        playingMusic = GlobalConfiguration.getInstance().getAsBoolean("enableMusic");
+        //System.out.println("SETTING SCALE IN CONSTRUCTOR");
+    }
 
     /**
      * Preloads the assets for this controller.
@@ -186,105 +307,6 @@ public abstract class WorldController implements Screen {
             }
         }
     }
-
-    /**
-     * Exit code for quitting the game
-     */
-    public static final int EXIT_QUIT = 0;
-    public static final int EXIT_MM_GM = 1;
-    public static final int EXIT_MM_LE = 2;
-    public static final int EXIT_GM_MM = 3;
-    public static final int EXIT_GM_LE = 4;
-    public static final int EXIT_LE_MM = 5;
-    public static final int EXIT_LE_GM = 6;
-    public static final int EXIT_GM_GM = 7;
-    public static final int EXIT_MM_TL = 8;
-    public static final int EXIT_TL_GM = 9;
-    public static final int EXIT_TL_TL = 10;
-
-    /**
-     * How many frames after winning/losing do we continue?
-     */
-    private static final int EXIT_COUNT = 120;
-
-    /**
-     * The amount of time for a physics engine step.
-     */
-    private static final float WORLD_STEP = 1 / 60.0f;
-    /**
-     * Number of velocity iterations for the constrain solvers
-     */
-    private static final int WORLD_VELOC = 6;
-    /**
-     * Number of position iterations for the constrain solvers
-     */
-    private static final int WORLD_POSIT = 2;
-
-    /**
-     * Width of the game world in Box2d units
-     */
-    private static final float DEFAULT_WIDTH = 16.0f * 1.3f;
-    /**
-     * Height of the game world in Box2d units
-     */
-    private static final float DEFAULT_HEIGHT = DEFAULT_WIDTH * (9.f / 16.f);
-    /**
-     * The default value of gravity (going down)
-     */
-    private static final float DEFAULT_GRAVITY = -4.9f;
-
-    /**
-     * Reference to the character avatar
-     */
-    protected List<SlothModel> slothList;
-
-    /**
-     * Reference to the game canvas
-     */
-    protected GameCanvas canvas;
-    /**
-     * All the entities in the world.
-     */
-    protected ArrayList<Entity> entities = new ArrayList<>();
-    /**
-     * Listener that will update the player mode when we are done
-     */
-    protected ScreenListener listener;
-
-    /**
-     * The Box2D world
-     */
-    protected World world;
-    /**
-     * The boundary of the world
-     */
-    @Getter
-    protected Rectangle bounds;
-    /**
-     * The world scale
-     */
-    protected Vector2 worldScale;
-
-    /**
-     * Whether or not this is an active controller
-     */
-    private boolean active;
-    /**
-     * Whether we have completed this level
-     */
-    private boolean complete;
-    /**
-     * Whether we have failed at this world (and need a reset)
-     */
-    private boolean failed;
-    /**
-     * Whether or not debug mode is active
-     */
-    protected boolean debug;
-    /**
-     * Countdown active for winning or losing
-     */
-    private int countdown;
 
     /**
      * Returns true if debug mode is active.
@@ -393,57 +415,6 @@ public abstract class WorldController implements Screen {
     }
 
     /**
-     * Creates a new game world with the default values.
-     * <p>
-     * The game world is scaled so that the screen coordinates do not agree
-     * with the Box2d coordinates.  The bounds are in terms of the Box2d
-     * world, not the screen.
-     */
-    protected WorldController() {
-        this(new Rectangle(0, 0, DEFAULT_WIDTH, DEFAULT_HEIGHT),
-                new Vector2(0, DEFAULT_GRAVITY));
-    }
-
-    /**
-     * Creates a new game world
-     * <p>
-     * The game world is scaled so that the screen coordinates do not agree
-     * with the Box2d coordinates.  The bounds are in terms of the Box2d
-     * world, not the screen.
-     *
-     * @param gravity The downward gravity
-     */
-    protected WorldController(float gravity) {
-        this(new Rectangle(0, 0, WorldController.DEFAULT_WIDTH, WorldController.DEFAULT_HEIGHT), new Vector2(0, gravity));
-    }
-
-    /**
-     * Creates a new game world
-     * <p>
-     * The game world is scaled so that the screen coordinates do not agree
-     * with the Box2d coordinates.  The bounds are in terms of the Box2d
-     * world, not the screen.
-     *
-     * @param bounds  The game bounds in Box2d coordinates
-     * @param gravity The gravitational force on this Box2d world
-     */
-    private WorldController(Rectangle bounds, Vector2 gravity) {
-        // Reload global configs
-        GlobalConfiguration.update();
-        assets = new Array<>();
-        world = new World(gravity, false);
-        this.bounds = new Rectangle(bounds);
-        this.worldScale = new Vector2(1, 1);
-        complete = false;
-        failed = false;
-        debug = false;
-        active = false;
-        countdown = -1;
-        playingMusic = GlobalConfiguration.getInstance().getAsBoolean("enableMusic");
-        //System.out.println("SETTING SCALE IN CONSTRUCTOR");
-    }
-
-    /**
      * Dispose of all (non-static) resources allocated to this mode.
      */
     public void dispose() {
@@ -456,7 +427,6 @@ public abstract class WorldController implements Screen {
         world = null;
         canvas = null;
     }
-
 
     /**
      * Immediately adds the object to the physics world
@@ -732,6 +702,24 @@ public abstract class WorldController implements Screen {
      */
     public void setScreenListener(ScreenListener listener) {
         this.listener = listener;
+    }
+
+    /**
+     * Tracks the asset state.  Otherwise subclasses will try to load assets
+     */
+    protected enum AssetState {
+        /**
+         * No assets loaded
+         */
+        EMPTY,
+        /**
+         * Still loading assets
+         */
+        LOADING,
+        /**
+         * Assets are complete
+         */
+        COMPLETE
     }
 
 }

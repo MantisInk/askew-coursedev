@@ -32,42 +32,6 @@ public class CapsuleObstacle extends SimpleObstacle {
      * Epsilon factor to prevent issues with the fixture seams
      */
     private static final float DEFAULT_EPSILON = 0.01f;
-
-    @Override
-    public void setTextures(MantisAssetManager manager) {
-        // Do nothing
-    }
-
-    /**
-     * Enum to specify the capsule orientiation
-     */
-    public enum Orientation {
-        /**
-         * A half-capsule with a rounded end at the top
-         */
-        TOP,
-        /**
-         * A full capsule with a rounded ends at the top and bottom
-         */
-        VERTICAL,
-        /**
-         * A half-capsule with a rounded end at the bottom
-         */
-        BOTTOM,
-        /**
-         * A half-capsule with a rounded end at the left
-         */
-        LEFT,
-        /**
-         * A full capsule with a rounded ends at the left and right
-         */
-        HORIZONTAL,
-        /**
-         * A half-capsule with a rounded end at the right
-         */
-        RIGHT
-    }
-
     /**
      * Shape information for this box
      */
@@ -84,7 +48,6 @@ public class CapsuleObstacle extends SimpleObstacle {
      * Rectangle representation of capsule core for fast computation
      */
     private final Rectangle center;
-
     /**
      * The width and height of the box
      */
@@ -93,6 +56,14 @@ public class CapsuleObstacle extends SimpleObstacle {
      * A cache value for when the user wants to access the dimensions
      */
     private final Vector2 sizeCache;
+    /**
+     * Cache of the polygon vertices (for resizing)
+     */
+    private final float[] vertices;
+    /**
+     * A cache value for computing fixtures
+     */
+    private final Vector2 posCache = new Vector2();
     /**
      * A cache value for the center fixture (for resizing)
      */
@@ -110,18 +81,85 @@ public class CapsuleObstacle extends SimpleObstacle {
      */
     private Orientation orient;
     /**
-     * Cache of the polygon vertices (for resizing)
-     */
-    private final float[] vertices;
-
-    /**
-     * A cache value for computing fixtures
-     */
-    private final Vector2 posCache = new Vector2();
-    /**
      * The seam offset of the core rectangle
      */
     private float seamEpsilon;
+
+    /**
+     * Creates a new box at the origin.
+     * <p>
+     * The orientation of the capsule will be a full capsule along the
+     * major axis.  If width == height, it will default to a vertical
+     * orientation.
+     * <p>
+     * The size is expressed in physics units NOT pixels.  In order for
+     * drawing to work properly, you MUST set the drawScale. The drawScale
+     * converts the physics units to pixels.
+     *
+     * @param width  The object width in physics units
+     * @param height The object width in physics units
+     */
+    public CapsuleObstacle(float width, float height) {
+        this(0, 0, width, height,
+                (width > height ? Orientation.HORIZONTAL : Orientation.VERTICAL));
+    }
+    /**
+     * Creates a new capsule object.
+     * <p>
+     * The orientation of the capsule will be a full capsule along the
+     * major axis.  If width == height, it will default to a vertical
+     * orientation.
+     * <p>
+     * The size is expressed in physics units NOT pixels.  In order for
+     * drawing to work properly, you MUST set the drawScale. The drawScale
+     * converts the physics units to pixels.
+     *
+     * @param x      Initial x position of the box center
+     * @param y      Initial y position of the box center
+     * @param width  The object width in physics units
+     * @param height The object width in physics units
+     */
+    public CapsuleObstacle(float x, float y, float width, float height) {
+        this(x, y, width, height,
+                (width > height ? Orientation.HORIZONTAL : Orientation.VERTICAL));
+    }
+
+    /**
+     * Creates a new capsule object width the given orientation.
+     * <p>
+     * The size is expressed in physics units NOT pixels.  In order for
+     * drawing to work properly, you MUST set the drawScale. The drawScale
+     * converts the physics units to pixels.
+     *
+     * @param x      Initial x position of the box center
+     * @param y      Initial y position of the box center
+     * @param width  The object width in physics units
+     * @param height The object width in physics units
+     */
+    private CapsuleObstacle(float x, float y, float width, float height, Orientation o) {
+        super(x, y);
+        dimension = new Vector2();
+        sizeCache = new Vector2();
+        shape = new PolygonShape();
+        end1 = new CircleShape();
+        end2 = new CircleShape();
+        center = new Rectangle();
+        vertices = new float[8];
+
+        core = null;
+        cap1 = null;
+        cap2 = null;
+        orient = o;
+        seamEpsilon = DEFAULT_EPSILON;
+
+        // Initialize
+        resize(width, height);
+    }
+
+    @Override
+    public void setTextures(MantisAssetManager manager) {
+        // Do nothing
+    }
 
     /**
      * Returns the dimensions of this box
@@ -236,21 +274,6 @@ public class CapsuleObstacle extends SimpleObstacle {
     }
 
     /**
-     * Sets the seam offset of the core rectangle
-     * <p>
-     * If the center rectangle is exactly the same size as the circle radius,
-     * you may get catching at the seems.  To prevent this, you should make
-     * the center rectangle epsilon narrower so that everything rolls off the
-     * round shape. This parameter is that epsilon value
-     *
-     * @parm value the seam offset of the core rectangle
-     */
-    public void setSeamOffset(float value) {
-        seamEpsilon = value;
-        markDirty(true);
-    }
-
-    /**
      * Returns the seam offset of the core rectangle
      * <p>
      * If the center rectangle is exactly the same size as the circle radius,
@@ -265,75 +288,18 @@ public class CapsuleObstacle extends SimpleObstacle {
     }
 
     /**
-     * Creates a new box at the origin.
+     * Sets the seam offset of the core rectangle
      * <p>
-     * The orientation of the capsule will be a full capsule along the
-     * major axis.  If width == height, it will default to a vertical
-     * orientation.
-     * <p>
-     * The size is expressed in physics units NOT pixels.  In order for
-     * drawing to work properly, you MUST set the drawScale. The drawScale
-     * converts the physics units to pixels.
+     * If the center rectangle is exactly the same size as the circle radius,
+     * you may get catching at the seems.  To prevent this, you should make
+     * the center rectangle epsilon narrower so that everything rolls off the
+     * round shape. This parameter is that epsilon value
      *
-     * @param width  The object width in physics units
-     * @param height The object width in physics units
+     * @parm value the seam offset of the core rectangle
      */
-    public CapsuleObstacle(float width, float height) {
-        this(0, 0, width, height,
-                (width > height ? Orientation.HORIZONTAL : Orientation.VERTICAL));
-    }
-
-    /**
-     * Creates a new capsule object.
-     * <p>
-     * The orientation of the capsule will be a full capsule along the
-     * major axis.  If width == height, it will default to a vertical
-     * orientation.
-     * <p>
-     * The size is expressed in physics units NOT pixels.  In order for
-     * drawing to work properly, you MUST set the drawScale. The drawScale
-     * converts the physics units to pixels.
-     *
-     * @param x      Initial x position of the box center
-     * @param y      Initial y position of the box center
-     * @param width  The object width in physics units
-     * @param height The object width in physics units
-     */
-    public CapsuleObstacle(float x, float y, float width, float height) {
-        this(x, y, width, height,
-                (width > height ? Orientation.HORIZONTAL : Orientation.VERTICAL));
-    }
-
-    /**
-     * Creates a new capsule object width the given orientation.
-     * <p>
-     * The size is expressed in physics units NOT pixels.  In order for
-     * drawing to work properly, you MUST set the drawScale. The drawScale
-     * converts the physics units to pixels.
-     *
-     * @param x      Initial x position of the box center
-     * @param y      Initial y position of the box center
-     * @param width  The object width in physics units
-     * @param height The object width in physics units
-     */
-    private CapsuleObstacle(float x, float y, float width, float height, Orientation o) {
-        super(x, y);
-        dimension = new Vector2();
-        sizeCache = new Vector2();
-        shape = new PolygonShape();
-        end1 = new CircleShape();
-        end2 = new CircleShape();
-        center = new Rectangle();
-        vertices = new float[8];
-
-        core = null;
-        cap1 = null;
-        cap2 = null;
-        orient = o;
-        seamEpsilon = DEFAULT_EPSILON;
-
-        // Initialize
-        resize(width, height);
+    public void setSeamOffset(float value) {
+        seamEpsilon = value;
+        markDirty(true);
     }
 
     /**
@@ -409,7 +375,6 @@ public class CapsuleObstacle extends SimpleObstacle {
         end1.setRadius(r);
         end2.setRadius(r);
     }
-
 
     /**
      * Sets the density of this body
@@ -563,6 +528,36 @@ public class CapsuleObstacle extends SimpleObstacle {
             }
             canvas.drawPhysics(end2, Color.YELLOW, getX() + dx, getY() + dy, drawScale.x, drawScale.y);
         }
+    }
+
+    /**
+     * Enum to specify the capsule orientiation
+     */
+    public enum Orientation {
+        /**
+         * A half-capsule with a rounded end at the top
+         */
+        TOP,
+        /**
+         * A full capsule with a rounded ends at the top and bottom
+         */
+        VERTICAL,
+        /**
+         * A half-capsule with a rounded end at the bottom
+         */
+        BOTTOM,
+        /**
+         * A half-capsule with a rounded end at the left
+         */
+        LEFT,
+        /**
+         * A full capsule with a rounded ends at the left and right
+         */
+        HORIZONTAL,
+        /**
+         * A half-capsule with a rounded end at the right
+         */
+        RIGHT
     }
 
 }

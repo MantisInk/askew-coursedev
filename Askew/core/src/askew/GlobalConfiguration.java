@@ -15,6 +15,10 @@ public class GlobalConfiguration {
 
     private JsonObject dataBlob;
 
+    private GlobalConfiguration() {
+        dataBlob = new JsonObject();
+    }
+
     public static GlobalConfiguration getInstance() {
         if (instance == null) {
             update();
@@ -30,10 +34,6 @@ public class GlobalConfiguration {
         JsonObject newBlob = JSONLoaderSaver.loadArbitrary(CONFIG_PATH).orElseThrow(RuntimeException::new);
         instance = new GlobalConfiguration();
         instance.dataBlob = newBlob;
-    }
-
-    private GlobalConfiguration() {
-        dataBlob = new JsonObject();
     }
 
     /**

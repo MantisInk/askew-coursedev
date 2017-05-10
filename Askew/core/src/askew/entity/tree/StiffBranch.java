@@ -35,6 +35,10 @@ import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 public class StiffBranch extends TreeParent {
 
     /**
+     * Set damping constant for joint rotation in vines
+     */
+    public static final float DAMPING_ROTATION = 5f;
+    /**
      * The debug name for the entire obstacle
      */
     private static final String BRANCH_NAME = "branch";
@@ -50,22 +54,26 @@ public class StiffBranch extends TreeParent {
      * lower limit of rotation in radians
      */
     private static final float LOWER_LIMIT = 0 - (float) Math.PI / 3;
+
+    // Invisible anchor entities
     /**
      * upper limit of rotation in radians
      */
     private static final float UPPER_LIMIT = (float) Math.PI / 3;
+    /**
+     * The starting angle of the branch (within joint limit)
+     */
+    private final float angle;
 
-    // Invisible anchor entities
+    // Dimension information
+    /**
+     * The number of planks in the branch
+     */
+    private final float numLinks;
     /**
      * The bottom pin of the branch (rotation pt)
      */
     private transient WheelObstacle start = null;
-    /**
-     * Set damping constant for joint rotation in vines
-     */
-    public static final float DAMPING_ROTATION = 5f;
-
-    // Dimension information
     /**
      * The size of the entire bridge
      */
@@ -82,15 +90,6 @@ public class StiffBranch extends TreeParent {
      * The spacing between each link
      */
     private transient float spacing = 0.0f;
-
-    /**
-     * The starting angle of the branch (within joint limit)
-     */
-    private final float angle;
-    /**
-     * The number of planks in the branch
-     */
-    private final float numLinks;
     /**
      * The starting coords (bottom) of the branch
      */

@@ -40,6 +40,7 @@ import lombok.Getter;
 @SuppressWarnings("WeakerAccess")
 public abstract class Obstacle extends Entity {
     /// Initialization structures to store body information
+    protected final transient Vector2 customScale;
     /**
      * Stores the body information for this shape
      */
@@ -53,30 +54,10 @@ public abstract class Obstacle extends Entity {
      */
     final transient MassData massdata;
     /**
-     * Whether or not to use the custom mass data
-     */
-    transient boolean masseffect;
-    /**
-     * A tag for debugging purposes
-     */
-    private transient String nametag;
-    /// Track garbage collection status
-    /**
-     * Whether the object should be removed from the world on next pass
-     */
-    private transient boolean toRemove;
-    /**
-     * Whether the object has changed shape and needs a new fixture
-     */
-    private transient boolean isDirty;
-
-    protected final transient Vector2 customScale;
-
-    /// Caching entities
-    /**
      * A cache value for when the user wants to access the body position
      */
     final transient Vector2 positionCache = new Vector2();
+    /// Track garbage collection status
     /**
      * A cache value for when the user wants to access the linear velocity
      */
@@ -85,9 +66,68 @@ public abstract class Obstacle extends Entity {
      * A cache value for when the user wants to access the center of mass
      */
     private final transient Vector2 centroidCache = new Vector2();
+    /**
+     * Whether or not to use the custom mass data
+     */
+    transient boolean masseffect;
+
+    /// Caching entities
+    /**
+     * A tag for debugging purposes
+     */
+    private transient String nametag;
+    /**
+     * Whether the object should be removed from the world on next pass
+     */
+    private transient boolean toRemove;
+    /**
+     * Whether the object has changed shape and needs a new fixture
+     */
+    private transient boolean isDirty;
     @Getter
     private transient boolean grabbed;
     /// BodyDef Methods
+
+    /**
+     * Create a new physics object at the origin.
+     */
+    Obstacle() {
+        this(0, 0);
+    }
+
+    /**
+     * Create a new physics object
+     *
+     * @param x Initial x position in world coordinates
+     * @param y Initial y position in world coordinates
+     */
+    Obstacle(float x, float y) {
+        // Object has yet to be deactivated
+        toRemove = false;
+
+        // Allocate the body information
+        bodyinfo = new BodyDef();
+        bodyinfo.awake = true;
+        bodyinfo.allowSleep = true;
+        bodyinfo.gravityScale = 1.0f;
+        bodyinfo.position.set(x, y);
+        bodyinfo.fixedRotation = false;
+        // Objects are physics entities unless otherwise noted
+        bodyinfo.type = BodyType.DynamicBody;
+
+        // Allocate the fixture information
+        // Default values are okay
+        fixture = new FixtureDef();
+
+        // Allocate the mass information, but turn it off
+        masseffect = false;
+        massdata = new MassData();
+
+        // Set the default drawing scale
+        drawScale = new Vector2(1, 1);
+        objectScale = new Vector2(1, 1);
+        customScale = new Vector2(1, 1);
+    }
 
     /**
      * Returns the body type for Box2D physics
@@ -504,6 +544,8 @@ public abstract class Obstacle extends Entity {
         return bodyinfo.angularDamping;
     }
 
+    /// FixtureDef Methods
+
     /**
      * Sets the angular damping for this body.
      * <p>
@@ -541,8 +583,6 @@ public abstract class Obstacle extends Entity {
         bodyinfo.angularDamping = body.getAngularDamping();
         bodyinfo.linearDamping = body.getLinearDamping();
     }
-
-    /// FixtureDef Methods
 
     /**
      * Returns the density of this body
@@ -656,6 +696,8 @@ public abstract class Obstacle extends Entity {
         fixture.isSensor = value;
     }
 
+    /// MassData Methods
+
     /**
      * Returns the filter data for this object (or null if there is none)
      * <p>
@@ -695,8 +737,6 @@ public abstract class Obstacle extends Entity {
             fixture.filter.maskBits = -1;
         }
     }
-
-    /// MassData Methods
 
     /**
      * Returns the center of mass of this body
@@ -767,6 +807,8 @@ public abstract class Obstacle extends Entity {
         return massdata.mass;
     }
 
+    /// Garbage Collection Methods
+
     /**
      * Sets the mass of this body
      * <p>
@@ -789,8 +831,6 @@ public abstract class Obstacle extends Entity {
     void resetMass() {
         masseffect = false;
     }
-
-    /// Garbage Collection Methods
 
     /**
      * Returns true if our object has been flagged for garbage collection
@@ -829,6 +869,9 @@ public abstract class Obstacle extends Entity {
         return isDirty;
     }
 
+
+    /// DEBUG METHODS
+
     /**
      * Sets whether the shape information must be updated.
      * <p>
@@ -852,9 +895,6 @@ public abstract class Obstacle extends Entity {
     public Body getBody() {
         return null;
     }
-
-
-    /// DEBUG METHODS
 
     /**
      * Returns the physics object tag.
@@ -888,47 +928,6 @@ public abstract class Obstacle extends Entity {
 
     void setCustomScale(float x, float y) {
         customScale.set(x, y);
-    }
-
-    /**
-     * Create a new physics object at the origin.
-     */
-    Obstacle() {
-        this(0, 0);
-    }
-
-    /**
-     * Create a new physics object
-     *
-     * @param x Initial x position in world coordinates
-     * @param y Initial y position in world coordinates
-     */
-    Obstacle(float x, float y) {
-        // Object has yet to be deactivated
-        toRemove = false;
-
-        // Allocate the body information
-        bodyinfo = new BodyDef();
-        bodyinfo.awake = true;
-        bodyinfo.allowSleep = true;
-        bodyinfo.gravityScale = 1.0f;
-        bodyinfo.position.set(x, y);
-        bodyinfo.fixedRotation = false;
-        // Objects are physics entities unless otherwise noted
-        bodyinfo.type = BodyType.DynamicBody;
-
-        // Allocate the fixture information
-        // Default values are okay
-        fixture = new FixtureDef();
-
-        // Allocate the mass information, but turn it off
-        masseffect = false;
-        massdata = new MassData();
-
-        // Set the default drawing scale
-        drawScale = new Vector2(1, 1);
-        objectScale = new Vector2(1, 1);
-        customScale = new Vector2(1, 1);
     }
 
     /// Abstract Methods

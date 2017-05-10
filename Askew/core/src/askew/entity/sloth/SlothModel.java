@@ -27,69 +27,6 @@ import lombok.Setter;
 @SuppressWarnings({"FieldCanBeLocal", "SuspiciousNameCombination"})
 public class SlothModel extends ComplexObstacle {
 
-    /**
-     * Constants for tuning sloth behaviour
-     */
-    private static final float HAND_DENSITY = 10.0f;
-    private final transient float ARM_DENSITY;
-    private static final float BODY_MASS = 0.5903138f;
-    private final transient float TORQUE;
-    private static final boolean BODY_FIXED_ROTATION = true;
-    private static final boolean HANDS_FIXED_ROTATION = true;
-    private final transient float GRAVITY_SCALE;
-    private final transient boolean GRABBING_HAND_HAS_TORQUE;
-    private final transient float OMEGA_NORMALIZER;
-    @Getter
-    private transient int id;
-
-    @Setter
-    @Getter
-    public transient int controlMode;
-    /**
-     * After flying this distance, flow starts to experience some serious
-     * air resistance.
-     */
-    private static final float FLOW_RESISTANCE_DAMPING_LAMBDA = 23f;
-
-    private static final int GRAB_ORIGINAL = 0;
-    private static final int GRAB_REVERSE = 1;
-    private static final int GRAB_TOGGLE = 2;
-
-    private static final int CONTROLS_ORIGINAL = 0;
-    private static final int CONTROLS_ONE_ARM = 1;
-
-    private static final int CAN_DOUBLE_GRAB = 1;
-
-    /**
-     * Indices for the body parts in the bodies array
-     */
-    private static final int PART_NONE = -1;
-    private static final int PART_BODY = 0;
-    private static final int PART_RIGHT_ARM = 1;
-    private static final int PART_LEFT_ARM = 2;
-    private static final int PART_LEFT_HAND = 3;
-    private static final int PART_RIGHT_HAND = 4;
-    private static final int PART_HEAD = 5;
-    private static final int PART_POWER_GLOW = 8;
-
-    private static final float PI = (float) Math.PI;
-
-    /**
-     * The number of DISTINCT body parts
-     */
-    private static final int BODY_TEXTURE_COUNT = 11;
-
-    private transient RevoluteJointDef leftGrabJointDef;
-    private transient RevoluteJointDef rightGrabJointDef;
-    private transient Joint leftGrabJoint;
-    private transient Joint rightGrabJoint;
-    private transient PolygonShape sensorShape;
-    private transient Fixture sensorFixture1;
-    private transient Fixture sensorFixture2;
-
-    private transient Body leftTarget;
-    private transient Body rightTarget;
-
     // help lines for tutorial mode
     public static final int DEFAULT = -1;
     public static final int SHIMMY_E = 0;
@@ -104,28 +41,84 @@ public class SlothModel extends ComplexObstacle {
     public static final int MINUS_30 = 9;
     public static final int PLUS_10 = 10;
     public static final int MINUS_10 = 11;
-
+    /**
+     * Constants for tuning sloth behaviour
+     */
+    private static final float HAND_DENSITY = 10.0f;
+    private static final float BODY_MASS = 0.5903138f;
+    private static final boolean BODY_FIXED_ROTATION = true;
+    private static final boolean HANDS_FIXED_ROTATION = true;
+    /**
+     * After flying this distance, flow starts to experience some serious
+     * air resistance.
+     */
+    private static final float FLOW_RESISTANCE_DAMPING_LAMBDA = 23f;
+    private static final int GRAB_ORIGINAL = 0;
+    private static final int GRAB_REVERSE = 1;
+    private static final int GRAB_TOGGLE = 2;
+    private static final int CONTROLS_ORIGINAL = 0;
+    private static final int CONTROLS_ONE_ARM = 1;
+    private static final int CAN_DOUBLE_GRAB = 1;
+    /**
+     * Indices for the body parts in the bodies array
+     */
+    private static final int PART_NONE = -1;
+    private static final int PART_BODY = 0;
+    private static final int PART_RIGHT_ARM = 1;
+    private static final int PART_LEFT_ARM = 2;
+    private static final int PART_LEFT_HAND = 3;
+    private static final int PART_RIGHT_HAND = 4;
+    private static final int PART_HEAD = 5;
+    private static final int PART_POWER_GLOW = 8;
+    private static final float PI = (float) Math.PI;
+    /**
+     * The number of DISTINCT body parts
+     */
+    private static final int BODY_TEXTURE_COUNT = 11;
     /**
      * Set damping constant for rotation of Flow's arms
      */
     private static final float ROTATION_DAMPING = 5f;
-
     /**
      * Cooldown for changing body frames
      */
     private static final int TRANSITION_COOLDOWN = 10;
+    /**
+     * Dist between arms?
+     */
+
+    private static final float SHOULDER_XOFFSET = 0.00f;
+    private static final float SHOULDER_YOFFSET = 0.10f;
+    private static final float HAND_YOFFSET = 0;
+    private static final float BODY_HEIGHT = 1.4f;
+    private static final float BODY_WIDTH = 1.8f * (489f / 835f);
+    private static final float ARM_WIDTH = 1.75f;
+    private static final float ARM_HEIGHT = 0.5f;
+    private static final float ARM_XOFFSET = ARM_WIDTH / 2f + .375f;
+    public static final float ARMSPAN = ARM_XOFFSET * 2 - 0.05f;
+    private static final float ARM_YOFFSET = 0f;
+    private static final float HAND_WIDTH = 0.1f;
+    private static final float HAND_HEIGHT = 0.1f;
+    //private static final float HAND_XOFFSET  = (ARM_WIDTH / 2f) - HAND_WIDTH/2;
+    private static final float HAND_XOFFSET = (ARM_WIDTH / 2f) - HAND_WIDTH * 2 - .3f;
     private static int currentCooldown = TRANSITION_COOLDOWN;
-
-    private transient Body grabPointR;
-    private transient Body grabPointL;
-
+    private static float TIME_SINCE_LGRAB;
+    private static float TIME_SINCE_RGRAB;
+    private final transient float ARM_DENSITY;
+    private final transient float TORQUE;
+    private final transient float GRAVITY_SCALE;
+    private final transient boolean GRABBING_HAND_HAS_TORQUE;
+    private final transient float OMEGA_NORMALIZER;
     private final transient Vector2 forceL = new Vector2();
     private final transient Vector2 forceR = new Vector2();
-
     private final transient CircleShape grabGlow = new CircleShape();
-
-    private transient WheelObstacle pin;
-
+    /**
+     * Cache vector for organizing body parts
+     */
+    private final transient Vector2 partCache = new Vector2();
+    @Setter
+    @Getter
+    public transient int controlMode;
     //JSON
     @Getter
     @Setter
@@ -133,15 +126,26 @@ public class SlothModel extends ComplexObstacle {
     @Getter
     @Setter
     public float y;
-
+    @Getter
+    private transient int id;
+    private transient RevoluteJointDef leftGrabJointDef;
+    private transient RevoluteJointDef rightGrabJointDef;
+    private transient Joint leftGrabJoint;
+    private transient Joint rightGrabJoint;
+    private transient PolygonShape sensorShape;
+    private transient Fixture sensorFixture1;
+    private transient Fixture sensorFixture2;
+    private transient Body leftTarget;
+    private transient Body rightTarget;
+    private transient Body grabPointR;
+    private transient Body grabPointL;
+    private transient WheelObstacle pin;
     private float lTheta;
     private float rTheta;
-
     private transient float rightVert;      // right joystick y input
     private transient float leftHori;       // left joystick z input
     private transient float leftVert;       // left joystick y input
     private transient float rightHori;      // right joystick x input
-
     @Getter
     private transient boolean leftGrab;
     @Getter
@@ -153,10 +157,13 @@ public class SlothModel extends ComplexObstacle {
     private transient float flowFacingState;
     @Getter
     private transient float power;
-
     @Getter
     @Setter
     private transient int movementMode;
+
+    // Layout of ragdoll
+    //  |0|______0______|0|
+    //
     private transient boolean leftGrabbing;
     private transient boolean rightGrabbing;
     @Getter
@@ -175,72 +182,14 @@ public class SlothModel extends ComplexObstacle {
     @Getter
     private transient Obstacle mostRecentlyGrabbed = null;
     private int airTime;
-
-    /**
-     * Returns the texture index for the given body part
-     * <p>
-     * As some body parts are symmetrical, we reuse texture.
-     *
-     * @return the texture index for the given body part
-     */
-    private static int partToAsset(int part) {
-        switch (part) {
-            case PART_LEFT_HAND:
-            case PART_RIGHT_HAND:
-            case PART_HEAD:
-                return 0;
-            case PART_LEFT_ARM:
-                return 3;
-            case PART_RIGHT_ARM:
-                return 1;
-            case PART_BODY:
-                return 2;
-            default:
-                return -1;
-        }
-    }
-
-    // Layout of ragdoll
-    //  |0|______0______|0|
-    //
-    /**
-     * Dist between arms?
-     */
-
-    private static final float SHOULDER_XOFFSET = 0.00f;
-    private static final float SHOULDER_YOFFSET = 0.10f;
-
-    private static final float HAND_YOFFSET = 0;
-
-    private static final float BODY_HEIGHT = 1.4f;
-    private static final float BODY_WIDTH = 1.8f * (489f / 835f);
-
-    private static final float ARM_WIDTH = 1.75f;
-    private static final float ARM_HEIGHT = 0.5f;
-
-    private static final float ARM_XOFFSET = ARM_WIDTH / 2f + .375f;
-    private static final float ARM_YOFFSET = 0f;
-
-    private static final float HAND_WIDTH = 0.1f;
-    private static final float HAND_HEIGHT = 0.1f;
-    //private static final float HAND_XOFFSET  = (ARM_WIDTH / 2f) - HAND_WIDTH/2;
-    private static final float HAND_XOFFSET = (ARM_WIDTH / 2f) - HAND_WIDTH * 2 - .3f;
-
-    public static final float ARMSPAN = ARM_XOFFSET * 2 - 0.05f;
-
-    private static float TIME_SINCE_LGRAB;
-    private static float TIME_SINCE_RGRAB;
-
-
     /**
      * Texture assets for the body parts
      */
     private transient TextureRegion[] partTextures;
-
-    /**
-     * Cache vector for organizing body parts
-     */
-    private final transient Vector2 partCache = new Vector2();
+    private transient float previousAngleLeft;
+    private transient float previousAngleRight;
+    private transient float cummulativeAngleLeft = 0;
+    private transient float cummulativeAngleRight = 0;
 
     /**
      * Creates a new ragdoll with its head at the given position.
@@ -267,6 +216,30 @@ public class SlothModel extends ComplexObstacle {
         this.rightGrabbing = false;
         this.leftGrabbing = true;
         this.drawNumber = -20;
+    }
+
+    /**
+     * Returns the texture index for the given body part
+     * <p>
+     * As some body parts are symmetrical, we reuse texture.
+     *
+     * @return the texture index for the given body part
+     */
+    private static int partToAsset(int part) {
+        switch (part) {
+            case PART_LEFT_HAND:
+            case PART_RIGHT_HAND:
+            case PART_HEAD:
+                return 0;
+            case PART_LEFT_ARM:
+                return 3;
+            case PART_RIGHT_ARM:
+                return 1;
+            case PART_BODY:
+                return 2;
+            default:
+                return -1;
+        }
     }
 
     public void build() {
@@ -410,36 +383,36 @@ public class SlothModel extends ComplexObstacle {
         joints.add(joint);
     }
 
-    public void setLeftHori(float leftHori) {
-        this.leftHori = leftHori;
-    }
-
-    public void setLeftVert(float leftVert) {
-        this.leftVert = leftVert;
-    }
-
-    public void setRightHori(float rightHori) {
-        this.rightHori = rightHori;
-    }
-
-    public void setRightVert(float rightVert) {
-        this.rightVert = rightVert;
-    }
-
     public float getLeftHori() {
         return this.leftHori;
+    }
+
+    public void setLeftHori(float leftHori) {
+        this.leftHori = leftHori;
     }
 
     public float getLeftVert() {
         return this.leftVert;
     }
 
+    public void setLeftVert(float leftVert) {
+        this.leftVert = leftVert;
+    }
+
     public float getRightHori() {
         return this.rightHori;
     }
 
+    public void setRightHori(float rightHori) {
+        this.rightHori = rightHori;
+    }
+
     public float getRightVert() {
         return this.rightVert;
+    }
+
+    public void setRightVert(float rightVert) {
+        this.rightVert = rightVert;
     }
 
     public Body getMainBody() {
@@ -466,13 +439,6 @@ public class SlothModel extends ComplexObstacle {
         }
         return diff;
     }
-
-
-    private transient float previousAngleLeft;
-    private transient float previousAngleRight;
-    private transient float cummulativeAngleLeft = 0;
-    private transient float cummulativeAngleRight = 0;
-
 
     public void doThePhysics() {
         // TODO: MOVE

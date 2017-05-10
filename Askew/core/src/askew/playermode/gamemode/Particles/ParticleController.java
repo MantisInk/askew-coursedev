@@ -20,8 +20,16 @@ public class ParticleController {
     private final LinkedList<Particle> unspawned = new LinkedList<>();
     private final LinkedList<Particle> spawned = new LinkedList<>();
     private final Particle[] tempArray;
+    private final int effect1_num = 15;
+    private final String effect1_texturePath = "texture/particle/test.png";
+    private final int fog_num = 3;
+    private final String fog_texturePath1 = "texture/particle/cloud.png";
+    private final String fog_texturePath2 = "texture/particle/cloud1.png";
+    private final ArrayList<TextureRegion> fog_textures = new ArrayList<>();
     @Setter
     Vector2 drawScale;
+    private TextureRegion effect1_texture;
+
 
     public ParticleController(GameModeController gmc, int maxParticles) {
         this.gmc = gmc;
@@ -64,7 +72,6 @@ public class ParticleController {
 
     }
 
-
     public void update(float delta) {
         if (gmc.isPaused()) {
             return;
@@ -105,12 +112,6 @@ public class ParticleController {
         }
     }
 
-
-    private final int effect1_num = 15;
-    private final String effect1_texturePath = "texture/particle/test.png";
-    private TextureRegion effect1_texture;
-
-
     public void effect1(float x, float y) {
         Particle current;
         for (int i = 0; i < effect1_num; i++) {
@@ -122,12 +123,6 @@ public class ParticleController {
             }
         }
     }
-
-    private final int fog_num = 3;
-    private final String fog_texturePath1 = "texture/particle/cloud.png";
-    private final String fog_texturePath2 = "texture/particle/cloud1.png";
-    private final ArrayList<TextureRegion> fog_textures = new ArrayList<>();
-
 
     public void fog(float x, float y) {
         Particle current;

@@ -59,6 +59,8 @@ import static javax.swing.JOptionPane.showInputDialog;
 @SuppressWarnings("FieldCanBeLocal")
 public class LevelEditorController extends WorldController {
 
+    public static final float GUI_LEFT_BAR_WIDTH = 200.f;
+    public static final float GUI_LEFT_BAR_MARGIN = 16f;
     private static final int BUFFER = 5;
     private static final int TEXT_HEIGHT = 20;
     private static final int FIELD_TEXT_WIDTH = 150;
@@ -66,89 +68,12 @@ public class LevelEditorController extends WorldController {
     private static final int BUTTON_WIDTH = 75;
     private static final int BUTTON_HEIGHT = 30;
     private static final int TEXT_HEIGHT1 = 20;
-
-    private final JSONLoaderSaver jsonLoaderSaver;
-    @Getter
-    @Setter
-    private MantisAssetManager mantisAssetManager;
-
-    private LevelModel levelModel;
-
     private static final ShapeRenderer gridLineRenderer = new ShapeRenderer();
-
-    private Texture background;
-    private Texture grey;
-    private Texture upFolder;
-    private Texture folder;
-    private Texture placeholder;
-    private Texture yellowbox;
-
-
-    private JFrame editorWindow;
-
-    //Camera Variables
-    private final Affine2 camTrans;
-    private float cxCamera;                //lower left corner position
-    private float cyCamera;
-    private float adjustedCxCamera;        //center of le window position
-    private float adjustedCyCamera;
-    private float mouseX;                //mouse position in window
-    private float mouseY;
-    private float adjustedMouseX;        //mouse position adjusted to camera
-    private float adjustedMouseY;
-
-
-    private final Vector2 oneScale;
-    private final transient CircleShape circleShape = new CircleShape();
-
-    private boolean pressedL, prevPressedL;
-
-
-    @Getter
-    private String currentLevel;
-
-    /**
-     * A decrementing int that helps prevent accidental repeats of actions through an arbitrary countdown
-     */
-    private int inputRateLimiter = 0;
-
     private static final int UI_WAIT_SHORT = 2;
     private static final int UI_WAIT_LONG = 15;
-
     //In Pixels, divide by world scale for box2d.
     private static final float GUI_LOWER_BAR_HEIGHT = 200.f;
-    public static final float GUI_LEFT_BAR_WIDTH = 200.f;
-    public static final float GUI_LEFT_BAR_MARGIN = 16f;
     private static final float GUI_EMARROW_WIDTH = 32f;
-
-    private final float MAX_SNAP_DISTANCE = 1f;
-    private final float CAMERA_PAN_SPEED = 20f;
-
-    private final EntityTree entityTree;
-    private Entity selected;
-    private Entity temporary;
-    private Entity undoSelected;
-    private Entity undoDelete;
-    private Entity undoCreate;
-    private boolean dragging = false;
-    private boolean creating = false;
-    private boolean snapping = false;
-    private boolean movefar = false;
-    private boolean dragmode = false;
-    private boolean prevclick = false;
-    private boolean currentclick = false;
-    private int entitiesPerPage;
-
-    private int entityMenuPage = 0;
-
-    private final GameModeController gmc;
-
-    private final ButtonList buttons;
-    private boolean released;
-
-
-    private boolean prompting;
-    private boolean showHelp;
     private static final String HELP_TEXT = "Welcome to the help screen. You \n" +
             "can hit H at any time to toggle this screen. Remember to save \n" +
             "often!\n" +
@@ -164,10 +89,84 @@ public class LevelEditorController extends WorldController {
             "T: Draw grid lines\n" +
             "X: (xbox controller) switch to playing the level\n" +
             "H: Toggle this help text";
+    private final JSONLoaderSaver jsonLoaderSaver;
+    //Camera Variables
+    private final Affine2 camTrans;
+    private final Vector2 oneScale;
+    private final transient CircleShape circleShape = new CircleShape();
+    private final float MAX_SNAP_DISTANCE = 1f;
+    private final float CAMERA_PAN_SPEED = 20f;
+    private final EntityTree entityTree;
+    private final GameModeController gmc;
+    private final ButtonList buttons;
+    @Getter
+    @Setter
+    private MantisAssetManager mantisAssetManager;
+    private LevelModel levelModel;
+    private Texture background;
+    private Texture grey;
+    private Texture upFolder;
+    private Texture folder;
+    private Texture placeholder;
+    private Texture yellowbox;
+    private JFrame editorWindow;
+    private float cxCamera;                //lower left corner position
+    private float cyCamera;
+    private float adjustedCxCamera;        //center of le window position
+    private float adjustedCyCamera;
+    private float mouseX;                //mouse position in window
+    private float mouseY;
+    private float adjustedMouseX;        //mouse position adjusted to camera
+    private float adjustedMouseY;
+    private boolean pressedL, prevPressedL;
+    @Getter
+    private String currentLevel;
+    /**
+     * A decrementing int that helps prevent accidental repeats of actions through an arbitrary countdown
+     */
+    private int inputRateLimiter = 0;
+    private Entity selected;
+    private Entity temporary;
+    private Entity undoSelected;
+    private Entity undoDelete;
+    private Entity undoCreate;
+    private boolean dragging = false;
+    private boolean creating = false;
+    private boolean snapping = false;
+    private boolean movefar = false;
+    private boolean dragmode = false;
+    private boolean prevclick = false;
+    private boolean currentclick = false;
+    private int entitiesPerPage;
+    private int entityMenuPage = 0;
+    private boolean released;
+    private boolean prompting;
+    private boolean showHelp;
     private boolean loadingLevelPrompt;
     private boolean shouldDrawGrid;
 
     private Vector2 temp;
+
+    /**
+     * Creates and initialize a new instance of the platformer game
+     * <p>
+     * The game has default gravity and other settings
+     */
+    public LevelEditorController(GameModeController gmc) {
+//		super(36,18,0); I want this scale but for the sake of alpha:
+        super(0);
+        jsonLoaderSaver = new JSONLoaderSaver(false);
+        entityTree = new EntityTree();
+        buttons = new ButtonList();
+        currentLevel = "level1";
+        showHelp = true;
+        shouldDrawGrid = true;
+        camTrans = new Affine2();
+        oneScale = new Vector2(1, 1);
+        pressedL = false;
+        prevPressedL = false;
+        this.gmc = gmc;
+    }
 
     /**
      * Preloads the assets for this controller.
@@ -213,28 +212,6 @@ public class LevelEditorController extends WorldController {
         entityTree.setTextures(manager);
         buttons.setManager(manager);
         buttons.setTextures(manager);
-    }
-
-
-    /**
-     * Creates and initialize a new instance of the platformer game
-     * <p>
-     * The game has default gravity and other settings
-     */
-    public LevelEditorController(GameModeController gmc) {
-//		super(36,18,0); I want this scale but for the sake of alpha:
-        super(0);
-        jsonLoaderSaver = new JSONLoaderSaver(false);
-        entityTree = new EntityTree();
-        buttons = new ButtonList();
-        currentLevel = "level1";
-        showHelp = true;
-        shouldDrawGrid = true;
-        camTrans = new Affine2();
-        oneScale = new Vector2(1, 1);
-        pressedL = false;
-        prevPressedL = false;
-        this.gmc = gmc;
     }
 
     public void setLevel(String levelName) {

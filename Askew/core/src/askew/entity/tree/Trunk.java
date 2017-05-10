@@ -35,6 +35,10 @@ import lombok.Setter;
 public class Trunk extends TreeParent {
 
     /**
+     * coords for starting branch off this trunk
+     */
+    public transient static final float DAMPING_ROTATION = 5f;
+    /**
      * The spacing between each link
      */
     private transient Vector2 dimension;
@@ -54,13 +58,7 @@ public class Trunk extends TreeParent {
     @Getter
     @Setter
     private float numLinks;                                    // param for json constructor
-
-
     private transient Vector2 final_norm = null;
-    /**
-     * coords for starting branch off this trunk
-     */
-    public transient static final float DAMPING_ROTATION = 5f;
     /**
      * Set damping constant for joint rotation in vines
      */

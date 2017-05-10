@@ -60,18 +60,37 @@ class ObstacleSelector implements QueryCallback {
      */
     private final World world;
     /**
-     * The current fixture selected by this tool (may be nullptr)
-     */
-    private Fixture selection;
-    /**
      * A default body used as the other half of the mouse joint
      */
     private final Body ground;
     /**
+     * The drawing scale for this selector
+     */
+    private final Vector2 drawScale;
+    /**
+     * A reusable definition for creating a mouse joint
+     */
+    private final MouseJointDef mouseJointDef;
+    /**
+     * The region of world space to select an object from
+     */
+    private final Rectangle pointer;
+    /**
+     * Position cache for moving mouse
+     */
+    private final Vector2 position = new Vector2();
+    /**
+     * Size cache for the draw scale
+     */
+    private final Vector2 scaleCache = new Vector2();
+    /**
+     * The current fixture selected by this tool (may be nullptr)
+     */
+    private Fixture selection;
+    /**
      * The width and height of the box
      */
     private Vector2 dimension;
-
     /**
      * The texture to display this selector on screen
      */
@@ -81,36 +100,48 @@ class ObstacleSelector implements QueryCallback {
      */
     private Vector2 origin;
     /**
-     * The drawing scale for this selector
-     */
-    private final Vector2 drawScale;
-
-    /**
-     * A reusable definition for creating a mouse joint
-     */
-    private final MouseJointDef mouseJointDef;
-    /**
      * The current mouse joint, if an item is selected
      */
     private MouseJoint mouseJoint;
-
-    /**
-     * The region of world space to select an object from
-     */
-    private final Rectangle pointer;
     /**
      * The amount to multiply by the mass to move the object
      */
     private float force;
 
     /**
-     * Position cache for moving mouse
+     * Creates a new ObstacleSelector for the given World and mouse size.
+     * <p>
+     * This world can never change.  If you want a selector for a different world,
+     * make a new instance.  However, the mouse size can be changed at any time.
+     *
+     * @param world the physics world
      */
-    private final Vector2 position = new Vector2();
-    /**
-     * Size cache for the draw scale
-     */
-    private final Vector2 scaleCache = new Vector2();
+    private ObstacleSelector(World world) {
+        this.world = world;
+
+        pointer = new Rectangle();
+        pointer.width = ObstacleSelector.DEFAULT_MSIZE;
+        pointer.height = ObstacleSelector.DEFAULT_MSIZE;
+
+        mouseJointDef = new MouseJointDef();
+
+        mouseJointDef.frequencyHz = DEFAULT_FREQUENCY;
+        mouseJointDef.dampingRatio = DEFAULT_DAMPING;
+        force = DEFAULT_FORCE;
+
+        BodyDef groundDef = new BodyDef();
+        groundDef.type = BodyDef.BodyType.StaticBody;
+        CircleShape groundShape = new CircleShape();
+        groundShape.setRadius(pointer.width);
+        ground = world.createBody(groundDef);
+        ground.createFixture(groundShape, 0);
+
+        FixtureDef groundFixture = new FixtureDef();
+        groundFixture.shape = groundShape;
+        ground.createFixture(groundFixture);
+
+        drawScale = new Vector2(1, 1);
+    }
 
     /**
      * Returns the response speed of the mouse joint
@@ -210,41 +241,6 @@ class ObstacleSelector implements QueryCallback {
     }
 
     /**
-     * Creates a new ObstacleSelector for the given World and mouse size.
-     * <p>
-     * This world can never change.  If you want a selector for a different world,
-     * make a new instance.  However, the mouse size can be changed at any time.
-     *
-     * @param world the physics world
-     */
-    private ObstacleSelector(World world) {
-        this.world = world;
-
-        pointer = new Rectangle();
-        pointer.width = ObstacleSelector.DEFAULT_MSIZE;
-        pointer.height = ObstacleSelector.DEFAULT_MSIZE;
-
-        mouseJointDef = new MouseJointDef();
-
-        mouseJointDef.frequencyHz = DEFAULT_FREQUENCY;
-        mouseJointDef.dampingRatio = DEFAULT_DAMPING;
-        force = DEFAULT_FORCE;
-
-        BodyDef groundDef = new BodyDef();
-        groundDef.type = BodyDef.BodyType.StaticBody;
-        CircleShape groundShape = new CircleShape();
-        groundShape.setRadius(pointer.width);
-        ground = world.createBody(groundDef);
-        ground.createFixture(groundShape, 0);
-
-        FixtureDef groundFixture = new FixtureDef();
-        groundFixture.shape = groundShape;
-        ground.createFixture(groundFixture);
-
-        drawScale = new Vector2(1, 1);
-    }
-
-    /**
      * Returns true if a physics body is currently selected
      *
      * @return true if a physics body is currently selected
@@ -341,6 +337,15 @@ class ObstacleSelector implements QueryCallback {
     //// Drawing code
 
     /**
+     * Returns the texture to display the selector on screen
+     *
+     * @return the texture to display the selector on screen
+     */
+    public TextureRegion getTexture() {
+        return texture;
+    }
+
+    /**
      * Sets the texture to display the selector on screen
      *
      * @param region the texture to display the selector on screen
@@ -348,15 +353,6 @@ class ObstacleSelector implements QueryCallback {
     public void setTexture(TextureRegion region) {
         texture = region;
         origin = new Vector2(texture.getRegionWidth() / 2.0f, texture.getRegionHeight() / 2.0f);
-    }
-
-    /**
-     * Returns the texture to display the selector on screen
-     *
-     * @return the texture to display the selector on screen
-     */
-    public TextureRegion getTexture() {
-        return texture;
     }
 
     /**

@@ -26,18 +26,6 @@ public class OwlModel extends BoxObstacle {
     private static final float OWL_WIDTH = 1.8f;
     private static final float VICTORY_SPEED = 0.15f;
     private static final float VICTORY_DISTANCE = 13f;
-
-    // determined at runtime to preserve aspect ratio from designers
-    private transient float owlHeight;
-
-    private transient TextureRegion owlTextureRegion;
-    private transient Animation idleAnimation;
-    private transient Animation flyAnimation;
-    private transient float elapseTime;
-    @Getter
-    private transient boolean doingVictory;
-    private transient float victoryDistance;
-
     //JSON
     @Getter
     @Setter
@@ -45,6 +33,15 @@ public class OwlModel extends BoxObstacle {
     @Getter
     @Setter
     public float y;
+    // determined at runtime to preserve aspect ratio from designers
+    private transient float owlHeight;
+    private transient TextureRegion owlTextureRegion;
+    private transient Animation idleAnimation;
+    private transient Animation flyAnimation;
+    private transient float elapseTime;
+    @Getter
+    private transient boolean doingVictory;
+    private transient float victoryDistance;
 
 
     /**

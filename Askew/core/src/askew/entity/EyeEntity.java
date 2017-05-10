@@ -12,10 +12,10 @@ import com.badlogic.gdx.math.Vector2;
 public class EyeEntity extends BackgroundEntity {
 
     private final transient Vector2 pupilOffset;
-    private transient TextureRegion texture2;
     private final float PUPIL_OFFSET = 0.08f;
     private final String pathEyes = "texture/eye/eyes.png";
     private final String pathPupils = "texture/eye/pupils.png";
+    private transient TextureRegion texture2;
 
     public EyeEntity(float x, float y) {
         this(x, y, 1.5f, 0, 1, 1, 0xFFFFFFFF);

@@ -21,16 +21,13 @@ public class WallModel extends PolygonObstacle {
 
     private static final float WALL_FRICTION = 1.0f;
     private static final float WALL_RESTITUTION = 0.1f;
+    private final int color;
+    private final transient Color tint;
     private transient TextureRegion circleTextureRegion;
     private transient TextureRegion edgeTextureRegion;
-
     // Instance variables
     private float x;
     private float y;
-
-    private final int color;
-    private final transient Color tint;
-
     /**
      * The points that define the convex hull of the wall. Must be an even number (2n) of points representing (x1,y1) ... (xn,yn)
      */

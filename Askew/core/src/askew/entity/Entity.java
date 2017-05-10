@@ -8,12 +8,10 @@ import com.badlogic.gdx.math.Vector2;
 
 @SuppressWarnings("WeakerAccess")
 public abstract class Entity implements Comparable {
-    protected transient Vector2 drawScale;
-    protected transient Vector2 objectScale;
-
     private final transient Vector2 drawScaleCache = new Vector2();
     private final transient Vector2 objectScaleCache = new Vector2();
-
+    protected transient Vector2 drawScale;
+    protected transient Vector2 objectScale;
     protected transient int drawNumber = 0;
 
     public abstract Vector2 getPosition();

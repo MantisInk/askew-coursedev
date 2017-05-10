@@ -58,46 +58,6 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
     private static final String BACKGROUND_FILE = "shared/loading.png";
     private static final String PROGRESS_FILE = "shared/progressbar.png";
     private static final String PLAY_BTN_FILE = "shared/play.png";
-
-    /**
-     * Background texture for start-up
-     */
-    private Texture background;
-    /**
-     * Play button to display when done
-     */
-    private Texture playButton;
-    /**
-     * Texture atlas to support a progress bar
-     */
-    private Texture statusBar;
-
-    // statusBar is a "texture atlas." Break it up into parts.
-    /**
-     * Left cap to the status background (grey region)
-     */
-    private TextureRegion statusBkgLeft;
-    /**
-     * Middle portion of the status background (grey region)
-     */
-    private TextureRegion statusBkgMiddle;
-    /**
-     * Right cap to the status background (grey region)
-     */
-    private TextureRegion statusBkgRight;
-    /**
-     * Left cap to the status forground (colored region)
-     */
-    private TextureRegion statusFrgLeft;
-    /**
-     * Middle portion of the status forground (colored region)
-     */
-    private TextureRegion statusFrgMiddle;
-    /**
-     * Right cap to the status forground (colored region)
-     */
-    private TextureRegion statusFrgRight;
-
     /**
      * Default budget for asset loader (do nothing but load 60 fps)
      */
@@ -110,6 +70,8 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
      * Standard window height (for scaling)
      */
     private static final int STANDARD_HEIGHT = 700;
+
+    // statusBar is a "texture atlas." Break it up into parts.
     /**
      * Ratio of the bar width to the screen
      */
@@ -134,7 +96,6 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
      * Amount to scale the play button
      */
     private static final float BUTTON_SCALE = 0.75f;
-
     /**
      * Start button for XBox controller on Windows
      */
@@ -143,7 +104,6 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
      * Start button for XBox controller on Mac OS X
      */
     private static final int MAC_OS_X_START = 4;
-
     /**
      * AssetManager to be loading in the background
      */
@@ -153,10 +113,49 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
      */
     private final GameCanvas canvas;
     /**
+     * Support for the X-Box start button in place of play button
+     */
+    private final int startButton;
+    /**
+     * Background texture for start-up
+     */
+    private Texture background;
+    /**
+     * Play button to display when done
+     */
+    private Texture playButton;
+    /**
+     * Texture atlas to support a progress bar
+     */
+    private Texture statusBar;
+    /**
+     * Left cap to the status background (grey region)
+     */
+    private TextureRegion statusBkgLeft;
+    /**
+     * Middle portion of the status background (grey region)
+     */
+    private TextureRegion statusBkgMiddle;
+    /**
+     * Right cap to the status background (grey region)
+     */
+    private TextureRegion statusBkgRight;
+    /**
+     * Left cap to the status forground (colored region)
+     */
+    private TextureRegion statusFrgLeft;
+    /**
+     * Middle portion of the status forground (colored region)
+     */
+    private TextureRegion statusFrgMiddle;
+    /**
+     * Right cap to the status forground (colored region)
+     */
+    private TextureRegion statusFrgRight;
+    /**
      * Listener that will update the player mode when we are done
      */
     private ScreenListener listener;
-
     /**
      * The width of the progress bar
      */
@@ -177,7 +176,6 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
      * Scaling factor for when the student changes the resolution.
      */
     private float scale;
-
     /**
      * Current progress (0 to 1) of the asset manager
      */
@@ -191,50 +189,9 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
      */
     private int budget;
     /**
-     * Support for the X-Box start button in place of play button
-     */
-    private final int startButton;
-    /**
      * Whether or not this player mode is still active
      */
     private boolean active;
-
-    /**
-     * Returns the budget for the asset loader.
-     * <p>
-     * The budget is the number of milliseconds to spend loading assets each animation
-     * frame.  This allows you to do something other than load assets.  An animation
-     * frame is ~16 milliseconds. So if the budget is 10, you have 6 milliseconds to
-     * do something else.  This is how game companies animate their loading screens.
-     *
-     * @return the budget in milliseconds
-     */
-    public int getBudget() {
-        return budget;
-    }
-
-    /**
-     * Sets the budget for the asset loader.
-     * <p>
-     * The budget is the number of milliseconds to spend loading assets each animation
-     * frame.  This allows you to do something other than load assets.  An animation
-     * frame is ~16 milliseconds. So if the budget is 10, you have 6 milliseconds to
-     * do something else.  This is how game companies animate their loading screens.
-     *
-     * @param millis the budget in milliseconds
-     */
-    public void setBudget(int millis) {
-        budget = millis;
-    }
-
-    /**
-     * Returns true if all assets are loaded and the player is ready to go.
-     *
-     * @return true if the player is ready to go
-     */
-    public boolean isReady() {
-        return pressState == 2;
-    }
 
     /**
      * Creates a askew.playermode.loading.LoadingMode with the default budget, size and position.
@@ -291,6 +248,43 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
             controller.addListener(this);
         }
         active = true;
+    }
+
+    /**
+     * Returns the budget for the asset loader.
+     * <p>
+     * The budget is the number of milliseconds to spend loading assets each animation
+     * frame.  This allows you to do something other than load assets.  An animation
+     * frame is ~16 milliseconds. So if the budget is 10, you have 6 milliseconds to
+     * do something else.  This is how game companies animate their loading screens.
+     *
+     * @return the budget in milliseconds
+     */
+    public int getBudget() {
+        return budget;
+    }
+
+    /**
+     * Sets the budget for the asset loader.
+     * <p>
+     * The budget is the number of milliseconds to spend loading assets each animation
+     * frame.  This allows you to do something other than load assets.  An animation
+     * frame is ~16 milliseconds. So if the budget is 10, you have 6 milliseconds to
+     * do something else.  This is how game companies animate their loading screens.
+     *
+     * @param millis the budget in milliseconds
+     */
+    public void setBudget(int millis) {
+        budget = millis;
+    }
+
+    /**
+     * Returns true if all assets are loaded and the player is ready to go.
+     *
+     * @return true if the player is ready to go
+     */
+    public boolean isReady() {
+        return pressState == 2;
     }
 
     /**

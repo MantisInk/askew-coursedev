@@ -34,14 +34,25 @@ public class InputController {
     private static final float GP_THRESHOLD = 0.01f;
 
     private final int id;
-
+    /**
+     * The crosshair position (for raddoll)
+     */
+    private final Vector2 crosshair;
+    /**
+     * The crosshair cache (for using as a return value)
+     */
+    private final Vector2 crosscache;
+    /**
+     * An X-Box controller (if it is connected)
+     */
+    @Getter
+    private final XBox360Controller xbox;
     @Getter
     private boolean rightClickPressed;
     private boolean rightClickPrevious;
     @Getter
     private boolean leftClickPressed;
     private boolean leftClickPrevious;
-
     // Keyboard keys for the level editor
     @Getter
     private boolean sKeyPressed;
@@ -69,7 +80,6 @@ public class InputController {
     private boolean shiftKeyPressed;
     @Getter
     private boolean spaceKeyPressed;
-
     @Getter
     private boolean vKeyPressed;
     @Getter
@@ -86,8 +96,6 @@ public class InputController {
     private boolean zKeyPressed;
     @Getter
     private boolean xKeyPressed;
-
-
     private boolean sKeyPrevious;
     private boolean nKeyPrevious;
     private boolean lKeyPrevious;
@@ -100,50 +108,36 @@ public class InputController {
     private boolean hKeyPrevious;
     private boolean bKeyPrevious;
     private boolean vKeyPrevious;
-
     // Fields to manage buttons
     private boolean startButtonPressed;
     private boolean startButtonPrevious;
-
     @Getter
     private boolean leftButtonPressed;
     private boolean leftButtonPrevious;
-
     private boolean rightButtonPressed;
     private boolean rightButtonPrevious;
-
     private boolean bottomButtonPressed;
     private boolean bottomButtonPrevious;
-
     private boolean topButtonPressed;
-    private boolean topButtonPrevious;
-
-    private boolean backButtonPressed;
-    private boolean backButtonPrevious;
 
     //Fields to manage DPad
-
+    private boolean topButtonPrevious;
+    private boolean backButtonPressed;
+    private boolean backButtonPrevious;
     private boolean topDPadPressed;
     private boolean topDPadPrevious;
-
     private boolean rightDPadPressed;
     private boolean rightDPadPrevious;
-
     private boolean leftDPadPressed;
     private boolean leftDPadPrevious;
-
     private boolean bottomDPadPressed;
     private boolean bottomDPadPrevious;
-
     @Getter
     private boolean upKeyPressed;
     private boolean upKeyPrevious;
-
     @Getter
     private boolean downKeyPressed;
     private boolean downKeyPrevious;
-
-
     /**
      * Whether the right hand is grabbing.
      */
@@ -152,10 +146,8 @@ public class InputController {
      * Whether the left hand is grabbing.
      */
     private boolean rightGrabPressed;
-
     private boolean leftStickPressed;
     private boolean rightStickPressed;
-
     /**
      * How much did left arm move horizontally?
      */
@@ -172,29 +164,28 @@ public class InputController {
      * How much did right arm move move vertically?
      */
     private float rightVertical;
-
-    /**
-     * The crosshair position (for raddoll)
-     */
-    private final Vector2 crosshair;
-    /**
-     * The crosshair cache (for using as a return value)
-     */
-    private final Vector2 crosscache;
     /**
      * For the gamepad crosshair control
      */
     private float momentum;
-
-    /**
-     * An X-Box controller (if it is connected)
-     */
-    @Getter
-    private final XBox360Controller xbox;
     @Getter
     private boolean altKeyPressed;
     @Getter
     private boolean dotKeyPressed;
+
+    /**
+     * Creates a new input controller
+     * <p>
+     * The input controller attempts to connect to the X-Box controller at device 0,
+     * if it exists.  Otherwise, it falls back to the keyboard control.
+     */
+    public InputController(int id) {
+        // If we have a game-pad for id, then use it.
+        xbox = new XBox360Controller(id);
+        crosshair = new Vector2();
+        crosscache = new Vector2();
+        this.id = id;
+    }
 
     /**
      * Returns the amount of sideways movement for the left arm.
@@ -290,7 +281,6 @@ public class InputController {
     public Vector2 getCrossHair() {
         return crosscache.set(crosshair);
     }
-
 
     /**
      * Returns true if the corresponding button was pressed.
@@ -390,21 +380,6 @@ public class InputController {
 
     public boolean didEnterKeyPress() {
         return enterKeyPressed && !enterKeyPrevious;
-    }
-
-
-    /**
-     * Creates a new input controller
-     * <p>
-     * The input controller attempts to connect to the X-Box controller at device 0,
-     * if it exists.  Otherwise, it falls back to the keyboard control.
-     */
-    public InputController(int id) {
-        // If we have a game-pad for id, then use it.
-        xbox = new XBox360Controller(id);
-        crosshair = new Vector2();
-        crosscache = new Vector2();
-        this.id = id;
     }
 
     /**

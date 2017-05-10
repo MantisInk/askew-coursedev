@@ -46,10 +46,14 @@ public class PoleVault extends TreeParent {
      */
     private static final float TRUNK_PIN_RADIUS = 0.1f;
     /**
+     * The spacing between each link
+     */
+    private final float numLinks;                                    // param for json constructor
+    private final float angle;
+    /**
      * pin the bottom of the pole vault
      */
     private transient WheelObstacle start = null;
-
     /**
      * starting coords of bottom anchor and length for branch
      */
@@ -71,14 +75,8 @@ public class PoleVault extends TreeParent {
      */
     // TODO: Fix this from being public (refactor artifact) ?
     private transient float spacing = 0.0f;
-    /**
-     * The spacing between each link
-     */
-    private final float numLinks;                                    // param for json constructor
-
     private float x;
     private float y;
-    private final float angle;
 
     /**
      * Creates a new tree trunk at the given position.

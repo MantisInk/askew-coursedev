@@ -39,13 +39,51 @@ public class BoxObstacle extends SimpleObstacle {
      */
     private final transient Vector2 sizeCache;
     /**
-     * A cache value for the fixture (for resizing)
-     */
-    transient Fixture geometry;
-    /**
      * Cache of the polygon vertices (for resizing)
      */
     private final transient float[] vertices;
+    /**
+     * A cache value for the fixture (for resizing)
+     */
+    transient Fixture geometry;
+
+    /**
+     * Creates a new box at the origin.
+     * <p>
+     * The size is expressed in physics units NOT pixels.  In order for
+     * drawing to work properly, you MUST set the drawScale. The drawScale
+     * converts the physics units to pixels.
+     *
+     * @param width  The object width in physics units
+     * @param height The object width in physics units
+     */
+    public BoxObstacle(float width, float height) {
+        this(0, 0, width, height);
+    }
+
+    /**
+     * Creates a new box object.
+     * <p>
+     * The size is expressed in physics units NOT pixels.  In order for
+     * drawing to work properly, you MUST set the drawScale. The drawScale
+     * converts the physics units to pixels.
+     *
+     * @param x      Initial x position of the box center
+     * @param y      Initial y position of the box center
+     * @param width  The object width in physics units
+     * @param height The object width in physics units
+     */
+    public BoxObstacle(float x, float y, float width, float height) {
+        super(x, y);
+        dimension = new Vector2(width, height);
+        sizeCache = new Vector2();
+        shape = new PolygonShape();
+        vertices = new float[8];
+        geometry = null;
+
+        // Initialize
+        resize(width, height);
+    }
 
     /**
      * Returns the dimensions of this box
@@ -119,44 +157,6 @@ public class BoxObstacle extends SimpleObstacle {
     public void setHeight(float value) {
         sizeCache.set(dimension.x, value);
         setDimension(sizeCache);
-    }
-
-    /**
-     * Creates a new box at the origin.
-     * <p>
-     * The size is expressed in physics units NOT pixels.  In order for
-     * drawing to work properly, you MUST set the drawScale. The drawScale
-     * converts the physics units to pixels.
-     *
-     * @param width  The object width in physics units
-     * @param height The object width in physics units
-     */
-    public BoxObstacle(float width, float height) {
-        this(0, 0, width, height);
-    }
-
-    /**
-     * Creates a new box object.
-     * <p>
-     * The size is expressed in physics units NOT pixels.  In order for
-     * drawing to work properly, you MUST set the drawScale. The drawScale
-     * converts the physics units to pixels.
-     *
-     * @param x      Initial x position of the box center
-     * @param y      Initial y position of the box center
-     * @param width  The object width in physics units
-     * @param height The object width in physics units
-     */
-    public BoxObstacle(float x, float y, float width, float height) {
-        super(x, y);
-        dimension = new Vector2(width, height);
-        sizeCache = new Vector2();
-        shape = new PolygonShape();
-        vertices = new float[8];
-        geometry = null;
-
-        // Initialize
-        resize(width, height);
     }
 
     /**

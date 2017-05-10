@@ -33,25 +33,6 @@ public class WheelObstacle extends SimpleObstacle {
     private Fixture geometry;
 
     /**
-     * Returns the radius of this circle
-     *
-     * @return the radius of this circle
-     */
-    public float getRadius() {
-        return shape.getRadius();
-    }
-
-    /**
-     * Sets the radius of this circle
-     *
-     * @param value the radius of this circle
-     */
-    public void setRadius(float value) {
-        shape.setRadius(value);
-        markDirty(true);
-    }
-
-    /**
      * Creates a new circle at the origin.
      * <p>
      * The size is expressed in physics units NOT pixels.  In order for
@@ -79,6 +60,25 @@ public class WheelObstacle extends SimpleObstacle {
         super(x, y);
         shape = new CircleShape();
         shape.setRadius(radius);
+    }
+
+    /**
+     * Returns the radius of this circle
+     *
+     * @return the radius of this circle
+     */
+    public float getRadius() {
+        return shape.getRadius();
+    }
+
+    /**
+     * Sets the radius of this circle
+     *
+     * @param value the radius of this circle
+     */
+    public void setRadius(float value) {
+        shape.setRadius(value);
+        markDirty(true);
     }
 
     /**

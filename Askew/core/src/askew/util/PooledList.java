@@ -32,100 +32,17 @@ import java.util.NoSuchElementException;
 public class PooledList<E> extends AbstractSequentialList<E> implements Iterable<E> {
 
     /**
-     * An internal node in the doubly-linked list
-     */
-    public class Entry implements Pool.Poolable {
-        /**
-         * The entry value
-         */
-        private E value;
-        /**
-         * The pointer to the next value
-         */
-        private Entry next;
-        /**
-         * The pointer to the previous value
-         */
-        private Entry prev;
-
-        /**
-         * Construct a new, isolated entry
-         */
-        public Entry() {
-            reset();
-        }
-
-        /**
-         * Returns the value for this entry
-         *
-         * @return the value for this entry
-         */
-        public E getValue() {
-            return value;
-        }
-
-        /**
-         * Removes this entry from the list in place
-         * <p>
-         * This method supports O(1) deletion.
-         */
-        public void remove() {
-            if (prev != null) {
-                prev.next = next;
-            } else {
-                head = next;
-            }
-            if (next != null) {
-                next.prev = prev;
-            } else {
-                tail = prev;
-            }
-            size--;
-            memory.free(this);
-        }
-
-        /**
-         * Resets this entry to an empty object for reuse later.
-         */
-        public void reset() {
-            value = null;
-            next = null;
-            prev = null;
-        }
-    }
-
-    /**
-     * Allocator for Entry entities
-     * <p>
-     * This class does no preallocate, but will reuse entities that have
-     * been freed.
-     */
-    private class EntryPool extends Pool<Entry> {
-
-        /**
-         * Creates a new Pool for Entrys
-         */
-        public EntryPool() {
-            super();
-        }
-
-        /**
-         * Return a new entry object
-         * <p>
-         * This method allocates a new object if there are no free ones.
-         *
-         * @return a new entry object
-         */
-        protected Entry newObject() {
-            return new Entry();
-        }
-    }
-
-    /**
      * Memory pool for reallocating deleted entities
      */
     private final Pool<Entry> memory;
-
+    /**
+     * Cached reference to the value iterator
+     */
+    private final ValueIterator values = new ValueIterator();
+    /**
+     * Cached reference to the entry iterator
+     */
+    private final EntryIterator entries = new EntryIterator();
     /**
      * The queue head
      */
@@ -424,15 +341,6 @@ public class PooledList<E> extends AbstractSequentialList<E> implements Iterable
     }
 
     /**
-     * Cached reference to the value iterator
-     */
-    private final ValueIterator values = new ValueIterator();
-    /**
-     * Cached reference to the entry iterator
-     */
-    private final EntryIterator entries = new EntryIterator();
-
-    /**
      * Returns an iterator over the list values
      *
      * @return an iterator over the list values
@@ -460,6 +368,96 @@ public class PooledList<E> extends AbstractSequentialList<E> implements Iterable
     public Iterator<Entry> entryIterator() {
         entries.reset();
         return entries;
+    }
+
+    /**
+     * An internal node in the doubly-linked list
+     */
+    public class Entry implements Pool.Poolable {
+        /**
+         * The entry value
+         */
+        private E value;
+        /**
+         * The pointer to the next value
+         */
+        private Entry next;
+        /**
+         * The pointer to the previous value
+         */
+        private Entry prev;
+
+        /**
+         * Construct a new, isolated entry
+         */
+        public Entry() {
+            reset();
+        }
+
+        /**
+         * Returns the value for this entry
+         *
+         * @return the value for this entry
+         */
+        public E getValue() {
+            return value;
+        }
+
+        /**
+         * Removes this entry from the list in place
+         * <p>
+         * This method supports O(1) deletion.
+         */
+        public void remove() {
+            if (prev != null) {
+                prev.next = next;
+            } else {
+                head = next;
+            }
+            if (next != null) {
+                next.prev = prev;
+            } else {
+                tail = prev;
+            }
+            size--;
+            memory.free(this);
+        }
+
+        /**
+         * Resets this entry to an empty object for reuse later.
+         */
+        public void reset() {
+            value = null;
+            next = null;
+            prev = null;
+        }
+    }
+
+    /**
+     * Allocator for Entry entities
+     * <p>
+     * This class does no preallocate, but will reuse entities that have
+     * been freed.
+     */
+    private class EntryPool extends Pool<Entry> {
+
+        /**
+         * Creates a new Pool for Entrys
+         */
+        public EntryPool() {
+            super();
+        }
+
+        /**
+         * Return a new entry object
+         * <p>
+         * This method allocates a new object if there are no free ones.
+         *
+         * @return a new entry object
+         */
+        protected Entry newObject() {
+            return new Entry();
+        }
     }
 
     /**

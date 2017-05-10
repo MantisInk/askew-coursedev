@@ -39,16 +39,14 @@ public class PolygonObstacle extends SimpleObstacle {
      * An earclipping triangular to make sure we work with convex shapes
      */
     private static final EarClippingTriangulator TRIANGULATOR = new EarClippingTriangulator();
-
-    /**
-     * Shape information for this physics object
-     */
-    private transient PolygonShape[] shapes;
     /**
      * Texture information for this object
      */
     protected transient PolygonRegion region;
-
+    /**
+     * Shape information for this physics object
+     */
+    private transient PolygonShape[] shapes;
     /**
      * The polygon vertices, scaled for drawing
      */
@@ -74,6 +72,41 @@ public class PolygonObstacle extends SimpleObstacle {
      * Cache of the polygon vertices (for resizing)
      */
     private transient float[] vertices;
+
+    /**
+     * Creates a (not necessarily convex) polygon at the origin.
+     * <p>
+     * The points given are relative to the polygon's origin.  They
+     * are measured in physics units.  They tile the image according
+     * to the drawScale (which must be set for drawing to work
+     * properly).
+     *
+     * @param points The polygon vertices
+     */
+    public PolygonObstacle(float[] points) {
+        this(points, 0, 0);
+    }
+
+    /**
+     * Creates a (not necessarily convex) polygon
+     * <p>
+     * The points given are relative to the polygon's origin.  They
+     * are measured in physics units.  They tile the image according
+     * to the drawScale (which must be set for drawing to work
+     * properly).
+     *
+     * @param points The polygon vertices
+     * @param x      Initial x position of the polygon center
+     * @param y      Initial y position of the polygon center
+     */
+    protected PolygonObstacle(float[] points, float x, float y) {
+        super(x, y);
+        assert points.length % 2 == 0;
+
+        // Compute the bounds.
+        initShapes(points);
+        initBounds();
+    }
 
     /**
      * Returns the dimensions of this box
@@ -146,41 +179,6 @@ public class PolygonObstacle extends SimpleObstacle {
     public void setHeight(float value) {
         sizeCache.set(dimension.x, value);
         setDimension(sizeCache);
-    }
-
-    /**
-     * Creates a (not necessarily convex) polygon at the origin.
-     * <p>
-     * The points given are relative to the polygon's origin.  They
-     * are measured in physics units.  They tile the image according
-     * to the drawScale (which must be set for drawing to work
-     * properly).
-     *
-     * @param points The polygon vertices
-     */
-    public PolygonObstacle(float[] points) {
-        this(points, 0, 0);
-    }
-
-    /**
-     * Creates a (not necessarily convex) polygon
-     * <p>
-     * The points given are relative to the polygon's origin.  They
-     * are measured in physics units.  They tile the image according
-     * to the drawScale (which must be set for drawing to work
-     * properly).
-     *
-     * @param points The polygon vertices
-     * @param x      Initial x position of the polygon center
-     * @param y      Initial y position of the polygon center
-     */
-    protected PolygonObstacle(float[] points, float x, float y) {
-        super(x, y);
-        assert points.length % 2 == 0;
-
-        // Compute the bounds.
-        initShapes(points);
-        initBounds();
     }
 
     /**

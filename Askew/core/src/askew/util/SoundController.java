@@ -54,48 +54,6 @@ import com.badlogic.gdx.utils.IdentityMap;
 public class SoundController {
 
     /**
-     * Inner class to track and active sound instance
-     * <p>
-     * A sound instance is a Sound object and a number.  That is because
-     * a single Sound object may have multiple instances.  We do not
-     * know when a sound ends.  Therefore, we simply let the sound go
-     * and we garbage collect when the lifespace is greater than the
-     * sound limit.
-     */
-    private class ActiveSound {
-        /**
-         * Reference to the sound resource
-         */
-        public final Sound sound;
-        /**
-         * The id number representing the sound instance
-         */
-        public final long id;
-        /**
-         * Is the sound looping (so no garbage collection)
-         */
-        public final boolean loop;
-        /**
-         * How long this sound has been running
-         */
-        public long lifespan;
-
-        /**
-         * Creates a new active sound with the given values
-         *
-         * @param s Reference to the sound resource
-         * @param n The id number representing the sound instance
-         * @param b Is the sound looping (so no garbage collection)
-         */
-        public ActiveSound(Sound s, long n, boolean b) {
-            sound = s;
-            id = n;
-            loop = b;
-            lifespan = 0;
-        }
-    }
-
-    /**
      * The default sound cooldown
      */
     private static final int DEFAULT_COOL = 20;
@@ -107,12 +65,10 @@ public class SoundController {
      * The default limit on sounds per frame
      */
     private static final int DEFAULT_FRAME = 4;
-
     /**
      * The singleton Sound controller instance
      */
     private static SoundController controller;
-
     /**
      * Keeps track of all of the allocated sound resources
      */
@@ -125,10 +81,7 @@ public class SoundController {
      * Support class for garbage collection
      */
     private final Array<String> collection;
-
     private final IdentityMap<String, Sound> customVolumes;
-
-
     /**
      * The number of animation frames before a key can be reused
      */
@@ -145,7 +98,6 @@ public class SoundController {
      * The number of sounds we have played this animation frame
      */
     private int current;
-
     /**
      * Creates a new SoundController with the default settings.
      */
@@ -174,8 +126,6 @@ public class SoundController {
         return controller;
     }
 
-    /// Properties
-
     /**
      * Returns the number of frames before a key can be reused
      * <p>
@@ -189,6 +139,8 @@ public class SoundController {
     public long getCoolDown() {
         return cooldown;
     }
+
+    /// Properties
 
     /**
      * Sets the number of frames before a key can be reused
@@ -266,8 +218,6 @@ public class SoundController {
         frameLimit = value;
     }
 
-    /// Sound Management
-
     /**
      * Uses the asset manager to allocate a sound
      * <p>
@@ -281,6 +231,8 @@ public class SoundController {
         Sound sound = manager.get(filename, Sound.class);
         soundbank.put(filename, sound);
     }
+
+    /// Sound Management
 
     /**
      * Plays the an instance of the given sound
@@ -423,6 +375,48 @@ public class SoundController {
         }
         collection.clear();
         current = 0;
+    }
+
+    /**
+     * Inner class to track and active sound instance
+     * <p>
+     * A sound instance is a Sound object and a number.  That is because
+     * a single Sound object may have multiple instances.  We do not
+     * know when a sound ends.  Therefore, we simply let the sound go
+     * and we garbage collect when the lifespace is greater than the
+     * sound limit.
+     */
+    private class ActiveSound {
+        /**
+         * Reference to the sound resource
+         */
+        public final Sound sound;
+        /**
+         * The id number representing the sound instance
+         */
+        public final long id;
+        /**
+         * Is the sound looping (so no garbage collection)
+         */
+        public final boolean loop;
+        /**
+         * How long this sound has been running
+         */
+        public long lifespan;
+
+        /**
+         * Creates a new active sound with the given values
+         *
+         * @param s Reference to the sound resource
+         * @param n The id number representing the sound instance
+         * @param b Is the sound looping (so no garbage collection)
+         */
+        public ActiveSound(Sound s, long n, boolean b) {
+            sound = s;
+            id = n;
+            loop = b;
+            lifespan = 0;
+        }
     }
 
 }

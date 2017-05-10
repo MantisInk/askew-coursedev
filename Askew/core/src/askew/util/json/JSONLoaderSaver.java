@@ -31,6 +31,37 @@ public class JSONLoaderSaver {
         }
     }
 
+    /**
+     * Loads an arbitrary file into a generic JSON object. Note- this must be run _after_ GDX init.
+     * So don't try to grab any config for the desktop loader.
+     *
+     * @param assetPath the path in assets referencing the file
+     * @return the JsonObject optional
+     */
+    public static Optional<JsonObject> loadArbitrary(String assetPath) {
+        FileHandle fileHandle = Gdx.files.internal(assetPath);
+        if (fileHandle.exists() && !fileHandle.isDirectory()) {
+            String contents = fileHandle.readString();
+            JsonParser jp = new JsonParser();
+            JsonElement je = jp.parse(contents);
+            return Optional.of(je.getAsJsonObject());
+        }
+
+        System.err.println("Missing: " + assetPath);
+        return Optional.empty();
+    }
+
+    public static void saveArbitrary(String s, String text) {
+        try {
+            FileWriter fw = new FileWriter(s);
+            fw.write(text);
+            fw.close();
+        } catch (IOException e) {
+            // Not much we can do, unlikely to happen anyway.
+            e.printStackTrace();
+        }
+    }
+
     public LevelModel loadLevel(String levelName) {
         FileHandle fileHandle = Gdx.files.internal("levels/" + levelName + ".json");
         if (fileHandle.exists() && !fileHandle.isDirectory()) {
@@ -86,37 +117,6 @@ public class JSONLoaderSaver {
 
     public Entity entityFromJson(String s) {
         return gson.fromJson(s, Entity.class);
-    }
-
-    /**
-     * Loads an arbitrary file into a generic JSON object. Note- this must be run _after_ GDX init.
-     * So don't try to grab any config for the desktop loader.
-     *
-     * @param assetPath the path in assets referencing the file
-     * @return the JsonObject optional
-     */
-    public static Optional<JsonObject> loadArbitrary(String assetPath) {
-        FileHandle fileHandle = Gdx.files.internal(assetPath);
-        if (fileHandle.exists() && !fileHandle.isDirectory()) {
-            String contents = fileHandle.readString();
-            JsonParser jp = new JsonParser();
-            JsonElement je = jp.parse(contents);
-            return Optional.of(je.getAsJsonObject());
-        }
-
-        System.err.println("Missing: " + assetPath);
-        return Optional.empty();
-    }
-
-    public static void saveArbitrary(String s, String text) {
-        try {
-            FileWriter fw = new FileWriter(s);
-            fw.write(text);
-            fw.close();
-        } catch (IOException e) {
-            // Not much we can do, unlikely to happen anyway.
-            e.printStackTrace();
-        }
     }
 
     public String prettyJson(JsonObject notPrettyJson) {

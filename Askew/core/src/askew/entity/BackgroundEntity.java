@@ -12,8 +12,14 @@ import lombok.Setter;
 @SuppressWarnings({"WeakerAccess", "unused"})
 public class BackgroundEntity extends Entity {
 
+    final transient Vector2 origin;
+    final transient Color tint;
+    private final transient Vector2 positionCache = new Vector2();
+    @Getter
+    protected transient float aspectRatio;
     float x;
     float y;
+    transient TextureRegion texture;
     private float width;
     private float height;
     private float depth;
@@ -24,15 +30,7 @@ public class BackgroundEntity extends Entity {
     @Setter
     @Getter
     private int color;
-
-    transient TextureRegion texture;
-    final transient Vector2 origin;
-    @Getter
-    protected transient float aspectRatio;
-
-    private final transient Vector2 positionCache = new Vector2();
     private transient Vector2 sizeCache = new Vector2();
-    final transient Color tint;
 
 
     BackgroundEntity() {

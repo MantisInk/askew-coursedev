@@ -38,6 +38,9 @@ import lombok.Setter;
 @SuppressWarnings({"FieldCanBeLocal", "SameParameterValue"})
 public class Vine extends ComplexObstacle {
 
+    public static final float lheight = .7f;
+    public static final String[] VINE_TEXTURES = {"texture/vine/vine.png", "texture/vine/vine2.png"};
+    public static final float DAMPING_ROTATION = 5f;
     private static final String VINE_NAME = "vine";
     /**
      * The debug name for the entire obstacle
@@ -52,49 +55,14 @@ public class Vine extends ComplexObstacle {
      */
     private static final float ANCHOR_RADIUS = 0.1f;
     /**
-     * The radius of each anchor pin
-     */
-    private transient float BASIC_DENSITY;
-    /**
      * The density of each plank in the bridge
      */
     private static final float lwidth = .15f;
-    public static final float lheight = .7f;
-
-    public static final String[] VINE_TEXTURES = {"texture/vine/vine.png", "texture/vine/vine2.png"};
     private static transient String VINE_TEXTURE;        // default texture
-
-    // Invisible anchor entities
-    private transient WheelObstacle start = null;                // anchor point of vine (top)
-    private transient WheelObstacle finish = null;                // optional bottom anchor (bottom)
-
-    public static final float DAMPING_ROTATION = 5f;
-    /**
-     * Set damping constant for joint rotation in vines
-     */
-
-    // Dimension information
-    private transient Vector2 dimension;
-    /**
-     * The length of the entire vine
-     */
-    private transient Vector2 planksize;
-    /**
-     * The size of a vine piece
-     */
-    private transient float linksize = 1.0f;
-    /**
-     * The length of each vine piece
-     */
-    private transient float spacing = 0.0f;
     /**
      * The spacing between each piece
      */
     private final transient boolean topPin;
-    @Getter
-    private transient Obstacle endpt;                        // to help with tutorial getting vine endpt
-
-
     //JSON
     @Getter
     @Setter
@@ -123,6 +91,33 @@ public class Vine extends ComplexObstacle {
     @Getter
     @Setter
     protected float omega = -400f;
+    /**
+     * The radius of each anchor pin
+     */
+    private transient float BASIC_DENSITY;
+    // Invisible anchor entities
+    private transient WheelObstacle start = null;                // anchor point of vine (top)
+    private transient WheelObstacle finish = null;                // optional bottom anchor (bottom)
+    /**
+     * Set damping constant for joint rotation in vines
+     */
+
+    // Dimension information
+    private transient Vector2 dimension;
+    /**
+     * The length of the entire vine
+     */
+    private transient Vector2 planksize;
+    /**
+     * The size of a vine piece
+     */
+    private transient float linksize = 1.0f;
+    /**
+     * The length of each vine piece
+     */
+    private transient float spacing = 0.0f;
+    @Getter
+    private transient Obstacle endpt;                        // to help with tutorial getting vine endpt
     /**
      * starting angular velocity of vine
      */

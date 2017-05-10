@@ -31,6 +31,10 @@ import com.badlogic.gdx.physics.box2d.World;
  */
 public abstract class TreeParent extends ComplexObstacle {
 
+    /**
+     * coords for starting branch off this trunk
+     */
+    public transient static final float DAMPING_ROTATION = 5f;
     static final String TRUNK_NAME = "trunk";
     /**
      * The debug name for the entire obstacle
@@ -45,11 +49,6 @@ public abstract class TreeParent extends ComplexObstacle {
      */
     static final float lwidth = .25f;
     static final float lheight = 1.0f;
-
-    /**
-     * The spacing between each link
-     */
-    protected transient Vector2 dimension;
     /**
      * The size of the entire bridge
      */
@@ -66,9 +65,9 @@ public abstract class TreeParent extends ComplexObstacle {
 
     public transient Vector2 final_norm = null;
     /**
-     * coords for starting branch off this trunk
+     * The spacing between each link
      */
-    public transient static final float DAMPING_ROTATION = 5f;
+    protected transient Vector2 dimension;
     /**
      * Set damping constant for joint rotation in vines
      */

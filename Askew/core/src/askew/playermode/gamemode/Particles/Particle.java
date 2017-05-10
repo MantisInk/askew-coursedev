@@ -9,16 +9,11 @@ public class Particle implements Comparable {
 
     float x;
     float y;
-    private float vx;
-    private float vy;
-    private float fx;
-    private float fy;
     float width;
     float height;
     @Getter
     float depth;
     float angle;
-    private float rot;
     @Getter
     int drawNumber;
     float accumulator;
@@ -26,6 +21,11 @@ public class Particle implements Comparable {
     int type;
     int textureNum;
     Color tint;
+    private float vx;
+    private float vy;
+    private float fx;
+    private float fy;
+    private float rot;
 
 
     public Particle() {

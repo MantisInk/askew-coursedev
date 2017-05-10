@@ -52,54 +52,20 @@ public class TutorialModeController extends GameModeController {
     private final int STAGE_SHIMMY = 3;
     private final int STAGE_FLING = 4;
     private final int STAGE_VINE = 5;
-    private int currentStage = STAGE_PINNED;
-    private boolean next = false;
-
     private final float CONTROLLER_DEADZONE = 0.15f;
-
-    private boolean pressedA = false;
-    private boolean prevRightGrab;
-    private boolean prevLeftGrab;
-    private boolean grabbedAll;
-
-    private float time = 0f;
-
-    private Animation joystickAnimation;
-    private Animation bumperLAnimation;
-    private Animation bumperRAnimation;
-    private float elapseTime;
-    private float count;
-
-    // selected animation textures to be drawn
-    private TextureRegion joystickNeutralTexture;
-    private TextureRegion joystickTexture;
-    private TextureRegion bumperLTexture;
-    private TextureRegion bumperRTexture;
-    private Texture container;
-
     // list of entities for stage of tutorial
     private final ArrayList<Trunk> trunkEntities = new ArrayList<>();
     private final ArrayList<Boolean> trunkGrabbed = new ArrayList<>();
     private final ArrayList<Vine> vineEntities = new ArrayList<>();
-
     // margin allowance for measuring distance from setpoints
     private final float[] inRangeAllowance = {0.02f, 0.02f, 0.02f, ARMSPAN / 2, 0.05f};
-    // list of setpoints for drawing helplines & other vars
-    private int inRangeSetPt = -1;            // step progression within tutorial level
     private final int MINUS30 = -2;            // constant as signal for drawing help lines -30 degrees from moving arm
     private final int MINUS10 = -1;
     private final int NEUTRAL = 0;            // constant as signal for drawing help lines when moving arm close to target
     private final int PLUS10 = 1;
     private final int PLUS30 = 2;            // constant as signal for drawing help lines +30 degrees from moving arm
     private final int EAST = 3;
-    private int targetLine = NEUTRAL;        // variable to store decision on what type of help line to draw
-    private float angleDiff = 0f;            // keeps track of (arm angle minus target angle) for sloth to draw
-    private boolean nextSetPt = false;
-    private int ind = -1;
-    private float omega = 0;
     private final float omega_0 = 0.15f;
-    private boolean swing = false;
-    private boolean back = false;
     private final float[] grabSetPoints = {14.019997f, 11.73999f, 9.399997f, 7.0199966f, 4.720001f};
     private final Vector2[] shimmySetPoints = {
             new Vector2(12f, 13f),
@@ -139,9 +105,49 @@ public class TutorialModeController extends GameModeController {
     private final boolean[] shimmyGrabbed = {false, false, false, false, false};
     private final int[] shimmyDir = {SHIMMY_S, SHIMMY_E, SHIMMY_N, SHIMMY_E, SHIMMY_SE};
     private final boolean[] flingGrabbed = {false, false, false, false};
-    private int[] flingDir = {SHIMMY_NE, SHIMMY_SE, SHIMMY_E, SHIMMY_SE};
     private final boolean[] vineGrabbed = {false, false, false, false, false, false, false, false};
     private final int[] vineDir = {SHIMMY_E, SHIMMY_SE, SHIMMY_E, SHIMMY_E, SHIMMY_N, SHIMMY_E, SHIMMY_E, SHIMMY_NE};
+    private int currentStage = STAGE_PINNED;
+    private boolean next = false;
+    private boolean pressedA = false;
+    private boolean prevRightGrab;
+    private boolean prevLeftGrab;
+    private boolean grabbedAll;
+    private float time = 0f;
+    private Animation joystickAnimation;
+    private Animation bumperLAnimation;
+    private Animation bumperRAnimation;
+    private float elapseTime;
+    private float count;
+    // selected animation textures to be drawn
+    private TextureRegion joystickNeutralTexture;
+    private TextureRegion joystickTexture;
+    private TextureRegion bumperLTexture;
+    private TextureRegion bumperRTexture;
+    private Texture container;
+    // list of setpoints for drawing helplines & other vars
+    private int inRangeSetPt = -1;            // step progression within tutorial level
+    private int targetLine = NEUTRAL;        // variable to store decision on what type of help line to draw
+    private float angleDiff = 0f;            // keeps track of (arm angle minus target angle) for sloth to draw
+    private boolean nextSetPt = false;
+    private int ind = -1;
+    private float omega = 0;
+    private boolean swing = false;
+    private boolean back = false;
+    private int[] flingDir = {SHIMMY_NE, SHIMMY_SE, SHIMMY_E, SHIMMY_SE};
+
+    /**
+     * Reference to the character avatar
+     */
+
+    public TutorialModeController() {
+        super();
+        currentStage = 0;
+        trunkEntities.clear();
+        MAX_TUTORIAL = GlobalConfiguration.getInstance().getAsInt("maxTutorial");
+    }
+
+    // Physics entities for the game
 
     /**
      * Load the assets for this controller.
@@ -164,19 +170,6 @@ public class TutorialModeController extends GameModeController {
         }
         DEFAULT_LEVEL = "tutorial0";
         loadLevel = DEFAULT_LEVEL;
-    }
-
-    // Physics entities for the game
-
-    /**
-     * Reference to the character avatar
-     */
-
-    public TutorialModeController() {
-        super();
-        currentStage = 0;
-        trunkEntities.clear();
-        MAX_TUTORIAL = GlobalConfiguration.getInstance().getAsInt("maxTutorial");
     }
 
     /**

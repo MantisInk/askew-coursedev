@@ -38,22 +38,41 @@ import lombok.Getter;
 @SuppressWarnings("WeakerAccess")
 public abstract class SimpleObstacle extends Obstacle {
     /**
-     * The physics body for Box2D.
-     */
-    transient Body body;
-
-    /**
-     * The texture for the shape.
-     */
-    protected transient TextureRegion texture;
-
-    /**
      * The texture origin for drawing
      */
     @Getter
     protected final transient Vector2 origin;
+    /**
+     * The texture for the shape.
+     */
+    protected transient TextureRegion texture;
+    /**
+     * The physics body for Box2D.
+     */
+    transient Body body;
 
     /// BodyDef Methods
+
+    /**
+     * Creates a new simple physics object at the origin.
+     * <p>
+     * REMEMBER: The size is in physics units, not pixels.
+     */
+    SimpleObstacle() {
+        this(0, 0);
+    }
+
+    /**
+     * Creates a new simple physics object
+     *
+     * @param x Initial x position in world coordinates
+     * @param y Initial y position in world coordinates
+     */
+    SimpleObstacle(float x, float y) {
+        super(x, y);
+        origin = new Vector2();
+        body = null;
+    }
 
     /**
      * Returns the body type for Box2D physics
@@ -527,6 +546,8 @@ public abstract class SimpleObstacle extends Obstacle {
         }
     }
 
+    /// FixtureDef Methods
+
     /**
      * Returns the angular damping for this body.
      * <p>
@@ -564,8 +585,6 @@ public abstract class SimpleObstacle extends Obstacle {
             super.setAngularDamping(value);
         }
     }
-
-    /// FixtureDef Methods
 
     /**
      * Sets the density of this body
@@ -625,6 +644,8 @@ public abstract class SimpleObstacle extends Obstacle {
         }
     }
 
+    /// MassData Methods
+
     /**
      * Sets whether this object is a sensor.
      * <p>
@@ -664,8 +685,6 @@ public abstract class SimpleObstacle extends Obstacle {
             }
         }
     }
-
-    /// MassData Methods
 
     /**
      * Returns the center of mass of this body
@@ -732,6 +751,8 @@ public abstract class SimpleObstacle extends Obstacle {
         return (body != null ? body.getMass() : super.getMass());
     }
 
+    /// Texture Information
+
     /**
      * Sets the mass of this body
      * <p>
@@ -755,8 +776,6 @@ public abstract class SimpleObstacle extends Obstacle {
             body.resetMassData();
         }
     }
-
-    /// Texture Information
 
     /**
      * Returns the object texture for drawing purposes.
@@ -812,27 +831,6 @@ public abstract class SimpleObstacle extends Obstacle {
      */
     public Body getBody() {
         return body;
-    }
-
-    /**
-     * Creates a new simple physics object at the origin.
-     * <p>
-     * REMEMBER: The size is in physics units, not pixels.
-     */
-    SimpleObstacle() {
-        this(0, 0);
-    }
-
-    /**
-     * Creates a new simple physics object
-     *
-     * @param x Initial x position in world coordinates
-     * @param y Initial y position in world coordinates
-     */
-    SimpleObstacle(float x, float y) {
-        super(x, y);
-        origin = new Vector2();
-        body = null;
     }
 
     /**

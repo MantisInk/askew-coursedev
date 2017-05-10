@@ -110,10 +110,10 @@ public class EntityTree {
 
         final String name;
         final String texturePath;//maybe string
-        Texture texture = null;
         final ETNode parent;
-        ArrayList<ETNode> children;
         final boolean isLeaf;
+        Texture texture = null;
+        ArrayList<ETNode> children;
 
         public ETNode(ETNode parent, String name, String texturePath, boolean isLeaf) {
             this.name = name;

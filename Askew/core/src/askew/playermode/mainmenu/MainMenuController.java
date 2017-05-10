@@ -21,34 +21,23 @@ import lombok.Setter;
 
 @SuppressWarnings("FieldCanBeLocal")
 public class MainMenuController extends WorldController {
-    @Getter
-    @Setter
-    private int selected = 1;
-    @Getter
-    @Setter
-    private int minLevel = 1;
-    @Getter
-    @Setter
-    private int maxLevel = 10;
-
+    private static final String FERN_TEXTURE = "texture/background/fern.png";
+    private static final String MENU_BACKGROUND1_TEXTURE = "texture/background/menu1.png";
+    private static final String MENU_BACKGROUND2_TEXTURE = "texture/background/menu2.png";
+    private static final String MENU_BACKGROUND_TEXTURE = "texture/background/menu_background.png";
+    private static final String MENU_MUSIC = "sound/music/levelselect.ogg";
     private final int MAX_LEVEL;
-
     private final Color fontcolor = new Color(.984f, .545f, .384f, 1);
-
     // main menu modes
     private final int HOME_SCREEN = 0;
     private final int LEVEL_SELECT = 1;
     private final int SETTINGS = 2;
-    private int mode;
-    private int prevMode;
-
     // home mode options
     private final int PLAY_BUTTON = 0;
     private final int TUTORIAL_BUTTON = 1;
     private final int LEVEL_SELECT_BUTTON = 2;
     private final int SETTINGS_BUTTON = 3;
     private final int QUIT_BUTTON = 4;
-    private int home_button = PLAY_BUTTON;
     private final String[] home_text = {"Play", "Tutorial", "Level Select", "Settings", "Quit"};
     private final Vector2[] home_text_locs = {
             new Vector2(0.6f, 0.54f),
@@ -62,20 +51,14 @@ public class MainMenuController extends WorldController {
             new Vector2(0.65f, 0.39f),
             new Vector2(0.65f, 0.32f),
             new Vector2(0.65f, 0.25f)};
-
     // level select mode options
     private final int CHOOSE_LEVEL = 0;
     private final int RETURN_HOME = 1;
-    private int select_button = CHOOSE_LEVEL;
     private final Vector2[] select_button_locs = {new Vector2(10f, 3.8f), new Vector2(10f, 2.8f)};
-
     // settings mode options
     private final int CONTROL_SCHEME = 0;
     private final int GRAB_CONTROL = 1;
     private final int SETTINGS_RETURN_HOME = 2;
-    private int settings_button = CONTROL_SCHEME;
-    private boolean control = false;        // false means one arm control scheme
-    private boolean grab = false;           // false means hold to grab
     private final String[] settings_text = {"Control Scheme", "One Arm", "Two Arm", "Grab Scheme", "Hold to Grab", "Release to Grab", "Main Menu"};
     private final Vector2[] settings_text_locs = {
             new Vector2(0.4f, 0.54f), new Vector2(0.45f, 0.54f), new Vector2(0.7f, 0.54f),
@@ -87,24 +70,47 @@ public class MainMenuController extends WorldController {
             new Vector2(0.43f, 0.43f), new Vector2(0.68f, 0.43f),
             new Vector2(0.43f, 0.33f)
     };
-
-    private static final String FERN_TEXTURE = "texture/background/fern.png";
-    private static final String MENU_BACKGROUND1_TEXTURE = "texture/background/menu1.png";
-    private static final String MENU_BACKGROUND2_TEXTURE = "texture/background/menu2.png";
-    private static final String MENU_BACKGROUND_TEXTURE = "texture/background/menu_background.png";
+    private final FileHandle fontFile = Gdx.files.internal("font/ReginaFree.ttf");
+    @Getter
+    @Setter
+    private int selected = 1;
+    @Getter
+    @Setter
+    private int minLevel = 1;
+    @Getter
+    @Setter
+    private int maxLevel = 10;
+    private int mode;
+    private int prevMode;
+    private int home_button = PLAY_BUTTON;
+    private int select_button = CHOOSE_LEVEL;
+    private int settings_button = CONTROL_SCHEME;
+    private boolean control = false;        // false means one arm control scheme
+    private boolean grab = false;           // false means hold to grab
     private boolean prevLeftUp, prevLeftDown, prevLeftLeft, prevLeftRight;        // keep track of previous joystick positions
     private boolean leftUp, leftDown, leftLeft, leftRight;                        // track current joystick positions
-    private static final String MENU_MUSIC = "sound/music/levelselect.ogg";
-
     @Getter
     private String nextCon = "";
-
-    private final FileHandle fontFile = Gdx.files.internal("font/ReginaFree.ttf");
     private BitmapFont regina;
     private BitmapFont regina1;
     private BitmapFont regina2;
 
     private Texture fern, menu1, menu2, menu;
+
+    public MainMenuController() {
+        mode = PLAY_BUTTON;
+        prevLeftUp = false;
+        prevLeftDown = false;
+        prevLeftLeft = false;
+        prevLeftRight = false;
+        leftUp = false;
+        leftDown = false;
+        leftLeft = false;
+        leftRight = false;
+        MAX_LEVEL = GlobalConfiguration.getInstance().getAsInt("maxLevel");
+        control = GlobalConfiguration.getInstance().getAsInt("flowControlMode") != 1;
+        grab = GlobalConfiguration.getInstance().getAsInt("flowMovementMode") != 1;
+    }
 
     // player selected another mode
     public void preLoadContent(MantisAssetManager manager) {
@@ -136,21 +142,6 @@ public class MainMenuController extends WorldController {
         regina2 = generator.generateFont(param);
         generator.dispose();
         SoundController.getInstance().allocate(manager, MENU_MUSIC);
-    }
-
-    public MainMenuController() {
-        mode = PLAY_BUTTON;
-        prevLeftUp = false;
-        prevLeftDown = false;
-        prevLeftLeft = false;
-        prevLeftRight = false;
-        leftUp = false;
-        leftDown = false;
-        leftLeft = false;
-        leftRight = false;
-        MAX_LEVEL = GlobalConfiguration.getInstance().getAsInt("maxLevel");
-        control = GlobalConfiguration.getInstance().getAsInt("flowControlMode") != 1;
-        grab = GlobalConfiguration.getInstance().getAsInt("flowMovementMode") != 1;
     }
 
     @Override

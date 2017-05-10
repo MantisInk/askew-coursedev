@@ -21,16 +21,13 @@ public class MantisAssetManager extends AssetManager {
     public static final String WALL_TEXTURE = "texture/wall/wall.png";
     public static final String EDGE_TEXTURE = "texture/wall/edge.png";
     public static final String THORN_TEXTURE = "texture/thorn/thorns.png";
+    @Getter
+    private final Map<String, TextureRegion> processedTextureMap;
     private boolean loaded;
     private boolean preloaded;
-
     @Getter
     @Setter
     private String[] texturePaths;
-
-    @Getter
-    private final Map<String, TextureRegion> processedTextureMap;
-
     @Getter
     private TextureAtlas textureAtlas;
 

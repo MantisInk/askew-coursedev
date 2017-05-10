@@ -12,19 +12,19 @@ public class InputControllerManager {
 
     private final List<InputController> inputControllerList;
 
+    private InputControllerManager() {
+        this.inputControllerList = new ArrayList<>();
+        for (int i = 0; i < NUM_CONTROLLERS; ++i) {
+            inputControllerList.add(new InputController(i));
+        }
+    }
+
     public static InputControllerManager getInstance() {
         if (instance == null) {
             instance = new InputControllerManager();
         }
 
         return instance;
-    }
-
-    private InputControllerManager() {
-        this.inputControllerList = new ArrayList<>();
-        for (int i = 0; i < NUM_CONTROLLERS; ++i) {
-            inputControllerList.add(new InputController(i));
-        }
     }
 
     public InputController getController(int index) {

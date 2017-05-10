@@ -58,22 +58,37 @@ public class GameModeController extends WorldController {
 
 
     public static final float MAX_MUSIC_VOLUME = 0.15f;
-    final Affine2 camTrans = new Affine2();
-
+    static final float CYCLES_OF_INTRO = 50f;
+    private static final String[] GAMEPLAY_MUSIC = new String[]{
+            "sound/music/askew.ogg",
+            "sound/music/flowwantshisorherbaby.ogg",
+            "sound/music/youdidit.ogg",
+            "sound/music/Lauren_Track1.ogg",
+            "sound/music/Lauren_Track2.ogg"
+    };
+    private static final String GRAB_SOUND = "sound/effect/grab.wav";
+    private static final String VICTORY_SOUND = "sound/effect/realvictory.wav";
+    private static final String RELEASE_SOUND = "sound/effect/release.wav";
+    private static final String ARM_SOUND = "sound/effect/arm.wav";
+    private static final String WIND_SOUND = "sound/effect/wind.wav";
+    private static final String FALL_MUSIC = "sound/music/fallingtoyourdeath" +
+            ".wav";
+    private static final float NEAR_FALL_DEATH_DISTANCE = 9;
+    private static final float LOWEST_ENTITY_FALL_DEATH_THRESHOLD = 12;
+    private static final int MAX_PARTICLES = 5000;
+    private static final int INITIAL_FOG = 300;
     /**
-     * Track asset loading from all instances and subclasses
+     * The new heavier gravity for this world (so it is not so floaty)
      */
-    private AssetState platformAssetState = AssetState.EMPTY;
-
+    private static final float DEFAULT_GRAVITY = -12.5f;//-15.7f;
     /**
      * Track asset loading from all instances and subclasses
      */
     @Getter
     protected static boolean playerIsReady = false;
-    @Getter
-    protected boolean paused = false;
-    private boolean prevPaused = false;
-    private boolean victory = false;
+    // Physics entities for the game
+    static OwlModel owl;
+    final Affine2 camTrans = new Affine2();
     // fern selection indicator locations for pause menu options
     final Vector2[] pause_locs = {
             new Vector2(0.68f, 0.53f),
@@ -83,58 +98,48 @@ public class GameModeController extends WorldController {
             new Vector2(0.08f, 0.53f),
             new Vector2(0.22f, 0.43f),
             new Vector2(0.12f, 0.33f)};
-
-    private static final String[] GAMEPLAY_MUSIC = new String[]{
-            "sound/music/askew.ogg",
-            "sound/music/flowwantshisorherbaby.ogg",
-            "sound/music/youdidit.ogg",
-            "sound/music/Lauren_Track1.ogg",
-            "sound/music/Lauren_Track2.ogg"
-    };
-
-    private static final String GRAB_SOUND = "sound/effect/grab.wav";
-    private static final String VICTORY_SOUND = "sound/effect/realvictory.wav";
-    private static final String RELEASE_SOUND = "sound/effect/release.wav";
-    private static final String ARM_SOUND = "sound/effect/arm.wav";
-    private static final String WIND_SOUND = "sound/effect/wind.wav";
-    private static final String FALL_MUSIC = "sound/music/fallingtoyourdeath" +
-            ".wav";
-
-    private Sound grabSound;
-    private Sound releaseSound;
-    private Sound victorySound;
-
-    @Setter
-    protected String loadLevel, DEFAULT_LEVEL;
-    LevelModel levelModel;                // LevelModel for the level the player is currently on
     private final int MAX_LEVEL;    // track int val of lvl #
-
-    private float currentTime;
-    private float recordTime;    // track current and record time to complete level
     private final boolean storeTimeRecords;
     private final RecordBook records = RecordBook.getInstance();
-
-    private PhysicsController collisions;
-
     private final JSONLoaderSaver jsonLoaderSaver;
-    private float initFlowX;
-    private float initFlowY;
     private final int PAUSE_RESUME = 0;
     private final int PAUSE_RESTART = 1;
     private final int PAUSE_MAINMENU = 2;
-    int pause_mode = PAUSE_RESUME;
     private final int VICTORY_NEXT = 0;
     private final int VICTORY_RESTART = 1;
     private final int VICTORY_MAINMENU = 2;
-    private int victory_mode = VICTORY_NEXT;
+    private final ParticleController particleController;
+    @Getter
+    protected boolean paused = false;
+    @Setter
+    protected String loadLevel, DEFAULT_LEVEL;
+    LevelModel levelModel;                // LevelModel for the level the player is currently on
+    int pause_mode = PAUSE_RESUME;
     Texture background;
     Texture pauseTexture;
-    private Texture victoryTexture;
     Texture fern;
+    /**
+     * The opacity of the black text covering the screen. Game can start
+     * when this is zero.
+     */
+    float coverOpacity;
+    /**
+     * Track asset loading from all instances and subclasses
+     */
+    private AssetState platformAssetState = AssetState.EMPTY;
+    private boolean prevPaused = false;
+    private boolean victory = false;
+    private Sound grabSound;
+    private Sound releaseSound;
+    private Sound victorySound;
+    private float currentTime;
+    private float recordTime;    // track current and record time to complete level
+    private PhysicsController collisions;
+    private float initFlowX;
+    private float initFlowY;
+    private int victory_mode = VICTORY_NEXT;
+    private Texture victoryTexture;
     private Texture edgefade;
-    private static final float NEAR_FALL_DEATH_DISTANCE = 9;
-    private static final float LOWEST_ENTITY_FALL_DEATH_THRESHOLD = 12;
-    static final float CYCLES_OF_INTRO = 50f;
     private float fallDeathHeight;
     private String selectedTrack;
     private String lastLevel;
@@ -143,23 +148,31 @@ public class GameModeController extends WorldController {
     private float cameraY;
     private float cameraVelocityX;
     private float cameraVelocityY;
-
     //For playtesting control schemes
     private int currentMovement;
     private int currentControl;
     private float windVolume;
-
-
-    /**
-     * The opacity of the black text covering the screen. Game can start
-     * when this is zero.
-     */
-    float coverOpacity;
-
-    private final ParticleController particleController;
-    private static final int MAX_PARTICLES = 5000;
-    private static final int INITIAL_FOG = 300;
     private float fogTime;
+
+
+    // Physics constants for initialization
+    /**
+     * Creates and initialize a new instance of the platformer game
+     * <p>
+     * The game has default gravity and other settings
+     */
+    public GameModeController() {
+        super(DEFAULT_GRAVITY);
+        collisions = new PhysicsController();
+        world.setContactListener(collisions);
+        DEFAULT_LEVEL = GlobalConfiguration.getInstance().getAsString("defaultLevel");
+        MAX_LEVEL = GlobalConfiguration.getInstance().getAsInt("maxLevel");
+        loadLevel = DEFAULT_LEVEL;
+        storeTimeRecords = GlobalConfiguration.getInstance().getAsBoolean("storeTimeRecords");
+        jsonLoaderSaver = new JSONLoaderSaver(false);
+        slothList = new ArrayList<>();
+        particleController = new ParticleController(this, MAX_PARTICLES);
+    }
 
     /**
      * Preloads the assets for this controller.
@@ -229,34 +242,6 @@ public class GameModeController extends WorldController {
 
         super.loadContent(manager);
         platformAssetState = AssetState.COMPLETE;
-    }
-
-
-    // Physics constants for initialization
-    /**
-     * The new heavier gravity for this world (so it is not so floaty)
-     */
-    private static final float DEFAULT_GRAVITY = -12.5f;//-15.7f;
-
-    // Physics entities for the game
-    static OwlModel owl;
-
-    /**
-     * Creates and initialize a new instance of the platformer game
-     * <p>
-     * The game has default gravity and other settings
-     */
-    public GameModeController() {
-        super(DEFAULT_GRAVITY);
-        collisions = new PhysicsController();
-        world.setContactListener(collisions);
-        DEFAULT_LEVEL = GlobalConfiguration.getInstance().getAsString("defaultLevel");
-        MAX_LEVEL = GlobalConfiguration.getInstance().getAsInt("maxLevel");
-        loadLevel = DEFAULT_LEVEL;
-        storeTimeRecords = GlobalConfiguration.getInstance().getAsBoolean("storeTimeRecords");
-        jsonLoaderSaver = new JSONLoaderSaver(false);
-        slothList = new ArrayList<>();
-        particleController = new ParticleController(this, MAX_PARTICLES);
     }
 
     // for use in progressing through levels
