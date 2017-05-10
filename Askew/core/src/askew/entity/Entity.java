@@ -56,7 +56,7 @@ public abstract class Entity implements Comparable {
         return objectScaleCache;
     }
 
-    protected void setObjectScale(Vector2 value) {
+    public void setObjectScale(Vector2 value) {
         setObjectScale(value.x, value.y);
     }
 
