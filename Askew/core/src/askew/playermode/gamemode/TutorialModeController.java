@@ -15,6 +15,7 @@ import askew.InputController;
 import askew.InputControllerManager;
 import askew.MantisAssetManager;
 import askew.entity.Entity;
+import askew.entity.FilterGroup;
 import askew.entity.obstacle.Obstacle;
 import askew.entity.tree.Trunk;
 import askew.entity.vine.Vine;
@@ -29,6 +30,7 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.Filter;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -254,7 +256,8 @@ public class TutorialModeController extends GameModeController {
 		ind = -1;
 		swing = false;
 		back = false;
-		ebbLvl = ebbGrabPts;
+//		ebbLvl = ebbGrabPts;
+		ebbLvl = ebbFlingUp;
 		for(int i = 0; i < shimmyGrabbed.length; i++)
 			shimmyGrabbed[i] = false;
 		for(int i = 0; i < flingGrabbed.length; i++)
@@ -286,7 +289,23 @@ public class TutorialModeController extends GameModeController {
 			slothList.get(0).pin(world);
 			slothList.get(0).setPinned();
 		}
-
+		if(currentStage == STAGE_EBB){
+			Filter f = new Filter();
+			f.maskBits = FilterGroup.NOCOLLIDE;
+			f.categoryBits = FilterGroup.VINE;
+			for(Entity obj : objects) {
+				if (obj instanceof Trunk) {
+					for (Obstacle plank : ((Trunk)obj).getBodies()) {
+						plank.setFilterData(f);
+					}
+				}
+				if (obj instanceof Vine) {
+					for(Obstacle plank: ((Vine)obj).getBodies()) {
+						plank.setFilterData(f);
+					}
+				}
+			}
+		}
 	}
 
 	/**
@@ -467,6 +486,69 @@ public class TutorialModeController extends GameModeController {
 				if((swing && ind == 5) || back && ind == 5) {
 					ebbLvl++;
 				}
+				break;
+			case ebbVine1:
+				for(Trunk t : trunkEntities) {
+					for(Obstacle plank: t.getBodies()){
+						if(plank.getBody().getUserData() instanceof Obstacle && ((Obstacle)plank.getBody().getUserData()).isGrabbed()) {
+							ind = trunkEntities.indexOf(t);
+							if(ind != 6) {
+								flingGrabbed[0] = false;
+							}
+							trunkGrabbed.set(ind,true);
+						}
+					}
+				}
+				for(Vine v : vineEntities) {
+					ind = vineEntities.indexOf(v);
+//					System.out.print(";aliej;owihtr;uhtojse;rle"+ ind+"   ");
+					for (Obstacle plank : v.getBodies()) {
+//						try {
+//						System.out.println(plank.getName());
+						if (plank.getBody().getUserData() instanceof Obstacle) {
+							if(((Obstacle) plank.getBody().getUserData()).isGrabbed()) {
+								if (ind != 0) {
+									trunkGrabbed.set(6, false);
+								}
+								flingGrabbed[ind] = true;
+							}
+						}
+//						} catch (NullPointerException e) {
+//							;
+//						}
+//					}
+					}
+				}
+				swing = flingGrabbed[0];
+				back = trunkGrabbed.get(6);
+				System.out.print(swing + "   " + back + "   " + ind + "   " + trunkGrabbed.get(6) + "   ");
+				if (swing && back) {
+					ebbLvl++;
+				}
+			case ebbVine2:
+				break;
+		}
+		Filter f = new Filter();
+		f.maskBits = FilterGroup.WALL | FilterGroup.SLOTH | FilterGroup.HAND;
+		f.categoryBits = FilterGroup.VINE;
+		for (int i = 0; i < ebbTrunkNum[ebbLvl]; i++) {
+			for(Obstacle plank: trunkEntities.get(i).getBodies()) {
+				plank.setFilterData(f);
+			}
+		}
+		if (ebbLvl >= ebbVine1) {
+			for(Obstacle plank: vineEntities.get(0).getBodies()) {
+//				System.out.println("getting filter");
+				plank.setFilterData(f);
+			}
+		}
+		if (ebbLvl >= ebbVine2) {
+			for(Obstacle plank: vineEntities.get(1).getBodies()) {
+				plank.setFilterData(f);
+			}
+			for(Obstacle plank: vineEntities.get(2).getBodies()) {
+				plank.setFilterData(f);
+			}
 		}
 		return;
 	}
@@ -950,6 +1032,7 @@ public class TutorialModeController extends GameModeController {
 
 		canvas.begin(camTrans);
 		Collections.sort(objects);
+
 		for(Entity obj : objects) {
 			obj.setDrawScale(worldScale);
 			// if stage 2, tint trunks if already grabbed
