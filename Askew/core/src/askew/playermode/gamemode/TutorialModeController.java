@@ -43,13 +43,14 @@ import static askew.entity.sloth.SlothModel.*;
 
 /**
  * Gameplay specific controller for the platformer game.
- *
+ * <p>
  * You will notice that asset loading is not grabbedAll with static methods this time.
  * Instance asset loading makes it easier to process our game modes in a loop, which
  * is much more scalable. However, we still want the assets themselves to be static.
  * This is the purpose of our AssetState variable; it ensures that multiple instances
  * place nicely with the static assets.
  */
+@SuppressWarnings("FieldCanBeLocal")
 public class TutorialModeController extends GameModeController {
 
 	private int MAX_TUTORIAL;
@@ -305,7 +306,7 @@ public class TutorialModeController extends GameModeController {
 		super.populateLevel();
 		trunkEntities.clear();
 		vineEntities.clear();
-		for(Entity e: objects) {
+		for(Entity e: entities) {
 			if(e instanceof Trunk) {
 				trunkEntities.add((Trunk)e);
 				trunkGrabbed.add(false);
@@ -321,7 +322,7 @@ public class TutorialModeController extends GameModeController {
 		if(currentStage == STAGE_EBB){
 			Filter f = new Filter();
 			f.maskBits = FilterGroup.NOCOLLIDE;
-			for(Entity obj : objects) {
+			for(Entity obj : entities) {
 				f.categoryBits = FilterGroup.VINE;
 				if (obj instanceof Trunk) {
 					for (Obstacle plank : ((Trunk)obj).getBodies()) {
@@ -775,166 +776,184 @@ public class TutorialModeController extends GameModeController {
 
 	public boolean checkGrabbedPt(Vector2 setpt, int dir) {
 //		System.out.print("   setpt: ("+setpt.x+","+setpt.y+")   ");
-		Body rTarget, lTarget, tTarget, bTarget;
-		Vector2 rtPos, ltPos, ttPos, btPos;
-		boolean xrange = false;
-		boolean yrange = false;
-		float other = (currentStage == STAGE_VINE) ? 0.6f : 0.05f;
+        Body rTarget, lTarget, tTarget, bTarget;
+        Vector2 rtPos, ltPos, ttPos, btPos;
+        boolean xrange = false;
+        boolean yrange = false;
+        float other = (currentStage == STAGE_VINE) ? 0.6f : 0.05f;
 //		System.out.print("  dir "+dir);
-		if (dir == SHIMMY_E || dir == SHIMMY_SE || dir == SHIMMY_NE) {
-			rTarget = slothList.get(0).getRightmostTarget();
-			if (rTarget == null) { return false; }
-			rtPos = rTarget.getPosition();
+        if (dir == SHIMMY_E || dir == SHIMMY_SE || dir == SHIMMY_NE) {
+            rTarget = slothList.get(0).getRightmostTarget();
+            if (rTarget == null) {
+                return false;
+            }
+            rtPos = rTarget.getPosition();
 //			System.out.print("   E: ("+rtPos.x+","+rtPos.y+")");
 
-			if (rtPos.x-0.05 >= setpt.x) { xrange = true; }
-			if (dir == SHIMMY_E && Math.abs(setpt.y-rtPos.y) <= other) {
+            if (rtPos.x - 0.05 >= setpt.x) {
+                xrange = true;
+            }
+            if (dir == SHIMMY_E && Math.abs(setpt.y - rtPos.y) <= other) {
 //				System.out.print("  setpt.y "+setpt.y+"   pos.y "+rtPos.y);
-				yrange = true; }
+                yrange = true;
+            }
 
-		} else if (dir == SHIMMY_W || dir == SHIMMY_SW || dir == SHIMMY_NW) {
-			lTarget = slothList.get(0).getLeftmostTarget();
-			if (lTarget == null) { return false; }
-			ltPos = lTarget.getPosition();
+        } else if (dir == SHIMMY_W || dir == SHIMMY_SW || dir == SHIMMY_NW) {
+            lTarget = slothList.get(0).getLeftmostTarget();
+            if (lTarget == null) {
+                return false;
+            }
+            ltPos = lTarget.getPosition();
 //			System.out.print("   W: ("+ltPos.x+","+ltPos.y+")");
 
-			if (ltPos.x+0.05 <= setpt.x) { xrange = true;}
-			if (dir == SHIMMY_W && Math.abs(setpt.y-ltPos.y) <= other) {
+            if (ltPos.x + 0.05 <= setpt.x) {
+                xrange = true;
+            }
+            if (dir == SHIMMY_W && Math.abs(setpt.y - ltPos.y) <= other) {
 //				System.out.print("  setpt.y "+setpt.y+"   pos.y "+ltPos.y);
-				yrange = true; }
+                yrange = true;
+            }
 
-		} else if (dir == SHIMMY_S || dir == SHIMMY_SE || dir == SHIMMY_SW){
-			bTarget = slothList.get(0).getBottomTarget();
+        } else if (dir == SHIMMY_S || dir == SHIMMY_SE || dir == SHIMMY_SW) {
+            bTarget = slothList.get(0).getBottomTarget();
 
-			if (bTarget == null) { return false; }
-			btPos = bTarget.getPosition();
+            if (bTarget == null) {
+                return false;
+            }
+            btPos = bTarget.getPosition();
 //			System.out.print("   S: ("+btPos.x+","+btPos.y+")");
 
-			if (btPos.y+0.05f <= setpt.y) { yrange = true; }
-			if (dir == SHIMMY_S && Math.abs(setpt.x - btPos.x) <= other) { xrange = true; }
+            if (btPos.y + 0.05f <= setpt.y) {
+                yrange = true;
+            }
+            if (dir == SHIMMY_S && Math.abs(setpt.x - btPos.x) <= other) {
+                xrange = true;
+            }
 
-		} else if (dir == SHIMMY_N || dir == SHIMMY_NE || dir == SHIMMY_NW) {
-			tTarget = slothList.get(0).getTopTarget();
-			if (tTarget == null) { return false; }
-			ttPos = tTarget.getPosition();
+        } else if (dir == SHIMMY_N || dir == SHIMMY_NE || dir == SHIMMY_NW) {
+            tTarget = slothList.get(0).getTopTarget();
+            if (tTarget == null) {
+                return false;
+            }
+            ttPos = tTarget.getPosition();
 //			System.out.print("    N: ("+ttPos.x+","+ttPos.y+")");
 
-			if (ttPos.y-0.05 >= setpt.y) { yrange = true; }
-			if (dir == SHIMMY_N && Math.abs(setpt.x - ttPos.x) <= other) { xrange = true; }
-		}
+            if (ttPos.y - 0.05 >= setpt.y) {
+                yrange = true;
+            }
+            if (dir == SHIMMY_N && Math.abs(setpt.x - ttPos.x) <= other) {
+                xrange = true;
+            }
+        }
 //		System.out.print("  xrange "+xrange+"   yrange "+yrange);
-		return xrange && yrange;
-	}
+        return xrange && yrange;
+    }
 
-	public boolean reachedBackPt(Vector2 backpt) {
-		try {
-			Vector2 handPos = slothList.get(0).getMostRecentlyGrabbed().getPosition();
-			Vector2 diff = handPos.cpy().sub(backpt);
+    private boolean reachedBackPt(Vector2 backpt) {
+        try {
+            Vector2 handPos = slothList.get(0).getMostRecentlyGrabbed().getPosition();
+            Vector2 diff = handPos.cpy().sub(backpt);
 //			System.out.print("   len "+diff.len());
 //			System.out.print("   backpt: "); printVector(backpt);
 //			System.out.print("   hand: "); printVector(handPos);
-			if(diff.len() < ARMSPAN) {
-				return true;
-			}
-			else
-				return false;
-		} catch (NullPointerException e) {
-			return false;
-		}
-	}
+            return diff.len() < ARMSPAN;
+        } catch (NullPointerException e) {
+            return false;
+        }
+    }
 
-	public boolean inRange(Vector2 setpt) {
-		return inRange(setpt, inRangeAllowance[currentStage-1]);
-	}
+    private boolean inRange(Vector2 setpt) {
+        return inRange(setpt, inRangeAllowance[currentStage - 1]);
+    }
 
-	// checks if next set point is in range for changing arm help
-	public boolean inRange(Vector2 setpt, float allowance) {
-		Body lTarget = slothList.get(0).getLeftTarget();
-		Body rTarget = slothList.get(0).getRightTarget();
-		Body lHand = slothList.get(0).getLeftHand();
-		Body rHand = slothList.get(0).getRightHand();
+    // checks if next set point is in range for changing arm help
+    private boolean inRange(Vector2 setpt, float allowance) {
+        Body lTarget = slothList.get(0).getLeftTarget();
+        Body rTarget = slothList.get(0).getRightTarget();
+        Body lHand = slothList.get(0).getLeftHand();
+        Body rHand = slothList.get(0).getRightHand();
 
-		Vector2 lhPos = lHand.getPosition();
-		Vector2 rhPos = rHand.getPosition();
-		Vector2 grabPos = new Vector2();
+        Vector2 lhPos = lHand.getPosition();
+        Vector2 rhPos = rHand.getPosition();
+        Vector2 grabPos = new Vector2();
 
-		if (lTarget == null && rTarget == null) {
-			return false;
-		}
-		Vector2 lPos, rPos;
-		boolean xrange = false;
-		boolean yrange = false;
-		float tAngle = 0f;
-		float aAngle = 0f;
-		float diff;
-		if (lTarget != null && rTarget != null) {
-			// if both hands grabbing
-			lPos = lTarget.getPosition();
-			rPos = rTarget.getPosition();
-			if(lPos.x > rPos.x) {
-				// move rh
-				tAngle = (setpt.cpy().sub(rPos).angle()+360)%360;
-				aAngle = (lhPos.cpy().sub(rhPos).angle()+360) %360;
+        if (lTarget == null && rTarget == null) {
+            return false;
+        }
+        Vector2 lPos, rPos;
+        boolean xrange = false;
+        boolean yrange = false;
+        float tAngle = 0f;
+        float aAngle = 0f;
+        float diff;
+        if (lTarget != null && rTarget != null) {
+            // if both hands grabbing
+            lPos = lTarget.getPosition();
+            rPos = rTarget.getPosition();
+            if (lPos.x > rPos.x) {
+                // move rh
+                tAngle = (setpt.cpy().sub(rPos).angle() + 360) % 360;
+                aAngle = (lhPos.cpy().sub(rhPos).angle() + 360) % 360;
 
-				xrange = Math.abs(setpt.x - lPos.x) <= ARMSPAN+allowance;
-				yrange = Math.abs(setpt.y - lPos.y) <= ARMSPAN+allowance;
-				grabPos = lPos;
-			} else {
-				// move lh
-				tAngle = (setpt.cpy().sub(lPos).angle()+360)%360;
-				aAngle = (rhPos.cpy().sub(lhPos).angle()+360) %360;
+                xrange = Math.abs(setpt.x - lPos.x) <= ARMSPAN + allowance;
+                yrange = Math.abs(setpt.y - lPos.y) <= ARMSPAN + allowance;
+                grabPos = lPos;
+            } else {
+                // move lh
+                tAngle = (setpt.cpy().sub(lPos).angle() + 360) % 360;
+                aAngle = (rhPos.cpy().sub(lhPos).angle() + 360) % 360;
 
-				xrange = Math.abs(setpt.x - rPos.x) <= ARMSPAN+allowance;
-				yrange = Math.abs(setpt.y - rPos.y) <= ARMSPAN+allowance;
-				grabPos = rPos;
-			}
-		}
-		if (lTarget != null) {
-			// move lh
-			lPos = lTarget.getPosition();
-			tAngle = (setpt.cpy().sub(lPos).angle()+360)%360;
-			aAngle = (rhPos.cpy().sub(lhPos).angle()+360) %360;
+                xrange = Math.abs(setpt.x - rPos.x) <= ARMSPAN + allowance;
+                yrange = Math.abs(setpt.y - rPos.y) <= ARMSPAN + allowance;
+                grabPos = rPos;
+            }
+        }
+        if (lTarget != null) {
+            // move lh
+            lPos = lTarget.getPosition();
+            tAngle = (setpt.cpy().sub(lPos).angle() + 360) % 360;
+            aAngle = (rhPos.cpy().sub(lhPos).angle() + 360) % 360;
 
-			xrange = Math.abs(setpt.x - lPos.x) <= ARMSPAN+allowance;
-			yrange = Math.abs(setpt.y - lPos.y) <= ARMSPAN+allowance;
-			grabPos = lPos;
-		}
-		if (rTarget != null) {
-			// move rh
-			rPos = rTarget.getPosition();
-			tAngle = (setpt.cpy().sub(rPos).angle()+360)%360;
-			aAngle = (lhPos.cpy().sub(rhPos).angle()+360) %360;
+            xrange = Math.abs(setpt.x - lPos.x) <= ARMSPAN + allowance;
+            yrange = Math.abs(setpt.y - lPos.y) <= ARMSPAN + allowance;
+            grabPos = lPos;
+        }
+        if (rTarget != null) {
+            // move rh
+            rPos = rTarget.getPosition();
+            tAngle = (setpt.cpy().sub(rPos).angle() + 360) % 360;
+            aAngle = (lhPos.cpy().sub(rhPos).angle() + 360) % 360;
 
-			xrange = Math.abs(setpt.x - rPos.x) <= ARMSPAN+allowance;
-			yrange = Math.abs(setpt.y - rPos.y) <= ARMSPAN+allowance;
-			grabPos = rPos;
-		}
+            xrange = Math.abs(setpt.x - rPos.x) <= ARMSPAN + allowance;
+            yrange = Math.abs(setpt.y - rPos.y) <= ARMSPAN + allowance;
+            grabPos = rPos;
+        }
 
-		diff = (((aAngle - tAngle)%360)+360)%360;
-		if (30 < diff && diff < 180) {
-			targetLine = MINUS30;
-		} else if (180 <= diff && diff < 330) {
-			targetLine = PLUS30;
-		} else {
-			targetLine = NEUTRAL;
-		}
+        diff = (((aAngle - tAngle) % 360) + 360) % 360;
+        if (30 < diff && diff < 180) {
+            targetLine = MINUS30;
+        } else if (180 <= diff && diff < 330) {
+            targetLine = PLUS30;
+        } else {
+            targetLine = NEUTRAL;
+        }
 //		System.out.println("aAngle "+aAngle+"  tAngle "+tAngle);
-		angleDiff = diff;
-		checkCloseToCorner(setpt,grabPos);
-		return xrange && yrange;
-	}
+        angleDiff = diff;
+        checkCloseToCorner(setpt, grabPos);
+        return xrange && yrange;
+    }
 
-	public void setTarget(Vine v) {
-		Obstacle sHand = slothList.get(0).getMostRecentlyGrabbed();
-		if (sHand == null) {
-			return;
-		}
-		Body hand = slothList.get(0).getMostRecentlyGrabbed().getBody();
-		Body otherHand = (hand == slothList.get(0).getRightHand()) ? slothList.get(0).getLeftHand() : slothList.get(0).getRightHand();
-		float aAngle = otherHand.getPosition().sub(hand.getPosition()).angle();
-		float vAngle = v.getEndpt().getPosition().sub(v.getPosition()).angle();
-		angleDiff = (((aAngle - vAngle)%360)+360)%360;
-		float lv = v.getEndpt().getLinearVelocity().x;
+    private void setTarget(Vine v) {
+        Obstacle sHand = slothList.get(0).getMostRecentlyGrabbed();
+        if (sHand == null) {
+            return;
+        }
+        Body hand = slothList.get(0).getMostRecentlyGrabbed().getBody();
+        Body otherHand = (hand == slothList.get(0).getRightHand()) ? slothList.get(0).getLeftHand() : slothList.get(0).getRightHand();
+        float aAngle = otherHand.getPosition().sub(hand.getPosition()).angle();
+        float vAngle = v.getEndpt().getPosition().sub(v.getPosition()).angle();
+        angleDiff = (((aAngle - vAngle) % 360) + 360) % 360;
+        float lv = v.getEndpt().getLinearVelocity().x;
 //		System.out.print("   lv "+lv);
 		if (10 < angleDiff && angleDiff < 350) {
 			if (lv < -0.05f) {
@@ -1130,9 +1149,9 @@ public class TutorialModeController extends GameModeController {
 				, cameraY * worldScale.y);
 
 		canvas.begin(camTrans);
-		Collections.sort(objects);
+		Collections.sort(entities);
 
-		for(Entity obj : objects) {
+		for(Entity obj : entities) {
 			obj.setDrawScale(worldScale);
 			// if stage 2, tint trunks if already grabbed
 			if(!(obj instanceof SlothModel)) {
@@ -1214,7 +1233,7 @@ public class TutorialModeController extends GameModeController {
 
 		if (debug) {
 			canvas.beginDebug(camTrans);
-			for(Entity obj : objects) {
+			for(Entity obj : entities) {
 				if( obj instanceof Obstacle){
 					((Obstacle)obj).drawDebug(canvas);
 				}
@@ -1232,39 +1251,39 @@ public class TutorialModeController extends GameModeController {
 		drawInstructions();
 		canvas.end();
 
-		if (coverOpacity > 0) {
-			Gdx.gl.glEnable(GL20.GL_BLEND);
-			displayFont.setColor(Color.WHITE);
-			Color coverColor = new Color(0,0,0,coverOpacity);
-			canvas.drawRectangle(coverColor,0,0,canvas.getWidth(), canvas
-					.getHeight());
-			coverOpacity -= (1/CYCLES_OF_INTRO);
-			Gdx.gl.glDisable(GL20.GL_BLEND);
-			canvas.begin();
-			if (!playerIsReady && !paused)
-				canvas.drawTextCentered(levelModel.getTitle(), displayFont, 0f);
-			canvas.end();
-		}
+        if (coverOpacity > 0) {
+            Gdx.gl.glEnable(GL20.GL_BLEND);
+            displayFont.setColor(Color.WHITE);
+            Color coverColor = new Color(0, 0, 0, coverOpacity);
+            canvas.drawRectangle(coverColor, 0, 0, canvas.getWidth(), canvas
+                    .getHeight());
+            coverOpacity -= (1 / CYCLES_OF_INTRO);
+            Gdx.gl.glDisable(GL20.GL_BLEND);
+            canvas.begin();
+            if (!playerIsReady && !paused)
+                canvas.drawTextCentered(levelModel.getTitle(), displayFont, 0f);
+            canvas.end();
+        }
 
-		// draw pause menu stuff over everything
-		if (paused) {
-			canvas.begin();
-			canvas.draw(pauseTexture);
-			canvas.draw(fern, Color.WHITE,fern.getWidth()/2, fern.getHeight()/2,
-					pause_locs[pause_mode].x * canvas.getWidth(), pause_locs[pause_mode].y* canvas.getHeight(),
-					0,2*worldScale.x/fern.getWidth(), 2*worldScale.y/fern.getHeight());
-			canvas.end();
-		}
+        // draw pause menu stuff over everything
+        if (paused) {
+            canvas.begin();
+            canvas.draw(pauseTexture);
+            canvas.draw(fern, Color.WHITE, fern.getWidth() / 2, fern.getHeight() / 2,
+                    pause_locs[pause_mode].x * canvas.getWidth(), pause_locs[pause_mode].y * canvas.getHeight(),
+                    0, 2 * worldScale.x / fern.getWidth(), 2 * worldScale.y / fern.getHeight());
+            canvas.end();
+        }
 
-	}
+    }
 
-	public void restart() {
-		//change back to 1
-		currentStage = 1;
-	}
+    public void restart() {
+        //change back to 1
+        currentStage = 1;
+    }
 
-	public void printVector(Vector2 v) {
-		System.out.print("("+v.x+","+v.y+")");
-	}
+    public void printVector(Vector2 v) {
+        System.out.print("(" + v.x + "," + v.y + ")");
+    }
 
 }

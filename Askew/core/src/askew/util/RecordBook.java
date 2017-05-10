@@ -15,6 +15,10 @@ public class RecordBook {
 
     private JsonObject dataBlob;
 
+    private RecordBook() {
+        dataBlob = new JsonObject();
+    }
+
     public static RecordBook getInstance() {
         if (instance == null) {
             update();
@@ -23,14 +27,10 @@ public class RecordBook {
     }
 
     /* Creates a new instance populated with the current values of the records.json. */
-    public static void update() {
+    private static void update() {
         JsonObject newBlob = JSONLoaderSaver.loadArbitrary(CONFIG_PATH).orElseThrow(RuntimeException::new);
         instance = new RecordBook();
         instance.dataBlob = newBlob;
-    }
-
-    private RecordBook() {
-        dataBlob = new JsonObject();
     }
 
     public void addLevel(String lvlname) {

@@ -19,29 +19,29 @@ import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 
 /**
  * The main class of the game.
- * 
+ * <p>
  * This class sets the window size and launches the game.  Aside from modifying
  * the window size, you should almost never need to modify this class.
  */
-public class DesktopLauncher {
-	
-	/**
-	 * Classic main method that all Java programmers know.
-	 * 
-	 * This method simply exists to start a new LwjglApplication.  For desktop games,
-	 * LibGDX is built on top of LWJGL (this is not the case for Android).
-	 * 
-	 * @param arg Command line arguments
-	 */
-	public static void main (String[] arg) {
-		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-		config.width  = 1600;
-		config.height = 900;
-		config.samples = 3;
-		config.resizable = false;
-		config.fullscreen = false;
-		config.title = "Askew";
-		config.addIcon("texture/icon.png", Files.FileType.Internal);
-		new LwjglApplication(new GDXRoot(), config);
-	}
+class DesktopLauncher {
+
+    /**
+     * Classic main method that all Java programmers know.
+     * <p>
+     * This method simply exists to start a new LwjglApplication.  For desktop games,
+     * LibGDX is built on top of LWJGL (this is not the case for Android).
+     *
+     * @param arg Command line arguments
+     */
+    public static void main(String[] arg) {
+        LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
+        config.width = 1600;
+        config.height = 900;
+        config.samples = 3;
+        config.resizable = false;
+        config.fullscreen = false;
+        config.title = "Askew";
+        config.addIcon("texture/icon.png", Files.FileType.Internal);
+        new LwjglApplication(new GDXRoot(), config);
+    }
 }

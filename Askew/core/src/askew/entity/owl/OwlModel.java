@@ -16,20 +16,25 @@ import lombok.Setter;
 
 /**
  * The owl which must be reached at the end of every level.
- *
+ * <p>
  * This should be a good example of a basic dumb entity.
  */
-public class OwlModel extends BoxObstacle  {
+@SuppressWarnings("FieldCanBeLocal")
+public class OwlModel extends BoxObstacle {
 
-    public static final String OWL_TEXTURE = "texture/owl/owl.png";
-    public static final float OWL_DRAW_WIDTH = 2.2f;
-    public static final float OWL_WIDTH = 1.8f;
-    public static final float VICTORY_SPEED = 0.15f;
+    private static final float OWL_DRAW_WIDTH = 2.2f;
+    private static final float OWL_WIDTH = 1.8f;
+    private static final float VICTORY_SPEED = 0.15f;
     private static final float VICTORY_DISTANCE = 13f;
-
+    //JSON
+    @Getter
+    @Setter
+    public float x;
+    @Getter
+    @Setter
+    public float y;
     // determined at runtime to preserve aspect ratio from designers
     private transient float owlHeight;
-
     private transient TextureRegion owlTextureRegion;
     private transient Animation idleAnimation;
     private transient Animation flyAnimation;
@@ -38,21 +43,16 @@ public class OwlModel extends BoxObstacle  {
     private transient boolean doingVictory;
     private transient float victoryDistance;
 
-    //JSON
-    @Getter @Setter
-    public float x;
-    @Getter @Setter
-    public float y;
-
 
     /**
      * Creates a new ragdoll with its head at the given position.
      *
-     * @param x  Initial x position of the ragdoll head
-     * @param y  Initial y position of the ragdoll head
+     * @param x Initial x position of the ragdoll head
+     * @param y Initial y position of the ragdoll head
      */
     public OwlModel(float x, float y) {
-        super(x,y, OWL_WIDTH, OWL_WIDTH);
+        //noinspection SuspiciousNameCombination
+        super(x, y, OWL_WIDTH, OWL_WIDTH);
         this.x = x;
         this.y = y;
         this.setBodyType(BodyDef.BodyType.StaticBody);
@@ -67,8 +67,8 @@ public class OwlModel extends BoxObstacle  {
         this.setName("owl");
     }
 
-    public void setPosition(float x, float y){
-        super.setPosition(x,y);
+    public void setPosition(float x, float y) {
+        super.setPosition(x, y);
         this.x = x;
         this.y = y;
     }
@@ -78,7 +78,7 @@ public class OwlModel extends BoxObstacle  {
     public void setTextures(MantisAssetManager manager) {
         idleAnimation = new Animation(0.127f, manager.getTextureAtlas()
                 .findRegions
-                ("idleowl"), Animation.PlayMode.LOOP);
+                        ("idleowl"), Animation.PlayMode.LOOP);
         flyAnimation = new Animation(0.127f, manager.getTextureAtlas().findRegions
                 ("owlfly"), Animation.PlayMode.LOOP);
         if (idleAnimation.getKeyFrames().length == 0)
@@ -86,7 +86,7 @@ public class OwlModel extends BoxObstacle  {
         owlTextureRegion = idleAnimation.getKeyFrame(0);
         setTexture(owlTextureRegion);
         // aspect ratio scaling
-        this.owlHeight = OWL_DRAW_WIDTH * ( owlTextureRegion.getRegionHeight() / owlTextureRegion.getRegionWidth());
+        this.owlHeight = OWL_DRAW_WIDTH * (owlTextureRegion.getRegionHeight() / owlTextureRegion.getRegionWidth());
         if (flyAnimation.getKeyFrames().length == 0)
             System.err.println("did not find anim");
     }
@@ -101,7 +101,7 @@ public class OwlModel extends BoxObstacle  {
         if (doingVictory) {
             drawFrame = flyAnimation.getKeyFrame(elapseTime, true);
             if (!drawFrame.isFlipX())
-                drawFrame.flip(true,false);
+                drawFrame.flip(true, false);
         } else {
             drawFrame = idleAnimation.getKeyFrame(elapseTime, true);
         }
@@ -109,9 +109,9 @@ public class OwlModel extends BoxObstacle  {
         setTexture(drawFrame);
         this.owlHeight = OWL_DRAW_WIDTH * (drawFrame.getRegionHeight() / drawFrame.getRegionWidth());
 
-        canvas.draw(drawFrame,Color.WHITE,origin.x,origin.y,getPosition().x*drawScale.x,getPosition().y*drawScale.y,getAngle(),
-               (1.0f/drawFrame.getRegionWidth()) *   OWL_DRAW_WIDTH * getDrawScale().x * objectScale.x,
-               (1.0f/drawFrame.getRegionHeight()  * owlHeight * getDrawScale().y * objectScale.y));
+        canvas.draw(drawFrame, Color.WHITE, origin.x, origin.y, getPosition().x * drawScale.x, getPosition().y * drawScale.y, getAngle(),
+                (1.0f / drawFrame.getRegionWidth()) * OWL_DRAW_WIDTH * getDrawScale().x * objectScale.x,
+                (1.0f / drawFrame.getRegionHeight() * owlHeight * getDrawScale().y * objectScale.y));
     }
 
     public float doVictory() {
