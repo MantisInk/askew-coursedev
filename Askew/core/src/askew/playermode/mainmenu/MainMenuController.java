@@ -369,7 +369,7 @@ public class MainMenuController extends WorldController {
                 home_button = PLAY_BUTTON;
                 GlobalConfiguration.getInstance().setFlowControlMode(control);
                 GlobalConfiguration.getInstance().setFlowMovementMode(grab);
-                GlobalConfiguration.getInstance().setFlowMovementMode(graphics);
+                GlobalConfiguration.getInstance().setGraphicsQuality(graphics);
             }
 
             if (input.didTopDPadPress() || input.didUpArrowPress() || (!prevLeftUp && leftUp)) {
