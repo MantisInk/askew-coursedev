@@ -122,7 +122,7 @@ public class BackgroundEntity extends Entity {
         angle = rads;
     }
 
-    float getWidth() {
+    public float getWidth() {
         return width;
     }
 
@@ -130,7 +130,7 @@ public class BackgroundEntity extends Entity {
         width = w;
     }
 
-    float getHeight() {
+    public float getHeight() {
         return height;
     }
 

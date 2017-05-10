@@ -56,24 +56,24 @@ import java.util.Map;
 
 import static javax.swing.JOptionPane.showInputDialog;
 
-@SuppressWarnings("FieldCanBeLocal")
 public class LevelEditorController extends WorldController {
 
+    public static final int BUFFER = 5;
+    public static final int TEXT_HEIGHT = 20;
+    public static final int FIELD_TEXT_WIDTH = 150;
+    public static final int FIELD_BOX_WIDTH = 150;
+    public static final int BUTTON_WIDTH = 75;
+    public static final int BUTTON_HEIGHT = 30;
+    public static final int TEXT_LENGTH = 175;
+    public static final int TEXT_HEIGHT1 = 20;
+    public static final int UI_WAIT_SHORT = 2;
+    public static final int UI_WAIT_LONG = 15;
+    public static final int UI_WAIT_ETERNAL = 120;
+    //In Pixels, divide by world scale for box2d.
+    public static final float GUI_LOWER_BAR_HEIGHT = 200.f;
     public static final float GUI_LEFT_BAR_WIDTH = 200.f;
     public static final float GUI_LEFT_BAR_MARGIN = 16f;
-    private static final int BUFFER = 5;
-    private static final int TEXT_HEIGHT = 20;
-    private static final int FIELD_TEXT_WIDTH = 150;
-    private static final int FIELD_BOX_WIDTH = 150;
-    private static final int BUTTON_WIDTH = 75;
-    private static final int BUTTON_HEIGHT = 30;
-    private static final int TEXT_HEIGHT1 = 20;
-    private static final ShapeRenderer gridLineRenderer = new ShapeRenderer();
-    private static final int UI_WAIT_SHORT = 2;
-    private static final int UI_WAIT_LONG = 15;
-    //In Pixels, divide by world scale for box2d.
-    private static final float GUI_LOWER_BAR_HEIGHT = 200.f;
-    private static final float GUI_EMARROW_WIDTH = 32f;
+    public static final float GUI_EMARROW_WIDTH = 32f;
     private static final String HELP_TEXT = "Welcome to the help screen. You \n" +
             "can hit H at any time to toggle this screen. Remember to save \n" +
             "often!\n" +
@@ -89,16 +89,26 @@ public class LevelEditorController extends WorldController {
             "T: Draw grid lines\n" +
             "X: (xbox controller) switch to playing the level\n" +
             "H: Toggle this help text";
-    private final JSONLoaderSaver jsonLoaderSaver;
+    private static ShapeRenderer gridLineRenderer = new ShapeRenderer();
+    public float MAX_SNAP_DISTANCE = 1f;
+    public float CAMERA_PAN_SPEED = 20f;
+    protected Vector2 oneScale;
+    JFrame editorWindow;
     //Camera Variables
-    private final Affine2 camTrans;
-    private final Vector2 oneScale;
-    private final transient CircleShape circleShape = new CircleShape();
-    private final float MAX_SNAP_DISTANCE = 1f;
-    private final float CAMERA_PAN_SPEED = 20f;
-    private final EntityTree entityTree;
-    private final GameModeController gmc;
-    private final ButtonList buttons;
+    Affine2 camTrans;
+    float cxCamera;                //lower left corner position
+    float cyCamera;
+    float adjustedCxCamera;        //center of le window position
+    float adjustedCyCamera;
+    float mouseX;                //mouse position in window
+    float mouseY;
+    float adjustedMouseX;        //mouse position adjusted to camera
+    float adjustedMouseY;
+    /**
+     * Track asset loading from all instances and subclasses
+     */
+    private AssetState levelEditorAssetState = AssetState.EMPTY;
+    private JSONLoaderSaver jsonLoaderSaver;
     @Getter
     @Setter
     private MantisAssetManager mantisAssetManager;
@@ -109,15 +119,7 @@ public class LevelEditorController extends WorldController {
     private Texture folder;
     private Texture placeholder;
     private Texture yellowbox;
-    private JFrame editorWindow;
-    private float cxCamera;                //lower left corner position
-    private float cyCamera;
-    private float adjustedCxCamera;        //center of le window position
-    private float adjustedCyCamera;
-    private float mouseX;                //mouse position in window
-    private float mouseY;
-    private float adjustedMouseX;        //mouse position adjusted to camera
-    private float adjustedMouseY;
+    private transient CircleShape circleShape = new CircleShape();
     private boolean pressedL, prevPressedL;
     @Getter
     private String currentLevel;
@@ -125,11 +127,13 @@ public class LevelEditorController extends WorldController {
      * A decrementing int that helps prevent accidental repeats of actions through an arbitrary countdown
      */
     private int inputRateLimiter = 0;
+    private EntityTree entityTree;
     private Entity selected;
     private Entity temporary;
     private Entity undoSelected;
     private Entity undoDelete;
     private Entity undoCreate;
+    private Button manip;
     private boolean dragging = false;
     private boolean creating = false;
     private boolean snapping = false;
@@ -139,6 +143,9 @@ public class LevelEditorController extends WorldController {
     private boolean currentclick = false;
     private int entitiesPerPage;
     private int entityMenuPage = 0;
+    private GameModeController gmc;
+    private ButtonList buttons;
+    private boolean didLoad;
     private boolean released;
     private boolean prompting;
     private boolean showHelp;
@@ -187,8 +194,8 @@ public class LevelEditorController extends WorldController {
     @Override
     public void setCanvas(GameCanvas canvas) {
         this.canvas = canvas;
-        this.worldScale.x = 1.0f * (float) canvas.getWidth() / bounds.getWidth();
-        this.worldScale.y = 1.0f * (float) canvas.getHeight() / bounds.getHeight();
+        this.worldScale.x = 1.0f * (float) canvas.getWidth() / (float) bounds.getWidth();
+        this.worldScale.y = 1.0f * (float) canvas.getHeight() / (float) bounds.getHeight();
     }
 
     /**
@@ -212,6 +219,7 @@ public class LevelEditorController extends WorldController {
         entityTree.setTextures(manager);
         buttons.setManager(manager);
         buttons.setTextures(manager);
+        levelEditorAssetState = AssetState.COMPLETE;
     }
 
     public void setLevel(String levelName) {
@@ -227,7 +235,10 @@ public class LevelEditorController extends WorldController {
         Gdx.input.setCursorCatched(false);
         Vector2 gravity = new Vector2(world.getGravity());
 
-        entities.stream().filter(obj -> (obj instanceof Obstacle)).forEachOrdered(obj -> ((Obstacle) obj).deactivatePhysics(world));
+        for (Entity obj : entities) {
+            if ((obj instanceof Obstacle))
+                ((Obstacle) obj).deactivatePhysics(world);
+        }
 
         entities.clear();
         buttons.clear();
@@ -254,6 +265,7 @@ public class LevelEditorController extends WorldController {
      */
     private void populateLevel() {
         levelModel = jsonLoaderSaver.loadLevel(currentLevel);
+        System.out.println(levelModel);
         if (levelModel != null)
             background = mantisAssetManager.get(levelModel.getBackground(), Texture.class);
 
@@ -261,11 +273,12 @@ public class LevelEditorController extends WorldController {
             levelModel = new LevelModel();
         }
 
-        entities.addAll(levelModel.getEntities());
+        for (Entity o : levelModel.getEntities()) {
+            entities.add(o);
+        }
     }
 
     private void populateButtons() {
-        //noinspection SuspiciousNameCombination
         buttons.add(new Button(GUI_LEFT_BAR_MARGIN,
                 GUI_LEFT_BAR_WIDTH - (2 * GUI_LEFT_BAR_MARGIN),
                 "JSON", 0, "levelgui"));
@@ -274,16 +287,13 @@ public class LevelEditorController extends WorldController {
                 GUI_LEFT_BAR_WIDTH - (2 * GUI_LEFT_BAR_MARGIN),
                 "JSON", 1, "globalconfig"));
 
-        buttons.add(new ToggleButton(GUI_LEFT_BAR_MARGIN, 5 *
-                GUI_LEFT_BAR_MARGIN,
-                0, "snapping"));
+        buttons.add(new ToggleButton(GUI_LEFT_BAR_MARGIN, 5 * GUI_LEFT_BAR_MARGIN, 0, "snapping"));
 
-        buttons.add(new ToggleButton(GUI_LEFT_BAR_MARGIN, 7 *
-                GUI_LEFT_BAR_MARGIN,
+        buttons.add(new ToggleButton(GUI_LEFT_BAR_MARGIN, 7 * GUI_LEFT_BAR_MARGIN,
+
                 1, "move far"));
 
-        buttons.add(new ToggleButton(GUI_LEFT_BAR_MARGIN, 9 *
-                GUI_LEFT_BAR_MARGIN,
+        buttons.add(new ToggleButton(GUI_LEFT_BAR_MARGIN, 9 * GUI_LEFT_BAR_MARGIN,
                 2, "drag mode"));
 
         buttons.add(new Button(11 * GUI_LEFT_BAR_MARGIN,
@@ -434,11 +444,11 @@ public class LevelEditorController extends WorldController {
                     switch (b.getName()) {
                         case ("left"):
                             entityMenuPage--;
-                            entityMenuPage = entityMenuPage % (entityTree.current.children.size() / entitiesPerPage + 1);
+                            entityMenuPage = entityMenuPage % ((int) (entityTree.current.children.size() / entitiesPerPage) + 1);
                             break;
                         case ("right"):
                             entityMenuPage++;
-                            entityMenuPage = entityMenuPage % (entityTree.current.children.size() / entitiesPerPage + 1);
+                            entityMenuPage = entityMenuPage % ((int) (entityTree.current.children.size() / entitiesPerPage) + 1);
                             break;
                         default:
                             break;
@@ -527,7 +537,7 @@ public class LevelEditorController extends WorldController {
         entities.remove(target);
     }
 
-    private Entity entityQuery() {
+    public Entity entityQuery() {
 
         Entity found = null;
         Vector2 mouse = new Vector2(adjustedMouseX, adjustedMouseY);
@@ -551,7 +561,7 @@ public class LevelEditorController extends WorldController {
         return null;
     }
 
-    private void camUpdate() {
+    public void camUpdate() {
         cxCamera = adjustedCxCamera - (((bounds.getWidth() - (GUI_LEFT_BAR_WIDTH / worldScale.x)) / 2f) + (GUI_LEFT_BAR_WIDTH / worldScale.x));
         cyCamera = adjustedCyCamera - (((bounds.getHeight() - (GUI_LOWER_BAR_HEIGHT / worldScale.y)) / 2f) + (GUI_LOWER_BAR_HEIGHT / worldScale.y));
 
@@ -646,50 +656,50 @@ public class LevelEditorController extends WorldController {
         if (InputControllerManager.getInstance().getController(0).didLeftClick()) {
             if (!processButtons(buttons.findButton(mouseX * worldScale.x, mouseY * worldScale.y))) {
 
-                if (mouseX * worldScale.x > GUI_LEFT_BAR_WIDTH) {
-                    if (mouseY * worldScale.y <= GUI_LOWER_BAR_HEIGHT) {
+                if (mouseX * worldScale.x <= GUI_LEFT_BAR_WIDTH) {
 
-                        int button = getEntityMenuButton(mouseX * worldScale.x, mouseY * worldScale.y);
-                        if (button >= entityTree.current.children.size()) {
-                            button = -2;
-                        }
-                        if (button != -2) {
-                            if (button == -1) {
-                                entityMenuPage = 0;
-                                if (entityTree.current.parent != null) {
-                                    entityTree.upFolder();
-                                    creating = false;
-                                    selected = null;
-                                }
-                            } else {
-                                if (!entityTree.current.children.get(button).isLeaf) {
-                                    entityMenuPage = 0;
-                                    entityTree.setCurrent(entityTree.current.children.get(button));
-                                    creating = false;
-                                    selected = null;
-                                } else {
-                                    selected = createXY(entityTree.current.children.get(button), adjustedMouseX, adjustedMouseY);
-                                    if (selected != null) {
-                                        selected.setTextures(getMantisAssetManager());
-                                        creating = true;
-                                    }
-                                }
-                            }
+                } else if (mouseY * worldScale.y <= GUI_LOWER_BAR_HEIGHT) {
+
+                    int button = getEntityMenuButton(mouseX * worldScale.x, mouseY * worldScale.y);
+                    if (button >= entityTree.current.children.size()) {
+                        button = -2;
+                    }
+                    if (button == -2) {
+                        //do nothing
+                    } else if (button == -1) {
+                        entityMenuPage = 0;
+                        if (entityTree.current.parent != null) {
+                            entityTree.upFolder();
+                            creating = false;
+                            selected = null;
                         }
                     } else {
-                        creating = false;
-                        dragging = false;
-                        if (dragmode) {
-                            if (entityQuery() != selected) {
-                                selected = null;
-                            }
-                            if (selected == null) {
-                                temporary = entityQuery();
-                            }
+                        if (!entityTree.current.children.get(button).isLeaf) {
+                            entityMenuPage = 0;
+                            entityTree.setCurrent(entityTree.current.children.get(button));
+                            creating = false;
+                            selected = null;
                         } else {
-
-                            selected = entityQuery();
+                            selected = createXY(entityTree.current.children.get(button), adjustedMouseX, adjustedMouseY);
+                            if (selected != null) {
+                                selected.setTextures(getMantisAssetManager());
+                                creating = true;
+                            }
                         }
+                    }
+                } else {
+                    creating = false;
+                    dragging = false;
+                    if (dragmode) {
+                        if (entityQuery() != selected) {
+                            selected = null;
+                        }
+                        if (selected == null) {
+                            temporary = entityQuery();
+                        }
+                    } else {
+
+                        selected = entityQuery();
                     }
                 }
 
@@ -697,10 +707,74 @@ public class LevelEditorController extends WorldController {
         }
 
         if (InputControllerManager.getInstance().getController(0).didLeftDrag()) {
-            if (mouseX * worldScale.x > GUI_LEFT_BAR_WIDTH) {
-                if (mouseY * worldScale.y > GUI_LOWER_BAR_HEIGHT) {
-                    dragging = true;
-                    if (selected != null) {
+            if (mouseX * worldScale.x <= GUI_LEFT_BAR_WIDTH) {
+
+            } else if (mouseY * worldScale.y <= GUI_LOWER_BAR_HEIGHT) {
+
+            } else {
+                dragging = true;
+                if (selected != null) {
+                    selected.setPosition(adjustedMouseX, adjustedMouseY);
+                    if (selected instanceof ComplexObstacle) {
+                        ((ComplexObstacle) selected).rebuild();
+                    }
+                    if (movefar) {
+                        selected.setModifiedPosition(adjustedMouseX, adjustedMouseY, adjustedCxCamera, adjustedCyCamera);
+                    }
+                    selected.setTextures(getMantisAssetManager());
+                } else {
+                    // find nearest wall, custom entity query
+                    float dist = Float.MAX_VALUE;
+                    WallModel wm = null;
+                    float bdx = 0;
+                    float bdy = 0;
+                    for (Entity e : entities) {
+                        if (e instanceof WallModel) {
+                            WallModel eWall = (WallModel) e;
+                            float dx = (eWall.getModelX() - adjustedMouseX);
+                            float dy = (eWall.getModelY() - adjustedMouseY);
+                            float newDst = (float) Math.sqrt(dx * dx + dy * dy);
+                            if (newDst < dist) {
+                                dist = newDst;
+                                wm = eWall;
+                                bdx = dx;
+                                bdy = dy;
+                            }
+                        }
+                    }
+
+                    bdx = -bdx;
+                    bdy = -bdy;
+                    if (wm != null && released) {
+                        if (InputControllerManager.getInstance().getController(0).isAltKeyPressed()) {
+                            // pinch move
+                            wm.pinchMove(bdx, bdy);
+//							released = false;
+                        } else if (InputControllerManager.getInstance().getController(0).isDotKeyPressed()) {
+                            // delete
+                            wm.pinchDelete(bdx, bdy);
+                            released = false;
+
+                        } else if (InputControllerManager.getInstance().getController(0).isRShiftKeyPressed()) {
+                            // pinch create
+                            wm.pinchCreate(bdx, bdy);
+                            released = false;
+                        }
+                    }
+                }
+            }
+        }
+        if (InputControllerManager.getInstance().getController(0).didLeftRelease()) {
+            released = true;
+            if (mouseX * worldScale.x <= GUI_LEFT_BAR_WIDTH) {
+
+            } else if (mouseY * worldScale.y <= GUI_LOWER_BAR_HEIGHT) {
+
+            } else {
+                if (selected != null) {
+                    if (dragging) {
+                        dragging = false;
+
                         selected.setPosition(adjustedMouseX, adjustedMouseY);
                         if (selected instanceof ComplexObstacle) {
                             ((ComplexObstacle) selected).rebuild();
@@ -709,75 +783,15 @@ public class LevelEditorController extends WorldController {
                             selected.setModifiedPosition(adjustedMouseX, adjustedMouseY, adjustedCxCamera, adjustedCyCamera);
                         }
                         selected.setTextures(getMantisAssetManager());
-                    } else {
-                        // find nearest wall, custom entity query
-                        float dist = Float.MAX_VALUE;
-                        WallModel wm = null;
-                        float bdx = 0;
-                        float bdy = 0;
-                        for (Entity e : entities) {
-                            if (e instanceof WallModel) {
-                                WallModel eWall = (WallModel) e;
-                                float dx = (eWall.getModelX() - adjustedMouseX);
-                                float dy = (eWall.getModelY() - adjustedMouseY);
-                                float newDst = (float) Math.sqrt(dx * dx + dy * dy);
-                                if (newDst < dist) {
-                                    dist = newDst;
-                                    wm = eWall;
-                                    bdx = dx;
-                                    bdy = dy;
-                                }
-                            }
-                        }
 
-                        bdx = -bdx;
-                        bdy = -bdy;
-                        if (wm != null && released) {
-                            if (InputControllerManager.getInstance().getController(0).isAltKeyPressed()) {
-                                // pinch move
-                                wm.pinchMove(bdx, bdy);
-                                //							released = false;
-                            } else if (InputControllerManager.getInstance().getController(0).isDotKeyPressed()) {
-                                // delete
-                                wm.pinchDelete(bdx, bdy);
-                                released = false;
-
-                            } else if (InputControllerManager.getInstance().getController(0).isRShiftKeyPressed()) {
-                                // pinch create
-                                wm.pinchCreate(bdx, bdy);
-                                released = false;
-                            }
+                        if (creating) {
+                            promptTemplate(selected);
                         }
                     }
-                }
-            }
-        }
-        if (InputControllerManager.getInstance().getController(0).didLeftRelease()) {
-            released = true;
-            if (mouseX * worldScale.x > GUI_LEFT_BAR_WIDTH) {
-                if (mouseY * worldScale.y > GUI_LOWER_BAR_HEIGHT) {
-                    if (selected != null) {
-                        if (dragging) {
-                            dragging = false;
+                } else {
+                    selected = temporary;
+                    temporary = null;
 
-                            selected.setPosition(adjustedMouseX, adjustedMouseY);
-                            if (selected instanceof ComplexObstacle) {
-                                ((ComplexObstacle) selected).rebuild();
-                            }
-                            if (movefar) {
-                                selected.setModifiedPosition(adjustedMouseX, adjustedMouseY, adjustedCxCamera, adjustedCyCamera);
-                            }
-                            selected.setTextures(getMantisAssetManager());
-
-                            if (creating) {
-                                promptTemplate(selected);
-                            }
-                        }
-                    } else {
-                        selected = temporary;
-                        temporary = null;
-
-                    }
                 }
             }
             creating = false;
@@ -863,15 +877,18 @@ public class LevelEditorController extends WorldController {
         // Turn the physics engine crank.
         //world.step(WORLD_STEP,WORLD_VELOC,WORLD_POSIT);
 
-        // we don't need ents to update in level editor
-//			ent.update(dt); // called last!
-        entities.stream().filter(ent -> ent instanceof Obstacle).forEachOrdered(ent -> {
-            Obstacle obj = (Obstacle) ent;
-            if (obj.isRemoved()) {
-                obj.deactivatePhysics(world);
-                entities.remove(ent);
+        for (Entity ent : entities) {
+
+            if (ent instanceof Obstacle) {
+                Obstacle obj = (Obstacle) ent;
+                if (obj.isRemoved()) {
+                    obj.deactivatePhysics(world);
+                    entities.remove(ent);
+                }
             }
-        });
+            // we don't need ents to update in level editor
+//			ent.update(dt); // called last!
+        }
     }
 
 
@@ -961,7 +978,7 @@ public class LevelEditorController extends WorldController {
 
 
     //ox and oy are bottom left corner
-    private boolean inBounds(float x, float y, float ox, float oy, float width, float height) {
+    public boolean inBounds(float x, float y, float ox, float oy, float width, float height) {
         return x >= ox && x <= ox + width && y >= oy && y <= oy + height;
     }
 
@@ -998,6 +1015,8 @@ public class LevelEditorController extends WorldController {
     }
 
     private void drawEntityMenu() {
+        int numChildren = entityTree.current.children.size();
+
         float margin = 18f;
         float startx = GUI_LEFT_BAR_WIDTH + margin + GUI_EMARROW_WIDTH;
         float starty = GUI_LOWER_BAR_HEIGHT - margin;
@@ -1015,8 +1034,8 @@ public class LevelEditorController extends WorldController {
         float mousey = mouseY * worldScale.y;
 
         Texture tex;
-        float x;
-        float y;
+        float x = 0;
+        float y = 0;
         String name;
 
         for (int i = 0; i <= entitiesPerPage; i++) {
@@ -1073,6 +1092,32 @@ public class LevelEditorController extends WorldController {
             if (movefar)
                 temp = ent.getModifiedPosition(adjustedCxCamera, adjustedCyCamera);
             canvas.drawPhysics(circleShape, new Color(Color.FIREBRICK), temp.x, temp.y, worldScale.x, worldScale.y);
+
+            if (false && ent instanceof BackgroundEntity) {
+                gridLineRenderer.setColor(Color.ORANGE);
+                Gdx.gl.glLineWidth(4);
+                gridLineRenderer.begin(ShapeRenderer.ShapeType.Line);
+                temp = ent.getModifiedPosition(levelModel.getMinX(), levelModel.getMinY());
+                float minPixelsX = ((temp.x + (((BackgroundEntity) ent).getWidth() * ((BackgroundEntity) ent).getAspectRatio()) / 2) * worldScale.x) - (cxCamera * worldScale.x);
+                float minPixelsY = ((temp.y + (((BackgroundEntity) ent).getHeight()) / 2) * worldScale.y) - (cyCamera * worldScale.y);
+                temp = ent.getModifiedPosition(levelModel.getMaxX(), levelModel.getMaxY());
+                float maxPixelsX = ((temp.x - (((BackgroundEntity) ent).getWidth() * ((BackgroundEntity) ent).getAspectRatio()) / 2) * worldScale.x) - (cxCamera * worldScale.x);
+                float maxPixelsY = ((temp.y - (((BackgroundEntity) ent).getHeight()) / 2) * worldScale.y) - (cyCamera * worldScale.y);
+                //gridLineRenderer.line(minPixelsX, minPixelsY, (ent.getX()-cxCamera) * worldScale.x, (ent.getY()-cyCamera) * worldScale.y);
+                //gridLineRenderer.line(minPixelsX, minPixelsY , minPixelsX + 3, minPixelsY);
+
+
+                // left line
+                gridLineRenderer.line(minPixelsX, maxPixelsY, minPixelsX, minPixelsY);
+                // top line
+                gridLineRenderer.line(minPixelsX, maxPixelsY, maxPixelsX, maxPixelsY);
+                // right line
+                gridLineRenderer.line(maxPixelsX, maxPixelsY, maxPixelsX, minPixelsY);
+                // bottom line
+                gridLineRenderer.line(minPixelsX, minPixelsY, maxPixelsX, minPixelsY);
+
+                gridLineRenderer.end();
+            }
         }
         canvas.endDebug();
     }
@@ -1099,8 +1144,8 @@ public class LevelEditorController extends WorldController {
         if (showHelp) {
             String[] splitHelp = HELP_TEXT.split("\\R");
             float beginY = GUI_LOWER_BAR_HEIGHT + (9f * worldScale.y);
-            for (String aSplitHelp : splitHelp) {
-                canvas.drawTextStandard(aSplitHelp, GUI_LEFT_BAR_WIDTH + 10, beginY);
+            for (int i = 0; i < splitHelp.length; i++) {
+                canvas.drawTextStandard(splitHelp[i], GUI_LEFT_BAR_WIDTH + 10, beginY);
                 beginY -= .3 * worldScale.y;
             }
         }
@@ -1129,7 +1174,6 @@ public class LevelEditorController extends WorldController {
         Vector2 pos = canvas.getCampos();
         pos.set(adjustedCxCamera * worldScale.x, adjustedCyCamera * worldScale.y);
         canvas.begin(camTrans);
-        //noinspection unchecked
         Collections.sort(entities);
         int s = entities.size();
         for (int i = 0; i < s; i++) {
@@ -1156,6 +1200,7 @@ public class LevelEditorController extends WorldController {
 
     //region JSON Stuff
     private void makeGuiWindow() {
+        didLoad = true;
         if (editorWindow != null) {
             editorWindow.dispose();
             editorWindow = null;
@@ -1198,7 +1243,7 @@ public class LevelEditorController extends WorldController {
         editorWindow.add(loadButton);
         editorWindow.add(saveButton);
 
-        generateSwingPropertiesForEntity(levelJson, editorWindow);
+        generateSwingPropertiesForEntity(levelJson, editorWindow, 0);
 
         editorWindow.setSize(canvas.getWidth() * 3 / 5, canvas.getHeight() * 2 / 3);
 
@@ -1214,7 +1259,7 @@ public class LevelEditorController extends WorldController {
         editorWindow.setVisible(true);
     }
 
-    private void generateSwingPropertiesForEntity(JsonObject e, JFrame jPanel) {
+    private void generateSwingPropertiesForEntity(JsonObject e, JFrame jPanel, int rowNum) {
         for (Map.Entry<String, JsonElement> entry : e.entrySet()) {
             // Add key
             String key = entry.getKey();
@@ -1260,6 +1305,7 @@ public class LevelEditorController extends WorldController {
             // Update panel with key, value
             jPanel.add(paramText);
             jPanel.add(valueComponent);
+            rowNum++;
         }
 
     }
@@ -1292,7 +1338,9 @@ public class LevelEditorController extends WorldController {
 
         // copy to avoid concurrent modification
         ArrayList<Entity> copy = new ArrayList<>(entities);
-        copy.forEach(timeToSave::addEntity);
+        for (Entity o : copy) {
+            timeToSave.addEntity(o);
+        }
         if (jsonLoaderSaver.saveLevel(timeToSave, currentLevel)) {
             RecordBook.getInstance().resetRecord(currentLevel);
             System.out.println("Saved!");
