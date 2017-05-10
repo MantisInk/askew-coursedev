@@ -979,7 +979,7 @@ public abstract class Obstacle extends Entity {
     public abstract void drawDebug(GameCanvas canvas);
 
 
-    public void setGrabbed() {
-        this.grabbed = true;
+    public void setGrabbed(boolean b) {
+    	this.grabbed = b;
     }
 }

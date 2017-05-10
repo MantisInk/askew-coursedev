@@ -54,21 +54,34 @@ public class MainMenuController extends WorldController {
     // level select mode options
     private final int CHOOSE_LEVEL = 0;
     private final int RETURN_HOME = 1;
-    private final Vector2[] select_button_locs = {new Vector2(10f, 3.8f), new Vector2(10f, 2.8f)};
+    private int select_button = CHOOSE_LEVEL;
+    private Vector2[] select_button_locs = {
+            new Vector2(0.65f, 0.45f),
+            new Vector2(0.65f, 0.35f)
+    };
+
     // settings mode options
     private final int CONTROL_SCHEME = 0;
     private final int GRAB_CONTROL = 1;
-    private final int SETTINGS_RETURN_HOME = 2;
-    private final String[] settings_text = {"Control Scheme", "One Arm", "Two Arm", "Grab Scheme", "Hold to Grab", "Release to Grab", "Main Menu"};
-    private final Vector2[] settings_text_locs = {
+    private final int GRAPHICS_QUALITY = 2;
+    private final int SETTINGS_RETURN_HOME = 3;
+    private int settings_button = CONTROL_SCHEME;
+    private boolean control = false;        // false means one arm control scheme
+    private boolean grab = false;           // false means hold to grab
+    private boolean graphics = false;       // false means low graphics
+    private final int NUM_SETTINGS = 3;
+    private String[] settings_text = {"Control Scheme", "One Arm", "Two Arm", "Grab Scheme", "Hold to Grab", "Release to Grab", "Graphics", "Low", "High", "Main Menu"};
+    private Vector2[] settings_text_locs = {
             new Vector2(0.4f, 0.54f), new Vector2(0.45f, 0.54f), new Vector2(0.7f, 0.54f),
             new Vector2(0.4f, 0.44f), new Vector2(0.45f, 0.44f), new Vector2(0.7f, 0.44f),
-            new Vector2(0.4f, 0.34f)
+            new Vector2(0.4f, 0.34f), new Vector2(0.45f, 0.34f), new Vector2(0.7f, 0.34f),
+            new Vector2(0.4f, 0.24f)
     };
     private final Vector2[] settings_button_locs = {
             new Vector2(0.43f, 0.53f), new Vector2(0.68f, 0.53f),
             new Vector2(0.43f, 0.43f), new Vector2(0.68f, 0.43f),
-            new Vector2(0.43f, 0.33f)
+            new Vector2(0.43f, 0.33f), new Vector2(0.68f, 0.33f),
+            new Vector2(0.43f, 0.23f)
     };
     private final FileHandle fontFile = Gdx.files.internal("font/ReginaFree.ttf");
     @Getter
@@ -144,6 +157,22 @@ public class MainMenuController extends WorldController {
         SoundController.getInstance().allocate(manager, MENU_MUSIC);
     }
 
+    public MainMenuController() {
+        mode = PLAY_BUTTON;
+        prevLeftUp = false;
+        prevLeftDown = false;
+        prevLeftLeft = false;
+        prevLeftRight = false;
+        leftUp = false;
+        leftDown = false;
+        leftLeft = false;
+        leftRight = false;
+        MAX_LEVEL = GlobalConfiguration.getInstance().getAsInt("maxLevel");
+        control = GlobalConfiguration.getInstance().getAsInt("flowControlMode") != 1;
+        grab = GlobalConfiguration.getInstance().getAsInt("flowMovementMode") != 1;
+        graphics = GlobalConfiguration.getInstance().getAsInt("graphics") == 1;
+    }
+
     @Override
     public boolean preUpdate(float dt) {
         if (!super.preUpdate(dt)) {
@@ -199,14 +228,15 @@ public class MainMenuController extends WorldController {
         // TODO: new level select screen
         else if (mode == LEVEL_SELECT) {
             canvas.draw(menu2);
-            canvas.drawText("         " + selected, displayFont, 6.5f * worldScale.x, 4.1f * worldScale.y);
-            canvas.draw(fern, Color.WHITE, fern.getWidth() / 2, fern.getHeight() / 2,
-                    select_button_locs[select_button].x * worldScale.x, select_button_locs[select_button].y * worldScale.y,
-                    0, worldScale.x / fern.getWidth(), worldScale.y / fern.getHeight());
-        } else if (mode == SETTINGS) {
+            canvas.drawText("         " + selected, displayFont, 0.42f*canvas.getWidth(), 0.45f*canvas.getHeight());
+            canvas.draw(fern, Color.WHITE,fern.getWidth()/2, fern.getHeight()/2,
+                    select_button_locs[select_button].x * canvas.getWidth(), select_button_locs[select_button].y* canvas.getHeight(),
+                    0,worldScale.x/fern.getWidth(),worldScale.y/fern.getHeight());
+        }
+        else if (mode == SETTINGS) {
             for (int i = 0; i < settings_text_locs.length; i++) {
-                if (i == 0 || i == 3 || i == 6)
-                    canvas.drawTextAlignedRight(settings_text[i], regina, settings_text_locs[i].x * canvas.getWidth(), settings_text_locs[i].y * canvas.getHeight(), fontcolor);
+                if (i == 0 || i == 3 || i == 6 || i ==9)
+                    canvas.drawTextAlignedRight(settings_text[i], regina, settings_text_locs[i].x*canvas.getWidth(), settings_text_locs[i].y*canvas.getHeight(), fontcolor);
             }
             if (control) {
                 canvas.drawText(settings_text[2], regina2, settings_text_locs[2].x * canvas.getWidth(), settings_text_locs[2].y * canvas.getHeight());
@@ -222,6 +252,13 @@ public class MainMenuController extends WorldController {
                 canvas.drawText(settings_text[5], regina2, settings_text_locs[5].x * canvas.getWidth(), settings_text_locs[5].y * canvas.getHeight());
                 canvas.drawText(settings_text[4], regina1, settings_text_locs[4].x * canvas.getWidth(), settings_text_locs[4].y * canvas.getHeight());
             }
+            if (graphics) {
+                canvas.drawText(settings_text[8], regina2, settings_text_locs[8].x*canvas.getWidth(), settings_text_locs[8].y*canvas.getHeight());
+                canvas.drawText(settings_text[7], regina1, settings_text_locs[7].x*canvas.getWidth(), settings_text_locs[7].y*canvas.getHeight());
+            } else {
+                canvas.drawText(settings_text[7], regina2, settings_text_locs[7].x*canvas.getWidth(), settings_text_locs[7].y*canvas.getHeight());
+                canvas.drawText(settings_text[8], regina1, settings_text_locs[8].x*canvas.getWidth(), settings_text_locs[8].y*canvas.getHeight());
+            }
             int swtch;
             switch (settings_button) {
                 case 0:
@@ -236,8 +273,14 @@ public class MainMenuController extends WorldController {
                             settings_button_locs[swtch].x * canvas.getWidth(), settings_button_locs[swtch].y * canvas.getHeight(),
                             0, worldScale.x / fern.getWidth(), worldScale.y / fern.getHeight());
                     break;
+                case 2:
+                    swtch = (graphics) ? 5 : 4;
+                    canvas.draw(fern, Color.WHITE, fern.getWidth() / 2, fern.getHeight() / 2,
+                            settings_button_locs[swtch].x * canvas.getWidth(), settings_button_locs[swtch].y * canvas.getHeight(),
+                            0, worldScale.x / fern.getWidth(), worldScale.y / fern.getHeight());
+                    break;
                 default:
-                    swtch = 4;
+                    swtch = 6;
                     canvas.draw(fern, Color.WHITE, fern.getWidth() / 2, fern.getHeight() / 2,
                             settings_button_locs[swtch].x * canvas.getWidth(), settings_button_locs[swtch].y * canvas.getHeight(),
                             0, worldScale.x / fern.getWidth(), worldScale.y / fern.getHeight());
@@ -337,14 +380,16 @@ public class MainMenuController extends WorldController {
                 home_button = PLAY_BUTTON;
                 GlobalConfiguration.getInstance().setFlowControlMode(control);
                 GlobalConfiguration.getInstance().setFlowMovementMode(grab);
+                GlobalConfiguration.getInstance().setGraphicsQuality(graphics);
             }
 
             if (input.didTopDPadPress() || input.didUpArrowPress() || (!prevLeftUp && leftUp)) {
                 if (settings_button > 0) {
                     settings_button--;
                 }
-            } else if (input.didBottomDPadPress() || input.didDownArrowPress() || (!prevLeftDown && leftDown)) {
-                if (settings_button < settings_button_locs.length - 1) {
+            }
+            else if (input.didBottomDPadPress() || input.didDownArrowPress() || (!prevLeftDown && leftDown)) {
+                if (settings_button < NUM_SETTINGS) {
                     settings_button++;
                 }
             } else if (input.didRightDPadPress() || input.didRightArrowPress() || (!prevLeftRight && leftRight)) {
@@ -354,12 +399,19 @@ public class MainMenuController extends WorldController {
                 if (settings_button == GRAB_CONTROL) {
                     grab = !grab;
                 }
-            } else if (input.didLeftDPadPress() || input.didLeftArrowPress() || (!prevLeftLeft && leftLeft)) {
+                if (settings_button == GRAPHICS_QUALITY) {
+                    graphics = !graphics;
+                }
+            }
+            else if (input.didLeftDPadPress() || input.didLeftArrowPress() || (!prevLeftLeft && leftLeft)) {
                 if (settings_button == CONTROL_SCHEME) {
                     control = !control;
                 }
                 if (settings_button == GRAB_CONTROL) {
                     grab = !grab;
+                }
+                if (settings_button == GRAPHICS_QUALITY) {
+                    graphics = !graphics;
                 }
             }
         }

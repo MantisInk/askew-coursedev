@@ -161,732 +161,704 @@ public class LevelEditorController extends WorldController {
      */
     public LevelEditorController(GameModeController gmc) {
 //		super(36,18,0); I want this scale but for the sake of alpha:
-        super(0);
-        jsonLoaderSaver = new JSONLoaderSaver(false);
-        entityTree = new EntityTree();
-        buttons = new ButtonList();
-        currentLevel = "level1";
-        showHelp = true;
-        shouldDrawGrid = true;
-        camTrans = new Affine2();
-        oneScale = new Vector2(1, 1);
-        pressedL = false;
-        prevPressedL = false;
-        this.gmc = gmc;
-    }
-
-    /**
-     * Preloads the assets for this controller.
-     * <p>
-     * To make the game modes more for-loop friendly, we opted for nonstatic loaders
-     * this time.  However, we still want the assets themselves to be static.  So
-     * we have an AssetState that determines the current loading state.  If the
-     * assets are already loaded, this method will do nothing.
-     *
-     * @param manager Reference to global asset manager.
-     */
-    public void preLoadContent(MantisAssetManager manager) {
-        super.preLoadContent(manager);
-        jsonLoaderSaver.setManager(manager);
-        setMantisAssetManager(manager);
-    }
-
-    @Override
-    public void setCanvas(GameCanvas canvas) {
-        this.canvas = canvas;
-        this.worldScale.x = 1.0f * (float) canvas.getWidth() / (float) bounds.getWidth();
-        this.worldScale.y = 1.0f * (float) canvas.getHeight() / (float) bounds.getHeight();
-    }
-
-    /**
-     * Load the assets for this controller.
-     * <p>
-     * To make the game modes more for-loop friendly, we opted for nonstatic loaders
-     * this time.  However, we still want the assets themselves to be static.  So
-     * we have an AssetState that determines the current loading state.  If the
-     * assets are already loaded, this method will do nothing.
-     *
-     * @param manager Reference to global asset manager.
-     */
-    public void loadContent(MantisAssetManager manager) {
-        super.loadContent(manager);
-        background = manager.get("texture/background/background1.png");
-        grey = manager.get("texture/leveleditor/grey.png");
-        upFolder = manager.get("texture/leveleditor/up.png");
-        folder = manager.get("texture/leveleditor/folder.png");
-        placeholder = manager.get("texture/leveleditor/placeholder.png");
-        yellowbox = manager.get("texture/leveleditor/yellowbox.png");
-        entityTree.setTextures(manager);
-        buttons.setManager(manager);
-        buttons.setTextures(manager);
-        levelEditorAssetState = AssetState.COMPLETE;
-    }
-
-    public void setLevel(String levelName) {
-        currentLevel = levelName;
-    }
-
-    /**
-     * Resets the status of the game so that we can play again.
-     * <p>
-     * This method disposes of the world and creates a new one.
-     */
-    public void reset() {
-        Gdx.input.setCursorCatched(false);
-        Vector2 gravity = new Vector2(world.getGravity());
-
-        for (Entity obj : entities) {
-            if ((obj instanceof Obstacle))
-                ((Obstacle) obj).deactivatePhysics(world);
-        }
-
-        entities.clear();
-        buttons.clear();
-        world.dispose();
-
-        world = new World(gravity, false);
-        setComplete(false);
-        setFailure(false);
-        populateLevel();
-        populateButtons();
-
-        adjustedCxCamera = 0;
-        adjustedCyCamera = 0;
-        camUpdate();
-
-        pressedL = false;
-        prevPressedL = false;
-        released = true;
-        //if (didLoad) makeGuiWindow();
-    }
-
-    /**
-     * Lays out the game geography.
-     */
-    private void populateLevel() {
-        levelModel = jsonLoaderSaver.loadLevel(currentLevel);
-        System.out.println(levelModel);
-        if (levelModel != null)
-            background = mantisAssetManager.get(levelModel.getBackground(), Texture.class);
-
-        if (levelModel == null) {
-            levelModel = new LevelModel();
-        }
-
-        for (Entity o : levelModel.getEntities()) {
-            entities.add(o);
-        }
-    }
-
-    private void populateButtons() {
-        buttons.add(new Button(GUI_LEFT_BAR_MARGIN,
-                GUI_LEFT_BAR_WIDTH - (2 * GUI_LEFT_BAR_MARGIN),
-                "JSON", 0, "levelgui"));
-
-        buttons.add(new Button(3 * GUI_LEFT_BAR_MARGIN,
-                GUI_LEFT_BAR_WIDTH - (2 * GUI_LEFT_BAR_MARGIN),
-                "JSON", 1, "globalconfig"));
-
-        buttons.add(new ToggleButton(GUI_LEFT_BAR_MARGIN, 5 * GUI_LEFT_BAR_MARGIN, 0, "snapping"));
-
-        buttons.add(new ToggleButton(GUI_LEFT_BAR_MARGIN, 7 * GUI_LEFT_BAR_MARGIN,
-
-                1, "move far"));
-
-        buttons.add(new ToggleButton(GUI_LEFT_BAR_MARGIN, 9 * GUI_LEFT_BAR_MARGIN,
-                2, "drag mode"));
-
-        buttons.add(new Button(11 * GUI_LEFT_BAR_MARGIN,
-                GUI_LEFT_BAR_WIDTH - (2 * GUI_LEFT_BAR_MARGIN),
-                "Entity", 0, "edit"));
-
-        buttons.add(new Button(13 * GUI_LEFT_BAR_MARGIN,
-                GUI_LEFT_BAR_WIDTH - (2 * GUI_LEFT_BAR_MARGIN),
-                "Entity", 1, "delete"));
-
-        buttons.add(new Button(15 * GUI_LEFT_BAR_MARGIN,
-                GUI_LEFT_BAR_WIDTH - (2 * GUI_LEFT_BAR_MARGIN),
-                "Entity", 2, "duplicate"));
-
-        buttons.add(new Button(19 * GUI_LEFT_BAR_MARGIN,
-                GUI_LEFT_BAR_WIDTH - (2 * GUI_LEFT_BAR_MARGIN),
-                "Entity", 3, "deselect"));
-
-        buttons.add(new Button(21 * GUI_LEFT_BAR_MARGIN,
-                GUI_LEFT_BAR_WIDTH - (2 * GUI_LEFT_BAR_MARGIN),
-                "Entity", 4, "undo"));
-
-        buttons.add(new Button(21 * GUI_LEFT_BAR_MARGIN,
-                GUI_LEFT_BAR_WIDTH - (2 * GUI_LEFT_BAR_MARGIN),
-                "LEOptions", 5, "debug"));
-
-        buttons.add(new Button(23 * GUI_LEFT_BAR_MARGIN,
-                GUI_LEFT_BAR_WIDTH - (2 * GUI_LEFT_BAR_MARGIN),
-                "LEOptions", 6, "zoom in"));
-
-        buttons.add(new Button(25 * GUI_LEFT_BAR_MARGIN,
-                GUI_LEFT_BAR_WIDTH - (2 * GUI_LEFT_BAR_MARGIN),
-                "LEOptions", 7, "zoom out"));
-
-
-        buttons.add(new MenuArrowButton(GUI_LEFT_BAR_WIDTH, 0,
-                GUI_EMARROW_WIDTH, GUI_LOWER_BAR_HEIGHT,
-                "EntityMenu", 0, "left", true));
-
-        buttons.add(new MenuArrowButton(canvas.getWidth() - GUI_EMARROW_WIDTH, 0,
-                GUI_EMARROW_WIDTH, GUI_LOWER_BAR_HEIGHT,
-                "EntityMenu", 0, "right", false));
-    }
-
-    private boolean processButtons(Button b) {
-        if (b != null) {
-            switch (b.getGroup()) {
-                case ("JSON"):
-                    switch (b.getName()) {
-                        case ("levelgui"):
-                            makeGuiWindow();
-                            break;
-                        case ("globalconfig"):
-                            promptGlobalConfig();
-                            break;
-                        default:
-                            break;
-                    }
-                    break;
-                case ("LEOptions"):
-                    switch (b.getName()) {
-                        case ("snapping"):
-                            ToggleButton t = ((ToggleButton) b);
-                            t.setOn(!t.isOn());
-                            snapping = t.isOn();
-                            break;
-                        case ("move far"):
-                            t = ((ToggleButton) b);
-                            t.setOn(!t.isOn());
-                            movefar = t.isOn();
-                            break;
-                        case ("drag mode"):
-                            t = ((ToggleButton) b);
-                            t.setOn(!t.isOn());
-                            dragmode = t.isOn();
-                            break;
-                        case ("debug"):
-                            System.out.println(levelModel);
-                            break;
-                        case ("zoom in"):
-                            bounds.setSize(bounds.getWidth() - 1.6f, bounds.getHeight() - .9f);
-                            setWorldScale(canvas);
-                            break;
-                        case ("zoom out"):
-                            bounds.setSize(bounds.getWidth() + 1.6f, bounds.getHeight() + .9f);
-                            setWorldScale(canvas);
-                            break;
-                        default:
-                            break;
-                    }
-                    break;
-                case ("Entity"):
-                    switch (b.getName()) {
-                        case ("edit"):
-                            if (selected != null) {
-                                undoSelected = selected;
-                                undoCreate = selected;
-                                promptTemplate(selected);
-                                entities.remove(selected);
-                                selected = null;
-                            }
-                            dragging = false;
-                            creating = false;
-                            break;
-                        case ("delete"):
-                            if (selected != null) {
-                                undoSelected = selected;
-                                undoCreate = selected;
-                                undoDelete = null;
-                                entities.remove(selected);
-                                selected = null;
-                            }
-                            dragging = false;
-                            creating = false;
-                            break;
-                        case ("duplicate"):
-                            if (selected != null) {
-                                undoSelected = selected;
-                                undoCreate = null;
-                                copyEntity(selected);
-                            }
-                            break;
-                        case ("deselect"):
-                            undoSelected = selected;
-                            selected = null;
-                            dragging = false;
-                            creating = false;
-                            break;
-                        case ("undo"):
-                            dragging = false;
-                            creating = false;
-                            selected = undoSelected;
-
-                            if (undoDelete != null) {
-                                entities.remove(undoDelete);
-                                undoDelete = null;
-                            }
-                            if (undoCreate != null) {
-                                entities.add(undoCreate);
-                                undoCreate = null;
-                            }
-
-                            break;
-                        default:
-                            break;
-                    }
-                case ("EntityMenu"):
-                    switch (b.getName()) {
-                        case ("left"):
-                            entityMenuPage--;
-                            entityMenuPage = entityMenuPage % ((int) (entityTree.current.children.size() / entitiesPerPage) + 1);
-                            break;
-                        case ("right"):
-                            entityMenuPage++;
-                            entityMenuPage = entityMenuPage % ((int) (entityTree.current.children.size() / entitiesPerPage) + 1);
-                            break;
-                        default:
-                            break;
-                    }
-                    break;
-                default:
-                    break;
-            }
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-
-    //region Utility Helpers
-
-    /**
-     * Type safety is overrated [trevor]
-     *
-     * @param x
-     * @param y
-     */
-    private Entity createXY(EntityTree.ETNode node, float x, float y) {
-        float xorig = x;
-        float yorig = y;
-        x = Math.round(x);
-        y = Math.round(y);
-
-        Entity entity = null;
-        String name = node.name;
-
-
-        switch (name) {
-            case "SlothModel":
-                entity = new SlothModel(x, y);
-                break;
-            case "Vine":
-                entity = new Vine(x, y, 5.0f, 5f, -400f, 0);
-                break;
-            case "Trunk":
-                entity = new Trunk(x, y, 5.0f, 0);
-                break;
-            case "PoleVault":
-                entity = new PoleVault(x, y, 5.0f, oneScale, 0);
-                break;
-            case "StiffBranch":
-                entity = new StiffBranch(x, y, 3.0f, oneScale, 0);
-                break;
-            case "OwlModel":
-                entity = new OwlModel(x, y);
-                break;
-            case "WallModel":
-                entity = new WallModel(x, y, new float[]{0, 0, 0f, 1f, 1f, 1f, 1f, 0f}, 0xFFFFFFFF);
-                break;
-            case "ThornModel":
-                entity = new ThornModel(x, y, 1, 0);
-                break;
-            case "GhostModel":
-                entity = new GhostModel(x, y, x + 2, y + 2, x, y);
-                break;
-            case "BackgroundEntity":
-                entity = new BackgroundEntity(xorig, yorig);
-                break;
-            case "EyeEntity":
-                entity = new EyeEntity(xorig, yorig);
-
-            default:
-                //System.err.println("UNKNOWN ENT");
-                break;
-        }
-
-
-        inputRateLimiter = UI_WAIT_SHORT;
-        if (entityTree.isBackground) {
-            entity = new BackgroundEntity(x, y, node.texturePath);
-        }
-        if (entity == null) {
-            System.err.println("UNKNOWN ENT");
-        }
-        return entity;
-
-    }
-
-    private void deleteEntity(Entity target) {
-        entities.remove(target);
-    }
-
-    public Entity entityQuery() {
-
-        Entity found = null;
-        Vector2 mouse = new Vector2(adjustedMouseX, adjustedMouseY);
-        float minDistance = Float.MAX_VALUE;
-        for (Entity e : entities) {
-            Vector2 pos = e.getPosition();
-            if (movefar) {
-                pos = e.getModifiedPosition(adjustedCxCamera, adjustedCyCamera);
-            }
-
-            float curDist = pos.dst(mouse);
-            if (curDist < minDistance) {
-                found = e;
-                minDistance = curDist;
-            }
-        }
-
-        if (minDistance < MAX_SNAP_DISTANCE) {
-            return found;
-        }
-        return null;
-    }
-
-    public void camUpdate() {
-        cxCamera = adjustedCxCamera - (((bounds.getWidth() - (GUI_LEFT_BAR_WIDTH / worldScale.x)) / 2f) + (GUI_LEFT_BAR_WIDTH / worldScale.x));
-        cyCamera = adjustedCyCamera - (((bounds.getHeight() - (GUI_LOWER_BAR_HEIGHT / worldScale.y)) / 2f) + (GUI_LOWER_BAR_HEIGHT / worldScale.y));
-
-    }
-
-
-    //endregion
-
-    /**
-     * Returns whether to process the update loop
-     * <p>
-     * At the start of the update loop, we check if it is time
-     * to switch to a new game mode.  If not, the update proceeds
-     * normally.
-     *
-     * @param dt Number of seconds since last animation frame
-     * @return whether to process the update loop
-     */
-    public boolean preUpdate(float dt) {
-        if (!super.preUpdate(dt)) {
-            return false;
-        }
-
-        InputController input = InputControllerManager.getInstance().getController(0);
-        prevPressedL = pressedL;
-        pressedL = input.isLKeyPressed();
-        if (input.didRightDPadPress()) {
-            System.out.println("GM");
-            listener.exitScreen(this, EXIT_LE_GM);
-            return false;
-        } else if (input.didTopDPadPress()) {
-            System.out.println("MM");
-            listener.exitScreen(this, EXIT_LE_MM);
-            return false;
-        } else if (input.didBottomDPadPress()) {
-            reset();
-        }
-
-        return true;
-    }
-
-    public void update(float dt) {
-
-        // Decrement rate limiter to allow new input
-        if (inputRateLimiter > 0) {
-            inputRateLimiter--;
-            return;
-        }
-
-        // Allow access to mouse coordinates for multiple inputs
-        mouseX = InputControllerManager.getInstance().getController(0).getCrossHair().x;
-        mouseY = InputControllerManager.getInstance().getController(0).getCrossHair().y;
-
-
-        if (InputControllerManager.getInstance().getController(0).isShiftKeyPressed()) {
-            // Check for pan
-            if (mouseX < GUI_LEFT_BAR_WIDTH / worldScale.x) {
-                // Pan left
-                adjustedCxCamera -= CAMERA_PAN_SPEED / worldScale.x;
-            }
-            if (mouseY < GUI_LOWER_BAR_HEIGHT / worldScale.y) {
-                // down
-                adjustedCyCamera -= CAMERA_PAN_SPEED / worldScale.y;
-            }
-            if (mouseX > (bounds.getWidth()) - 1) {
-                adjustedCxCamera += CAMERA_PAN_SPEED / worldScale.x;
-            }
-            if (mouseY > (bounds.getHeight()) - 1) {
-                adjustedCyCamera += CAMERA_PAN_SPEED / worldScale.y;
-            }
-            if (InputControllerManager.getInstance().getController(0).isSpaceKeyPressed()) {
-                adjustedCxCamera = 0;
-                adjustedCyCamera = 0;
-                if (selected != null && selected instanceof BackgroundEntity) {
-                    adjustedCxCamera = selected.getX();
-                    adjustedCyCamera = selected.getY();
-                }
-            }
-            camUpdate();
-        }
-
-        adjustedMouseX = mouseX + cxCamera;
-        adjustedMouseY = mouseY + cyCamera;
-        if (snapping) {
-            adjustedMouseX = Math.round(adjustedMouseX);
-            adjustedMouseY = Math.round(adjustedMouseY);
-
-        }
-
-
-        // Left Click
-        if (InputControllerManager.getInstance().getController(0).didLeftClick()) {
-            if (!processButtons(buttons.findButton(mouseX * worldScale.x, mouseY * worldScale.y))) {
-
-                if (mouseX * worldScale.x <= GUI_LEFT_BAR_WIDTH) {
-
-                } else if (mouseY * worldScale.y <= GUI_LOWER_BAR_HEIGHT) {
-
-                    int button = getEntityMenuButton(mouseX * worldScale.x, mouseY * worldScale.y);
-                    if (button >= entityTree.current.children.size()) {
-                        button = -2;
-                    }
-                    if (button == -2) {
-                        //do nothing
-                    } else if (button == -1) {
-                        entityMenuPage = 0;
-                        if (entityTree.current.parent != null) {
-                            entityTree.upFolder();
-                            creating = false;
-                            selected = null;
-                        }
-                    } else {
-                        if (!entityTree.current.children.get(button).isLeaf) {
-                            entityMenuPage = 0;
-                            entityTree.setCurrent(entityTree.current.children.get(button));
-                            creating = false;
-                            selected = null;
-                        } else {
-                            selected = createXY(entityTree.current.children.get(button), adjustedMouseX, adjustedMouseY);
-                            if (selected != null) {
-                                selected.setTextures(getMantisAssetManager());
-                                creating = true;
-                            }
-                        }
-                    }
-                } else {
-                    creating = false;
-                    dragging = false;
-                    if (dragmode) {
-                        if (entityQuery() != selected) {
-                            selected = null;
-                        }
-                        if (selected == null) {
-                            temporary = entityQuery();
-                        }
-                    } else {
-
-                        selected = entityQuery();
-                    }
-                }
-
-            }
-        }
-
-        if (InputControllerManager.getInstance().getController(0).didLeftDrag()) {
-            if (mouseX * worldScale.x <= GUI_LEFT_BAR_WIDTH) {
-
-            } else if (mouseY * worldScale.y <= GUI_LOWER_BAR_HEIGHT) {
-
-            } else {
-                dragging = true;
-                if (selected != null) {
-                    selected.setPosition(adjustedMouseX, adjustedMouseY);
-                    if (selected instanceof ComplexObstacle) {
-                        ((ComplexObstacle) selected).rebuild();
-                    }
-                    if (movefar) {
-                        selected.setModifiedPosition(adjustedMouseX, adjustedMouseY, adjustedCxCamera, adjustedCyCamera);
-                    }
-                    selected.setTextures(getMantisAssetManager());
-                } else {
-                    // find nearest wall, custom entity query
-                    float dist = Float.MAX_VALUE;
-                    WallModel wm = null;
-                    float bdx = 0;
-                    float bdy = 0;
-                    for (Entity e : entities) {
-                        if (e instanceof WallModel) {
-                            WallModel eWall = (WallModel) e;
-                            float dx = (eWall.getModelX() - adjustedMouseX);
-                            float dy = (eWall.getModelY() - adjustedMouseY);
-                            float newDst = (float) Math.sqrt(dx * dx + dy * dy);
-                            if (newDst < dist) {
-                                dist = newDst;
-                                wm = eWall;
-                                bdx = dx;
-                                bdy = dy;
-                            }
-                        }
-                    }
-
-                    bdx = -bdx;
-                    bdy = -bdy;
-                    if (wm != null && released) {
-                        if (InputControllerManager.getInstance().getController(0).isAltKeyPressed()) {
-                            // pinch move
-                            wm.pinchMove(bdx, bdy);
+		super(DEFAULT_WIDTH,DEFAULT_HEIGHT,0);
+		jsonLoaderSaver = new JSONLoaderSaver(false);
+		entityTree = new EntityTree();
+		buttons = new ButtonList();
+		currentLevel = "level1";
+		showHelp = true;
+		shouldDrawGrid = true;
+		camTrans = new Affine2();
+		oneScale = new Vector2(1,1);
+		pressedL = false;
+		prevPressedL = false;
+		this.gmc = gmc;
+	}
+
+	public void setLevel(String levelName) {
+		currentLevel = levelName;
+	}
+
+	/**
+	 * Resets the status of the game so that we can play again.
+	 *
+	 * This method disposes of the world and creates a new one.
+	 */
+	public void reset() {
+		Gdx.input.setCursorCatched(false);
+		Vector2 gravity = new Vector2(world.getGravity());
+
+		for(Entity obj : objects) {
+			if( (obj instanceof Obstacle))
+				((Obstacle)obj).deactivatePhysics(world);
+		}
+
+		objects.clear();
+		buttons.clear();
+		world.dispose();
+
+		world = new World(gravity,false);
+		setComplete(false);
+		setFailure(false);
+		populateLevel();
+		populateButtons();
+
+		adjustedCxCamera = 0;
+		adjustedCyCamera = 0;
+		camUpdate();
+
+		pressedL = false;
+		prevPressedL = false;
+		released = true;
+		//if (didLoad) makeGuiWindow();
+	}
+
+	/**
+	 * Lays out the game geography.
+	 */
+	private void populateLevel() {
+		try {
+			levelModel = jsonLoaderSaver.loadLevel(currentLevel);
+			System.out.println(levelModel);
+			if (levelModel != null)
+				background = mantisAssetManager.get(levelModel.getBackground(), Texture.class);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+
+		if (levelModel == null) {
+			levelModel = new LevelModel();
+		}
+
+		for (Entity o : levelModel.getEntities()) {
+			objects.add(o);
+		}
+	}
+
+	private void populateButtons(){
+		buttons.add(new Button(GUI_LEFT_BAR_MARGIN, GUI_LEFT_BAR_MARGIN,
+				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
+				"JSON", 0, "levelgui"));
+
+		buttons.add(new Button(GUI_LEFT_BAR_MARGIN, 3 * GUI_LEFT_BAR_MARGIN,
+				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
+				"JSON", 1, "globalconfig"));
+
+		buttons.add(new ToggleButton(GUI_LEFT_BAR_MARGIN, 5 * GUI_LEFT_BAR_MARGIN,
+				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
+				"LEOptions", 0, "snapping"));
+
+		buttons.add(new ToggleButton(GUI_LEFT_BAR_MARGIN, 7 * GUI_LEFT_BAR_MARGIN,
+				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
+				"LEOptions", 1, "move far"));
+
+		buttons.add(new ToggleButton(GUI_LEFT_BAR_MARGIN, 9 * GUI_LEFT_BAR_MARGIN,
+				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
+				"LEOptions", 2, "drag mode"));
+
+		buttons.add(new Button(GUI_LEFT_BAR_MARGIN, 11 * GUI_LEFT_BAR_MARGIN,
+				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
+				"Entity", 0, "edit"));
+
+		buttons.add(new Button(GUI_LEFT_BAR_MARGIN, 13 * GUI_LEFT_BAR_MARGIN,
+				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
+				"Entity", 1, "delete"));
+
+		buttons.add(new Button(GUI_LEFT_BAR_MARGIN, 15 * GUI_LEFT_BAR_MARGIN,
+				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
+				"Entity", 2, "duplicate"));
+
+		buttons.add(new Button(GUI_LEFT_BAR_MARGIN, 17 * GUI_LEFT_BAR_MARGIN,
+				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
+				"Entity", 5, "randomize"));
+
+		buttons.add(new Button(GUI_LEFT_BAR_MARGIN, 19 * GUI_LEFT_BAR_MARGIN,
+				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
+				"Entity", 3, "deselect"));
+
+		buttons.add(new Button(GUI_LEFT_BAR_MARGIN, 21 * GUI_LEFT_BAR_MARGIN,
+				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
+				"Entity", 4, "undo"));
+
+		buttons.add(new Button(GUI_LEFT_BAR_MARGIN, 21 * GUI_LEFT_BAR_MARGIN,
+				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
+				"LEOptions", 5, "debug"));
+
+		buttons.add(new Button(GUI_LEFT_BAR_MARGIN, 23 * GUI_LEFT_BAR_MARGIN,
+				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
+				"LEOptions", 6, "zoom in"));
+
+		buttons.add(new Button(GUI_LEFT_BAR_MARGIN, 25 * GUI_LEFT_BAR_MARGIN,
+				GUI_LEFT_BAR_WIDTH- (2*GUI_LEFT_BAR_MARGIN), GUI_LEFT_BAR_MARGIN,
+				"LEOptions", 7, "zoom out"));
+
+
+		buttons.add(new MenuArrowButton(GUI_LEFT_BAR_WIDTH, 0,
+				GUI_EMARROW_WIDTH, GUI_LOWER_BAR_HEIGHT,
+				"EntityMenu", 0, "left", 0,true));
+
+		buttons.add(new MenuArrowButton(canvas.getWidth()-GUI_EMARROW_WIDTH, 0,
+				GUI_EMARROW_WIDTH, GUI_LOWER_BAR_HEIGHT,
+				"EntityMenu", 0, "right", 0,false));
+	}
+
+	private boolean processButtons(Button b){
+		if(b != null){
+			switch (b.getGroup()){
+				case("JSON"):
+					switch (b.getName()){
+						case("levelgui"):
+							makeGuiWindow();
+							break;
+						case("globalconfig"):
+							promptGlobalConfig();
+							break;
+						default:
+							break;
+					}
+					break;
+				case("LEOptions"):
+					switch (b.getName()){
+						case("snapping"):
+							ToggleButton t = ((ToggleButton)b);
+							t.setOn(!t.isOn());
+							snapping = t.isOn();
+							break;
+						case("move far"):
+							t = ((ToggleButton)b);
+							t.setOn(!t.isOn());
+							movefar = t.isOn();
+							break;
+						case("drag mode"):
+							t = ((ToggleButton)b);
+							t.setOn(!t.isOn());
+							dragmode = t.isOn();
+							break;
+						case("debug"):
+							System.out.println(levelModel);
+							break;
+						case("zoom in"):
+							bounds.setSize(bounds.getWidth() - 1.6f, bounds.getHeight() - .9f);
+							setWorldScale(canvas);
+							break;
+						case("zoom out"):
+							bounds.setSize(bounds.getWidth() + 1.6f, bounds.getHeight() + .9f);
+							setWorldScale(canvas);
+							break;
+						default:
+							break;
+					}
+					break;
+				case("Entity"):
+					switch(b.getName()){
+						case("edit"):
+							if (selected != null) {
+								undoSelected = selected;
+								undoCreate = selected;
+								promptTemplate(selected);
+								objects.remove(selected);
+								selected = null;
+							}
+							dragging = false;
+							creating = false;
+							break;
+						case("delete"):
+							if (selected != null) {
+								undoSelected = selected;
+								undoCreate = selected;
+								undoDelete = null;
+								objects.remove(selected);
+								selected = null;
+							}
+							dragging = false;
+							creating = false;
+							break;
+						case("duplicate"):
+							if(selected != null) {
+								undoSelected = selected;
+								undoCreate = null;
+								copyEntity(selected);
+							}
+							break;
+						case("deselect"):
+							undoSelected = selected;
+							selected = null;
+							dragging = false;
+							creating = false;
+							break;
+						case("undo"):
+							dragging = false;
+							creating = false;
+							selected = undoSelected;
+
+							if(undoDelete != null){
+								objects.remove(undoDelete);
+								undoDelete = null;
+							}
+							if(undoCreate != null){
+								objects.add(undoCreate);
+								undoCreate = null;
+							}
+							break;
+						case("randomize"):
+							if(selected != null){
+								if(selected  instanceof  Vine){
+									((Vine) selected).setAngle((float)(Math.random() -.5) * 30 );
+									((Vine) selected).setOmega((float)(Math.random() -.5) * 200 );
+									((Vine) selected).rebuild();
+								}
+							}
+							break;
+						default:
+							break;
+					}
+				case("EntityMenu"):
+					switch (b.getName()){
+						case("left"):
+							entityMenuPage--;
+							entityMenuPage = entityMenuPage % ((int)(entityTree.current.children.size()/entitiesPerPage)+1);
+							break;
+						case("right"):
+							entityMenuPage++;
+							entityMenuPage = entityMenuPage % ((int)(entityTree.current.children.size()/entitiesPerPage)+1);
+							break;
+						default:
+							break;
+					}
+					break;
+				default:
+					break;
+			}
+			return true;
+		}
+		else{
+			return false;
+		}
+	}
+
+
+	//region Utility Helpers
+	/**
+	 * Type safety is overrated [trevor]
+	 * @param x
+	 * @param y
+	 */
+	private Entity createXY(EntityTree.ETNode node, float x, float y) {
+		float xorig = x;
+		float yorig = y;
+		x = Math.round(x);
+		y = Math.round(y);
+
+		Entity entity = null;
+		String name = node.name;
+
+
+		switch (name) {
+			case "SlothModel":
+				entity = new SlothModel(x,y);
+				break;
+			case "Vine":
+				entity = new Vine(x,y,5.0f, 5f, -400f, 0);
+				break;
+			case "Trunk":
+				entity = new Trunk(x,y, 5.0f, 0);
+				break;
+			case "PoleVault":
+				entity = new PoleVault(x,y, 5.0f, oneScale, 0);
+				break;
+			case "StiffBranch":
+				entity = new StiffBranch(x,y, 3.0f,oneScale, 0);
+				break;
+			case "OwlModel":
+				entity = new OwlModel(x,y);
+				break;
+			case "WallModel":
+				entity = new WallModel(x,y,new float[] {0,0,0f,1f,1f,1f,1f,0f}, 0xFFFFFFFF);
+				break;
+			case "ThornModel":
+				entity = new ThornModel(x,y,1,0);
+				break;
+			case "GhostModel":
+				entity = new GhostModel(x,y,x+2,y+2,x,y);
+				break;
+			case "BackgroundEntity":
+				entity = new BackgroundEntity(xorig,yorig);
+				break;
+			case "EyeEntity":
+				entity = new EyeEntity(xorig,yorig);
+
+			default:
+				//System.err.println("UNKNOWN ENT");
+				break;
+		}
+
+
+		inputRateLimiter = UI_WAIT_SHORT;
+		if(entityTree.isBackground){
+			entity = new BackgroundEntity(x,y,node.texturePath);
+		}
+		if(entity == null){
+			System.err.println("UNKNOWN ENT");
+		}
+		return entity;
+
+	}
+
+	private void deleteEntity(Entity target){
+		objects.remove(target);
+	}
+
+	public Entity entityQuery() {
+
+		Entity found = null;
+		Vector2 mouse = new Vector2(adjustedMouseX, adjustedMouseY);
+		float minDistance = Float.MAX_VALUE;
+		for (Entity e : objects) {
+			Vector2 pos = e.getPosition();
+			if(movefar){
+				pos = e.getModifiedPosition(adjustedCxCamera,adjustedCyCamera);
+			}
+
+			float curDist = pos.dst(mouse);
+			if (curDist < minDistance) {
+				found = e;
+				minDistance = curDist;
+			}
+		}
+
+		if (minDistance < MAX_SNAP_DISTANCE) {
+			return found;
+		}
+		return null;
+	}
+
+	public void camUpdate(){
+		cxCamera = adjustedCxCamera - (((bounds.getWidth()-(GUI_LEFT_BAR_WIDTH/worldScale.x) )/2f)+(GUI_LEFT_BAR_WIDTH / worldScale.x) );
+		cyCamera = adjustedCyCamera - (((bounds.getHeight()-(GUI_LOWER_BAR_HEIGHT/worldScale.y))/2f) + (GUI_LOWER_BAR_HEIGHT / worldScale.y));
+
+	}
+
+
+	//endregion
+
+	/**
+	 * Returns whether to process the update loop
+	 *
+	 * At the start of the update loop, we check if it is time
+	 * to switch to a new game mode.  If not, the update proceeds
+	 * normally.
+	 *
+	 * @param dt Number of seconds since last animation frame
+	 *
+	 * @return whether to process the update loop
+	 */
+	public boolean preUpdate(float dt) {
+		if (!super.preUpdate(dt)) {
+			return false;
+		}
+
+		InputController input = InputControllerManager.getInstance().getController(0);
+		prevPressedL = pressedL;
+		pressedL = input.isLKeyPressed();
+		if (input.didRightDPadPress()) {
+			System.out.println("GM");
+			listener.exitScreen(this, EXIT_LE_GM);
+			return false;
+		} else if (input.didTopDPadPress()) {
+			System.out.println("MM");
+			listener.exitScreen(this, EXIT_LE_MM);
+			return false;
+		}else if (input.didBottomDPadPress()) {
+			reset();
+		}
+
+		return true;
+	}
+
+	public void update(float dt) {
+
+		// Decrement rate limiter to allow new input
+		if (inputRateLimiter > 0) {
+			inputRateLimiter--;
+			return;
+		}
+
+		// Allow access to mouse coordinates for multiple inputs
+		mouseX = InputControllerManager.getInstance().getController(0).getCrossHair().x;
+		mouseY = InputControllerManager.getInstance().getController(0).getCrossHair().y;
+
+
+
+		if(InputControllerManager.getInstance().getController(0).isShiftKeyPressed()) {
+			// Check for pan
+			if (mouseX < GUI_LEFT_BAR_WIDTH / worldScale.x ) {
+				// Pan left
+				adjustedCxCamera -= CAMERA_PAN_SPEED/worldScale.x;
+			}
+			if (mouseY < GUI_LOWER_BAR_HEIGHT / worldScale.y ) {
+				// down
+				adjustedCyCamera -= CAMERA_PAN_SPEED/worldScale.y;
+			}
+			if (mouseX > (bounds.getWidth() ) - 1) {
+				adjustedCxCamera += CAMERA_PAN_SPEED/worldScale.x;
+			}
+			if (mouseY > (bounds.getHeight() ) - 1) {
+				adjustedCyCamera += CAMERA_PAN_SPEED/worldScale.y;
+			}
+			if(InputControllerManager.getInstance().getController(0).isSpaceKeyPressed()){
+				adjustedCxCamera = 0;
+				adjustedCyCamera = 0;
+				if(selected != null && selected instanceof BackgroundEntity){
+					adjustedCxCamera = selected.getX();
+					adjustedCyCamera = selected.getY();
+				}
+			}
+			camUpdate();
+		}
+
+		adjustedMouseX = mouseX + cxCamera ;
+		adjustedMouseY = mouseY + cyCamera ;
+		if(snapping){
+			adjustedMouseX = Math.round(adjustedMouseX);
+			adjustedMouseY = Math.round(adjustedMouseY);
+
+		}
+
+
+		// Left Click
+		if (InputControllerManager.getInstance().getController(0).didLeftClick()) {
+			if(!processButtons(buttons.findButton(mouseX * worldScale.x, mouseY * worldScale.y))) {
+
+				if (mouseX * worldScale.x <= GUI_LEFT_BAR_WIDTH) {
+
+				} else if (mouseY * worldScale.y <= GUI_LOWER_BAR_HEIGHT) {
+
+					int button = getEntityMenuButton(mouseX * worldScale.x, mouseY * worldScale.y);
+					if(button >= entityTree.current.children.size()){
+						button = -2;
+					}
+					if (button == -2) {
+						//do nothing
+					} else if (button == -1) {
+						entityMenuPage = 0;
+						if (entityTree.current.parent != null) {
+							entityTree.upFolder();
+							creating = false;
+							selected = null;
+						}
+					} else {
+						if (!entityTree.current.children.get(button).isLeaf) {
+							entityMenuPage = 0;
+							entityTree.setCurrent(entityTree.current.children.get(button));
+							creating = false;
+							selected = null;
+						} else {
+							selected = createXY(entityTree.current.children.get(button), adjustedMouseX, adjustedMouseY);
+							if (selected != null) {
+								selected.setTextures(getMantisAssetManager());
+								creating = true;
+							}
+						}
+					}
+				} else {
+					creating = false;
+					dragging = false;
+					if (dragmode) {
+						if (entityQuery() != selected) {
+							selected = null;
+						}
+						if (selected == null) {
+							temporary = entityQuery();
+						}
+					} else {
+
+						selected = entityQuery();
+					}
+				}
+
+			}
+		}
+
+		if(InputControllerManager.getInstance().getController(0).didLeftDrag()){
+			if(mouseX* worldScale.x <= GUI_LEFT_BAR_WIDTH ){
+
+			}else if(mouseY * worldScale.y <= GUI_LOWER_BAR_HEIGHT){
+
+			} else {
+				dragging = true;
+				if(selected != null){
+					selected.setPosition(adjustedMouseX, adjustedMouseY);
+					if(selected instanceof ComplexObstacle){
+						((ComplexObstacle) selected).rebuild();
+					}
+					if(movefar){
+						selected.setModifiedPosition( adjustedMouseX, adjustedMouseY, adjustedCxCamera, adjustedCyCamera);
+					}
+					selected.setTextures(getMantisAssetManager());
+				}else{
+					// find nearest wall, custom entity query
+					float dist = Float.MAX_VALUE;
+					WallModel wm = null;
+					float bdx = 0;
+					float bdy = 0;
+					for (Entity e : objects) {
+						if (e instanceof WallModel) {
+							WallModel eWall = (WallModel) e;
+							float dx = (eWall.getModelX() - adjustedMouseX);
+							float dy = (eWall.getModelY() - adjustedMouseY);
+							float newDst = (float) Math.sqrt(dx*dx + dy*dy);
+							if (newDst < dist) {
+								dist = newDst;
+								wm = eWall;
+								bdx = dx;
+								bdy = dy;
+							}
+						}
+					}
+
+					bdx = -bdx;
+					bdy = -bdy;
+					if (wm != null && released) {
+						if (InputControllerManager.getInstance().getController(0).isAltKeyPressed()) {
+							// pinch move
+							wm.pinchMove(bdx,bdy);
 //							released = false;
-                        } else if (InputControllerManager.getInstance().getController(0).isDotKeyPressed()) {
-                            // delete
-                            wm.pinchDelete(bdx, bdy);
-                            released = false;
+						} else if (InputControllerManager.getInstance().getController(0).isDotKeyPressed()) {
+							// delete
+							wm.pinchDelete(bdx,bdy);
+							released = false;
 
-                        } else if (InputControllerManager.getInstance().getController(0).isRShiftKeyPressed()) {
-                            // pinch create
-                            wm.pinchCreate(bdx, bdy);
-                            released = false;
-                        }
-                    }
-                }
-            }
-        }
-        if (InputControllerManager.getInstance().getController(0).didLeftRelease()) {
-            released = true;
-            if (mouseX * worldScale.x <= GUI_LEFT_BAR_WIDTH) {
+						} else if (InputControllerManager.getInstance().getController(0).isRShiftKeyPressed()) {
+							// pinch create
+							wm.pinchCreate(bdx,bdy);
+							released = false;
+						}
+					}
+				}
+			}
+		}
+		if(InputControllerManager.getInstance().getController(0).didLeftRelease()){
+			released= true;
+			if(mouseX* worldScale.x <= GUI_LEFT_BAR_WIDTH ){
 
-            } else if (mouseY * worldScale.y <= GUI_LOWER_BAR_HEIGHT) {
+			}else if(mouseY * worldScale.y <= GUI_LOWER_BAR_HEIGHT){
 
-            } else {
-                if (selected != null) {
-                    if (dragging) {
-                        dragging = false;
+			}else{
+				if(selected != null){
+					if(dragging) {
+						dragging = false;
 
-                        selected.setPosition(adjustedMouseX, adjustedMouseY);
-                        if (selected instanceof ComplexObstacle) {
-                            ((ComplexObstacle) selected).rebuild();
-                        }
-                        if (movefar) {
-                            selected.setModifiedPosition(adjustedMouseX, adjustedMouseY, adjustedCxCamera, adjustedCyCamera);
-                        }
-                        selected.setTextures(getMantisAssetManager());
+						selected.setPosition(adjustedMouseX, adjustedMouseY);
+						if(selected instanceof ComplexObstacle){
+							((ComplexObstacle) selected).rebuild();
+						}
+						if(movefar){
+							selected.setModifiedPosition( adjustedMouseX, adjustedMouseY, adjustedCxCamera, adjustedCyCamera);
+						}
+						selected.setTextures(getMantisAssetManager());
 
-                        if (creating) {
-                            promptTemplate(selected);
-                        }
-                    }
-                } else {
-                    selected = temporary;
-                    temporary = null;
+						if (creating) {
+							promptTemplate(selected);
+						}
+					}
+				}else {
+					selected = temporary;
+					temporary = null;
 
-                }
-            }
-            creating = false;
-        }
+				}
+			}
+			creating = false;
+		}
 
-        // Edit entity with mouse over it
-        if (InputControllerManager.getInstance().getController(0).isEKeyPressed()) {
-            Entity select = entityQuery();
-            if (select != null) {
-                if (!prompting) {
-                    prompting = true; //Use different constant? Can just use the same one?
+		// Edit entity with mouse over it
+		if(InputControllerManager.getInstance().getController(0).isEKeyPressed()) {
+			Entity select = entityQuery();
+			if (select != null) {
+				if (!prompting) {
+					prompting = true; //Use different constant? Can just use the same one?
 
-                    JDialog entityDisplay = new JDialog();
-                    entityDisplay.setUndecorated(true);
-                    entityDisplay.setSize(600, 600);
-                    entityDisplay.toFront();
-                    JPanel panel = makeEntityWindow(select, entityDisplay);
+					JDialog entityDisplay = new JDialog();
+					entityDisplay.setUndecorated(true);
+					entityDisplay.setSize(600,600);
+					entityDisplay.toFront();
+					JPanel panel = makeEntityWindow(select,entityDisplay);
 
-                    entityDisplay.add(panel);
-                    entityDisplay.setVisible(true);
-                }
-            }
-            inputRateLimiter = UI_WAIT_SHORT;
-        }
+					entityDisplay.add(panel);
+					entityDisplay.setVisible(true);
+				}
+			}
+			inputRateLimiter = UI_WAIT_SHORT;
+		}
 
-        // Name
-        if (InputControllerManager.getInstance().getController(0).isNKeyPressed()) {
-            String prevLevel = currentLevel;
-            currentLevel = showInputDialog("What should we call this level?");
-            //If action cancelled or entry is empty
-            if (currentLevel.isEmpty()) {
-                currentLevel = prevLevel;
-            }
-            inputRateLimiter = UI_WAIT_LONG;
-        }
+		// Name
+		if(InputControllerManager.getInstance().getController(0).isNKeyPressed()) {
+			String prevLevel = currentLevel;
+			currentLevel = showInputDialog("What should we call this level?");
+			//If action cancelled or entry is empty
+			if(currentLevel.isEmpty()) { currentLevel = prevLevel; }
+			inputRateLimiter = UI_WAIT_LONG;
+		}
 
-        // Load
-        if (InputControllerManager.getInstance().getController(0).isLKeyPressed()) {
-            if (!loadingLevelPrompt) {
-                loadingLevelPrompt = true;
-                loadLevel(showInputDialog("What level do you want to load?"));
-                loadingLevelPrompt = false;
-            }
-            inputRateLimiter = UI_WAIT_LONG;
-        }
+		// Load
+//		if(InputControllerManager.getInstance().getController(0).isLKeyPressed()) {
+//			if (!loadingLevelPrompt) {
+//				loadingLevelPrompt = true;
+//				loadLevel(showInputDialog("What level do you want to load?"));
+//				loadingLevelPrompt = false;
+//			}
+//			inputRateLimiter = UI_WAIT_LONG;
+//		}
 
-        // Save
-        if (InputControllerManager.getInstance().getController(0).isSKeyPressed()) {
-            saveLevel();
-        }
+		// Save
+		if(InputControllerManager.getInstance().getController(0).isSKeyPressed()) {
+			saveLevel();
+		}
 
-        // Help
-        if (InputControllerManager.getInstance().getController(0).isHKeyPressed()) {
-            showHelp = !showHelp;
-            inputRateLimiter = UI_WAIT_LONG;
-        }
+		// Help
+		if (InputControllerManager.getInstance().getController(0).isHKeyPressed()) {
+			showHelp = !showHelp;
+			inputRateLimiter = UI_WAIT_LONG;
+		}
 
-        // Grid
-        if (InputControllerManager.getInstance().getController(0).isTKeyPressed()) {
-            shouldDrawGrid = !shouldDrawGrid;
-            inputRateLimiter = UI_WAIT_LONG;
-        }
+		// Grid
+		if (InputControllerManager.getInstance().getController(0).isTKeyPressed()) {
+			shouldDrawGrid = !shouldDrawGrid;
+			inputRateLimiter = UI_WAIT_LONG;
+		}
 
-        // Background
-        if (InputControllerManager.getInstance().getController(0).isBKeyPressed()) {
-            levelModel.setBackground(showInputDialog("What texture should the background be set to?"));
-            // TODO: Update the drawn background (after henry implements the engine)
-            background = getMantisAssetManager().get("texture/background/background1.png");
+		// Background
+		if (InputControllerManager.getInstance().getController(0).isBKeyPressed()) {
+			levelModel.setBackground(showInputDialog("What texture should the background be set to?"));
+			// TODO: Update the drawn background (after henry implements the engine)
+			background = getMantisAssetManager().get("texture/background/background1.png");
 
-        }
+		}
 
-        // Playtest
-        if (InputControllerManager.getInstance().getController(0).isXKeyPressed()) {
-            gmc.setLevel(currentLevel);
-            saveLevel();
-            listener.exitScreen(this, EXIT_LE_GM);
-        }
-    }
+		// Playtest
+		if (InputControllerManager.getInstance().getController(0).isXKeyPressed()) {
+			gmc.setLevel(currentLevel);
+			saveLevel();
+			listener.exitScreen(this, EXIT_LE_GM);
+		}
+	}
 
-    @Override
-    public void postUpdate(float dt) {
+	@Override
+	public void postUpdate(float dt) {
 
-        // Turn the physics engine crank.
-        //world.step(WORLD_STEP,WORLD_VELOC,WORLD_POSIT);
+		// Turn the physics engine crank.
+		//world.step(WORLD_STEP,WORLD_VELOC,WORLD_POSIT);
 
-        for (Entity ent : entities) {
+		for (Entity ent :objects){
 
-            if (ent instanceof Obstacle) {
-                Obstacle obj = (Obstacle) ent;
-                if (obj.isRemoved()) {
-                    obj.deactivatePhysics(world);
-                    entities.remove(ent);
-                }
-            }
-            // we don't need ents to update in level editor
+			if(ent instanceof Obstacle){
+				Obstacle obj  = (Obstacle)ent;
+				if (obj.isRemoved()) {
+					obj.deactivatePhysics(world);
+					objects.remove(ent);
+					continue;
+				}
+			}
+			// we don't need ents to update in level editor
 //			ent.update(dt); // called last!
         }
     }

@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import lombok.Setter;
+import org.lwjgl.Sys;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -76,6 +77,7 @@ public class ParticleController {
         if (gmc.isPaused()) {
             return;
         }
+        System.out.println(numParticles());
         int counter = 0;
         while (counter < spawned.size()) {
             Particle curParticle = spawned.get(counter);

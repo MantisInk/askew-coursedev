@@ -179,8 +179,11 @@ public class SlothModel extends ComplexObstacle {
     private transient boolean didOneArmCheck;
     private transient boolean waitingForSafeRelease;
     private transient boolean tutorial = false;
+    private transient boolean movingLeftArm = false;
     @Getter
     private transient Obstacle mostRecentlyGrabbed = null;
+    @Getter
+    private transient Body mostRecentTarget = null;
     private int airTime;
     /**
      * Texture assets for the body parts
@@ -843,13 +846,15 @@ public class SlothModel extends ComplexObstacle {
         if (leftHand) {
             leftGrabJoint = grabJoint;
             leftTarget = target;
+            mostRecentTarget = target;
         } else {
             rightGrabJoint = grabJoint;
             rightTarget = target;
+            mostRecentTarget = target;
         }
         // set data as grabbed for pinned to shade grabbed stuff
         if (target.getUserData() instanceof Obstacle) {
-            ((Obstacle) target.getUserData()).setGrabbed();
+            ((Obstacle)target.getUserData()).setGrabbed(true);
         }
 
         joints.add(grabJoint);
@@ -864,6 +869,9 @@ public class SlothModel extends ComplexObstacle {
             leftCanGrabOrIsGrabbing = false;
             releasedEntity = true;
             leftGrabJoint = null;
+            if (leftTarget.getUserData() instanceof Obstacle) {
+                ((Obstacle)leftTarget.getUserData()).setGrabbed(false);
+            }
             leftTarget = null;
         }
         if (mostRecentlyGrabbed != null && mostRecentlyGrabbed.getBody() == getLeftHand()) {
@@ -881,6 +889,9 @@ public class SlothModel extends ComplexObstacle {
             leftCanGrabOrIsGrabbing = true;
             releasedEntity = true;
             rightGrabJoint = null;
+            if (rightTarget.getUserData() instanceof Obstacle) {
+                ((Obstacle)rightTarget.getUserData()).setGrabbed(false);
+            }
             rightTarget = null;
         }
     }
@@ -1010,13 +1021,12 @@ public class SlothModel extends ComplexObstacle {
             BoxObstacle part = (BoxObstacle) bodies.get(body_ind);
             TextureRegion texture = part.getTexture();
             if (texture != null) {
-                // different textures for flow's body
-
-                //Velocity thresholds for Flow to turn
+                // Velocity thresholds for Flow to turn
                 float upper_threshold = 9.75f;
                 float lower_threshold = 3.0f;
 
-                TextureRegion old_texture = texture;
+                // Different textures for flow's body
+                TextureRegion old_texture=texture;
 
                 if (body_ind == PART_BODY) {
                     if (currentCooldown < 0) {
@@ -1049,42 +1059,17 @@ public class SlothModel extends ComplexObstacle {
                                 texture.flip(true, false);
                             }
                         } else {
-                            part.setTexture(partTextures[4]);
+                            part.setTexture(getFrontFlow());
                         }
 
                         if (old_texture != part.getTexture() || (old_texture.isFlipX() != part.getTexture().isFlipX())) {
                             currentCooldown = TRANSITION_COOLDOWN;
                         }
                     } else {
-                        part.setTexture(getFrontFlow());
+
                     }
                     currentCooldown--;
 
-
-//                    System.out.println(flowFacingState);
-//                    if (flowFacingState > lower_threshold && flowFacingState < upper_threshold){
-//                        part.setTexture(partTextures[2]);
-//                        if (!texture.isFlipX()) {
-//                            texture.flip(true, false);
-//                        }
-//                    } else if (flowFacingState > upper_threshold) {
-//                        part.setTexture(partTextures[5]);
-//                        if (!texture.isFlipX()) {
-//                            texture.flip(true, false);
-//                        }
-//                    } else if (flowFacingState < -lower_threshold && flowFacingState > -upper_threshold) {
-//                        part.setTexture(partTextures[2]);
-//                        if (texture.isFlipX()) {
-//                            texture.flip(true, false);
-//                        }
-//                    } else if (flowFacingState < -upper_threshold) {
-//                        part.setTexture(partTextures[5]);
-//                        if (texture.isFlipX()) {
-//                            texture.flip(true, false);
-//                        }
-//                    } else {
-//                        part.setTexture(partTextures[4]);
-//                    }
                 }
 
                 // different textures for flow's arms if controlling
@@ -1105,10 +1090,14 @@ public class SlothModel extends ComplexObstacle {
                 if (body_ind == PART_LEFT_HAND || body_ind == PART_RIGHT_HAND)
                     continue;
                 if (body_ind == PART_RIGHT_ARM) {
-                    drawArm(canvas, part, (leftCanGrabOrIsGrabbing && isActualLeftGrab()) || (!leftCanGrabOrIsGrabbing && !isActualRightGrab()));
+                    if (!tutorial || (tutorial && !pinned) || (tutorial && pinned && !movingLeftArm)) {
+                        drawArm(canvas, part, (leftCanGrabOrIsGrabbing && isActualLeftGrab()) || (!leftCanGrabOrIsGrabbing && !isActualRightGrab()));
+                    }
                 } else if (body_ind == PART_LEFT_ARM) {
                     // left limb
-                    drawArm(canvas, part, (leftCanGrabOrIsGrabbing && !isActualLeftGrab()) || (!leftCanGrabOrIsGrabbing && isActualRightGrab()));
+                    if (!tutorial || (tutorial && !pinned) || (tutorial && pinned && movingLeftArm)) {
+                        drawArm(canvas, part, (leftCanGrabOrIsGrabbing && !isActualLeftGrab()) || (!leftCanGrabOrIsGrabbing && isActualRightGrab()));
+                    }
                 }
                 //If the body parts are not limbs
                 else {
@@ -1255,9 +1244,11 @@ public class SlothModel extends ComplexObstacle {
         pinned = true;
     }
 
-    public void setTutorial() {
-        tutorial = true;
+    public void removeArm(boolean movingLeftArm) {
+        this.movingLeftArm = movingLeftArm;
     }
+
+    public void setTutorial() {tutorial = true;}
 
     public void drawHelpLines(GameCanvas canvas, Affine2 camTrans, int mode, float angleDiff) {
         if (tutorial) {

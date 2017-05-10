@@ -7,12 +7,13 @@
   "flowCanMoveGrabbingHand": true,
   "flowMovementMode": 0,
   "flowControlMode": 0,
+  "graphics": 0,
   "vineDensity": 3.0,
   "fullscreen": false,
   "defaultLevel": "level1",
   "storeTimeRecords": false,
-  "maxLevel": 9,
+  "maxLevel": 7,
   "currentLevel": 1,
-  "enableMusic": false,
-  "maxTutorial": 5
+  "enableMusic": true,
+  "maxTutorial": 3
 }

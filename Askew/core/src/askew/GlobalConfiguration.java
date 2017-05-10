@@ -91,4 +91,12 @@ public class GlobalConfiguration {
         else
             dataBlob.addProperty("flowMovementMode", 1);
     }
+
+    public void setGraphicsQuality(boolean mode) {
+        dataBlob.remove("graphics");
+        if (mode)
+            dataBlob.addProperty("graphics",0);
+        else
+            dataBlob.addProperty("graphics",1);
+    }
 }
