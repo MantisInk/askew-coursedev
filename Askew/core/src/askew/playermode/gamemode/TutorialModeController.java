@@ -23,7 +23,10 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 
@@ -60,6 +63,7 @@ public class TutorialModeController extends GameModeController {
 	private boolean prevRightGrab;
 	private boolean prevLeftGrab;
 	private boolean grabbedAll;
+	private boolean moveLeftArm = false;
 
 	private float time = 0f;
 
@@ -68,6 +72,8 @@ public class TutorialModeController extends GameModeController {
 	private Animation bumperRAnimation;
 	private float elapseTime;
 	private float count;
+
+	BitmapFont instrFont;
 
 	// selected animation textures to be drawn
 	TextureRegion joystickNeutralTexture;
@@ -90,6 +96,7 @@ public class TutorialModeController extends GameModeController {
 	private ArrayList<Boolean> trunkGrabbed = new ArrayList<Boolean>();
 	protected  ArrayList<Vine> vineEntities = new ArrayList<Vine>();
 
+	// stuff for vector prediction
 	// margin allowance for measuring distance from setpoints
 	private float[] inRangeAllowance = {0.02f, 0.02f, 0.02f, ARMSPAN/2, 0.05f};
 	// list of setpoints for drawing helplines & other vars
@@ -179,6 +186,16 @@ public class TutorialModeController extends GameModeController {
 		rUp = manager.get(rUpPath);
 		DEFAULT_LEVEL = "tutorial1";
 		loadLevel = DEFAULT_LEVEL;
+
+		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("font/ReginaFree.ttf"));
+		FreeTypeFontGenerator.FreeTypeFontParameter param = new FreeTypeFontGenerator.FreeTypeFontParameter();
+		param.size = 56;
+		param.color = Color.BLUE;
+		param.shadowColor = Color.LIGHT_GRAY;
+		param.shadowOffsetX = 1;
+		param.shadowOffsetY = 1;
+		instrFont = generator.generateFont(param);
+		generator.dispose();
 	}
 
 	// Physics objects for the game
@@ -197,11 +214,13 @@ public class TutorialModeController extends GameModeController {
 	 * This method disposes of the world and creates a new one.
 	 */
 	public void reset() {
+		bounds = new Rectangle(0,0,16.0f, 9.0f);
 		loadLevel = "tutorial"+currentStage;
 		trunkEntities.clear();
 		trunkGrabbed.clear();
 		super.reset();
 		time = 0;
+		moveLeftArm = false;
 		inRangeSetPt = -1;
 		targetLine = NEUTRAL;
 		angleDiff = 0f;
@@ -298,15 +317,18 @@ public class TutorialModeController extends GameModeController {
 			elapseTime += dt;
 			time = time+dt ;
 			// TODO: move sloth movement in slothmodel
+			slothList.get(0).setTutorial();
 			Vector2 set;
+			InputController input = InputControllerManager.getInstance().getController(0);
 
 			switch(currentStage) {
 				case STAGE_PINNED:
-					if( (int)(time/3) %2 == 0) {
-						slothList.get(0).getRightArm().setAngle((float)Math.PI);
-					} else {
-						slothList.get(0).getLeftArm().setAngle((float)Math.PI);
+					if(input.getLeftGrab()){
+						moveLeftArm = true;
+					} else if (input.getRightGrab()) {
+						moveLeftArm = false;
 					}
+					slothList.get(0).removeArm(moveLeftArm);
 					break;
 				case STAGE_GRAB:
 					grabbedAll = trunkGrabbed.get(0);
@@ -690,7 +712,6 @@ public class TutorialModeController extends GameModeController {
 	}
 
 	public void drawInstructions() {
-		displayFont.setColor(Color.GOLDENROD);
 		joystickNeutralTexture = joystickAnimation.getKeyFrame(0);
 		joystickTexture = joystickAnimation.getKeyFrame(elapseTime, true);
 		bumperLTexture = bumperLAnimation.getKeyFrame(elapseTime,true);
@@ -698,7 +719,7 @@ public class TutorialModeController extends GameModeController {
 
 //		canvas.draw(container, Color.WHITE, container.getWidth() / 2, 0, 425, 300, 0, worldScale.x * 5 / container.getWidth(), worldScale.y * 5 / container.getHeight());
 				if(currentStage == STAGE_PINNED) {
-					if((int)(time/3) %2 == 0){
+					if(moveLeftArm){
 						canvas.draw(joystickTexture, Color.WHITE, joystickTexture.getRegionWidth() / 2, 0, 350, 450, 0, worldScale.x / joystickTexture.getRegionWidth(), worldScale.y / joystickTexture.getRegionHeight());
 						canvas.draw(joystickNeutralTexture, Color.WHITE, joystickNeutralTexture.getRegionWidth() / 2, 0, 450, 450, 0, worldScale.x / joystickNeutralTexture.getRegionWidth(), worldScale.y / joystickNeutralTexture.getRegionHeight());
 					} else{
@@ -707,14 +728,14 @@ public class TutorialModeController extends GameModeController {
 					}
 				} else if(currentStage == STAGE_GRAB) {
 					if (!grabbedAll) {
-				canvas.drawTextCentered("Try to grab all 5 branches", displayFont, 250f);
+				canvas.drawTextCentered("Try to grab all 5 branches", instrFont, 250f);
 			}
 		} else if (currentStage == STAGE_SHIMMY) {
-			canvas.drawTextCentered("Try to shimmy across to the owl", displayFont, 250f);
+			canvas.drawTextCentered("Try to shimmy across to the owl", instrFont, 250f);
 		} else if (currentStage == STAGE_FLING) {
-			canvas.drawTextCentered("Try to fling from branch to branch", displayFont, 250f);
+			canvas.drawTextCentered("Try to fling from branch to branch", instrFont, 250f);
 		} else if (currentStage == STAGE_VINE) {
-			canvas.drawTextCentered("Learn to swing on the vines", displayFont, 250f);
+			canvas.drawTextCentered("Learn to swing on the vines", instrFont, 250f);
 		}
 		if (currentStage >= STAGE_GRAB) {
 			if(slothList.get(0).isActualRightGrab()) {
@@ -731,10 +752,19 @@ public class TutorialModeController extends GameModeController {
 		}
 		if((currentStage == STAGE_PINNED && time > 6f) ||
 				(currentStage == STAGE_GRAB && grabbedAll)) {
-			canvas.drawTextCentered("Press A to continue", displayFont, 200f);
+			canvas.drawTextCentered("Press A to continue", instrFont, 200f);
 		}
-		if(currentStage == STAGE_PINNED && time < 6f) {
-			canvas.drawTextCentered("Practice moving one arm at a time", displayFont, 200f);
+		if(currentStage == STAGE_PINNED) {
+			if (time < 6f) {
+				canvas.drawTextCentered("Practice moving one arm at a time", instrFont, 250f);
+			}
+			if (moveLeftArm) {
+				canvas.draw(rPressed, Color.WHITE, rPressed.getWidth() / 2, 0, 365, 150, 0, worldScale.x / rPressed.getWidth(), worldScale.y / rPressed.getHeight());
+				canvas.drawTextCentered("Press RB to switch arms", instrFont, -250f);
+			} else {
+				canvas.draw(lPressed, Color.WHITE, lPressed.getWidth() / 2, 0, 365, 150, 0, worldScale.x / lPressed.getWidth(), worldScale.y / lPressed.getHeight());
+				canvas.drawTextCentered("Press LB to switch arms", instrFont, -250f);
+			}
 		}
 	}
 
@@ -755,7 +785,6 @@ public class TutorialModeController extends GameModeController {
 
 		canvas.begin(camTrans);
 		Collections.sort(objects);
-		slothList.get(0).setTutorial();
 		for(Entity obj : objects) {
 			obj.setDrawScale(worldScale);
 			// if stage 2, tint trunks if already grabbed
