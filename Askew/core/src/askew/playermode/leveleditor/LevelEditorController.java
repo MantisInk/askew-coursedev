@@ -157,6 +157,27 @@ public class LevelEditorController extends WorldController {
 
     private Vector2 temp;
 
+    @Override
+    public void preLoadContent(MantisAssetManager m) {
+        this.mantisAssetManager = m;
+        jsonLoaderSaver.setManager(m);
+        setMantisAssetManager(m);
+    }
+
+    public void loadContent(MantisAssetManager manager) {
+        super.loadContent(manager);
+        background = manager.get("texture/background/background1.png");
+        grey = manager.get("texture/leveleditor/grey.png");
+        upFolder = manager.get("texture/leveleditor/up.png");
+        folder = manager.get("texture/leveleditor/folder.png");
+        placeholder = manager.get("texture/leveleditor/placeholder.png");
+        yellowbox = manager.get("texture/leveleditor/yellowbox.png");
+        entityTree.setTextures(manager);
+        buttons.setManager(manager);
+        buttons.setTextures(manager);
+        levelEditorAssetState = AssetState.COMPLETE;
+    }
+
     /**
      * Creates and initialize a new instance of the platformer game
      * <p>
@@ -223,7 +244,8 @@ public class LevelEditorController extends WorldController {
         levelModel = jsonLoaderSaver.loadLevel(currentLevel);
         System.out.println(levelModel);
         if (levelModel != null)
-            background = mantisAssetManager.get(levelModel.getBackground(), Texture.class);
+            background = mantisAssetManager
+                    .get(levelModel.getBackground(), Texture.class);
 
         if (levelModel == null) {
             levelModel = new LevelModel();
@@ -243,16 +265,16 @@ public class LevelEditorController extends WorldController {
                 GUI_LEFT_BAR_WIDTH - (2 * GUI_LEFT_BAR_MARGIN),
                 "JSON", 1, "globalconfig"));
 
-        buttons.add(new ToggleButton(5 * GUI_LEFT_BAR_MARGIN,
-                GUI_LEFT_BAR_WIDTH - (2 * GUI_LEFT_BAR_MARGIN),
+        buttons.add(new ToggleButton(GUI_LEFT_BAR_MARGIN,5 *
+                GUI_LEFT_BAR_MARGIN,
                 0, "snapping"));
 
-        buttons.add(new ToggleButton(7 * GUI_LEFT_BAR_MARGIN,
-                GUI_LEFT_BAR_WIDTH - (2 * GUI_LEFT_BAR_MARGIN),
+        buttons.add(new ToggleButton(GUI_LEFT_BAR_MARGIN,7 *
+                GUI_LEFT_BAR_MARGIN,
                 1, "move far"));
 
-        buttons.add(new ToggleButton(9 * GUI_LEFT_BAR_MARGIN,
-                GUI_LEFT_BAR_WIDTH - (2 * GUI_LEFT_BAR_MARGIN),
+        buttons.add(new ToggleButton(GUI_LEFT_BAR_MARGIN,9 *
+                GUI_LEFT_BAR_MARGIN,
                 2, "drag mode"));
 
         buttons.add(new Button(11 * GUI_LEFT_BAR_MARGIN,

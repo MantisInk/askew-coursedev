@@ -33,7 +33,7 @@ public class BackgroundEntity extends Entity {
     private transient Vector2 sizeCache = new Vector2();
 
 
-    BackgroundEntity() {
+    public BackgroundEntity() {
         this(0, 0);
     }
 
