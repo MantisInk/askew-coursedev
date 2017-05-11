@@ -10,10 +10,7 @@
  */
 package askew.playermode.leveleditor;
 
-import askew.GlobalConfiguration;
-import askew.InputController;
-import askew.InputControllerManager;
-import askew.MantisAssetManager;
+import askew.*;
 import askew.entity.BackgroundEntity;
 import askew.entity.Entity;
 import askew.entity.EyeEntity;
@@ -163,6 +160,13 @@ public class LevelEditorController extends WorldController {
         jsonLoaderSaver.setManager(m);
         setMantisAssetManager(m);
     }
+    @Override
+    public void setCanvas(GameCanvas canvas) {
+        this.canvas = canvas;
+        this.worldScale.x = 1.0f * (float)canvas.getWidth()/(float)bounds.getWidth();
+        this.worldScale.y = 1.0f * (float)canvas.getHeight()/(float)bounds.getHeight();
+    }
+
 
     public void loadContent(MantisAssetManager manager) {
         super.loadContent(manager);
