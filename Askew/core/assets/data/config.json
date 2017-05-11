@@ -12,7 +12,7 @@
   "fullscreen": false,
   "defaultLevel": "level1",
   "storeTimeRecords": false,
-  "maxLevel": 7,
+  "maxLevel": 11,
   "currentLevel": 1,
   "enableMusic": false,
   "maxTutorial": 3

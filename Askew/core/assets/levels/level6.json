@@ -24,9 +24,9 @@
     {
       "CLASSNAME": "askew.entity.wall.WallModel",
       "INSTANCE": {
+        "color": -1,
         "x": -2.0,
         "y": 2.0,
-        "color": -1,
         "points": [
           0.0,
           0.0,
@@ -42,9 +42,9 @@
     {
       "CLASSNAME": "askew.entity.wall.WallModel",
       "INSTANCE": {
+        "color": -1,
         "x": 0.0,
         "y": 0.0,
-        "color": -1,
         "points": [
           4.0,
           3.0,
@@ -64,9 +64,9 @@
     {
       "CLASSNAME": "askew.entity.wall.WallModel",
       "INSTANCE": {
+        "color": -1,
         "x": 3.0,
         "y": -2.0,
-        "color": -1,
         "points": [
           0.0,
           0.0,
@@ -77,54 +77,6 @@
           1.0,
           0.0
         ]
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.vine.Vine",
-      "INSTANCE": {
-        "numLinks": 7.0,
-        "x": 6.0,
-        "y": -4.0,
-        "angle": 5.0,
-        "omega": -400.0,
-        "pin": false,
-        "texture": 0
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.vine.Vine",
-      "INSTANCE": {
-        "numLinks": 7.0,
-        "x": 12.0,
-        "y": -4.0,
-        "angle": 5.0,
-        "omega": -400.0,
-        "pin": false,
-        "texture": 0
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.vine.Vine",
-      "INSTANCE": {
-        "numLinks": 7.0,
-        "x": 18.0,
-        "y": -4.0,
-        "angle": 5.0,
-        "omega": -400.0,
-        "pin": false,
-        "texture": 0
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.vine.Vine",
-      "INSTANCE": {
-        "numLinks": 10.0,
-        "x": 22.0,
-        "y": -4.0,
-        "angle": 5.0,
-        "omega": -400.0,
-        "pin": false,
-        "texture": 0
       }
     },
     {
@@ -139,9 +91,9 @@
     {
       "CLASSNAME": "askew.entity.wall.WallModel",
       "INSTANCE": {
+        "color": -1,
         "x": -3.0,
         "y": -20.0,
-        "color": -1,
         "points": [
           0.0,
           0.0,
@@ -157,9 +109,9 @@
     {
       "CLASSNAME": "askew.entity.wall.WallModel",
       "INSTANCE": {
+        "color": -1,
         "x": 37.0,
         "y": -19.0,
-        "color": -1,
         "points": [
           0.0,
           0.0,
@@ -195,23 +147,11 @@
       }
     },
     {
-      "CLASSNAME": "askew.entity.vine.Vine",
-      "INSTANCE": {
-        "numLinks": 5.0,
-        "x": 27.0,
-        "y": -3.0,
-        "angle": 5.0,
-        "omega": -400.0,
-        "pin": false,
-        "texture": 0
-      }
-    },
-    {
       "CLASSNAME": "askew.entity.wall.WallModel",
       "INSTANCE": {
+        "color": -1,
         "x": 22.0,
         "y": -4.0,
-        "color": -1,
         "points": [
           0.0,
           0.0,
@@ -227,9 +167,9 @@
     {
       "CLASSNAME": "askew.entity.wall.WallModel",
       "INSTANCE": {
+        "color": -1,
         "x": 34.0,
         "y": -4.0,
-        "color": -1,
         "points": [
           0.0,
           0.0,
@@ -245,9 +185,9 @@
     {
       "CLASSNAME": "askew.entity.wall.WallModel",
       "INSTANCE": {
+        "color": -1,
         "x": 28.0,
         "y": 9.0,
-        "color": -1,
         "points": [
           0.0,
           0.0,
@@ -270,8 +210,8 @@
     {
       "CLASSNAME": "askew.entity.tree.Trunk",
       "INSTANCE": {
-        "x": 28.080023,
-        "y": 3.9649994,
+        "x": 28.0,
+        "y": 5.0,
         "angle": 270.0,
         "numLinks": 6.0
       }
@@ -279,8 +219,8 @@
     {
       "CLASSNAME": "askew.entity.tree.Trunk",
       "INSTANCE": {
-        "x": 28.028023,
-        "y": -1.9889998,
+        "x": 28.0,
+        "y": -1.0,
         "angle": 270.0,
         "numLinks": 6.0
       }
@@ -288,10 +228,79 @@
     {
       "CLASSNAME": "askew.entity.tree.Trunk",
       "INSTANCE": {
-        "x": 28.041023,
-        "y": 0.9879999,
+        "x": 28.0,
+        "y": 2.0,
         "angle": 270.0,
         "numLinks": 6.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 28.0,
+        "y": -4.0,
+        "angle": 270.0,
+        "numLinks": 6.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "numLinks": 7.0,
+        "x": 22.0,
+        "y": -5.0,
+        "angle": 30.0,
+        "omega": -400.0,
+        "pin": false,
+        "texture": 0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "numLinks": 7.0,
+        "x": 6.0,
+        "y": -5.0,
+        "angle": -25.0,
+        "omega": 0.0,
+        "pin": false,
+        "texture": 0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "numLinks": 7.0,
+        "x": 12.0,
+        "y": -5.0,
+        "angle": 25.0,
+        "omega": 0.0,
+        "pin": false,
+        "texture": 0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "numLinks": 7.0,
+        "x": 17.0,
+        "y": -5.0,
+        "angle": -25.0,
+        "omega": 0.0,
+        "pin": false,
+        "texture": 0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "numLinks": 5.0,
+        "x": 27.0,
+        "y": -4.0,
+        "angle": 15.0,
+        "omega": 0.0,
+        "pin": false,
+        "texture": 0
       }
     },
     {
