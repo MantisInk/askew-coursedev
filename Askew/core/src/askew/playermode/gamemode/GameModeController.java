@@ -835,12 +835,6 @@ public class GameModeController extends WorldController {
 			canvas.end();
 			slothList.forEach(x -> x.drawGrab(canvas, camTrans));
 
-			canvas.begin();
-			canvas.drawTextStandard("current time:    " + currentTime, 10f, 70f);
-			canvas.drawTextStandard("record time:     " + recordTime, 10f, 50f);
-
-			canvas.end();
-
 			if (debug) {
 				canvas.beginDebug(camTrans);
 				entities.stream().filter(obj -> obj instanceof Obstacle).forEachOrdered(obj -> ((Obstacle) obj).drawDebug(canvas));
