@@ -4,62 +4,55 @@ size: 2048,2048
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
+Ghost
+  rotate: false
+  xy: 367, 8
+  size: 289, 464
+  orig: 289, 464
+  offset: 0, 0
+  index: 1
+Ghosty
+  rotate: false
+  xy: 658, 3
+  size: 282, 469
+  orig: 282, 469
+  offset: 0, 0
+  index: 6
+Ghosty
+  rotate: false
+  xy: 942, 2
+  size: 277, 470
+  orig: 277, 470
+  offset: 0, 0
+  index: 2
 bumperL
   rotate: false
-  xy: 2, 484
+  xy: 2, 474
   size: 1942, 1562
   orig: 1942, 1562
   offset: 0, 0
   index: 1
 owlfly
   rotate: false
-  xy: 2, 43
+  xy: 2, 33
   size: 363, 439
   orig: 363, 439
+  offset: 0, 0
+  index: 8
+owlfly
+  rotate: false
+  xy: 1221, 104
+  size: 309, 368
+  orig: 309, 368
   offset: 0, 0
   index: 1
 owlfly
   rotate: false
-  xy: 367, 114
-  size: 309, 368
-  orig: 309, 368
-  offset: 0, 0
-  index: 2
-owlfly
-  rotate: false
-  xy: 678, 159
+  xy: 1532, 149
   size: 331, 323
   orig: 331, 323
   offset: 0, 0
-  index: 3
-owlfly
-  rotate: false
-  xy: 1011, 204
-  size: 340, 278
-  orig: 340, 278
-  offset: 0, 0
-  index: 5
-owlfly
-  rotate: false
-  xy: 1353, 229
-  size: 346, 253
-  orig: 346, 253
-  offset: 0, 0
-  index: 6
-owlfly
-  rotate: false
-  xy: 1353, 2
-  size: 336, 225
-  orig: 336, 225
-  offset: 0, 0
-  index: 7
-owlfly
-  rotate: false
-  xy: 1691, 66
-  size: 350, 161
-  orig: 350, 161
-  offset: 0, 0
-  index: 4
+  index: 2
 
 packed2.png
 size: 2048,2048
@@ -68,18 +61,46 @@ filter: Nearest,Nearest
 repeat: none
 bumperL
   rotate: false
-  xy: 2, 236
+  xy: 2, 484
   size: 1942, 1562
   orig: 1942, 1562
   offset: 0, 0
   index: 2
 owlfly
   rotate: false
-  xy: 2, 2
+  xy: 2, 204
+  size: 340, 278
+  orig: 340, 278
+  offset: 0, 0
+  index: 4
+owlfly
+  rotate: false
+  xy: 344, 229
+  size: 346, 253
+  orig: 346, 253
+  offset: 0, 0
+  index: 5
+owlfly
+  rotate: false
+  xy: 344, 2
+  size: 336, 225
+  orig: 336, 225
+  offset: 0, 0
+  index: 6
+owlfly
+  rotate: false
+  xy: 692, 250
   size: 353, 232
   orig: 353, 232
   offset: 0, 0
-  index: 8
+  index: 7
+owlfly
+  rotate: false
+  xy: 1047, 321
+  size: 350, 161
+  orig: 350, 161
+  offset: 0, 0
+  index: 3
 
 packed3.png
 size: 2048,2048
@@ -114,53 +135,39 @@ filter: Nearest,Nearest
 repeat: none
 Ghosty
   rotate: false
-  xy: 1648, 1364
-  size: 290, 523
-  orig: 290, 523
+  xy: 1698, 1377
+  size: 263, 484
+  orig: 263, 484
   offset: 0, 0
-  index: 1
+  index: 5
 Ghosty
   rotate: false
-  xy: 1648, 839
-  size: 290, 523
-  orig: 290, 523
-  offset: 0, 0
-  index: 2
-Ghosty
-  rotate: false
-  xy: 1648, 839
-  size: 290, 523
-  orig: 290, 523
-  offset: 0, 0
-  index: 6
-Ghosty
-  rotate: false
-  xy: 1690, 314
-  size: 290, 523
-  orig: 290, 523
+  xy: 1698, 891
+  size: 254, 484
+  orig: 254, 484
   offset: 0, 0
   index: 3
 Ghosty
   rotate: false
-  xy: 1690, 314
-  size: 290, 523
-  orig: 290, 523
+  xy: 1703, 401
+  size: 244, 488
+  orig: 244, 488
   offset: 0, 0
-  index: 5
+  index: 4
 idleowl
   rotate: false
   xy: 2, 540
-  size: 827, 1347
-  orig: 827, 1347
+  size: 865, 1321
+  orig: 865, 1321
   offset: 0, 0
-  index: 3
+  index: 6
 idleowl
   rotate: false
-  xy: 831, 532
-  size: 815, 1355
-  orig: 815, 1355
+  xy: 869, 515
+  size: 827, 1346
+  orig: 827, 1346
   offset: 0, 0
-  index: 4
+  index: 3
 joy
   rotate: false
   xy: 2, 2
@@ -170,45 +177,38 @@ joy
   index: 1
 joy
   rotate: false
-  xy: 555, 25
+  xy: 555, 8
   size: 580, 505
   orig: 580, 505
   offset: 0, 0
   index: 4
 joy
   rotate: false
-  xy: 1137, 3
-  size: 551, 527
-  orig: 551, 527
+  xy: 1137, 8
+  size: 564, 505
+  orig: 564, 505
   offset: 0, 0
-  index: 2
+  index: 8
 
 packed6.png
 size: 2048,2048
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
-Ghosty
+idleowl
   rotate: false
-  xy: 1643, 1364
-  size: 290, 523
-  orig: 290, 523
+  xy: 2, 536
+  size: 813, 1353
+  orig: 813, 1353
   offset: 0, 0
   index: 4
 idleowl
   rotate: false
-  xy: 2, 536
+  xy: 817, 538
   size: 813, 1351
   orig: 813, 1351
   offset: 0, 0
   index: 5
-idleowl
-  rotate: false
-  xy: 817, 555
-  size: 824, 1332
-  orig: 824, 1332
-  offset: 0, 0
-  index: 2
 joy
   rotate: false
   xy: 2, 2
@@ -222,14 +222,14 @@ joy
   size: 551, 527
   orig: 551, 527
   offset: 0, 0
-  index: 10
+  index: 2
 joy
   rotate: false
-  xy: 1108, 26
+  xy: 1108, 9
   size: 551, 527
   orig: 551, 527
   offset: 0, 0
-  index: 11
+  index: 10
 
 packed7.png
 size: 2048,2048
@@ -238,35 +238,35 @@ filter: Nearest,Nearest
 repeat: none
 idleowl
   rotate: false
-  xy: 2, 512
-  size: 810, 1321
-  orig: 810, 1321
+  xy: 2, 531
+  size: 812, 1331
+  orig: 812, 1331
   offset: 0, 0
-  index: 6
+  index: 2
 idleowl
   rotate: false
-  xy: 814, 535
+  xy: 816, 564
   size: 806, 1298
   orig: 806, 1298
   offset: 0, 0
   index: 1
 joy
   rotate: false
-  xy: 2, 5
-  size: 564, 505
-  orig: 564, 505
+  xy: 2, 2
+  size: 551, 527
+  orig: 551, 527
   offset: 0, 0
-  index: 8
+  index: 11
 joy
   rotate: false
-  xy: 568, 2
+  xy: 555, 21
   size: 551, 508
   orig: 551, 508
   offset: 0, 0
   index: 3
 joy
   rotate: false
-  xy: 1121, 25
+  xy: 1108, 54
   size: 551, 508
   orig: 551, 508
   offset: 0, 0
