@@ -95,14 +95,14 @@ public class PoleVault extends TreeParent {
         this.x = x;
         this.y = y;
         this.angle = angle;
-        this.linksize = lheight;
+        this.linksize = PLANK_HEIGHT;
         this.setObjectScale(scale);
         setPosition(x, y);
         build();
     }
 
     public void build() {
-        planksize = new Vector2(lwidth, linksize);
+        planksize = new Vector2(PLANK_WIDTH, linksize);
         linksize = planksize.y;
 
         // Compute the bridge length
@@ -137,6 +137,7 @@ public class PoleVault extends TreeParent {
             plank.setAngle((float) Math.toRadians(angle));
             if (ii == 0)
                 plank.setBodyType(BodyDef.BodyType.StaticBody);
+            plank.setCustomScale(2.5f,1.0f);
             Filter f = new Filter();
             f.maskBits = FilterGroup.WALL | FilterGroup.SLOTH | FilterGroup.HAND;
             f.categoryBits = FilterGroup.VINE;

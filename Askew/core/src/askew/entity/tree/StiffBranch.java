@@ -117,7 +117,7 @@ public class StiffBranch extends TreeParent {
     }
 
     public void build() {
-        planksize = new Vector2(lwidth, lheight);
+        planksize = new Vector2(PLANK_WIDTH, PLANK_HEIGHT);
         linksize = planksize.y;
 
         // Compute the bridge length
@@ -151,6 +151,7 @@ public class StiffBranch extends TreeParent {
             plank.setDensity(BASIC_DENSITY);
             //plank.setAngle(-90-angle);
             plank.setAngle((float) Math.toRadians(angle));
+            plank.setCustomScale(2.5f,1.0f);
             Filter f = new Filter();
             f.maskBits = FilterGroup.WALL | FilterGroup.SLOTH | FilterGroup.HAND;
             f.categoryBits = FilterGroup.VINE;

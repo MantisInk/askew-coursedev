@@ -57,7 +57,7 @@ public class Vine extends ComplexObstacle {
     /**
      * The density of each plank in the bridge
      */
-    private static final float lwidth = .15f;
+    private static final float VINE_WIDTH = .10f;
     private static transient String VINE_TEXTURE;        // default texture
     /**
      * The spacing between each piece
@@ -154,7 +154,7 @@ public class Vine extends ComplexObstacle {
         this.BASIC_DENSITY = GlobalConfiguration.getInstance().getAsFloat("vineDensity");
 
 
-        planksize = new Vector2(lwidth, lheight);
+        planksize = new Vector2(VINE_WIDTH, lheight);
         linksize = lheight;
 
 
@@ -195,7 +195,7 @@ public class Vine extends ComplexObstacle {
         }
         endpt = bodies.get(bodies.size - 1);
 
-        setCustomScale(2, 1.05f);
+        setCustomScale(3.0f, 1.05f);
     }
 
 
