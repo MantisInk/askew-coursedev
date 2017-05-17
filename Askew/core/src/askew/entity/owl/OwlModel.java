@@ -1,16 +1,18 @@
 package askew.entity.owl;
 
-import askew.GameCanvas;
 import askew.MantisAssetManager;
 import askew.entity.FilterGroup;
 import askew.entity.obstacle.BoxObstacle;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
+import askew.entity.obstacle.ComplexObstacle;
+import askew.entity.obstacle.Obstacle;
+import askew.entity.obstacle.SimpleObstacle;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Filter;
+import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -20,12 +22,15 @@ import lombok.Setter;
  * This should be a good example of a basic dumb entity.
  */
 @SuppressWarnings("FieldCanBeLocal")
-public class OwlModel extends BoxObstacle {
+public class OwlModel extends ComplexObstacle {
 
     private static final float OWL_DRAW_WIDTH = 2.2f;
-    private static final float OWL_WIDTH = 1.8f;
+    private static final float OWL_HEIGHT = 1.4f *0.6f;
+    private static final float OWL_WIDTH = 1.8f * (489f / 835f) * 0.6f;
     private static final float VICTORY_SPEED = 0.15f;
     private static final float VICTORY_DISTANCE = 13f;
+    private static final String OWL_TEXTURE = "texture/owl/ebb.png";
+
     //JSON
     @Getter
     @Setter
@@ -36,12 +41,12 @@ public class OwlModel extends BoxObstacle {
     // determined at runtime to preserve aspect ratio from designers
     private transient float owlHeight;
     private transient TextureRegion owlTextureRegion;
-    private transient Animation idleAnimation;
-    private transient Animation flyAnimation;
     private transient float elapseTime;
     @Getter
     private transient boolean doingVictory;
     private transient float victoryDistance;
+    private BoxObstacle pin;
+    private BoxObstacle owlBody;
 
 
     /**
@@ -51,20 +56,10 @@ public class OwlModel extends BoxObstacle {
      * @param y Initial y position of the ragdoll head
      */
     public OwlModel(float x, float y) {
-        //noinspection SuspiciousNameCombination
-        super(x, y, OWL_WIDTH, OWL_WIDTH);
+        super(x, y);
         this.x = x;
         this.y = y;
-        this.setBodyType(BodyDef.BodyType.StaticBody);
-        this.setDensity(0);
-        this.setFriction(0);
-        this.setRestitution(0);
-        this.setSensor(true);
-        Filter f = new Filter();
-        f.maskBits = FilterGroup.SLOTH | FilterGroup.HAND;
-        f.categoryBits = FilterGroup.WALL;
-        this.setFilterData(f);
-        this.setName("owl");
+        build();
     }
 
     public void setPosition(float x, float y) {
@@ -73,45 +68,71 @@ public class OwlModel extends BoxObstacle {
         this.y = y;
     }
 
+    @Override
+    protected boolean createJoints(World world) {
+        // Pin arm to the vine
+        Vector2 pinAnchorPosition = new Vector2(0,0);
+        Vector2 armAnchorPosition = new Vector2(-OWL_WIDTH*0.46f,
+                OWL_HEIGHT*0.45f);
+
+        RevoluteJointDef  grabJointDef = new RevoluteJointDef();
+        grabJointDef.bodyA = pin.getBody();
+        grabJointDef.bodyB = owlBody.getBody();
+
+        grabJointDef.localAnchorA.set(pinAnchorPosition);
+        grabJointDef.localAnchorB.set(armAnchorPosition);
+        grabJointDef.collideConnected = false;
+        joints.add(world.createJoint(grabJointDef));
+        return true;
+    }
+
+    private void setupOwl() {
+        this.setSensor(true);
+        this.setName("owl");
+        Vector2 pos = new Vector2(x,y);
+
+        // Branch pin
+        pin = new BoxObstacle(pos.x, pos.y,0.1f,0.1f);
+        pin.setDensity(0);
+        pin.setBodyType(BodyDef.BodyType.StaticBody);
+        bodies.add(pin);
+
+        // Owl Hull
+        owlBody = new BoxObstacle(pos.x, pos.y, OWL_WIDTH,OWL_HEIGHT);
+        owlBody.setName("owl");
+        owlBody.setDensity(1);
+        Filter f = new Filter();
+        f.maskBits = FilterGroup.ARM | FilterGroup.SLOTH | FilterGroup.HAND;
+        f.categoryBits = FilterGroup.WALL;
+        owlBody.setFilterData(f);
+        owlBody.setCustomScale(1.4f,1.4f);
+        bodies.add(owlBody);
+    }
+
 
     @Override
     public void setTextures(MantisAssetManager manager) {
-        idleAnimation = new Animation(0.127f, manager.getTextureAtlas()
-                .findRegions
-                        ("idleowl"), Animation.PlayMode.LOOP);
-        flyAnimation = new Animation(0.127f, manager.getTextureAtlas().findRegions
-                ("owlfly"), Animation.PlayMode.LOOP);
-        if (idleAnimation.getKeyFrames().length == 0)
-            System.err.println("did not find anim");
-        owlTextureRegion = idleAnimation.getKeyFrame(0);
-        setTexture(owlTextureRegion);
-        // aspect ratio scaling
-        this.owlHeight = OWL_DRAW_WIDTH * (owlTextureRegion.getRegionHeight() / owlTextureRegion.getRegionWidth());
-        if (flyAnimation.getKeyFrames().length == 0)
-            System.err.println("did not find anim");
+        Texture owlTexture = manager.get(OWL_TEXTURE);
+        owlTextureRegion = new TextureRegion(owlTexture);
+        for (Obstacle body : bodies) {
+            ((SimpleObstacle) body).setTexture(owlTextureRegion);
+        }
     }
 
     @Override
-    public void draw(GameCanvas canvas) {
-        elapseTime += Gdx.graphics.getDeltaTime();
+    public void update(float delta) {
+        elapseTime += delta;
+    }
 
-        if (elapseTime == 0) return;
+    @Override
+    public void build() {
+        setupOwl();
+    }
 
-        TextureRegion drawFrame;
-        if (doingVictory) {
-            drawFrame = flyAnimation.getKeyFrame(elapseTime, true);
-            if (!drawFrame.isFlipX())
-                drawFrame.flip(true, false);
-        } else {
-            drawFrame = idleAnimation.getKeyFrame(elapseTime, true);
-        }
-        drawFrame.getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
-        setTexture(drawFrame);
-        this.owlHeight = OWL_DRAW_WIDTH * (drawFrame.getRegionHeight() / drawFrame.getRegionWidth());
-
-        canvas.draw(drawFrame, Color.WHITE, origin.x, origin.y, getPosition().x * drawScale.x, getPosition().y * drawScale.y, getAngle(),
-                (1.0f / drawFrame.getRegionWidth()) * OWL_DRAW_WIDTH * getDrawScale().x * objectScale.x,
-                (1.0f / drawFrame.getRegionHeight() * owlHeight * getDrawScale().y * objectScale.y));
+    @Override
+    public void rebuild() {
+        bodies.clear();
+        build();
     }
 
     public float doVictory() {

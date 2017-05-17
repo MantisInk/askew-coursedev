@@ -135,60 +135,39 @@ filter: Nearest,Nearest
 repeat: none
 Ghosty
   rotate: false
-  xy: 1698, 1377
+  xy: 743, 58
   size: 263, 484
   orig: 263, 484
   offset: 0, 0
   index: 5
-Ghosty
+kidnapbaby
   rotate: false
-  xy: 1698, 891
-  size: 254, 484
-  orig: 254, 484
-  offset: 0, 0
-  index: 3
-Ghosty
-  rotate: false
-  xy: 1703, 401
-  size: 244, 488
-  orig: 244, 488
+  xy: 2, 544
+  size: 1032, 1501
+  orig: 1032, 1501
   offset: 0, 0
   index: 4
-idleowl
+kidnapbaby
   rotate: false
-  xy: 2, 540
-  size: 865, 1321
-  orig: 865, 1321
+  xy: 1036, 617
+  size: 959, 1428
+  orig: 959, 1428
   offset: 0, 0
-  index: 6
-idleowl
-  rotate: false
-  xy: 869, 515
-  size: 827, 1346
-  orig: 827, 1346
-  offset: 0, 0
-  index: 3
-joy
+  index: 5
+kidnapbaby
   rotate: false
   xy: 2, 2
-  size: 551, 536
-  orig: 551, 536
+  size: 739, 540
+  orig: 739, 540
   offset: 0, 0
-  index: 1
-joy
+  index: 12
+kidnapbaby
   rotate: false
-  xy: 555, 8
-  size: 580, 505
-  orig: 580, 505
+  xy: 1036, 45
+  size: 930, 570
+  orig: 930, 570
   offset: 0, 0
-  index: 4
-joy
-  rotate: false
-  xy: 1137, 8
-  size: 564, 505
-  orig: 564, 505
-  offset: 0, 0
-  index: 8
+  index: 10
 
 packed6.png
 size: 2048,2048
@@ -197,41 +176,137 @@ filter: Nearest,Nearest
 repeat: none
 idleowl
   rotate: false
-  xy: 2, 536
-  size: 813, 1353
-  orig: 813, 1353
+  xy: 1063, 712
+  size: 865, 1321
+  orig: 865, 1321
   offset: 0, 0
-  index: 4
-idleowl
+  index: 6
+kidnapbaby
   rotate: false
-  xy: 817, 538
-  size: 813, 1351
-  orig: 813, 1351
+  xy: 2, 612
+  size: 1059, 1421
+  orig: 1059, 1421
   offset: 0, 0
-  index: 5
-joy
+  index: 3
+kidnapbaby
   rotate: false
   xy: 2, 2
+  size: 741, 608
+  orig: 741, 608
+  offset: 0, 0
+  index: 9
+kidnapbaby
+  rotate: false
+  xy: 745, 51
+  size: 706, 559
+  orig: 706, 559
+  offset: 0, 0
+  index: 11
+kidnapbaby
+  rotate: false
+  xy: 1453, 18
+  size: 491, 692
+  orig: 491, 692
+  offset: 0, 0
+  index: 13
+
+packed7.png
+size: 2048,2048
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+Ghosty
+  rotate: false
+  xy: 1761, 484
+  size: 254, 484
+  orig: 254, 484
+  offset: 0, 0
+  index: 3
+joy
+  rotate: false
+  xy: 1407, 1504
+  size: 551, 536
+  orig: 551, 536
+  offset: 0, 0
+  index: 1
+joy
+  rotate: false
+  xy: 1407, 970
   size: 551, 532
   orig: 551, 532
   offset: 0, 0
   index: 12
+kidnapbaby
+  rotate: false
+  xy: 2, 1005
+  size: 1403, 1035
+  orig: 1403, 1035
+  offset: 0, 0
+  index: 14
+kidnapbaby
+  rotate: false
+  xy: 2, 2
+  size: 857, 1001
+  orig: 857, 1001
+  offset: 0, 0
+  index: 2
+kidnapbaby
+  rotate: false
+  xy: 861, 35
+  size: 898, 933
+  orig: 898, 933
+  offset: 0, 0
+  index: 1
+
+packed8.png
+size: 2048,2048
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+Ghosty
+  rotate: false
+  xy: 1690, 195
+  size: 244, 488
+  orig: 244, 488
+  offset: 0, 0
+  index: 4
+idleowl
+  rotate: false
+  xy: 1137, 685
+  size: 827, 1346
+  orig: 827, 1346
+  offset: 0, 0
+  index: 3
 joy
   rotate: false
-  xy: 555, 7
+  xy: 2, 24
+  size: 580, 505
+  orig: 580, 505
+  offset: 0, 0
+  index: 4
+joy
+  rotate: false
+  xy: 584, 2
   size: 551, 527
   orig: 551, 527
   offset: 0, 0
   index: 2
 joy
   rotate: false
-  xy: 1108, 9
+  xy: 1137, 156
   size: 551, 527
   orig: 551, 527
   offset: 0, 0
   index: 10
+kidnapbaby
+  rotate: false
+  xy: 2, 531
+  size: 771, 1500
+  orig: 771, 1500
+  offset: 0, 0
+  index: 6
 
-packed7.png
+packed9.png
 size: 2048,2048
 format: RGBA8888
 filter: Nearest,Nearest
@@ -239,17 +314,17 @@ repeat: none
 idleowl
   rotate: false
   xy: 2, 531
-  size: 812, 1331
-  orig: 812, 1331
+  size: 813, 1353
+  orig: 813, 1353
   offset: 0, 0
-  index: 2
+  index: 4
 idleowl
   rotate: false
-  xy: 816, 564
-  size: 806, 1298
-  orig: 806, 1298
+  xy: 817, 533
+  size: 813, 1351
+  orig: 813, 1351
   offset: 0, 0
-  index: 1
+  index: 5
 joy
   rotate: false
   xy: 2, 2
@@ -259,42 +334,83 @@ joy
   index: 11
 joy
   rotate: false
-  xy: 555, 21
+  xy: 555, 24
+  size: 564, 505
+  orig: 564, 505
+  offset: 0, 0
+  index: 8
+joy
+  rotate: false
+  xy: 1121, 23
   size: 551, 508
   orig: 551, 508
   offset: 0, 0
   index: 3
+
+packed10.png
+size: 2048,2048
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+idleowl
+  rotate: false
+  xy: 2, 512
+  size: 812, 1331
+  orig: 812, 1331
+  offset: 0, 0
+  index: 2
 joy
   rotate: false
-  xy: 1108, 54
+  xy: 2, 2
   size: 551, 508
   orig: 551, 508
   offset: 0, 0
   index: 9
-
-packed8.png
-size: 2048,512
-format: RGBA8888
-filter: Nearest,Nearest
-repeat: none
 joy
   rotate: false
-  xy: 2, 2
+  xy: 555, 5
   size: 551, 505
   orig: 551, 505
   offset: 0, 0
   index: 5
 joy
   rotate: false
-  xy: 555, 2
+  xy: 1108, 80
   size: 551, 505
   orig: 551, 505
   offset: 0, 0
   index: 6
+kidnapbaby
+  rotate: false
+  xy: 816, 587
+  size: 859, 1256
+  orig: 859, 1256
+  offset: 0, 0
+  index: 7
+
+packed11.png
+size: 2048,2048
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+idleowl
+  rotate: false
+  xy: 2, 509
+  size: 806, 1298
+  orig: 806, 1298
+  offset: 0, 0
+  index: 1
 joy
   rotate: false
-  xy: 1108, 2
+  xy: 2, 2
   size: 551, 505
   orig: 551, 505
   offset: 0, 0
   index: 7
+kidnapbaby
+  rotate: false
+  xy: 810, 971
+  size: 670, 836
+  orig: 670, 836
+  offset: 0, 0
+  index: 8
