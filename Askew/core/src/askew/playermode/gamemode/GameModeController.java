@@ -151,8 +151,8 @@ public class GameModeController extends WorldController {
 	protected float coverOpacity;
 
 	protected ParticleController particleController;
-	protected static final int MAX_PARTICLES = 5;
-	protected static final int INITIAL_FOG = 5;
+	protected static final int MAX_PARTICLES = 5000;
+	protected static final int INITIAL_FOG = 50;
 	protected float fogTime;
 
 	/**
@@ -456,7 +456,7 @@ public class GameModeController extends WorldController {
 				world.createJoint(jointDef);
 			}
 			for(int i = 0; i < INITIAL_FOG; i++) {
-				//particleController.fog(levelModel.getMaxX()-levelModel.getMinX(),levelModel.getMaxY()-levelModel.getMinY() );
+				particleController.fog(levelModel.getMaxX()-levelModel.getMinX(),levelModel.getMaxY()-levelModel.getMinY() );
 			}
 			currentTime = 0f;
 	}
@@ -662,7 +662,7 @@ public class GameModeController extends WorldController {
             }
             currentTime += dt;
             if (currentTime - fogTime > .1f) {
-                //particleController.fog(cameraX, cameraY);
+                particleController.fog(cameraX, cameraY);
                 fogTime = currentTime;
             }
             particleController.update(dt);
@@ -796,14 +796,25 @@ public class GameModeController extends WorldController {
 
 			//noinspection unchecked
 			Collections.sort(entities);
-			Particle[] particles = particleController.getSorted();
-			particleController.setDrawScale(worldScale);
+
 
 			canvas.begin(camTrans);
 			for(Entity e : entities){
 				e.setDrawScale(worldScale);
 				e.draw(canvas);
 			}
+			canvas.end();
+
+
+			Particle[] particles = particleController.getSorted();
+			particleController.setDrawScale(worldScale);
+			int n = particleController.spawned.size();
+			System.out.println(n);
+			canvas.beginParticle(camTrans);
+			for(int i = 0; i < n; i++){
+				particleController.draw(canvas, particles[i]);
+			}
+
 			canvas.end();
 
 			/*
