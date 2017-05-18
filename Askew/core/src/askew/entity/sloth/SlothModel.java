@@ -174,6 +174,7 @@ public class SlothModel extends ComplexObstacle {
     private transient boolean didSafeGrab;
     private transient boolean setLastGrabX;
     private transient float lastGrabX;
+    @Getter
     private transient boolean dismembered;
     private transient boolean pinned = false;
     private transient boolean didOneArmCheck;

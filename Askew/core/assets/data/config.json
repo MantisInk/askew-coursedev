@@ -14,6 +14,7 @@
   "storeTimeRecords": true,
   "maxMultiLevel": 1,
   "maxLevel": 7,
+  "multiplayer": false,
   "currentLevel": 1,
   "currentMultiLevel": 1,
   "enableMusic": false,

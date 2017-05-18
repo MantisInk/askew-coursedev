@@ -156,6 +156,7 @@ public class GameModeController extends WorldController {
 	private int currentMovement;
 	private int currentControl;
 	private float windVolume;
+	private int framesToDie;
 
 
 	/** The opacity of the black text covering the screen. Game can start
@@ -321,6 +322,7 @@ public class GameModeController extends WorldController {
 	 */
 	public void reset() {
 		super.reset();
+		framesToDie = 60;
 		showStatsTimer = 60;
 		Gdx.input.setCursorCatched(true);
 		coverOpacity = 2f; // start at 2 for 1 second of full black
@@ -666,6 +668,17 @@ public class GameModeController extends WorldController {
 		if (!paused) {
 
 			if (!victory) currentTime += dt;
+
+			if (multiplayer) {
+				if (slothList.stream().map(SlothModel::isDismembered).reduce
+						(Boolean::logicalAnd).orElse(true)) {
+					reset();
+				}
+			} else {
+				if (framesToDie < 0) {
+					reset();
+				}
+			}
 			// Prevent control input if flow is win
 			if (!collisions.isFlowWin()) {
 				for (int i = 0; i < slothList.size(); i++){
@@ -699,18 +712,24 @@ public class GameModeController extends WorldController {
 					float slothY = sloth.getBody().getPosition().y;
 					if (slothY < fallDeathHeight + NEAR_FALL_DEATH_DISTANCE) {
 						if (slothY < fallDeathHeight) {
-							reset();
+							if (multiplayer) {
+								sloth.dismember(world);
+							} else {
+								reset();
+							}
 						} else {
-							float normalizedDistanceFromDeath = (slothY -
-									fallDeathHeight) / NEAR_FALL_DEATH_DISTANCE;
-							coverOpacity = 2 * (1 - normalizedDistanceFromDeath);
-							if (coverOpacity > 1) coverOpacity = 1;
-							SoundController.getInstance().setVolume("fallmusic", (1 -
-									normalizedDistanceFromDeath)*MAX_MUSIC_VOLUME*2);
-							SoundController.getInstance().setPitch("fallmusic",normalizedDistanceFromDeath*0.6f+0.1f);
-							if (playingMusic)
-								SoundController.getInstance().setVolume("bgmusic",
-										normalizedDistanceFromDeath*MAX_MUSIC_VOLUME);
+							if (!multiplayer) {
+								float normalizedDistanceFromDeath = (slothY -
+										fallDeathHeight) / NEAR_FALL_DEATH_DISTANCE;
+								coverOpacity = 2 * (1 - normalizedDistanceFromDeath);
+								if (coverOpacity > 1) coverOpacity = 1;
+								SoundController.getInstance().setVolume("fallmusic", (1 -
+										normalizedDistanceFromDeath)*MAX_MUSIC_VOLUME*2);
+								SoundController.getInstance().setPitch("fallmusic",normalizedDistanceFromDeath*0.6f+0.1f);
+								if (playingMusic)
+									SoundController.getInstance().setVolume("bgmusic",
+											normalizedDistanceFromDeath*MAX_MUSIC_VOLUME);
+							}
 						}
 					} else {
 						SoundController.getInstance().setVolume("fallmusic", 0);
@@ -723,6 +742,7 @@ public class GameModeController extends WorldController {
 					}
 
 					if (isFailure()) {
+						framesToDie--;
 						if (sloth.dismember(world)) {
                             ghostSound.play();
                             fallDeathHeight = sloth.getPosition().y - NEAR_FALL_DEATH_DISTANCE;
@@ -859,12 +879,22 @@ public class GameModeController extends WorldController {
 			canvas.draw(background);
 			canvas.end();
 
-			float slothX = slothList.stream().map(sloth -> sloth.getBody()
-					.getPosition().x).reduce(Math::max).orElse(0f);
-			float slothY = slothList.stream().map(sloth -> sloth.getBody().getPosition().y).reduce(Math::max).orElse(0f);
+			float slothX = -100000;
+			float slothY = 100000;
+			for (SlothModel sloth : slothList) {
+				if (sloth.isDismembered()) continue;
+				if (sloth.getBody().getPosition().x > slothX) {
+					slothX = sloth.getBody().getPosition().x;
+					slothY = sloth.getBody().getPosition().y;
+				}
+			}
 
-			cameraVelocityX = cameraVelocityX * 0.4f + (slothX - cameraX) * 0.18f;
-			cameraVelocityY = cameraVelocityY * 0.4f + (slothY - cameraY) * 0.18f;
+			float velocityModifier = 0.18f;
+			if (multiplayer) {
+				velocityModifier = 0.01f;
+			}
+			cameraVelocityX = cameraVelocityX * 0.4f + (slothX - cameraX) * velocityModifier;
+			cameraVelocityY = cameraVelocityY * 0.4f + (slothY - cameraY) * velocityModifier;
 			cameraX += cameraVelocityX;
 			cameraY += cameraVelocityY;
 
