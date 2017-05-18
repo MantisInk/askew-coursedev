@@ -1,13 +1,13 @@
 {
-  "levelModelVersion": 2,
+  "levelModelVersion": 4,
   "goalTimeGold": 30,
   "goalTimeSilver": 45,
   "goalTimeBronze": 60,
   "recordTime": 9999999.0,
-  "maxX": 20.0,
+  "maxX": 24.0,
   "maxY": 21.0,
   "minX": -7.0,
-  "minY": 6.0,
+  "minY": 5.0,
   "title": "level2",
   "background": "texture/background/BackgroundStuff/purple.png",
   "soundtrack": "TODO",
@@ -375,11 +375,10 @@
     {
       "CLASSNAME": "askew.entity.tree.Trunk",
       "INSTANCE": {
-        "x": 13.5,
-        "y": 12.0,
+        "x": 13.054154,
+        "y": 12.111658,
         "angle": 225.0,
-        "numLinks": 3.0,
-        "grabbed": false
+        "numLinks": 3.0
       }
     },
     {
@@ -388,8 +387,7 @@
         "x": 9.554999,
         "y": 13.032496,
         "angle": 270.0,
-        "numLinks": 2.0,
-        "grabbed": false
+        "numLinks": 2.0
       }
     },
     {
@@ -398,8 +396,7 @@
         "x": 5.0,
         "y": 13.0,
         "angle": 270.0,
-        "numLinks": 2.0,
-        "grabbed": false
+        "numLinks": 2.0
       }
     },
     {
@@ -408,8 +405,7 @@
         "x": -1.0,
         "y": 13.0,
         "angle": 270.0,
-        "numLinks": 5.0,
-        "grabbed": false
+        "numLinks": 5.0
       }
     },
     {
@@ -418,8 +414,25 @@
         "x": -5.0,
         "y": 15.0,
         "angle": 270.0,
-        "numLinks": 5.0,
-        "grabbed": false
+        "numLinks": 5.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 22.0,
+        "y": 10.0,
+        "angle": 90.0,
+        "numLinks": 7.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.owl.OwlModel",
+      "INSTANCE": {
+        "x": 20.0,
+        "y": 10.0,
+        "pin": {},
+        "owlBody": {}
       }
     },
     {
@@ -429,25 +442,9 @@
         "y": 16.87401,
         "lTheta": 0.0,
         "rTheta": 0.0,
-        "grabbed": false
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.tree.Trunk",
-      "INSTANCE": {
-        "x": 18.649998,
-        "y": 7.0999975,
-        "angle": 90.0,
-        "numLinks": 7.0,
-        "grabbed": false
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.owl.OwlModel",
-      "INSTANCE": {
-        "x": 17.0,
-        "y": 8.0,
-        "grabbed": false
+        "airTime": 0,
+        "blinkFrame": 138,
+        "facingFront": true
       }
     }
   ]
