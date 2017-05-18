@@ -749,6 +749,11 @@ public class GameModeController extends WorldController {
                             fallDeathHeight = sloth.getPosition().y - NEAR_FALL_DEATH_DISTANCE;
                         }
                     }
+
+                    if (multiplayer &&  (sloth.getMainBody().getPosition().x
+							< cameraX - bounds.width/2f)) {
+						sloth.dismember(world);
+					}
                 }
             }
 			leftNewGrab = (!leftPrevGrab && slothList.get(0).isActualLeftGrab());
