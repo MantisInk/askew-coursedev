@@ -8,8 +8,8 @@
   rotation: false,
   minWidth: 16,
   minHeight: 16,
-  maxWidth: 2048,
-  maxHeight: 2048,
+  maxWidth: 4096,
+  maxHeight: 4096,
   square: false,
   stripWhitespaceX: false,
   stripWhitespaceY: false,
@@ -31,6 +31,10 @@
   useIndexes: true,
   limitMemory: true,
   grid: false,
-  scale: [ 1 ],
-  scaleSuffix: [ "" ]
+  scale: [
+    1
+  ],
+  scaleSuffix: [
+    ""
+  ]
 }

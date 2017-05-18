@@ -6,11 +6,18 @@ import java.util.List;
 
 public class InputControllerManager {
 
-    public static final int NUM_CONTROLLERS = 2;
+    private static final int NUM_CONTROLLERS = 2;
 
     private static InputControllerManager instance;
 
-    private List<InputController> inputControllerList;
+    private final List<InputController> inputControllerList;
+
+    private InputControllerManager() {
+        this.inputControllerList = new ArrayList<>();
+        for (int i = 0; i < NUM_CONTROLLERS; ++i) {
+            inputControllerList.add(new InputController(i));
+        }
+    }
 
     public static InputControllerManager getInstance() {
         if (instance == null) {
@@ -18,13 +25,6 @@ public class InputControllerManager {
         }
 
         return instance;
-    }
-
-    private InputControllerManager() {
-        this.inputControllerList = new ArrayList<>();
-        for (int i = 0; i < NUM_CONTROLLERS; ++i) {
-            inputControllerList.add(new InputController(i));
-        }
     }
 
     public InputController getController(int index) {

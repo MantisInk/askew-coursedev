@@ -5,31 +5,13 @@
   "goalTimeBronze": 60,
   "recordTime": 9.213538,
   "maxX": 20.0,
-  "maxY": 20.0,
-  "minX": 0.0,
-  "minY": 0.0,
+  "maxY": 34.0,
+  "minX": -4.0,
+  "minY": -4.0,
   "title": "The Playground",
   "background": "texture/background/background1.png",
   "soundtrack": "TODO",
   "entities": [
-    {
-      "CLASSNAME": "askew.entity.wall.WallModel",
-      "INSTANCE": {
-        "x": 7.007002,
-        "y": 4.9790025,
-        "color": -1,
-        "points": [
-          0.0,
-          0.0,
-          0.0,
-          1.0,
-          2.0,
-          1.0,
-          2.0,
-          0.0
-        ]
-      }
-    },
     {
       "CLASSNAME": "askew.entity.tree.Trunk",
       "INSTANCE": {
@@ -37,15 +19,6 @@
         "y": 1.0,
         "angle": -90.0,
         "numLinks": 10.0
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.tree.Trunk",
-      "INSTANCE": {
-        "x": 6.5,
-        "y": 7.5,
-        "angle": 270.0,
-        "numLinks": 3.0
       }
     },
     {
@@ -69,38 +42,98 @@
     {
       "CLASSNAME": "askew.entity.tree.PoleVault",
       "INSTANCE": {
-        "linksize": 1.0,
         "numLinks": 5.0,
-        "x": 11.0,
-        "y": 11.0,
-        "angle": 0.0
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.tree.PoleVault",
-      "INSTANCE": {
+        "angle": 0.0,
         "linksize": 1.0,
-        "numLinks": 5.0,
-        "x": 5.0,
-        "y": 11.0,
-        "angle": 0.0
+        "x": 6.0,
+        "y": 11.0
       }
     },
     {
       "CLASSNAME": "askew.entity.owl.OwlModel",
       "INSTANCE": {
+        "x": 1.0,
+        "y": 28.0,
+        "pin": {},
+        "owlBody": {}
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 6.0,
+        "y": 3.0,
+        "angle": 270.0,
+        "numLinks": 4.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 6.0,
+        "y": 5.0,
+        "angle": 270.0,
+        "numLinks": 4.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.PoleVault",
+      "INSTANCE": {
+        "numLinks": 5.0,
+        "angle": 0.0,
+        "linksize": 1.0,
+        "x": 10.0,
+        "y": 15.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.PoleVault",
+      "INSTANCE": {
+        "numLinks": 5.0,
+        "angle": 0.0,
+        "linksize": 1.0,
+        "x": 6.0,
+        "y": 19.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.PoleVault",
+      "INSTANCE": {
+        "numLinks": 5.0,
+        "angle": 0.0,
+        "linksize": 1.0,
+        "x": 10.0,
+        "y": 23.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
         "x": 8.0,
-        "y": 18.0
+        "y": 11.0,
+        "angle": 90.0,
+        "numLinks": 4.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 10.0,
+        "y": 28.0,
+        "angle": 90.0,
+        "numLinks": 10.0
       }
     },
     {
       "CLASSNAME": "askew.entity.sloth.SlothModel",
       "INSTANCE": {
         "x": 8.0,
-        "y": 10.0,
+        "y": 5.0,
         "lTheta": 0.0,
         "rTheta": 0.0,
-        "airTime": 0
+        "airTime": 0,
+        "blinkFrame": 40,
+        "facingFront": true
       }
     }
   ]

@@ -26,7 +26,6 @@ android/gen/
 .idea/
 *.ipr
 *.iws
-*.iml
 out/
 com_crashlytics_export_strings.xml
 
@@ -59,7 +58,6 @@ nb-configuration.xml
 
 .gradle
 gradle-app.setting
-build/
 
 ## OS Specific
 .DS_Store

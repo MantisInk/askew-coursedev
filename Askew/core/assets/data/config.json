@@ -3,16 +3,17 @@
   "flowArmDensity": 1.1,
   "flowTorque": 3.2,
   "flowOmegaNormalizer": 5.0,
-  "flowGravityScale": 0.7,
+  "flowGravityScale": 0.5,
   "flowCanMoveGrabbingHand": true,
   "flowMovementMode": 0,
   "flowControlMode": 0,
+  "graphics": 0,
   "vineDensity": 3.0,
   "fullscreen": false,
   "defaultLevel": "level1",
   "storeTimeRecords": false,
-  "maxLevel": 7,
+  "maxLevel": 11,
   "currentLevel": 1,
-  "enableMusic": true,
-  "maxTutorial": 5
+  "enableMusic": false,
+  "maxTutorial": 3
 }

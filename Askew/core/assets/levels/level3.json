@@ -411,8 +411,10 @@
     {
       "CLASSNAME": "askew.entity.owl.OwlModel",
       "INSTANCE": {
-        "x": 16.588007,
-        "y": 14.950008
+        "x": 17.008316,
+        "y": 8.991661,
+        "pin": {},
+        "owlBody": {}
       }
     },
     {
@@ -451,9 +453,9 @@
     {
       "CLASSNAME": "askew.entity.wall.WallModel",
       "INSTANCE": {
+        "color": 1280305407,
         "x": 14.261007,
         "y": 9.282007,
-        "color": 1280305407,
         "points": [
           0.0,
           0.0,
@@ -469,10 +471,13 @@
     {
       "CLASSNAME": "askew.entity.sloth.SlothModel",
       "INSTANCE": {
-        "x": -2.612999,
-        "y": 16.393011,
+        "x": -2.5891666,
+        "y": 12.414991,
         "lTheta": 0.0,
-        "rTheta": 0.0
+        "rTheta": 0.0,
+        "airTime": 0,
+        "blinkFrame": 69,
+        "facingFront": true
       }
     },
     {

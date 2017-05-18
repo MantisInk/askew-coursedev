@@ -7,12 +7,17 @@ import com.google.gson.JsonObject;
  * A model class containing variables which we set as configurable for faster prototyping and modding.
  * Uses the singleton pattern.
  */
+@SuppressWarnings("SameParameterValue")
 public class GlobalConfiguration {
 
     private static final String CONFIG_PATH = "data/config.json";
     private static GlobalConfiguration instance;
 
     private JsonObject dataBlob;
+
+    private GlobalConfiguration() {
+        dataBlob = new JsonObject();
+    }
 
     public static GlobalConfiguration getInstance() {
         if (instance == null) {
@@ -31,12 +36,9 @@ public class GlobalConfiguration {
         instance.dataBlob = newBlob;
     }
 
-    private GlobalConfiguration() {
-        dataBlob = new JsonObject();
-    }
-
     /**
      * Returns the boolean represented by a key.
+     *
      * @param key The unique key at the top level of the config.json
      * @return The object or null if it does not exist.
      */
@@ -71,7 +73,7 @@ public class GlobalConfiguration {
 
     public void setCurrentLevel(int lvl) {
         dataBlob.remove("currentLevel");
-        dataBlob.addProperty("currentLevel",lvl);
+        dataBlob.addProperty("currentLevel", lvl);
     }
 
     public void setFlowControlMode(boolean mode) {
@@ -85,8 +87,16 @@ public class GlobalConfiguration {
     public void setFlowMovementMode(boolean mode) {
         dataBlob.remove("flowMovementMode");
         if (mode)
-            dataBlob.addProperty("flowMovementMode",0);
+            dataBlob.addProperty("flowMovementMode", 0);
         else
-            dataBlob.addProperty("flowMovementMode",1);
+            dataBlob.addProperty("flowMovementMode", 1);
+    }
+
+    public void setGraphicsQuality(boolean mode) {
+        dataBlob.remove("graphics");
+        if (mode)
+            dataBlob.addProperty("graphics", 0);
+        else
+            dataBlob.addProperty("graphics", 1);
     }
 }

@@ -33,26 +33,27 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.Filter;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
-import com.badlogic.gdx.utils.ObjectSet;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 /**
- * Gameplay specific controller for the platformer game.
- *
+ * Gameplay specific controller for Askew.
+ * <p>
  * You will notice that asset loading is not done with static methods this time.
  * Instance asset loading makes it easier to process our game modes in a loop, which
  * is much more scalable. However, we still want the assets themselves to be static.
  * This is the purpose of our AssetState variable; it ensures that multiple instances
  * place nicely with the static assets.
  */
+@SuppressWarnings({"FieldCanBeLocal", "WeakerAccess"})
 public class GameModeController extends WorldController {
 
 
@@ -133,10 +134,11 @@ public class GameModeController extends WorldController {
 	private String selectedTrack;
 	private String lastLevel;
 	private MantisAssetManager manager;
-	private float cameraX;
-	private float cameraY;
-	private float cameraVelocityX;
-	private float cameraVelocityY;
+	protected float cameraX;
+	protected float cameraY;
+	protected float cameraVelocityX;
+	protected float cameraVelocityY;
+	private VictoryCutscene victoryCutscene;
 
 	//For playtesting control schemes
 	private int currentMovement;
@@ -149,8 +151,8 @@ public class GameModeController extends WorldController {
 	protected float coverOpacity;
 
 	protected ParticleController particleController;
-	protected static final int MAX_PARTICLES = 5000;
-	protected static final int INITIAL_FOG = 100;
+	protected static final int MAX_PARTICLES = 5;
+	protected static final int INITIAL_FOG = 5;
 	protected float fogTime;
 
 	/**
@@ -218,6 +220,7 @@ public class GameModeController extends WorldController {
 		edgefade = manager.get("texture/postprocess/edgefade.png");
 
 		particleController.setTextures(manager);
+		victoryCutscene = new VictoryCutscene(manager);
 
 		super.loadContent(manager);
 		platformAssetState = AssetState.COMPLETE;
@@ -231,19 +234,15 @@ public class GameModeController extends WorldController {
 	// Physics objects for the game
 	protected static OwlModel owl;
 
-	/** Mark set to handle more sophisticated collision callbacks */
-	protected ObjectSet<Fixture> sensorFixtures;
-
 	/**
 	 * Creates and initialize a new instance of the platformer game
 	 *
 	 * The game has default gravity and other settings
 	 */
 	public GameModeController() {
-		super(DEFAULT_WIDTH,DEFAULT_HEIGHT,DEFAULT_GRAVITY);
+		super(DEFAULT_GRAVITY);
 		collisions = new PhysicsController();
 		world.setContactListener(collisions);
-		sensorFixtures = new ObjectSet<Fixture>();
 		DEFAULT_LEVEL = GlobalConfiguration.getInstance().getAsString("defaultLevel");
 		MAX_LEVEL = GlobalConfiguration.getInstance().getAsInt("maxLevel");
 		loadLevel = DEFAULT_LEVEL;
@@ -298,12 +297,12 @@ public class GameModeController extends WorldController {
 
 		particleController.reset();
 		fogTime = 0;
-		for(Entity obj : objects) {
+		for(Entity obj : entities) {
 			if( (obj instanceof Obstacle))
 				((Obstacle)obj).deactivatePhysics(world);
 		}
 
-		objects.clear();
+		entities.clear();
 		world.dispose();
 		world = new World(gravity,false);
 		if(collisions == null){
@@ -322,10 +321,10 @@ public class GameModeController extends WorldController {
 		currentMovement = GlobalConfiguration.getInstance().getAsInt("flowMovementMode");
 		System.out.println("currentmovmentgm:" + currentMovement);
 //		System.out.println("control "+currentControl+" movement "+currentMovement);
-		populateLevel();
-		// set death height
+        populateLevel();
+        // set death height
 //		fallDeathHeight = Float.MAX_VALUE;
-//		for(Entity obj: objects) {
+//		for(Entity obj: entities) {
 //			float potentialFallDeath = obj.getY() -
 //					LOWEST_ENTITY_FALL_DEATH_THRESHOLD;
 //			if (potentialFallDeath < fallDeathHeight) {
@@ -368,6 +367,7 @@ public class GameModeController extends WorldController {
 		} else {
 			instance.setVolume("windmusic",0);
 		}
+		victoryCutscene.reset();
 	}
 
 	/**
@@ -376,10 +376,9 @@ public class GameModeController extends WorldController {
 	protected void populateLevel() {
 		// Are we loading a new level?
 		if (lastLevel == null || !lastLevel.equals(loadLevel)) {
-			selectedTrack = GAMEPLAY_MUSIC[(int)Math.floor(GAMEPLAY_MUSIC.length * Math.random())];
+			selectedTrack = GAMEPLAY_MUSIC[(int) Math.floor(GAMEPLAY_MUSIC.length * Math.random())];
 		}
 		lastLevel = loadLevel;
-		try {
 			levelModel = jsonLoaderSaver.loadLevel(loadLevel);
 			if (levelModel != null) {
 				background = manager.get(levelModel.getBackground(), Texture.class);
@@ -420,11 +419,11 @@ public class GameModeController extends WorldController {
 
 			if (slothId == 2) {
 				// Attach the sloths
-				Vine wtfVine = new Vine(initFlowX, initFlowY, 6, false, 90, 0, 0, false);
+				Vine wtfVine = new Vine(initFlowX, initFlowY, 90, 0, 6, 0, false);
 				wtfVine.setTextures(manager);
 				addObject(wtfVine);
-				objects.remove(wtfVine);
-				objects.add(0, wtfVine);
+				entities.remove(wtfVine);
+				entities.add(0, wtfVine);
 
 				List<Obstacle> lazy = new ArrayList<>();
 				wtfVine.getBodies().forEach(lazy::add);
@@ -443,7 +442,7 @@ public class GameModeController extends WorldController {
 				jointDef.localAnchorB.set(new Vector2(0, 0.2f));
 				jointDef.localAnchorA.set(new Vector2(0, Vine.lheight / 2));
 				jointDef.collideConnected = false;
-				Joint joint = world.createJoint(jointDef);
+				world.createJoint(jointDef);
 
 				// Definition for a revolute joint
 				jointDef = new RevoluteJointDef();
@@ -454,16 +453,12 @@ public class GameModeController extends WorldController {
 				jointDef.localAnchorB.set(new Vector2(0, 0.2f));
 				jointDef.localAnchorA.set(new Vector2(0, -Vine.lheight / 2));
 				jointDef.collideConnected = false;
-				joint = world.createJoint(jointDef);
+				world.createJoint(jointDef);
 			}
 			for(int i = 0; i < INITIAL_FOG; i++) {
 				//particleController.fog(levelModel.getMaxX()-levelModel.getMinX(),levelModel.getMaxY()-levelModel.getMinY() );
 			}
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-		currentTime = 0f;
-
+			currentTime = 0f;
 	}
 
 	/**For drawing force lines*/
@@ -662,224 +657,222 @@ public class GameModeController extends WorldController {
                             grabSound.play();
                             fallDeathHeight = sloth.getPosition().y - NEAR_FALL_DEATH_DISTANCE;
                         }
-					}
-				}
-			}
-			currentTime += dt;
-			if(currentTime - fogTime > .1f) {
-				//particleController.fog(cameraX, cameraY);
-				//fogTime = currentTime;
-			}
-			particleController.update(dt);
+                    }
+                }
+            }
+            currentTime += dt;
+            if (currentTime - fogTime > .1f) {
+                //particleController.fog(cameraX, cameraY);
+                fogTime = currentTime;
+            }
+            particleController.update(dt);
 
 
-			//#TODO Collision states check
-			if (!collisions.isFlowWin()) setFailure(collisions.isFlowKill());
+            //#TODO Collision states check
+            if (!collisions.isFlowWin()) setFailure(collisions.isFlowKill());
 
-			if (!isFailure() && collisions.isFlowWin()) {
-				if (!owl.isDoingVictory()) {
-					victorySound.play(0.10f);
-					SoundController.getInstance().stop("bgmusic");
-					SlothModel sloth = collisions.winningSloth();
-					sloth.releaseLeft(world);
-					sloth.releaseRight(world);
-					if (collisions.getLeftBody(world, sloth) != null && collisions.getLeftBody(world, sloth).equals(owl.getBody()))
-						sloth.grab(world, owl.getBody(), true);
-					else if (collisions.getRightBody(world, sloth) != null && collisions.getRightBody(world, sloth).equals(owl.getBody()))
-						sloth.grab(world, owl.getBody(), false);
-					else {
-						sloth.grab(world, owl.getBody(), true);
-						sloth.grab(world, owl.getBody(), false);
-					}
-				}
+            if (!isFailure() && collisions.isFlowWin()) {
+                if (!owl.isDoingVictory()) {
+                    victorySound.play(0.10f);
+                    SoundController.getInstance().stop("bgmusic");
+                    SlothModel sloth = collisions.winningSloth();
+                    sloth.releaseLeft(world);
+                    sloth.releaseRight(world);
+                    if (collisions.getLeftBody(world, sloth) != null && collisions.getLeftBody(world, sloth).equals(owl.getBody()))
+                        sloth.grab(world, owl.getBody(), true);
+                    else if (collisions.getRightBody(world, sloth) != null && collisions.getRightBody(world, sloth).equals(owl.getBody()))
+                        sloth.grab(world, owl.getBody(), false);
+                    else {
+                        sloth.grab(world, owl.getBody(), true);
+                        sloth.grab(world, owl.getBody(), false);
+                    }
+                }
 
-				coverOpacity = owl.doVictory();
+                coverOpacity = owl.doVictory();
 
-				if (owl.didVictory()) {
-					setComplete(true);
-				}
-			}
+                if (owl.didVictory()) {
+                    setComplete(true);
+                }
+            }
 
-			slothList.forEach(sloth->{
-				if (sloth.isGrabbedEntity() && !collisions.isFlowWin()) {
-					grabSound.play();
-				}
+            slothList.forEach(sloth -> {
+                if (sloth.isGrabbedEntity() && !collisions.isFlowWin()) {
+                    grabSound.play();
+                }
 
-				if (sloth.isReleasedEntity() && !collisions.isFlowWin()) {
-					releaseSound.play();
-				}
+                if (sloth.isReleasedEntity() && !collisions.isFlowWin()) {
+                    releaseSound.play();
+                }
 
-				// Normal physics
-				sloth.doThePhysics();
-			});
+                // Normal physics
+                sloth.doThePhysics();
+            });
 
-			// Play arm sound based on arm power
+            // Play arm sound based on arm power
 //			float slothPower = sloth.getPower();
 //			SoundController.getInstance().setVolume("armmusic", slothPower * 0.2f);
 //			SoundController.getInstance().setPitch("armmusic", 0.9f + slothPower * 0.9f);
 
-			// Play wind sound based on flow speed
-			float slothSpeed = slothList
-					.parallelStream()
-					.map(sloth->sloth.getMainBody().getLinearVelocity().len())
-					.reduce((acc,el)->acc+el)
-					.orElse(0f) / slothList.size();
-			float windVolume = slothSpeed / 20f;
-			this.windVolume += (windVolume - this.windVolume) * 0.04f;
-			if (this.windVolume > 1) this.windVolume = 1;
-			SoundController.getInstance().setVolume("windmusic", this.windVolume);
-			SoundController.getInstance().setPitch("windmusic", 1.0f + this.windVolume * 0.9f);
+            // Play wind sound based on flow speed
+            float slothSpeed = slothList
+                    .parallelStream()
+                    .map(sloth -> sloth.getMainBody().getLinearVelocity().len())
+                    .reduce((acc, el) -> acc + el)
+                    .orElse(0f) / slothList.size();
+            float windVolume = slothSpeed / 20f;
+            this.windVolume += (windVolume - this.windVolume) * 0.04f;
+            if (this.windVolume > 1) this.windVolume = 1;
+            SoundController.getInstance().setVolume("windmusic", this.windVolume);
+            SoundController.getInstance().setPitch("windmusic", 1.0f + this.windVolume * 0.9f);
 
-			// If we use sound, we must remember this.
-			SoundController.getInstance().update();
+            // If we use sound, we must remember this.
+            SoundController.getInstance().update();
 
-			if (isComplete()) {
-				victory = true;
-				playerIsReady = false;
-				float record = currentTime;
-				if (record < records.getRecord(loadLevel) && storeTimeRecords) {
-					if (records.setRecord(loadLevel, record)) {
-						System.out.println("New record time for this level!");
-					}
-				}
-			}
-		}
-	}
+            if (isComplete()) {
+                victory = true;
+                playerIsReady = false;
+                float record = currentTime;
+                if (record < records.getRecord(loadLevel) && storeTimeRecords) {
+                    if (records.setRecord(loadLevel, record)) {
+                        System.out.println("New record time for this level!");
+                    }
+                }
+            }
+        }
+    }
 
-	public void draw(float delta){
+    public void draw(float delta) {
 		canvas.clear();
-
-		canvas.begin();
-		canvas.draw(background);
-		canvas.end();
-
-		float slothX = slothList.stream().map(sloth->sloth.getBody().getPosition().x).reduce((x,y)->x+y).orElse(0f) / slothList.size();
-		float slothY = slothList.stream().map(sloth->sloth.getBody().getPosition().y).reduce((x,y)->x+y).orElse(0f) / slothList.size();
-
-		cameraVelocityX = cameraVelocityX * 0.4f + (slothX - cameraX) * 0.18f;
-		cameraVelocityY = cameraVelocityY * 0.4f + (slothY - cameraY) * 0.18f;
-		cameraX += cameraVelocityX;
-		cameraY +=  cameraVelocityY;
-
-		// Check for camera in bounds
-		// Y Checks
-		if (cameraY - bounds.height /2f < levelModel.getMinY()) {
-			cameraY = levelModel.getMinY() + bounds.height/2f ;
-		}
-
-		if (cameraY + bounds.height / 2f > levelModel.getMaxY()) {
-			cameraY = levelModel.getMaxY() - bounds.height/2f;
-		}
-
-		// X Checks
-		if (cameraX - bounds.width/2 < levelModel.getMinX()) {
-			cameraX = levelModel.getMinX() + bounds.width / 2f;
-		}
-
-		if (cameraX + bounds.width/2f > levelModel.getMaxX()) {
-			cameraX = levelModel.getMaxX() - bounds.width / 2f;
-		}
-
-		camTrans.setToTranslation(-1 * cameraX * worldScale.x
-				, -1 * cameraY * worldScale.y);
-
-		camTrans.translate(canvas.getWidth()/2,canvas.getHeight()/2);
-		canvas.getCampos().set( cameraX * worldScale.x
-				, cameraY * worldScale.y);
-
-		canvas.begin(camTrans);
-
-		Collections.sort(objects);
-		Particle[] particles = particleController.getSorted();
-		particleController.setDrawScale(worldScale);
-		int n = particleController.numParticles();
-		int total = objects.size() + n;
-		int i = 0;
-		int j = 0;
-		Particle p = null;
-		Entity ent = null;
-		while( i + j < total){
-			p = null;
-			ent = null;
-			if( i < n){
-				 p = particles[i];
-			}
-			if( j < objects.size()) {
-				ent = objects.get(j);
-			}
-			if(ent != null && ent.compareTo(p) < 0){
-				ent.setDrawScale(worldScale);
-				ent.draw(canvas);
-				j++;
-			} else if (p != null) {
-				particleController.draw(canvas, p);
-				i++;
-			}
-		}
-
-
-
-		if (!playerIsReady && !paused && coverOpacity <= 0)
-			printHelp();
-		canvas.end();
-		slothList.forEach(x->x.drawGrab(canvas, camTrans));
-
-		canvas.begin();
-		canvas.drawTextStandard("current time:    "+currentTime, 10f, 70f);
-		canvas.drawTextStandard("record time:     "+recordTime,10f,50f);
-
-		canvas.end();
-
-		if (debug) {
-			canvas.beginDebug(camTrans);
-			for(Entity obj : objects) {
-				if( obj instanceof  Obstacle){
-					((Obstacle)obj).drawDebug(canvas);
-				}
-			}
-			canvas.endDebug();
-			canvas.begin();
-			// text
-			canvas.drawTextStandard("FPS: " + 1f/delta, 10.0f, 100.0f);
-			canvas.end();
-			slothList.forEach(sloth->sloth.drawForces(canvas, camTrans));
-		}
-
-		if (coverOpacity > 0) {
-			Gdx.gl.glEnable(GL20.GL_BLEND);
-			displayFont.setColor(Color.WHITE);
-			Color coverColor = new Color(0,0,0,coverOpacity);
-			canvas.drawRectangle(coverColor,0,0,canvas.getWidth(), canvas
-					.getHeight());
-			coverOpacity -= (1/CYCLES_OF_INTRO);
-			Gdx.gl.glDisable(GL20.GL_BLEND);
-			canvas.begin();
-			if (!playerIsReady && !paused && !victory)
-				canvas.drawTextCentered(levelModel.getTitle(), displayFont, 0f);
-			canvas.end();
-		}
 
 		if (victory) {
 			canvas.begin();
+			canvas.draw(background);
+			victoryCutscene.draw(canvas);
 			canvas.draw(victoryTexture);
-			canvas.draw(fern, Color.WHITE,fern.getWidth()/2, fern.getHeight()/2,
-					victory_locs[victory_mode].x * canvas.getWidth(), victory_locs[victory_mode].y* canvas.getHeight(),
-					0,2*worldScale.x/fern.getWidth(), 2*worldScale.y/fern.getHeight());
+			canvas.draw(fern, Color.WHITE, fern.getWidth() / 2, fern.getHeight() / 2,
+					victory_locs[victory_mode].x * canvas.getWidth(), victory_locs[victory_mode].y * canvas.getHeight(),
+					0, 2 * worldScale.x / fern.getWidth(), 2 * worldScale.y / fern.getHeight());
 			canvas.end();
-		}
+		} else {
 
-		// draw pause menu stuff over everything
-		if (paused && !victory) {
 			canvas.begin();
-			canvas.draw(pauseTexture);
-			canvas.draw(fern, Color.WHITE,fern.getWidth()/2, fern.getHeight()/2,
-					pause_locs[pause_mode].x * canvas.getWidth(), pause_locs[pause_mode].y* canvas.getHeight(),
-					0,2*worldScale.x/fern.getWidth(), 2*worldScale.y/fern.getHeight());
+			canvas.draw(background);
+			canvas.end();
+
+			float slothX = slothList.stream().map(sloth -> sloth.getBody().getPosition().x).reduce((x, y) -> x + y).orElse(0f) / slothList.size();
+			float slothY = slothList.stream().map(sloth -> sloth.getBody().getPosition().y).reduce((x, y) -> x + y).orElse(0f) / slothList.size();
+
+			cameraVelocityX = cameraVelocityX * 0.4f + (slothX - cameraX) * 0.18f;
+			cameraVelocityY = cameraVelocityY * 0.4f + (slothY - cameraY) * 0.18f;
+			cameraX += cameraVelocityX;
+			cameraY += cameraVelocityY;
+
+			// Check for camera in bounds
+			// Y Checks
+			if (cameraY - bounds.height / 2f < levelModel.getMinY()) {
+				cameraY = levelModel.getMinY() + bounds.height / 2f;
+			}
+
+			if (cameraY + bounds.height / 2f > levelModel.getMaxY()) {
+				cameraY = levelModel.getMaxY() - bounds.height / 2f;
+			}
+
+			// X Checks
+			if (cameraX - bounds.width / 2 < levelModel.getMinX()) {
+				cameraX = levelModel.getMinX() + bounds.width / 2f;
+			}
+
+			if (cameraX + bounds.width / 2f > levelModel.getMaxX()) {
+				cameraX = levelModel.getMaxX() - bounds.width / 2f;
+			}
+
+			camTrans.setToTranslation(-1 * cameraX * worldScale.x
+					, -1 * cameraY * worldScale.y);
+
+			camTrans.translate(canvas.getWidth() / 2, canvas.getHeight() / 2);
+			canvas.getCampos().set(cameraX * worldScale.x
+					, cameraY * worldScale.y);
+
+			canvas.begin(camTrans);
+
+			//noinspection unchecked
+			Collections.sort(entities);
+			Particle[] particles = particleController.getSorted();
+			particleController.setDrawScale(worldScale);
+			int n = particleController.numParticles();
+			int total = entities.size() + n;
+			int i = 0;
+			int j = 0;
+			Particle p;
+			Entity ent;
+			while (i + j < total) {
+				p = null;
+				ent = null;
+				if (i < n) {
+					p = particles[i];
+				}
+				if (j < entities.size()) {
+					ent = entities.get(j);
+				}
+				// FIXME: I think there is an issue with the logic here. or at
+				// least semantics. You normally shouldnt do a null compareTo,
+				// but it looks like that's whats happening here -
+				// trevor
+				//noinspection ConstantConditions
+				if (ent != null && ent.compareTo(p) < 0) {
+					ent.setDrawScale(worldScale);
+					ent.draw(canvas);
+					j++;
+				} else if (p != null) {
+					particleController.draw(canvas, p);
+					i++;
+				}
+			}
+
+
+			if (!playerIsReady && !paused && coverOpacity <= 0)
+				printHelp();
+			canvas.end();
+			slothList.forEach(x -> x.drawGrab(canvas, camTrans));
+
+			if (debug) {
+				canvas.beginDebug(camTrans);
+				entities.stream().filter(obj -> obj instanceof Obstacle).forEachOrdered(obj -> ((Obstacle) obj).drawDebug(canvas));
+				canvas.endDebug();
+				canvas.begin();
+				// text
+				canvas.drawTextStandard("FPS: " + 1f / delta, 10.0f, 100.0f);
+				canvas.end();
+				slothList.forEach(sloth -> sloth.drawForces(canvas, camTrans));
+			}
+
+			if (coverOpacity > 0) {
+				Gdx.gl.glEnable(GL20.GL_BLEND);
+				displayFont.setColor(Color.WHITE);
+				Color coverColor = new Color(0, 0, 0, coverOpacity);
+				canvas.drawRectangle(coverColor, 0, 0, canvas.getWidth(), canvas
+						.getHeight());
+				coverOpacity -= (1 / CYCLES_OF_INTRO);
+				Gdx.gl.glDisable(GL20.GL_BLEND);
+				canvas.begin();
+				if (!playerIsReady && !paused && !victory)
+					canvas.drawTextCentered(levelModel.getTitle(), displayFont, 0f);
+				canvas.end();
+			}
+
+			// draw pause menu stuff over everything
+			if (paused && !victory) {
+				canvas.begin();
+				canvas.draw(pauseTexture);
+				canvas.draw(fern, Color.WHITE, fern.getWidth() / 2, fern.getHeight() / 2,
+						pause_locs[pause_mode].x * canvas.getWidth(), pause_locs[pause_mode].y * canvas.getHeight(),
+						0, 2 * worldScale.x / fern.getWidth(), 2 * worldScale.y / fern.getHeight());
+				canvas.end();
+			}
+			canvas.begin();
+			canvas.draw(edgefade);
 			canvas.end();
 		}
-		canvas.begin();
-		canvas.draw(edgefade);
-		canvas.end();
 	}
 
 }

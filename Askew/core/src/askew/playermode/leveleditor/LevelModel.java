@@ -6,7 +6,8 @@ import lombok.Data;
 import java.util.ArrayList;
 import java.util.List;
 
-public @Data
+public
+@Data
 class LevelModel {
 
     public static final int LATEST_LEVEL_MODEL_VERSION = 4;
@@ -18,7 +19,9 @@ class LevelModel {
     int goalTimeBronze;
     float recordTime;
 
-    /** Determines when Flow should die and limits camera movement */
+    /**
+     * Determines when Flow should die and limits camera movement
+     */
     float maxX;
     float maxY;
     float minX;
@@ -31,7 +34,7 @@ class LevelModel {
     List<Entity> entities;
 
     public LevelModel() {
-        this.entities = new ArrayList<Entity>();
+        this.entities = new ArrayList<>();
         this.levelModelVersion = LATEST_LEVEL_MODEL_VERSION;
         this.goalTimeGold = 30;
         this.goalTimeSilver = 45;
@@ -50,8 +53,8 @@ class LevelModel {
         entities.add(o);
     }
 
-    public String toString(){
-        String ans  = "";
+    public String toString() {
+        String ans = "";
         ans += this.title;
         ans += "\n";
         ans += this.minX;

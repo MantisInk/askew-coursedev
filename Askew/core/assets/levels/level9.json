@@ -1,174 +1,117 @@
 {
-  "levelModelVersion": 2,
+  "levelModelVersion": 4,
   "goalTimeGold": 30,
   "goalTimeSilver": 45,
   "goalTimeBronze": 60,
-  "recordTime": 6.030836,
-  "maxX": 20.0,
+  "recordTime": 9999999.0,
+  "maxX": 21.0,
   "maxY": 20.0,
   "minX": 0.0,
   "minY": 0.0,
-  "title": "Surprise?",
+  "title": "The One That\u0027s Not So Bad",
   "background": "texture/background/background1.png",
   "soundtrack": "TODO",
   "entities": [
     {
-      "CLASSNAME": "askew.entity.tree.PoleVault",
-      "INSTANCE": {
-        "linksize": 1.0,
-        "numLinks": 5.0,
-        "x": -9.0,
-        "y": 15.0,
-        "angle": 0.0,
-        "grabbed": false
-      }
-    },
-    {
       "CLASSNAME": "askew.entity.tree.Trunk",
       "INSTANCE": {
-        "x": -5.0,
-        "y": 15.0,
-        "angle": -30.0,
-        "numLinks": 5.0,
-        "grabbed": false
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.tree.Trunk",
-      "INSTANCE": {
-        "x": 0.0,
-        "y": 15.0,
-        "angle": -30.0,
-        "numLinks": 5.0,
-        "grabbed": false
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.vine.Vine",
-      "INSTANCE": {
-        "numLinks": 6.0,
-        "x": 6.0,
-        "y": 20.0,
-        "angle": 15.0,
-        "omega": -5.0,
-        "pin": false,
-        "texture": 0
+        "x": 21.0,
+        "y": 8.0,
+        "angle": 90.0,
+        "numLinks": 5.0
       }
     },
     {
       "CLASSNAME": "askew.entity.owl.OwlModel",
       "INSTANCE": {
-        "x": 17.0,
-        "y": 4.0,
-        "grabbed": false
+        "x": 18.0,
+        "y": 8.0,
+        "pin": {},
+        "owlBody": {}
       }
     },
     {
-      "CLASSNAME": "askew.entity.tree.StiffBranch",
+      "CLASSNAME": "askew.entity.tree.Trunk",
       "INSTANCE": {
+        "x": 16.0,
+        "y": 3.0,
         "angle": 0.0,
-        "numLinks": 4.0,
-        "x": 13.0,
-        "y": 8.0,
-        "grabbed": false
+        "numLinks": 5.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 16.0,
+        "y": 3.0,
+        "angle": 90.0,
+        "numLinks": 5.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 9.0,
+        "y": 3.0,
+        "angle": 60.0,
+        "numLinks": 4.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 11.0,
+        "y": 3.0,
+        "angle": 90.0,
+        "numLinks": 2.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 8.0,
+        "y": 18.0,
+        "angle": 90.0,
+        "numLinks": 5.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.wall.WallModel",
+      "INSTANCE": {
+        "color": -1,
+        "x": 8.0,
+        "y": 12.0,
+        "points": [
+          0.0,
+          0.0,
+          0.0,
+          16.0,
+          2.0,
+          16.0,
+          2.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 5.59,
+        "y": 5.0,
+        "angle": 90.0,
+        "numLinks": 5.0
       }
     },
     {
       "CLASSNAME": "askew.entity.sloth.SlothModel",
       "INSTANCE": {
-        "x": -12.0,
+        "x": 4.0,
         "y": 18.0,
         "lTheta": 0.0,
         "rTheta": 0.0,
-        "grabbed": false
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.tree.Trunk",
-      "INSTANCE": {
-        "x": -15.0,
-        "y": 15.0,
-        "angle": -90.0,
-        "numLinks": 5.0,
-        "grabbed": false
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.wall.WallModel",
-      "INSTANCE": {
-        "x": -21.0,
-        "y": 10.0,
-        "color": -1,
-        "points": [
-          0.0,
-          0.0,
-          0.0,
-          1.0,
-          22.0,
-          1.0,
-          22.0,
-          0.0
-        ],
-        "grabbed": false
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.wall.WallModel",
-      "INSTANCE": {
-        "x": -7.0,
-        "y": 0.0,
-        "color": -1,
-        "points": [
-          0.0,
-          0.0,
-          0.0,
-          1.0,
-          35.0,
-          1.0,
-          35.0,
-          0.0
-        ],
-        "grabbed": false
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.tree.Trunk",
-      "INSTANCE": {
-        "x": 5.0,
-        "y": 8.0,
-        "angle": 0.0,
-        "numLinks": 5.0,
-        "grabbed": false
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.tree.StiffBranch",
-      "INSTANCE": {
-        "angle": 0.0,
-        "numLinks": 3.0,
-        "x": 5.0,
-        "y": 10.0,
-        "grabbed": false
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.tree.Trunk",
-      "INSTANCE": {
-        "x": 9.0,
-        "y": 8.0,
-        "angle": 0.0,
-        "numLinks": 5.0,
-        "grabbed": false
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.tree.StiffBranch",
-      "INSTANCE": {
-        "angle": 0.0,
-        "numLinks": 3.0,
-        "x": 9.0,
-        "y": 10.0,
-        "grabbed": false
+        "airTime": 0,
+        "blinkFrame": 62,
+        "facingFront": true
       }
     }
   ]
