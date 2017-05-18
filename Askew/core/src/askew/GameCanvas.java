@@ -535,7 +535,14 @@ public class GameCanvas {
     }
 
     public void draw(Texture image) {
-        draw(image, Color.WHITE, 0, 0, getWidth(), getHeight());
+        if (active != DrawPass.STANDARD) {
+            Gdx.app.error("askew.GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
+            return;
+        }
+
+        // Unlike Lab 1, we can shortcut without a master drawing method
+        spriteBatch.setColor(Color.WHITE);
+        spriteBatch.draw(image, 0, 0, 0.999f, getWidth(), getHeight());
     }
 
     /**

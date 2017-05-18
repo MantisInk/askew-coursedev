@@ -756,7 +756,7 @@ public class GameModeController extends WorldController {
 		} else {
 
 			canvas.begin();
-			//canvas.draw(background);
+			canvas.draw(background);
 			canvas.end();
 
 			float slothX = slothList.stream().map(sloth -> sloth.getBody().getPosition().x).reduce((x, y) -> x + y).orElse(0f) / slothList.size();
