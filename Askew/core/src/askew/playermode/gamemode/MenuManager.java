@@ -3,6 +3,7 @@ package askew.playermode.gamemode;
 import askew.InputController;
 import askew.InputControllerManager;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -32,6 +33,8 @@ public class MenuManager {
     private boolean didUpdate;
     private ChangeListener changeListener;
     private List<TextButton> mainButtons;
+    private Sound blip;
+    private Sound blip2;
     private int mainButtonIndex;
     private boolean prevLeftUp;
     private boolean prevLeftDown;
@@ -42,8 +45,11 @@ public class MenuManager {
     private boolean leftLeft;
     private boolean leftDown;
 
-    public MenuManager(BitmapFont regina, BitmapFont beckyIsBack) {
+    public MenuManager(BitmapFont regina, BitmapFont beckyIsBack, Sound blip,
+     Sound blip2                  ) {
         font = regina;
+        this.blip = blip;
+        this.blip2 = blip2;
         stage = new Stage();
         table = new Table();
         table.setFillParent(true);
@@ -141,13 +147,14 @@ public class MenuManager {
 
         if (input.didBottomButtonPress()) {
             // select
+            blip2.play();
             return Optional.of(mainButtons.get(mainButtonIndex).getText().toString() +
                     mainButtonIndex);
         } else if ((leftLeft && !prevLeftLeft) || input.didLeftArrowPress()) {
-
+            blip.play();
         } else if ((leftRight && !prevLeftRight) || input.didRightArrowPress()) {
             // right
-
+            blip.play();
         } else if ((leftUp && !prevLeftUp) || input.didUpArrowPress()) {
             // up
             int prevIndex = mainButtonIndex;
@@ -156,6 +163,7 @@ public class MenuManager {
             mainButtons.get(prevIndex).toggle();
             if (prevIndex != mainButtonIndex)
                 mainButtons.get(mainButtonIndex).toggle();
+            blip.play();
         } else if ((leftDown && !prevLeftDown) || input.didDownArrowPress()) {
             // down
             int prevIndex = mainButtonIndex;
@@ -164,6 +172,7 @@ public class MenuManager {
             mainButtons.get(prevIndex).toggle();
             if (prevIndex != mainButtonIndex)
                 mainButtons.get(mainButtonIndex).toggle();
+            blip.play();
         }
         return Optional.empty();
     }

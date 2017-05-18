@@ -95,12 +95,14 @@ public class GameModeController extends WorldController {
 	public static final String RELEASE_SOUND = "sound/effect/release.wav";
 	public static final String ARM_SOUND = "sound/effect/arm.wav";
 	public static final String WIND_SOUND = "sound/effect/wind.wav";
+	public static final String GHOST_SOUND = "sound/effect/ghostkillsyou.wav";
 	public static final String FALL_MUSIC = "sound/music/fallingtoyourdeath" +
 			".wav";
 
 	Sound grabSound;
 	Sound releaseSound;
 	Sound victorySound;
+	Sound ghostSound;
 
 	@Setter
 	protected String loadLevel, DEFAULT_LEVEL;
@@ -177,6 +179,7 @@ public class GameModeController extends WorldController {
 		manager.load(FALL_MUSIC, Sound.class);
 		manager.load(ARM_SOUND, Sound.class);
 		manager.load(WIND_SOUND, Sound.class);
+		manager.load(GHOST_SOUND, Sound.class);
 
 		manager.load(VICTORY_SOUND, Sound.class);
 		manager.load(GRAB_SOUND, Sound.class);
@@ -215,6 +218,7 @@ public class GameModeController extends WorldController {
 		grabSound = Gdx.audio.newSound(Gdx.files.internal(GRAB_SOUND));
 		releaseSound = Gdx.audio.newSound(Gdx.files.internal(RELEASE_SOUND));
 		victorySound = Gdx.audio.newSound(Gdx.files.internal(VICTORY_SOUND));
+		ghostSound = Gdx.audio.newSound(Gdx.files.internal(GHOST_SOUND));
 
 		pauseTexture = manager.get("texture/background/pause.png", Texture.class);
 		victoryTexture = manager.get("texture/background/victory.png", Texture.class);
@@ -649,7 +653,7 @@ public class GameModeController extends WorldController {
 
 					if (isFailure()) {
 						if (sloth.dismember(world)) {
-                            grabSound.play();
+                            ghostSound.play();
                             fallDeathHeight = sloth.getPosition().y - NEAR_FALL_DEATH_DISTANCE;
                         }
                     }

@@ -3,6 +3,7 @@ package askew;
 import askew.playermode.gamemode.MenuManager;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -47,6 +48,8 @@ public class MantisAssetManager extends AssetManager {
             load(WALL_TEXTURE, Texture.class);
             load(THORN_TEXTURE, Texture.class);
             load(EDGE_TEXTURE, Texture.class);
+            load("sound/effect/blip.wav",Sound.class);
+            load("sound/effect/blip2.wav",Sound.class);
         }
 
         preloaded = true;
@@ -61,7 +64,9 @@ public class MantisAssetManager extends AssetManager {
         }
 
         menuManager = new MenuManager(get("shared/ReginaFree.ttf", BitmapFont
-                .class), get("shared/ReginaFree.ttf", BitmapFont.class));
+                .class), get("shared/ReginaFree.ttf", BitmapFont.class), get
+                ("sound/effect/blip.wav", Sound.class), get
+                ("sound/effect/blip2.wav", Sound.class));
         loaded = true;
     }
 
