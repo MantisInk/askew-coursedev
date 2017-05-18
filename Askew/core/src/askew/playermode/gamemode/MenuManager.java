@@ -124,9 +124,10 @@ public class MenuManager {
     public void setupSettingsMenu(boolean control, boolean grab, boolean
             graphics, boolean music) {
         clear();
-        mainButtons.add(new TextButton("Control Scheme: " + (control ? "One Arm" : "Two Arm"),
+        mainButtons.add(new TextButton("Control Scheme: " + (control ? "Two " +
+                "Arm" : "One Arm"),
                 textButtonStyle));
-        mainButtons.add(new TextButton("Grab Scheme: " + (grab ? "Normal" : "Reverse"), textButtonStyle));
+        mainButtons.add(new TextButton("Grab Scheme: " + (grab ? "Normal" : "Toggle"), textButtonStyle));
         mainButtons.add(new TextButton("Graphics Quality: " + (graphics ? "LOW" : "HIGH"),
                 textButtonStyle));
         mainButtons.add(new TextButton("Music: " + (music ? "ON" : "OFF"), textButtonStyle));

@@ -299,7 +299,7 @@ public class MainMenuController extends WorldController {
                     control = !control;
                     manager.getMenuManager().updateButtonContainingText
                             ("Control", "Control Scheme: " +
-                                    (control ? "One Arm" : "Two Arm"));
+                                    (control ? "Two Arm" : "One Arm"));
                 }
             } else if (updateString.contains("Grab Scheme")) {
                 if (updateString.contains("ACTION_RIGHT") || updateString
@@ -307,7 +307,7 @@ public class MainMenuController extends WorldController {
                     grab = !grab;
                     manager.getMenuManager().updateButtonContainingText
                             ("Grab", "Grab Scheme: " +
-                                    (grab ? "Normal" : "Reverse"));
+                                    (grab ? "Normal" : "Toggle"));
                 }
             } else if (updateString.contains("Graphics Quality")) {
                 if (updateString.contains("ACTION_RIGHT") || updateString
