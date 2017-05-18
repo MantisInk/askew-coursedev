@@ -98,6 +98,7 @@ public class MenuManager {
 
     public void setupLevelCompleteMenu() {
         clear();
+        table.add(midVerticalGroup).expand().center();
         mainButtons.add(new TextButton("Next Level",
                 textButtonStyle));
         mainButtons.add(new TextButton("Restart", textButtonStyle));
@@ -150,6 +151,12 @@ public class MenuManager {
         return false;
     }
 
+    public void throwJunkOnTheScreen(String junk) {
+        Label title = new Label(junk, labelStyle);
+        title.setFontScale(1.0f);
+        midVerticalGroup.addActor(title);
+    }
+
     public void setupMainMenu() {
         clear();
         mainButtons.add(new TextButton("Play", textButtonStyle));
@@ -178,6 +185,10 @@ public class MenuManager {
      * @return a status code -1 if nothing of value has happened.
      */
     public Optional<String> update() {
+        return update(true);
+    }
+
+    public Optional<String> update(boolean playSound) {
         if (didUpdate) {
             return Optional.empty();
         }
@@ -198,17 +209,17 @@ public class MenuManager {
 
         if (input.didBottomButtonPress()) {
             // select
-            blip2.play();
+            if (playSound) blip2.play();
             return Optional.of(mainButtons.get(mainButtonIndex).getText().toString() +
                     mainButtonIndex);
         } else if ((leftLeft && !prevLeftLeft) || input.didLeftArrowPress()) {
-            blip.play();
+            if (playSound) blip.play();
             return Optional.of("ACTION_LEFT "+mainButtons.get
                     (mainButtonIndex).getText().toString() +
                     mainButtonIndex);
         } else if ((leftRight && !prevLeftRight) || input.didRightArrowPress()) {
             // right
-            blip.play();
+            if (playSound) blip.play();
             return Optional.of("ACTION_RIGHT "+mainButtons.get
                     (mainButtonIndex).getText().toString() +
                     mainButtonIndex);
@@ -220,7 +231,7 @@ public class MenuManager {
             mainButtons.get(prevIndex).toggle();
             if (prevIndex != mainButtonIndex)
                 mainButtons.get(mainButtonIndex).toggle();
-            blip.play();
+            if (playSound) blip.play();
         } else if ((leftDown && !prevLeftDown) || input.didDownArrowPress()) {
             // down
             int prevIndex = mainButtonIndex;
@@ -229,7 +240,7 @@ public class MenuManager {
             mainButtons.get(prevIndex).toggle();
             if (prevIndex != mainButtonIndex)
                 mainButtons.get(mainButtonIndex).toggle();
-            blip.play();
+            if (playSound) blip.play();
         }
         return Optional.empty();
     }

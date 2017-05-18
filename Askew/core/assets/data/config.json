@@ -11,7 +11,7 @@
   "vineDensity": 3.0,
   "fullscreen": false,
   "defaultLevel": "level1",
-  "storeTimeRecords": false,
+  "storeTimeRecords": true,
   "maxLevel": 11,
   "currentLevel": 1,
   "enableMusic": false,

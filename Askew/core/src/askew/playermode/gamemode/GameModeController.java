@@ -90,6 +90,8 @@ public class GameModeController extends WorldController {
 			"sound/music/Lauren_Track2.ogg"
 	};
 
+	public static final String OK_SOUND = "sound/effect/youdidokay.wav";
+	public static final String GREAT_SOUND = "sound/effect/youdidgreat.wav";
 	public static final String GRAB_SOUND = "sound/effect/grab.wav";
 	public static final String VICTORY_SOUND = "sound/effect/realvictory.wav";
 	public static final String RELEASE_SOUND = "sound/effect/release.wav";
@@ -103,6 +105,8 @@ public class GameModeController extends WorldController {
 	Sound releaseSound;
 	Sound victorySound;
 	Sound ghostSound;
+	Sound okSound;
+	Sound greatSound;
 
 	@Setter
 	protected String loadLevel, DEFAULT_LEVEL;
@@ -158,6 +162,8 @@ public class GameModeController extends WorldController {
 	protected static final int MAX_PARTICLES = 5;
 	protected static final int INITIAL_FOG = 5;
 	protected float fogTime;
+	private int levelCompleteJunkState;
+	private int showStatsTimer;
 
 	/**
 	 * Preloads the assets for this controller.
@@ -180,6 +186,8 @@ public class GameModeController extends WorldController {
 		manager.load(ARM_SOUND, Sound.class);
 		manager.load(WIND_SOUND, Sound.class);
 		manager.load(GHOST_SOUND, Sound.class);
+		manager.load(OK_SOUND, Sound.class);
+		manager.load(GREAT_SOUND, Sound.class);
 
 		manager.load(VICTORY_SOUND, Sound.class);
 		manager.load(GRAB_SOUND, Sound.class);
@@ -219,6 +227,8 @@ public class GameModeController extends WorldController {
 		releaseSound = Gdx.audio.newSound(Gdx.files.internal(RELEASE_SOUND));
 		victorySound = Gdx.audio.newSound(Gdx.files.internal(VICTORY_SOUND));
 		ghostSound = Gdx.audio.newSound(Gdx.files.internal(GHOST_SOUND));
+		okSound = Gdx.audio.newSound(Gdx.files.internal(OK_SOUND));
+		greatSound = Gdx.audio.newSound(Gdx.files.internal(GREAT_SOUND));
 
 		pauseTexture = manager.get("texture/background/pause.png", Texture.class);
 		victoryTexture = manager.get("texture/background/victory.png", Texture.class);
@@ -295,6 +305,8 @@ public class GameModeController extends WorldController {
 	 */
 	public void reset() {
 		super.reset();
+		levelCompleteJunkState = 0;
+		showStatsTimer = 60;
 		Gdx.input.setCursorCatched(true);
 		coverOpacity = 2f; // start at 2 for 1 second of full black
 		this.windVolume = 0;
@@ -507,18 +519,49 @@ public class GameModeController extends WorldController {
 
 		if (victory) {
 			paused = false;
-			String updateString = manager.getMenuManager().update().orElse("");
+			showStatsTimer--;
+			String updateString = manager.getMenuManager().update(false).orElse
+					("");
 			if (!updateString.contains("ACTION")) {
 				if (updateString.contains("Main Menu")) {
 					listener.exitScreen(this, EXIT_GM_MM);
 				} else if (updateString.contains("Restart")) {
 					reset();
-				} else if (updateString.contains("Next Level")) {
-					playerIsReady = false;
-					int current = GlobalConfiguration.getInstance().getCurrentLevel();
-					GlobalConfiguration.getInstance().setCurrentLevel(current + 1);
-					setLevel();
-					listener.exitScreen(this, EXIT_GM_GM);
+				} else if (updateString.contains("Next Level") ||
+						((showStatsTimer < 0) && levelCompleteJunkState !=2 )) {
+					if (levelCompleteJunkState == 0) {
+						manager.getMenuManager().throwJunkOnTheScreen
+								("Completion Time: " +  String.format("%.2f",
+										currentTime));
+						levelCompleteJunkState++;
+						showStatsTimer = 80;
+						okSound.play();
+					} else if (levelCompleteJunkState == 1) {
+						boolean newRecord = RecordBook.getInstance()
+								.setRecord("level" + GlobalConfiguration
+												.getInstance().getCurrentLevel(),
+										currentTime);
+						if (newRecord) {
+							manager.getMenuManager().throwJunkOnTheScreen
+									("New Record!");
+							greatSound.play();
+						} else {
+							float record = RecordBook.getInstance
+									().getRecord("level" + GlobalConfiguration
+											.getInstance().getCurrentLevel());
+							manager.getMenuManager().throwJunkOnTheScreen
+									("Record Time: " + String.format("%.2f",
+											record));
+							okSound.play();
+						}
+						levelCompleteJunkState++;
+					} else {
+						playerIsReady = false;
+						int current = GlobalConfiguration.getInstance().getCurrentLevel();
+						GlobalConfiguration.getInstance().setCurrentLevel(current + 1);
+						setLevel();
+						listener.exitScreen(this, EXIT_GM_GM);
+					}
 				}
 			}
 		}
@@ -593,7 +636,7 @@ public class GameModeController extends WorldController {
 
 		if (!paused) {
 
-			currentTime += dt;
+			if (!victory) currentTime += dt;
 			// Prevent control input if flow is win
 			if (!collisions.isFlowWin()) {
 				for (int i = 0; i < slothList.size(); i++){
@@ -731,9 +774,9 @@ public class GameModeController extends WorldController {
                 playerIsReady = false;
                 float record = currentTime;
                 if (record < records.getRecord(loadLevel) && storeTimeRecords) {
-                    if (records.setRecord(loadLevel, record)) {
-                        System.out.println("New record time for this level!");
-                    }
+//                    if (records.setRecord(loadLevel, record)) {
+//                        System.out.println("New record time for this level!");
+//                    }
                 }
             }
         }
