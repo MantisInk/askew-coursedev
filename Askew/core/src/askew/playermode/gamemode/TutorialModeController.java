@@ -106,6 +106,7 @@ public class TutorialModeController extends GameModeController {
 	private String swing1Path = "texture/background/tutorial/swing1.png";
 	private String swing2Path = "texture/background/tutorial/swing2.png";
 	private String swing3Path = "texture/background/tutorial/swing3.png";
+	private String swing4Path = "texture/background/tutorial/swing4.png";
 	Texture holdDown;
 	Texture holdLeft;
 	Texture holdRight;
@@ -113,6 +114,7 @@ public class TutorialModeController extends GameModeController {
 	Texture swing1;
 	Texture swing2;
 	Texture swing3;
+	Texture swing4;
 
 	// list of objects for stage of tutorial
 	private ArrayList<Boolean> trunkGrabbed = new ArrayList<Boolean>();
@@ -235,6 +237,7 @@ public class TutorialModeController extends GameModeController {
 		swing1 = manager.get(swing1Path);
 		swing2 = manager.get(swing2Path);
 		swing3 = manager.get(swing3Path);
+		swing4 = manager.get(swing4Path);
 
 		DEFAULT_LEVEL = "tutorial1";
 		loadLevel = DEFAULT_LEVEL;
@@ -284,8 +287,8 @@ public class TutorialModeController extends GameModeController {
 		ind = -1;
 		swing = false;
 		back = false;
-		ebbLvl = ebbGrabPts;
-//		ebbLvl = ebbFling;
+//		ebbLvl = ebbGrabPts;
+		ebbLvl = ebbVine1;
 		for(int i = 0; i < shimmyGrabbed.length; i++)
 			shimmyGrabbed[i] = false;
 		for(int i = 0; i < flingGrabbed.length; i++)
@@ -1041,37 +1044,37 @@ public class TutorialModeController extends GameModeController {
 					}
 				} else if(currentStage == STAGE_GRAB) {
 					if (!grabbedAll) {
-				canvas.drawTextCentered("Try to grab all 5 branches", instrFont, 250f);
+				canvas.drawTextCentered("Try to grab all 5 branches", instrFont, 275f);
 			}
 		} else if (currentStage == STAGE_SHIMMY) {
-			canvas.drawTextCentered("Try to shimmy across to the owl", instrFont, 250f);
+			canvas.drawTextCentered("Try to shimmy across to the owl", instrFont, 275f);
 		} else if (currentStage == STAGE_FLING) {
-			canvas.drawTextCentered("Try to fling from branch to branch", instrFont, 250f);
+			canvas.drawTextCentered("Try to fling from branch to branch", instrFont, 275f);
 		} else if (currentStage == STAGE_VINE) {
-			canvas.drawTextCentered("Learn to swing on the vines", instrFont, 250f);
+			canvas.drawTextCentered("Learn to swing on the vines", instrFont, 275f);
 		} else if (currentStage == STAGE_EBB) {
 			switch(ebbLvl) {
 				case ebbGrabPts:
-					canvas.drawTextCentered("Try to grab all 4 endpoints", instrFont, 250f);
+					canvas.drawTextCentered("Try to grab all 4 endpoints", instrFont, 275f);
 					break;
 				case ebbFlag:
-					canvas.drawTextCentered("Try to hold Flow's arms horizontally \nwithout grabbing for 2.5s", instrFont, 250f);
+					canvas.drawTextCentered("Try to hold Flow's arms horizontally \nwithout grabbing for 2.5s", instrFont, 275f);
 					canvas.drawText("time held: "+((int)(grabs*100))/100.0, instrFont, 0.4f*canvas.getWidth(), 0.3f*canvas.getHeight());
 					break;
 				case ebbFling:
-					canvas.drawTextCentered("Try to fling from one short \ntrunk to the other", instrFont, 250f);
+					canvas.drawTextCentered("Try to fling from one short \ntrunk to the other", instrFont, 275f);
 					break;
 				case ebbFlingUp:
-					canvas.drawTextCentered("Now try flinging upwards", instrFont, 250f);
+					canvas.drawTextCentered("Now try flinging upwards", instrFont, 275f);
 					break;
 				case ebbVine1:
-					canvas.drawTextCentered("Use the vine to reach \nthe next trunk", instrFont, 250f);
+					canvas.drawTextCentered("Use the vine to reach \nthe next trunk", instrFont, 275f);
 					break;
 				case ebbVine2:
-					canvas.drawTextCentered("Use the next 2 vines \nto reach the following trunk", instrFont, 250f);
+					canvas.drawTextCentered("Use the next 2 vines \nto reach the following trunk", instrFont, 275f);
 					break;
 				default:
-					canvas.drawTextCentered("Reach Cherry the owl \nto complete the tutorial", instrFont, 250f);
+					canvas.drawTextCentered("Reach Cherry the owl \nto complete the tutorial", instrFont, 275f);
 			}
 		}
 		if (currentStage >= STAGE_GRAB) {
@@ -1164,8 +1167,9 @@ public class TutorialModeController extends GameModeController {
 							trunkGrabbed.set(ind, true);
 						}
 					}
-				} else if (currentStage != STAGE_EBB) {
-					obj.draw(canvas);
+				} else if ((currentStage != STAGE_EBB)) {
+//					if (! (obj instanceof BackgroundEntity))
+						obj.draw(canvas);
 				} else if (!(obj instanceof Trunk || obj instanceof Vine || obj instanceof OwlModel)) {
 					obj.draw(canvas);
 				}
@@ -1193,13 +1197,30 @@ public class TutorialModeController extends GameModeController {
 					canvas.draw(holdRight, tint, 0, holdRight.getHeight()/2, 375, 1290, 0, 1, 1);
 					break;
 				case ebbFling:
+					canvas.draw(swing0, new Color(0x7f7f7f90), swing0.getWidth(), swing0.getHeight(), 785, 1320, 0, 1, 1);
+					canvas.draw(swing1, tint, 0, swing1.getHeight(), 760, 1320, 0, 1, 1);
+					canvas.draw(swing2, new Color(0x7f7f7fD0), 0, swing2.getHeight(), 750, 1320, 0, 1, 1);
+					canvas.draw(swing3, new Color(0x7f7f7fFF), 0, 0, 815, 1365, -0.1f, 1, 1);
+					canvas.draw(swing4, new Color(0x7f7f7fF0), 0, swing4.getHeight(), 995, 1415+swing4.getHeight(), 0.1f, 1, 1);
+					break;
 				case ebbFlingUp:
 					canvas.draw(swing0, new Color(0x7f7f7f90), swing0.getWidth(), swing0.getHeight(), 785, 1320, 0, 1, 1);
 					canvas.draw(swing1, tint, 0, swing1.getHeight(), 760, 1320, 0, 1, 1);
 					canvas.draw(swing2, new Color(0x7f7f7fD0), 0, swing2.getHeight(), 750, 1320, 0, 1, 1);
-					canvas.draw(swing3, new Color(0x7f7f7fF0),0, swing3.getHeight(), 830, 1370+swing3.getHeight(), -0.1f, 1, 1);
-					canvas.draw(swing3, new Color(0x7f7f7fFF),0, 0, 815, 1375, 0, 1, 1);
+					canvas.draw(swing3, new Color(0x7f7f7fFF), 0, 0, 815, 1365, -0.1f, 1, 1);
+					canvas.draw(swing3, new Color(0x7f7f7fFF), 0, 0, 1065, 1490, -0.1f, 1, 1);
+					break;
 				case ebbVine1:
+					SlothModel sloth = slothList.get(0);
+					// reach for vine
+					if((!sloth.isActualLeftGrab() && !sloth.isActualRightGrab()) ||
+							((sloth.isActualLeftGrab() || sloth.isActualRightGrab()) && !(checkGrabbedObst(vineEntities.get(0))))) {
+						canvas.draw(swing3, new Color(0x7f7f7fFF), 0, 0, 1315, 1585, 0, 1, 1);
+					// swing on vine
+					} else {
+						break;
+					}
+					break;
 				case ebbVine2:
 					break;
 			}
@@ -1240,7 +1261,7 @@ public class TutorialModeController extends GameModeController {
 		canvas.end();
 		slothList.get(0).drawGrab(canvas, camTrans);
 
-		drawHelpLines();
+//		drawHelpLines();
 
 		if (debug) {
 			canvas.beginDebug(camTrans);
@@ -1288,9 +1309,18 @@ public class TutorialModeController extends GameModeController {
 
     }
 
-    public void restart() {
+	private boolean checkGrabbedObst(Vine vine) {
+		for(Obstacle plank : vine.getBodies()){
+			if (plank.getBody().getUserData() instanceof Obstacle && ((Obstacle) plank.getBody().getUserData()).isGrabbed()) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public void restart() {
         //change back to 1
-        currentStage = 1;
+        currentStage = 3;
     }
 
     public void printVector(Vector2 v) {

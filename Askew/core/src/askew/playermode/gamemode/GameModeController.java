@@ -115,6 +115,8 @@ public class GameModeController extends WorldController {
 	// lvl #
 
 	protected float currentTime, recordTime;	// track current and record time to complete level
+	protected int currentGrabs, recordGrabs;
+	protected boolean leftPrevGrab, rightPrevGrab, leftNewGrab, rightNewGrab;
 	private boolean storeTimeRecords;
 	private RecordBook records = RecordBook.getInstance();
 
@@ -413,6 +415,7 @@ public class GameModeController extends WorldController {
 			if (levelModel != null) {
 				background = manager.get(levelModel.getBackground(), Texture.class);
 				recordTime = records.getRecord(loadLevel);
+				recordGrabs = records.getRecordGrabs(loadLevel);
 			}
 
 			if (levelModel == null) {
@@ -492,6 +495,9 @@ public class GameModeController extends WorldController {
 				particleController.fog(levelModel.getMaxX() - levelModel.getMinX(), levelModel.getMaxY() - levelModel.getMinY());
 			}
 			currentTime = 0f;
+			currentGrabs = 0;
+			leftPrevGrab = false;
+			rightPrevGrab = false;
 	}
 
 	/**For drawing force lines*/
@@ -724,8 +730,19 @@ public class GameModeController extends WorldController {
                     }
                 }
             }
-            currentTime += dt;
-            if (currentTime - fogTime > .1f) {
+			leftNewGrab = (!leftPrevGrab && slothList.get(0).isActualLeftGrab());
+			rightNewGrab = (!rightPrevGrab && slothList.get(0).isActualRightGrab());
+			leftPrevGrab = slothList.get(0).isActualLeftGrab();
+			rightPrevGrab = slothList.get(0).isActualRightGrab();
+			if (leftNewGrab) {
+				currentGrabs++;
+			}
+			if (rightNewGrab) {
+				currentGrabs++;
+			}
+
+			currentTime += dt;
+			if (currentTime - fogTime > .1f) {
                 particleController.fog(cameraX, cameraY);
                 fogTime = currentTime;
             }
@@ -795,11 +812,16 @@ public class GameModeController extends WorldController {
             if (isComplete()) {
                 victory = true;
                 playerIsReady = false;
-                float record = currentTime;
-                if (record < records.getRecord(loadLevel) && storeTimeRecords) {
-//                    if (records.setRecord(loadLevel, record)) {
+                float recordT = currentTime;
+                int recordG = currentGrabs -1; // cuz grabbing the owl adds an extra grab
+                if (storeTimeRecords) {
+					// TODO: work this into end of level screen
+//                    if (records.setRecord(loadLevel, recordT)) {
 //                        System.out.println("New record time for this level!");
 //                    }
+//                    if (records.setRecordGrabs(loadLevel, recordG) && storeTimeRecords) {
+//						System.out.println("New record grabs for this level!");
+//					}
                 }
             }
         }
