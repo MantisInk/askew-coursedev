@@ -59,10 +59,6 @@ public class MenuManager {
         rightVerticalGroup.pad(100f);
         midVerticalGroup.pad(100f);
         leftVerticalGroup.pad(100f);
-        stage.addActor(table);
-        table.add(rightVerticalGroup).expand().center().left().padLeft(100f);
-//        table.add(midVerticalGroup).center().padTop(100f);
-//        table.add(rightVerticalGroup).center().right().padLeft(100f);
 
         textButtonStyle = new TextButtonStyle();
         textButtonStyle.font = regina;
@@ -79,9 +75,14 @@ public class MenuManager {
     }
 
     private void clear() {
+        stage.clear();
+        table.clear();
         rightVerticalGroup.clear();
         midVerticalGroup.clear();
         leftVerticalGroup.clear();
+        stage.addActor(table);
+        table.add(rightVerticalGroup).expand().center().left().padLeft(100f);
+
         mainButtonIndex = 0;
         mainButtons = new ArrayList<>();
         changeListener = new ChangeListener() {
