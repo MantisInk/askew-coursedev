@@ -457,7 +457,7 @@ public class GameModeController extends WorldController {
 				joint = world.createJoint(jointDef);
 			}
 			for(int i = 0; i < INITIAL_FOG; i++) {
-				particleController.fog(levelModel.getMaxX()-levelModel.getMinX(),levelModel.getMaxY()-levelModel.getMinY() );
+				//particleController.fog(levelModel.getMaxX()-levelModel.getMinX(),levelModel.getMaxY()-levelModel.getMinY() );
 			}
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -667,8 +667,8 @@ public class GameModeController extends WorldController {
 			}
 			currentTime += dt;
 			if(currentTime - fogTime > .1f) {
-				particleController.fog(cameraX, cameraY);
-				fogTime = currentTime;
+				//particleController.fog(cameraX, cameraY);
+				//fogTime = currentTime;
 			}
 			particleController.update(dt);
 

@@ -69,18 +69,19 @@ public class ParticleController {
         if (gmc.isPaused()){
             return;
         }
-        System.out.println(numParticles());
+        int i = 0;
         int counter = 0;
-        while (counter < spawned.size()){
-            Particle curParticle = spawned.get(counter);
+        while (i < spawned.size() && counter < 50000){
+            Particle curParticle = spawned.get(i);
             if(curParticle.accumulator < curParticle.deathTime){
                 curParticle.update(delta);
-                counter += 1;
+                i += 1;
             }
             else{
                 unspawned.add(curParticle);
-                spawned.remove(counter);
+                spawned.remove(i);
             }
+            counter++;
         }
     }
 
