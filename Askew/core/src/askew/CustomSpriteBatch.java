@@ -61,8 +61,8 @@ import com.badlogic.gdx.utils.NumberUtils;
 public class CustomSpriteBatch implements Batch {
     private Mesh mesh;
 
-    private final int VERTEX_SIZE = 5;
-    private final int SPRITE_SIZE = 20;
+    private final int VERTEX_SIZE = 6;
+    private final int SPRITE_SIZE = 4 * VERTEX_SIZE;
 
 
     private final float[] vertices;
@@ -134,12 +134,46 @@ public class CustomSpriteBatch implements Batch {
         triangles = new short[size * 3];
 
         if (defaultShader == null) {
-            shader = SpriteBatch.createDefaultShader();
+            shader = createDefaultShader();
             ownsShader = true;
         } else
             shader = defaultShader;
 
         projectionMatrix.setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+    }
+
+    static public ShaderProgram createDefaultShader () {
+        String vertexShader = "attribute vec4 " + ShaderProgram.POSITION_ATTRIBUTE + ";\n" //
+                + "attribute vec4 " + ShaderProgram.COLOR_ATTRIBUTE + ";\n" //
+                + "attribute vec2 " + ShaderProgram.TEXCOORD_ATTRIBUTE + "0;\n" //
+                + "uniform mat4 u_projTrans;\n" //
+                + "varying vec4 v_color;\n" //
+                + "varying vec2 v_texCoords;\n" //
+                + "\n" //
+                + "void main()\n" //
+                + "{\n" //
+                + "   v_color = " + ShaderProgram.COLOR_ATTRIBUTE + ";\n" //
+                + "   v_color.a = v_color.a * (255.0/254.0);\n" //
+                + "   v_texCoords = " + ShaderProgram.TEXCOORD_ATTRIBUTE + "0;\n" //
+                + "   gl_Position =  u_projTrans * " + ShaderProgram.POSITION_ATTRIBUTE + ";\n" //
+                + "}\n";
+        String fragmentShader = "#ifdef GL_ES\n" //
+                + "#define LOWP lowp\n" //
+                + "precision mediump float;\n" //
+                + "#else\n" //
+                + "#define LOWP \n" //
+                + "#endif\n" //
+                + "varying LOWP vec4 v_color;\n" //
+                + "varying vec2 v_texCoords;\n" //
+                + "uniform sampler2D u_texture;\n" //
+                + "void main()\n"//
+                + "{\n" //
+                + "  gl_FragColor = v_color * texture2D(u_texture, v_texCoords);\n" //
+                + "}";
+
+        ShaderProgram shader = new ShaderProgram(vertexShader, fragmentShader);
+        if (shader.isCompiled() == false) throw new IllegalArgumentException("Error compiling shader: " + shader.getLog());
+        return shader;
     }
 
     @Override
@@ -345,25 +379,25 @@ public class CustomSpriteBatch implements Batch {
     @Override
     public void draw (Texture texture, float x, float y, float originX, float originY, float width, float height, float scaleX,
                       float scaleY, float rotation, int srcX, int srcY, int srcWidth, int srcHeight, boolean flipX, boolean flipY) {
-        System.out.println("DELETED, REIMPLEMENT IF NEEDED");
+        System.out.println("DELETED, REIMPLEMENT IF NEEDED 1");
         return;
     }
 
     @Override
     public void draw (Texture texture, float x, float y, float width, float height, int srcX, int srcY, int srcWidth,
                       int srcHeight, boolean flipX, boolean flipY) {
-        System.out.println("DELETED, REIMPLEMENT IF NEEDED");
+        System.out.println("DELETED, REIMPLEMENT IF NEEDED 2");
         return;
     }
 
     @Override
     public void draw (Texture texture, float x, float y, int srcX, int srcY, int srcWidth, int srcHeight) {
-        System.out.println("DELETED, REIMPLEMENT IF NEEDED");
+        System.out.println("DELETED, REIMPLEMENT IF NEEDED 3");
     }
 
     @Override
     public void draw (Texture texture, float x, float y, float width, float height, float u, float v, float u2, float v2) {
-        System.out.println("DELETED, REIMPLEMENT IF NEEDED");
+        System.out.println("DELETED, REIMPLEMENT IF NEEDED 4");
     }
 
     @Override
@@ -404,24 +438,28 @@ public class CustomSpriteBatch implements Batch {
         int idx = this.vertexIndex;
         vertices[idx++] = x;
         vertices[idx++] = y;
+        vertices[idx++] = 0;
         vertices[idx++] = color;
         vertices[idx++] = u;
         vertices[idx++] = v;
 
         vertices[idx++] = x;
         vertices[idx++] = fy2;
+        vertices[idx++] = 0;
         vertices[idx++] = color;
         vertices[idx++] = u;
         vertices[idx++] = v2;
 
         vertices[idx++] = fx2;
         vertices[idx++] = fy2;
+        vertices[idx++] = 0;
         vertices[idx++] = color;
         vertices[idx++] = u2;
         vertices[idx++] = v2;
 
         vertices[idx++] = fx2;
         vertices[idx++] = y;
+        vertices[idx++] = 0;
         vertices[idx++] = color;
         vertices[idx++] = u2;
         vertices[idx++] = v;
@@ -430,7 +468,44 @@ public class CustomSpriteBatch implements Batch {
 
     @Override
     public void draw (Texture texture, float[] spriteVertices, int offset, int count) {
-        System.out.println("DELETED, REIMPLEMENT IF NEEDED");
+        if (!drawing) throw new IllegalStateException("PolygonSpriteBatch.begin must be called before draw.");
+        System.out.println("no");
+        return;
+//        final short[] triangles = this.triangles;
+//        final float[] vertices = this.vertices;
+//
+//        final int triangleCount = count / 20 * 6;
+//        if (texture != lastTexture) {
+//            switchTexture(texture);
+//            System.out.println("????");
+//        }
+//        else if (triangleIndex + triangleCount > triangles.length || vertexIndex + count > vertices.length) //
+//            flush();
+//
+//        int vertexIndex = this.vertexIndex;
+//        int triangleIndex = this.triangleIndex;
+//        short vertex = (short)(vertexIndex / VERTEX_SIZE);
+//        for (int n = triangleIndex + triangleCount; triangleIndex < n; triangleIndex += 6, vertex += 4) {
+//            triangles[triangleIndex] = vertex;
+//            triangles[triangleIndex + 1] = (short)(vertex + 1);
+//            triangles[triangleIndex + 2] = (short)(vertex + 2);
+//            triangles[triangleIndex + 3] = (short)(vertex + 2);
+//            triangles[triangleIndex + 4] = (short)(vertex + 3);
+//            triangles[triangleIndex + 5] = vertex;
+//        }
+//        this.triangleIndex = triangleIndex;
+//
+//        //System.arraycopy(spriteVertices, offset, vertices, vertexIndex, count);
+//
+//        for (int i = 0; i < count/5; i ++) {
+//            vertices[vertexIndex++] = spriteVertices[offset + i];
+//            vertices[vertexIndex++] = spriteVertices[offset + i + 1];
+//            vertices[vertexIndex++] = .2f;
+//            vertices[vertexIndex++] = spriteVertices[offset + i + 2];
+//            vertices[vertexIndex++] = spriteVertices[offset + i + 3];
+//            vertices[vertexIndex++] = spriteVertices[offset + i + 4];
+//        }
+//        //this.vertexIndex += count;
     }
 
     @Override
@@ -472,24 +547,28 @@ public class CustomSpriteBatch implements Batch {
         int idx = this.vertexIndex;
         vertices[idx++] = x;
         vertices[idx++] = y;
+        vertices[idx++] = 0;
         vertices[idx++] = color;
         vertices[idx++] = u;
         vertices[idx++] = v;
 
         vertices[idx++] = x;
         vertices[idx++] = fy2;
+        vertices[idx++] = 0;
         vertices[idx++] = color;
         vertices[idx++] = u;
         vertices[idx++] = v2;
 
         vertices[idx++] = fx2;
         vertices[idx++] = fy2;
+        vertices[idx++] = 0;
         vertices[idx++] = color;
         vertices[idx++] = u2;
         vertices[idx++] = v2;
 
         vertices[idx++] = fx2;
         vertices[idx++] = y;
+        vertices[idx++] = 0;
         vertices[idx++] = color;
         vertices[idx++] = u2;
         vertices[idx++] = v;
@@ -499,13 +578,13 @@ public class CustomSpriteBatch implements Batch {
     @Override
     public void draw (TextureRegion region, float x, float y, float originX, float originY, float width, float height,
                       float scaleX, float scaleY, float rotation) {
-        System.out.println("DELETED, REIMPLEMENT IF NEEDED");
+        System.out.println("DELETED, REIMPLEMENT IF NEEDED 6");
     }
 
     @Override
     public void draw (TextureRegion region, float x, float y, float originX, float originY, float width, float height,
                       float scaleX, float scaleY, float rotation, boolean clockwise) {
-        System.out.println("DELETED, REIMPLEMENT IF NEEDED");
+        System.out.println("DELETED, REIMPLEMENT IF NEEDED 7");
     }
 
     @Override
@@ -550,24 +629,28 @@ public class CustomSpriteBatch implements Batch {
         int idx = vertexIndex;
         vertices[idx++] = x1;
         vertices[idx++] = y1;
+        vertices[idx++] = 0;
         vertices[idx++] = color;
         vertices[idx++] = u;
         vertices[idx++] = v;
 
         vertices[idx++] = x2;
         vertices[idx++] = y2;
+        vertices[idx++] = 0;
         vertices[idx++] = color;
         vertices[idx++] = u;
         vertices[idx++] = v2;
 
         vertices[idx++] = x3;
         vertices[idx++] = y3;
+        vertices[idx++] = 0;
         vertices[idx++] = color;
         vertices[idx++] = u2;
         vertices[idx++] = v2;
 
         vertices[idx++] = x4;
         vertices[idx++] = y4;
+        vertices[idx++] = 0;
         vertices[idx++] = color;
         vertices[idx++] = u2;
         vertices[idx++] = v;
