@@ -107,14 +107,12 @@ public class TutorialModeController extends GameModeController {
 	private String swing2Path = "texture/background/tutorial/swing2.png";
 	private String swing3Path = "texture/background/tutorial/swing3.png";
 	private String swing4Path = "texture/background/tutorial/swing4.png";
-	Texture holdDown;
-	Texture holdLeft;
-	Texture holdRight;
-	Texture swing0;
-	Texture swing1;
-	Texture swing2;
-	Texture swing3;
-	Texture swing4;
+	private String vine0Path = "texture/background/tutorial/vine0.png";
+	private String vine1Path = "texture/background/tutorial/vine1.png";
+	private String vine2Path = "texture/background/tutorial/vine2.png";
+	private String vine3Path = "texture/background/tutorial/vine3.png";
+	private String vine4Path = "texture/background/tutorial/vine4.png";
+	Texture holdDown, holdLeft, holdRight, swing0, swing1, swing2, swing3, swing4, vine0, vine1, vine2, vine3, vine4;
 
 	// list of objects for stage of tutorial
 	private ArrayList<Boolean> trunkGrabbed = new ArrayList<Boolean>();
@@ -238,6 +236,11 @@ public class TutorialModeController extends GameModeController {
 		swing2 = manager.get(swing2Path);
 		swing3 = manager.get(swing3Path);
 		swing4 = manager.get(swing4Path);
+		vine0 = manager.get(vine0Path);
+		vine1 = manager.get(vine1Path);
+		vine2 = manager.get(vine2Path);
+		vine3 = manager.get(vine3Path);
+		vine4 = manager.get(vine4Path);
 
 		DEFAULT_LEVEL = "tutorial1";
 		loadLevel = DEFAULT_LEVEL;
@@ -288,7 +291,7 @@ public class TutorialModeController extends GameModeController {
 		swing = false;
 		back = false;
 //		ebbLvl = ebbGrabPts;
-		ebbLvl = ebbVine1;
+		ebbLvl = ebbVine2;
 		for(int i = 0; i < shimmyGrabbed.length; i++)
 			shimmyGrabbed[i] = false;
 		for(int i = 0; i < flingGrabbed.length; i++)
@@ -1215,20 +1218,26 @@ public class TutorialModeController extends GameModeController {
 					// reach for vine
 					if((!sloth.isActualLeftGrab() && !sloth.isActualRightGrab()) ||
 							((sloth.isActualLeftGrab() || sloth.isActualRightGrab()) && !(checkGrabbedObst(vineEntities.get(0))))) {
-						canvas.draw(swing3, new Color(0x7f7f7fFF), 0, 0, 1315, 1585, 0, 1, 1);
-					// swing on vine
+						canvas.draw(vine0, new Color(0x7f7f7fFF), 0, 0, 1400, 1600, 0, 1, 1);
+//						canvas.draw(swing3, new Color(0x7f7f7fFF), 0, 0, 1515, 1585, 0, 1, 1);
+						// swing on vine
 					} else {
-						break;
+						canvas.draw(vine3, new Color(0x7f7f7fFF), vine3.getWidth(), vine3.getHeight(), 1600, 2000, 0, 1, 1);
+						canvas.draw(vine1, new Color(0x7f7f7fFF), 0, vine1.getHeight(), 1600, 2000, 0, 1, 1);
+						canvas.draw(vine2, new Color(0x7f7f7fFF), 0, vine2.getHeight(), 1600, 2000, 0, 1, 1);
 					}
 					break;
 				case ebbVine2:
-					// reach for vine
+					// reach for vine1
 					if((!sloth.isActualLeftGrab() && !sloth.isActualRightGrab()) ||
-							((sloth.isActualLeftGrab() || sloth.isActualRightGrab()) && !(checkGrabbedObst(vineEntities.get(0))))) {
+							((sloth.isActualLeftGrab() || sloth.isActualRightGrab()) && !(checkGrabbedObst(vineEntities.get(1))) && !(checkGrabbedObst(vineEntities.get(2))))) {
 						canvas.draw(swing3, new Color(0x7f7f7fFF), 0, 0, 2185, 1585, 0, 1, 1);
-						// swing on vine
+					// swing on vine1
+					} else if (checkGrabbedObst(vineEntities.get(1))) {
+						canvas.draw(vine4, new Color(0x7f7f7fFF), 0, vine1.getHeight(), 2385, 2075, 0, 1, 1);
+						canvas.draw(vine2, new Color(0x7f7f7fFF), 0, vine2.getHeight(), 2415, 2015, 0, 1, 1);
+						// swing on vine2
 					} else {
-						break;
 					}
 					break;
 			}
