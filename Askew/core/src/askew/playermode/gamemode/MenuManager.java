@@ -159,7 +159,8 @@ public class MenuManager {
 
     public void setupMainMenu() {
         clear();
-        mainButtons.add(new TextButton("Play", textButtonStyle));
+        mainButtons.add(new TextButton("Singleplayer", textButtonStyle));
+        mainButtons.add(new TextButton("Multiplayer", textButtonStyle));
         mainButtons.add(new TextButton("Tutorial", textButtonStyle));
         mainButtons.add(new TextButton("Level Select", textButtonStyle));
         mainButtons.add(new TextButton("Settings", textButtonStyle));

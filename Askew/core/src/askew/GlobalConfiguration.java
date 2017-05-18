@@ -103,4 +103,8 @@ public class GlobalConfiguration {
     public void setMusic(boolean mode) {
             dataBlob.addProperty("enableMusic", mode);
     }
+
+    public void setMultiplayer(boolean multiplayer) {
+        dataBlob.addProperty("multiplayer", multiplayer);
+    }
 }

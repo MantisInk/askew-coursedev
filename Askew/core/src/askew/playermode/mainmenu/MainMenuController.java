@@ -232,12 +232,21 @@ public class MainMenuController extends WorldController {
             String updateString = manager.getMenuManager().update().orElse("");
             if (!updateString.contains
                     ("ACTION")) {
-                if (updateString.contains("Play")) {
+                if (updateString.contains("Singleplayer")) {
                     selected = GlobalConfiguration.getInstance().getCurrentLevel();
                     if (selected > MAX_LEVEL) {
                         selected = 1;
                         GlobalConfiguration.getInstance().setCurrentLevel(selected);
                     }
+                    GlobalConfiguration.getInstance().setMultiplayer(false);
+                    nextCon = "GM";
+                } else if (updateString.contains("Multiplayer")) {
+                    selected = GlobalConfiguration.getInstance().getCurrentLevel();
+                    if (selected > MAX_LEVEL) {
+                        selected = 1;
+                        GlobalConfiguration.getInstance().setCurrentLevel(selected);
+                    }
+                    GlobalConfiguration.getInstance().setMultiplayer(true);
                     nextCon = "GM";
                 } else if (updateString.contains("Tutorial")) {
                     nextCon = "TL";

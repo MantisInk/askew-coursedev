@@ -643,10 +643,16 @@
         "x": -7.0,
         "y": 14.0,
         "lTheta": 0.0,
-        "rTheta": 0.0,
-        "airTime": 0,
-        "blinkFrame": 21,
-        "facingFront": true
+        "rTheta": 0.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.sloth.SlothModel",
+      "INSTANCE": {
+        "x": -6.164167,
+        "y": 13.270823,
+        "lTheta": 0.0,
+        "rTheta": 0.0
       }
     },
     {
