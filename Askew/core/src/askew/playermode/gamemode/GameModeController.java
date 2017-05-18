@@ -148,6 +148,7 @@ public class GameModeController extends WorldController {
 	protected float cameraVelocityX;
 	protected float cameraVelocityY;
 	private VictoryCutscene victoryCutscene;
+	private boolean multiplayer;
 
 	//For playtesting control schemes
 	private int currentMovement;
@@ -274,6 +275,7 @@ public class GameModeController extends WorldController {
 	// for use in progressing through levels
 	public void setLevel() {
 		if (GlobalConfiguration.getInstance().getAsBoolean("multiplayer")) {
+			multiplayer = true;
 			int lvl = GlobalConfiguration.getInstance().getCurrentMultiLevel();
 			if (lvl > MAX_MULTI_LEVEL) {
 				loadLevel = "multilevel1";
@@ -287,6 +289,7 @@ public class GameModeController extends WorldController {
 				listener.exitScreen(this, EXIT_GM_MM);
 			} else
 				loadLevel = "level"+lvl;
+			multiplayer = false;
 		}
 	}
 
@@ -350,18 +353,7 @@ public class GameModeController extends WorldController {
 		victory_mode = VICTORY_NEXT;
 		currentControl = GlobalConfiguration.getInstance().getAsInt("flowControlMode");
 		currentMovement = GlobalConfiguration.getInstance().getAsInt("flowMovementMode");
-		System.out.println("currentmovmentgm:" + currentMovement);
-//		System.out.println("control "+currentControl+" movement "+currentMovement);
         populateLevel();
-        // set death height
-//		fallDeathHeight = Float.MAX_VALUE;
-//		for(Entity obj: entities) {
-//			float potentialFallDeath = obj.getY() -
-//					LOWEST_ENTITY_FALL_DEATH_THRESHOLD;
-//			if (potentialFallDeath < fallDeathHeight) {
-//				fallDeathHeight = potentialFallDeath;
-//			}
-//		}
 		fallDeathHeight = levelModel.getMinY() -
 				LOWEST_ENTITY_FALL_DEATH_THRESHOLD;
 
@@ -398,9 +390,10 @@ public class GameModeController extends WorldController {
 		} else {
 			instance.setVolume("windmusic",0);
 		}
+
 		victoryCutscene.reset();
 		manager.getMenuManager().setupLevelCompleteMenu();
-		if (loadLevel.contains("multi")) {
+		if (multiplayer) {
 			levelCompleteJunkState = -1;
 		} else {
 			levelCompleteJunkState = 0;
