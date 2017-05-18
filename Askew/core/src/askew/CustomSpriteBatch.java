@@ -133,6 +133,10 @@ public class CustomSpriteBatch implements Batch {
         vertices = new float[size * VERTEX_SIZE];
         triangles = new short[size * 3];
 
+        Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
+        Gdx.gl.glDepthFunc(GL20.GL_LEQUAL);
+        Gdx.gl.glClearDepthf(1.0f);
+
         if (defaultShader == null) {
             shader = createDefaultShader();
             ownsShader = true;
@@ -168,7 +172,11 @@ public class CustomSpriteBatch implements Batch {
                 + "uniform sampler2D u_texture;\n" //
                 + "void main()\n"//
                 + "{\n" //
-                + "  gl_FragColor = v_color * texture2D(u_texture, v_texCoords);\n" //
+                + "  vec4 color = v_color * texture2D(u_texture, v_texCoords);\n"//
+                + "  if (color.a < .01f){\n"//
+                + "    discard; \n"//
+                + "  }\n"//
+                + "  gl_FragColor = color;\n" //
                 + "}";
 
         ShaderProgram shader = new ShaderProgram(vertexShader, fragmentShader);
@@ -181,6 +189,7 @@ public class CustomSpriteBatch implements Batch {
         if (drawing) throw new IllegalStateException("PolygonSpriteBatch.end must be called before begin.");
         renderCalls = 0;
 
+
         Gdx.gl.glDepthMask(true);
         if (customShader != null)
             customShader.begin();
@@ -190,19 +199,7 @@ public class CustomSpriteBatch implements Batch {
 
         drawing = true;
     }
-    public void beginBackground () {
-        if (drawing) throw new IllegalStateException("PolygonSpriteBatch.end must be called before begin.");
-        renderCalls = 0;
-        setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-        Gdx.gl.glDepthMask(false);
-        if (customShader != null)
-            customShader.begin();
-        else
-            shader.begin();
-        setupMatrices();
 
-        drawing = true;
-    }
     public void beginParticle () {
         if (drawing) throw new IllegalStateException("PolygonSpriteBatch.end must be called before begin.");
         renderCalls = 0;
@@ -305,7 +302,7 @@ public class CustomSpriteBatch implements Batch {
         this.vertexIndex = vertexIndex;
     }
     public void draw (PolygonRegion region, float x, float y) {
-        draw(region, x, y, 0);
+        draw(region, x, y, 0.5f);
     }
 
 
@@ -351,7 +348,7 @@ public class CustomSpriteBatch implements Batch {
         this.vertexIndex = vertexIndex;
     }
     public void draw (PolygonRegion region, float x, float y, float width, float height){
-        draw(region, x, y, 0, width,height);
+        draw(region, x, y, 0.5f, width,height);
     }
 
 
@@ -410,7 +407,7 @@ public class CustomSpriteBatch implements Batch {
     }
     public void draw (PolygonRegion region, float x, float y, float originX, float originY, float width, float height,
                       float scaleX, float scaleY, float rotation){
-        draw(region, x, y ,0, originX, originY,width,height,scaleX,scaleY,rotation);
+        draw(region, x, y ,0.5f, originX, originY,width,height,scaleX,scaleY,rotation);
     }
 
     @Override
@@ -439,7 +436,7 @@ public class CustomSpriteBatch implements Batch {
 
     @Override
     public void draw (Texture texture, float x, float y) {
-        draw(texture, x, y,0);
+        draw(texture, x, y,0.5f);
     }
     public void draw (Texture texture, float x, float y, float z) {
         draw(texture, x, y, z, texture.getWidth(), texture.getHeight());
@@ -447,7 +444,7 @@ public class CustomSpriteBatch implements Batch {
 
     @Override
     public void draw (Texture texture, float x, float y, float width, float height) {
-        draw(texture, x, y, 0, width,height);
+        draw(texture, x, y, 0.5f, width,height);
     }
     public void draw (Texture texture, float x, float y, float z, float width, float height){
         if (!drawing) throw new IllegalStateException("PolygonSpriteBatch.begin must be called before draw.");
@@ -548,7 +545,7 @@ public class CustomSpriteBatch implements Batch {
 
     @Override
     public void draw (TextureRegion region, float x, float y) {
-        draw(region, x, y, 0);
+        draw(region, x, y, 0.5f);
     }
     public void draw (TextureRegion region, float x, float y, float z) {
         draw(region, x, y, z, region.getRegionWidth(), region.getRegionHeight());
@@ -556,7 +553,7 @@ public class CustomSpriteBatch implements Batch {
 
     @Override
     public void draw (TextureRegion region, float x, float y, float width, float height) {
-        draw(region, x, y, 0, width , height);
+        draw(region, x, y, 0.5f, width , height);
     }
     public void draw (TextureRegion region, float x, float y, float z, float width, float height) {
         if (!drawing) throw new IllegalStateException("PolygonSpriteBatch.begin must be called before draw.");
@@ -633,7 +630,7 @@ public class CustomSpriteBatch implements Batch {
 
     @Override
     public void draw (TextureRegion region, float width, float height, Affine2 transform) {
-        draw(region, width, height, transform, 0);
+        draw(region, width, height, transform, 0.5f);
     }
     public void draw (TextureRegion region, float width, float height, Affine2 transform, float z) {
         if (!drawing) throw new IllegalStateException("PolygonSpriteBatch.begin must be called before draw.");
@@ -792,6 +789,7 @@ public class CustomSpriteBatch implements Batch {
 
     private void setupMatrices () {
         combinedMatrix.set(projectionMatrix).mul(transformMatrix);
+        combinedMatrix.val[Matrix4.M22] = 1;
         if (customShader != null) {
             customShader.setUniformMatrix("u_projTrans", combinedMatrix);
             customShader.setUniformi("u_texture", 0);

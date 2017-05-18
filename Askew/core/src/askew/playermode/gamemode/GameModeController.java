@@ -756,7 +756,7 @@ public class GameModeController extends WorldController {
 		} else {
 
 			canvas.begin();
-			canvas.draw(background);
+			//canvas.draw(background);
 			canvas.end();
 
 			float slothX = slothList.stream().map(sloth -> sloth.getBody().getPosition().x).reduce((x, y) -> x + y).orElse(0f) / slothList.size();
@@ -796,7 +796,6 @@ public class GameModeController extends WorldController {
 
 			//noinspection unchecked
 			Collections.sort(entities);
-			Collections.sort(backgroundEntities);
 			Particle[] particles = particleController.getSorted();
 			particleController.setDrawScale(worldScale);
 
@@ -806,6 +805,7 @@ public class GameModeController extends WorldController {
 				e.draw(canvas);
 			}
 			canvas.end();
+
 			/*
 			int n = particleController.numParticles();
 			int total = entities.size() + n;

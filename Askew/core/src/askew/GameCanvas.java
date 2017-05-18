@@ -388,51 +388,6 @@ public class GameCanvas {
      *
      * @param affine the global transform apply to the camera
      */
-    public void beginBackground(Affine2 affine) {
-        global.setAsAffine(affine);
-        global.mulLeft(camera.combined);
-        spriteBatch.setProjectionMatrix(global);
-
-        spriteBatch.beginBackground();
-        active = DrawPass.STANDARD;
-    }
-
-    /**
-     * Start a standard drawing sequence.
-     * <p>
-     * Nothing is flushed to the graphics card until the method end() is called.
-     *
-     * @param sx the amount to scale the x-axis
-     * @param sy the amount to scale the y-axis
-     */
-    public void beginBackground(float sx, float sy) {
-        global.idt();
-        global.scl(sx, sy, 1.0f);
-        global.mulLeft(camera.combined);
-
-        spriteBatch.setProjectionMatrix(global);
-        spriteBatch.beginBackground();
-        active = DrawPass.STANDARD;
-    }
-
-    /**
-     * Start a standard drawing sequence.
-     * <p>
-     * Nothing is flushed to the graphics card until the method end() is called.
-     */
-    public void beginBackground() {
-        spriteBatch.setProjectionMatrix(camera.combined);
-        spriteBatch.beginBackground();
-        active = DrawPass.STANDARD;
-    }
-
-    /**
-     * Start a standard drawing sequence.
-     * <p>
-     * Nothing is flushed to the graphics card until the method end() is called.
-     *
-     * @param affine the global transform apply to the camera
-     */
     public void beginParticle(Affine2 affine) {
         global.setAsAffine(affine);
         global.mulLeft(camera.combined);
@@ -1320,7 +1275,7 @@ public class GameCanvas {
 
         computeTransform(ox, oy, campos.x + offsetx, campos.y + offsety, angle, sx, sy);
         spriteBatch.setColor(tint);
-        spriteBatch.draw(region, region.getRegionWidth(), region.getRegionHeight(), local);
+        spriteBatch.draw(region, region.getRegionWidth(), region.getRegionHeight(), local, depth/(1 + depth));
     }
 
     /**
