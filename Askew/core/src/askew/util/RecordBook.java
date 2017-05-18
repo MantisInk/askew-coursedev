@@ -1,7 +1,9 @@
 package askew.util;
 
 import askew.util.json.JSONLoaderSaver;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 
 /**
  * A model class containing variables which we set as configurable for faster prototyping and modding.
@@ -9,9 +11,10 @@ import com.google.gson.JsonObject;
  */
 public class RecordBook {
 
-    private static final String CONFIG_PATH = "levels/records.json";
+    private static final String TIMES_PATH = "levels/records.json";
     private static RecordBook instance;
-    private final float DEFAULT_COMPLETION_TIME = 9999999.0f;
+    private final JsonPrimitive DEFAULT_COMPLETION_TIME = new JsonPrimitive(9999999.0f);
+    private final JsonPrimitive DEFAULT_NUM_GRABS = new JsonPrimitive(9999999);
 
     private JsonObject dataBlob;
 
@@ -28,59 +31,68 @@ public class RecordBook {
 
     /* Creates a new instance populated with the current values of the records.json. */
     private static void update() {
-        JsonObject newBlob = JSONLoaderSaver.loadArbitrary(CONFIG_PATH).orElseThrow(RuntimeException::new);
+        JsonObject newBlob = JSONLoaderSaver.loadArbitrary(TIMES_PATH).orElseThrow(RuntimeException::new);
         instance = new RecordBook();
         instance.dataBlob = newBlob;
     }
 
     public void addLevel(String lvlname) {
-        dataBlob.addProperty(lvlname, DEFAULT_COMPLETION_TIME);
+        JsonArray entry = new JsonArray();
+        entry.add(DEFAULT_COMPLETION_TIME);
+        entry.add(DEFAULT_NUM_GRABS);
+        dataBlob.add(lvlname, entry);
     }
 
     public float getRecord(String lvlname) {
         try {
-            return dataBlob.get(lvlname).getAsFloat();
+            return dataBlob.get(lvlname).getAsJsonArray().get(0).getAsFloat();
         } catch (NullPointerException e) {
             System.err.print("Level record doesn't exist!");
             return 0f;
         }
     }
 
+    public int getRecordGrabs(String lvlname) {
+        try {
+            return dataBlob.get(lvlname).getAsJsonArray().get(1).getAsInt();
+        } catch (NullPointerException e) {
+            System.err.print("Level record doesn't exist!");
+            return 9999999;
+        }
+    }
+
     public void resetRecord(String lvlname) {
         try {
             dataBlob.remove(lvlname);
-            dataBlob.addProperty(lvlname, DEFAULT_COMPLETION_TIME);
         } catch (NullPointerException e) {
             System.err.print("Level record doesn't exist!");
-            dataBlob.addProperty(lvlname, DEFAULT_COMPLETION_TIME);
         }
+        addLevel(lvlname);
     }
 
     public boolean setRecord(String lvlname, float record) {
         try {
-            dataBlob.remove(lvlname);
-            dataBlob.addProperty(lvlname, record);
+            float oldRecord = getRecord(lvlname);
+            if (record < oldRecord) {
+                dataBlob.get(lvlname).getAsJsonArray().set(0, new JsonPrimitive(record));
+            }
+            return (record < oldRecord);
         } catch (NullPointerException e) {
             System.err.print("Level record doesn't exist!");
             return false;
         }
-        return true;
     }
 
-//    public boolean save() {
-//        try {
-//            FileWriter fw = new FileWriter(CONFIG_PATH);
-//            GsonBuilder gsonBuilder = new GsonBuilder();
-//            gsonBuilder.setPrettyPrinting();
-//            gsonBuilder.registerTypeAdapter(Entity.class, wrapper);
-//            Gson gson = gsonBuilder.create();
-//            gson.toJson(toSave, fw);
-//            fw.flush();
-//            fw.close();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//            return false;
-//        }
-//        return true;
-//    }
+    public boolean setRecordGrabs(String lvlname, int grabs) {
+        try {
+            int oldGrabs= getRecordGrabs(lvlname);
+            if (grabs < oldGrabs) {
+                dataBlob.get(lvlname).getAsJsonArray().set(1, new JsonPrimitive(grabs));
+            }
+            return (grabs < oldGrabs);
+        } catch (NullPointerException e) {
+            System.err.print("Level record doesn't exist!");
+            return false;
+        }
+    }
 }

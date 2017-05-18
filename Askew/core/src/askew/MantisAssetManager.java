@@ -1,8 +1,11 @@
 package askew;
 
+import askew.playermode.gamemode.MenuManager;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import lombok.Getter;
@@ -31,6 +34,9 @@ public class MantisAssetManager extends AssetManager {
     @Getter
     private TextureAtlas textureAtlas;
 
+    @Getter
+    private MenuManager menuManager;
+
     public MantisAssetManager() {
         super();
         processedTextureMap = new HashMap<>();
@@ -42,6 +48,8 @@ public class MantisAssetManager extends AssetManager {
             load(WALL_TEXTURE, Texture.class);
             load(THORN_TEXTURE, Texture.class);
             load(EDGE_TEXTURE, Texture.class);
+            load("sound/effect/blip.wav",Sound.class);
+            load("sound/effect/blip2.wav",Sound.class);
         }
 
         preloaded = true;
@@ -54,6 +62,11 @@ public class MantisAssetManager extends AssetManager {
             createTexture(EDGE_TEXTURE);
             textureAtlas = new TextureAtlas(Gdx.files.internal("texture/packed/packed.atlas"));
         }
+
+        menuManager = new MenuManager(get("shared/ReginaFree.ttf", BitmapFont
+                .class), get("shared/ReginaFree.ttf", BitmapFont.class), get
+                ("sound/effect/blip.wav", Sound.class), get
+                ("sound/effect/blip2.wav", Sound.class));
         loaded = true;
     }
 

@@ -11,9 +11,12 @@
   "vineDensity": 3.0,
   "fullscreen": false,
   "defaultLevel": "level1",
-  "storeTimeRecords": false,
-  "maxLevel": 11,
+  "storeTimeRecords": true,
+  "maxMultiLevel": 1,
+  "maxLevel": 7,
+  "multiplayer": false,
   "currentLevel": 1,
+  "currentMultiLevel": 1,
   "enableMusic": false,
   "maxTutorial": 3
 }

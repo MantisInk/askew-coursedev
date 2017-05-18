@@ -53,6 +53,7 @@ texture/background/tutorial/swing0.png
 texture/background/tutorial/swing1.png
 texture/background/tutorial/swing2.png
 texture/background/tutorial/swing3.png
+texture/background/tutorial/swing4.png
 texture/background/victory.png
 texture/branch/branch.png
 texture/eye/eyeL.png
