@@ -1173,23 +1173,34 @@ public class TutorialModeController extends GameModeController {
 		}
 
 		if(currentStage == STAGE_EBB) {
+			Color tint = new Color(0x7f7f7fB0);
 			switch(ebbLvl) {
 				case ebbGrabPts:
 					if(!ebbGrabbed[0]) {
-						canvas.draw(holdLeft, new Color(0x7f7f7fB0), holdLeft.getWidth(), holdRight.getHeight()/2, 425, 1100, 0, 1, 1);
+						canvas.draw(holdLeft, tint, holdLeft.getWidth(), holdRight.getHeight()/2, 425, 1100, 0, 1, 1);
 					}
 					if(!ebbGrabbed[1]) {
-						canvas.draw(holdDown, new Color(0x7f7f7fB0), holdDown.getWidth() / 2, holdDown.getHeight(), 405, 1110, 0, 1, 1);
+						canvas.draw(holdDown, tint, holdDown.getWidth() / 2, holdDown.getHeight(), 405, 1110, 0, 1, 1);
 					}
 					if(!ebbGrabbed[2]) {
-						canvas.draw(holdRight, new Color(0x7f7f7fB0), 0, holdRight.getHeight()/2, 375, 1090, 0, 1, 1);
+						canvas.draw(holdRight, tint, 0, holdRight.getHeight()/2, 375, 1090, 0, 1, 1);
 					}
 					if(!ebbGrabbed[3]) {
-						canvas.draw(holdUp, new Color(0x7f7f7fB0), holdUp.getWidth() / 2, 0, 405, 1090, 0, 1, 1);
+						canvas.draw(holdUp, tint, holdUp.getWidth() / 2, 0, 405, 1090, 0, 1, 1);
 					}
 					break;
 				case ebbFlag:
-					canvas.draw(holdRight, new Color(0x7f7f7fB0), 0, holdRight.getHeight()/2, 375, 1290, 0, 1, 1);
+					canvas.draw(holdRight, tint, 0, holdRight.getHeight()/2, 375, 1290, 0, 1, 1);
+					break;
+				case ebbFling:
+				case ebbFlingUp:
+					canvas.draw(swing0, new Color(0x7f7f7f90), swing0.getWidth(), swing0.getHeight(), 785, 1320, 0, 1, 1);
+					canvas.draw(swing1, tint, 0, swing1.getHeight(), 760, 1320, 0, 1, 1);
+					canvas.draw(swing2, new Color(0x7f7f7fD0), 0, swing2.getHeight(), 750, 1320, 0, 1, 1);
+					canvas.draw(swing3, new Color(0x7f7f7fF0),0, swing3.getHeight(), 830, 1370+swing3.getHeight(), -0.1f, 1, 1);
+					canvas.draw(swing3, new Color(0x7f7f7fFF),0, 0, 815, 1375, 0, 1, 1);
+				case ebbVine1:
+				case ebbVine2:
 					break;
 			}
 		}
