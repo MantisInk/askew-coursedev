@@ -793,12 +793,20 @@ public class GameModeController extends WorldController {
 			canvas.getCampos().set(cameraX * worldScale.x
 					, cameraY * worldScale.y);
 
-			canvas.begin(camTrans);
 
 			//noinspection unchecked
 			Collections.sort(entities);
+			Collections.sort(backgroundEntities);
 			Particle[] particles = particleController.getSorted();
 			particleController.setDrawScale(worldScale);
+
+			canvas.begin(camTrans);
+			for(Entity e : entities){
+				e.setDrawScale(worldScale);
+				e.draw(canvas);
+			}
+			canvas.end();
+			/*
 			int n = particleController.numParticles();
 			int total = entities.size() + n;
 			int i = 0;
@@ -829,8 +837,8 @@ public class GameModeController extends WorldController {
 					i++;
 				}
 			}
+			*/
 
-			canvas.end();
 
 			canvas.begin();
 			if (!playerIsReady && !paused && coverOpacity <= 0)

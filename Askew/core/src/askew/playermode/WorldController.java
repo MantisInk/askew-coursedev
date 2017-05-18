@@ -16,6 +16,7 @@ package askew.playermode;/*
  */
 
 import askew.*;
+import askew.entity.BackgroundEntity;
 import askew.entity.Entity;
 import askew.entity.EyeEntity;
 import askew.entity.obstacle.Obstacle;
@@ -127,6 +128,10 @@ public abstract class WorldController implements Screen {
      * All the entities in the world.
      */
     protected ArrayList<Entity> entities = new ArrayList<>();
+    /**
+     * All the background entities in the world.
+     */
+    protected ArrayList<Entity> backgroundEntities = new ArrayList<>();
     /**
      * Listener that will update the player mode when we are done
      */
@@ -435,9 +440,14 @@ public abstract class WorldController implements Screen {
      */
     protected void addObject(Entity obj) {
         //assert inBounds(obj) : "Object is not in bounds";
-        entities.add(obj);
-        if (obj instanceof Obstacle) {
-            ((Obstacle) obj).activatePhysics(world);
+        if(obj instanceof BackgroundEntity){
+            backgroundEntities.add(obj);
+        }
+        else {
+            entities.add(obj);
+            if (obj instanceof Obstacle) {
+                ((Obstacle) obj).activatePhysics(world);
+            }
         }
     }
 
