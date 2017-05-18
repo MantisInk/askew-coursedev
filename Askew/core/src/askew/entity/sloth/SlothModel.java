@@ -184,9 +184,9 @@ public class SlothModel extends ComplexObstacle {
     private transient Obstacle mostRecentlyGrabbed = null;
     @Getter
     private transient Body mostRecentTarget = null;
-    private int airTime;
+    private transient int airTime;
     private static final int FRAMES_PER_BLINK = 150;
-    private int blinkFrame = 0;
+    private transient int blinkFrame = 0;
 
     /**
      * Texture assets for the body parts
@@ -196,7 +196,7 @@ public class SlothModel extends ComplexObstacle {
     private transient float previousAngleRight;
     private transient float cummulativeAngleLeft = 0;
     private transient float cummulativeAngleRight = 0;
-    private boolean facingFront;
+    private transient boolean facingFront;
 
     /**
      * Creates a new ragdoll with its head at the given position.

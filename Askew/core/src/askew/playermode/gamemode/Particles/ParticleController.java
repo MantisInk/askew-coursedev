@@ -76,7 +76,6 @@ public class ParticleController {
         if (gmc.isPaused()) {
             return;
         }
-        System.out.println(numParticles());
         int counter = 0;
         while (counter < spawned.size()) {
             Particle curParticle = spawned.get(counter);
@@ -91,7 +90,6 @@ public class ParticleController {
     }
 
     public void draw(GameCanvas canvas, Particle p) {
-
         if (p.accumulator > 0) {
             if (p.type == 0) {
                 if (effect1_texture != null) {

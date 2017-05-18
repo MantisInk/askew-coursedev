@@ -37,6 +37,8 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Filter;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -368,6 +370,7 @@ public class GameModeController extends WorldController {
 			instance.setVolume("windmusic",0);
 		}
 		victoryCutscene.reset();
+		manager.getMenuManager().setupLevelCompleteMenu();
 	}
 
 	/**
@@ -497,25 +500,17 @@ public class GameModeController extends WorldController {
 
 		if (victory) {
 			paused = false;
-			if (input.didBottomButtonPress() && victory_mode == VICTORY_NEXT) {
+			String updateString = manager.getMenuManager().update().orElse("");
+			if (updateString.contains("Main Menu")) {
+				listener.exitScreen(this, EXIT_GM_MM);
+			} else if (updateString.contains("Restart")) {
+				reset();
+			} else if (updateString.contains("Next Level")) {
 				playerIsReady = false;
 				int current = GlobalConfiguration.getInstance().getCurrentLevel();
 				GlobalConfiguration.getInstance().setCurrentLevel(current + 1);
-				System.out.println("GG");
 				setLevel();
 				listener.exitScreen(this, EXIT_GM_GM);
-			} else if (input.didBottomButtonPress() && victory_mode == VICTORY_RESTART) {
-				reset();
-			} else if (input.didBottomButtonPress() && victory_mode == VICTORY_MAINMENU) {
-				System.out.println("MM");
-				listener.exitScreen(this, EXIT_GM_MM);
-			}
-
-			if ((input.didTopDPadPress() || input.didUpArrowPress()) && victory_mode > 0) {
-				victory_mode--;
-			}
-			if ((input.didBottomDPadPress() || input.didDownArrowPress()) && victory_mode < 2) {
-				victory_mode++;
 			}
 		}
 
@@ -747,11 +742,14 @@ public class GameModeController extends WorldController {
 		if (victory) {
 			canvas.begin();
 			canvas.draw(background);
+			canvas.end();
+			canvas.begin();
 			victoryCutscene.draw(canvas);
-			canvas.draw(victoryTexture);
-			canvas.draw(fern, Color.WHITE, fern.getWidth() / 2, fern.getHeight() / 2,
-					victory_locs[victory_mode].x * canvas.getWidth(), victory_locs[victory_mode].y * canvas.getHeight(),
-					0, 2 * worldScale.x / fern.getWidth(), 2 * worldScale.y / fern.getHeight());
+//			canvas.draw(victoryTexture);
+//			canvas.draw(fern, Color.WHITE, fern.getWidth() / 2, fern.getHeight() / 2,
+//					victory_locs[victory_mode].x * canvas.getWidth(), victory_locs[victory_mode].y * canvas.getHeight(),
+//					0, 2 * worldScale.x / fern.getWidth(), 2 * worldScale.y / fern.getHeight());
+			manager.getMenuManager().draw();
 			canvas.end();
 		} else {
 

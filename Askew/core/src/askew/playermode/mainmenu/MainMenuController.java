@@ -102,6 +102,7 @@ public class MainMenuController extends WorldController {
     private BitmapFont regina;
     private BitmapFont regina1;
     private BitmapFont regina2;
+    private MantisAssetManager manager;
 
     private Texture fern, menu1, menu2, menu;
 
@@ -151,6 +152,7 @@ public class MainMenuController extends WorldController {
         regina2 = generator.generateFont(param);
         generator.dispose();
         SoundController.getInstance().allocate(manager, MENU_MUSIC);
+        this.manager = manager;
     }
 
     @Override
@@ -198,12 +200,10 @@ public class MainMenuController extends WorldController {
         canvas.begin(); // DO NOT SCALE
         canvas.draw(menu);
         if (mode == HOME_SCREEN) {
-            for (int i = 0; i < home_text_locs.length; i++) {
-                canvas.drawTextAlignedRight(home_text[i], regina, home_text_locs[i].x * canvas.getWidth(), home_text_locs[i].y * canvas.getHeight(), fontcolor);
-            }
-            canvas.draw(fern, Color.WHITE, fern.getWidth() / 2, fern.getHeight() / 2,
-                    home_button_locs[home_button].x * canvas.getWidth(), home_button_locs[home_button].y * canvas.getHeight(),
-                    0, worldScale.x / fern.getWidth(), worldScale.y / fern.getHeight());
+            canvas.end();
+            canvas.begin();
+            // I apologize for this. - Trevor
+            manager.getMenuManager().draw();
         }
         // TODO: new level select screen
         else if (mode == LEVEL_SELECT) {
@@ -279,6 +279,7 @@ public class MainMenuController extends WorldController {
             if (!instance.isActive("menumusic"))
                 instance.play("menumusic", MENU_MUSIC, true, GameModeController.MAX_MUSIC_VOLUME);
         }
+        manager.getMenuManager().setupMainMenu();
     }
 
     @Override
@@ -288,8 +289,8 @@ public class MainMenuController extends WorldController {
             if (mode != prevMode) {
                 return;
             }
-//            System.out.println(mode+" "+home_button);
-            if ((input.didBottomButtonPress() || input.didEnterKeyPress()) && home_button == PLAY_BUTTON) {
+            String updateString = manager.getMenuManager().update().orElse("");
+            if (updateString.contains("Play")) {
                 selected = GlobalConfiguration.getInstance().getCurrentLevel();
                 if (selected > MAX_LEVEL) {
                     selected = 1;
@@ -297,32 +298,19 @@ public class MainMenuController extends WorldController {
                 }
                 System.out.println("selected " + selected);
                 nextCon = "GM";
-                return;
-            } else if ((input.didBottomButtonPress() || input.didEnterKeyPress()) && home_button == TUTORIAL_BUTTON) {
+            } else if (updateString.contains("Tutorial")) {
                 nextCon = "TL";
-                return;
-            } else if ((input.didBottomButtonPress() || input.didEnterKeyPress()) && home_button == LEVEL_SELECT_BUTTON) {
+            } else if (updateString.contains("Level Select")) {
                 mode = LEVEL_SELECT;
                 select_button = CHOOSE_LEVEL;
                 selected = 1;
-            } else if ((input.didBottomButtonPress() || input.didEnterKeyPress()) && home_button == SETTINGS_BUTTON) {
+            } else if (updateString.contains("Settings")) {
                 mode = SETTINGS;
                 settings_button = CONTROL_SCHEME;
-            } else if ((input.didBottomButtonPress() || input.didEnterKeyPress()) && home_button == QUIT_BUTTON) {
+            } else if (updateString.contains("Exit")) {
                 listener.exitScreen(this, EXIT_QUIT);
             }
-
-            if (input.didTopDPadPress() || input.didUpArrowPress() || (!prevLeftUp && leftUp)) {
-                if (home_button > 0) {
-                    home_button--;
-                }
-            } else if (input.didBottomDPadPress() || input.didDownArrowPress() || (!prevLeftDown && leftDown)) {
-                if (home_button < home_button_locs.length - 1) {
-                    home_button++;
-                }
-            }
-        }
-        if (mode == LEVEL_SELECT) {
+        } else if (mode == LEVEL_SELECT) {
             if (mode != prevMode)
                 return;
 
@@ -348,8 +336,7 @@ public class MainMenuController extends WorldController {
             } else if (input.didBottomDPadPress() || input.didDownArrowPress() || (leftDown && !prevLeftDown)) {
                 select_button = RETURN_HOME;
             }
-        }
-        if (mode == SETTINGS) {
+        } else if (mode == SETTINGS) {
             if (mode != prevMode)
                 return;
 
