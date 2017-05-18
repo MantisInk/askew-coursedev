@@ -241,7 +241,7 @@ public class CustomSpriteBatch implements Batch {
     }
 
     /** Draws a polygon region with the bottom left corner at x,y having the width and height of the region. */
-    public void draw (PolygonRegion region, float x, float y) {
+    public void draw (PolygonRegion region, float x, float y, float z) {
         if (!drawing) throw new IllegalStateException("PolygonSpriteBatch.begin must be called before draw.");
 
         final short[] triangles = this.triangles;
@@ -271,16 +271,20 @@ public class CustomSpriteBatch implements Batch {
         for (int i = 0; i < regionVerticesLength; i += 2) {
             vertices[vertexIndex++] = regionVertices[i] + x;
             vertices[vertexIndex++] = regionVertices[i + 1] + y;
-            vertices[vertexIndex++] = 0;
+            vertices[vertexIndex++] = z;
             vertices[vertexIndex++] = color;
             vertices[vertexIndex++] = textureCoords[i];
             vertices[vertexIndex++] = textureCoords[i + 1];
         }
         this.vertexIndex = vertexIndex;
     }
+    public void draw (PolygonRegion region, float x, float y) {
+        draw(region, x, y, 0);
+    }
+
 
     /** Draws a polygon region with the bottom left corner at x,y and stretching the region to cover the given width and height. */
-    public void draw (PolygonRegion region, float x, float y, float width, float height) {
+    public void draw (PolygonRegion region, float x, float y, float z, float width, float height) {
         if (!drawing) throw new IllegalStateException("PolygonSpriteBatch.begin must be called before draw.");
 
         final short[] triangles = this.triangles;
@@ -313,19 +317,23 @@ public class CustomSpriteBatch implements Batch {
         for (int i = 0; i < regionVerticesLength; i += 2) {
             vertices[vertexIndex++] = regionVertices[i] * sX + x;
             vertices[vertexIndex++] = regionVertices[i + 1] * sY + y;
-            vertices[vertexIndex++] = 0;
+            vertices[vertexIndex++] = z;
             vertices[vertexIndex++] = color;
             vertices[vertexIndex++] = textureCoords[i];
             vertices[vertexIndex++] = textureCoords[i + 1];
         }
         this.vertexIndex = vertexIndex;
     }
+    public void draw (PolygonRegion region, float x, float y, float width, float height){
+        draw(region, x, y, 0, width,height);
+    }
+
 
     /** Draws the polygon region with the bottom left corner at x,y and stretching the region to cover the given width and height.
      * The polygon region is offset by originX, originY relative to the origin. Scale specifies the scaling factor by which the
      * polygon region should be scaled around originX, originY. Rotation specifies the angle of counter clockwise rotation of the
      * rectangle around originX, originY. */
-    public void draw (PolygonRegion region, float x, float y, float originX, float originY, float width, float height,
+    public void draw (PolygonRegion region, float x, float y, float z, float originX, float originY, float width, float height,
                       float scaleX, float scaleY, float rotation) {
         if (!drawing) throw new IllegalStateException("PolygonSpriteBatch.begin must be called before draw.");
 
@@ -367,14 +375,17 @@ public class CustomSpriteBatch implements Batch {
             fy = (regionVertices[i + 1] * sY - originY) * scaleY;
             vertices[vertexIndex++] = cos * fx - sin * fy + worldOriginX;
             vertices[vertexIndex++] = sin * fx + cos * fy + worldOriginY;
-            vertices[vertexIndex++] = 0;
+            vertices[vertexIndex++] = z;
             vertices[vertexIndex++] = color;
             vertices[vertexIndex++] = textureCoords[i];
             vertices[vertexIndex++] = textureCoords[i + 1];
         }
         this.vertexIndex = vertexIndex;
     }
-
+    public void draw (PolygonRegion region, float x, float y, float originX, float originY, float width, float height,
+                      float scaleX, float scaleY, float rotation){
+        draw(region, x, y ,0, originX, originY,width,height,scaleX,scaleY,rotation);
+    }
 
     @Override
     public void draw (Texture texture, float x, float y, float originX, float originY, float width, float height, float scaleX,
@@ -402,11 +413,17 @@ public class CustomSpriteBatch implements Batch {
 
     @Override
     public void draw (Texture texture, float x, float y) {
-        draw(texture, x, y, texture.getWidth(), texture.getHeight());
+        draw(texture, x, y,0);
+    }
+    public void draw (Texture texture, float x, float y, float z) {
+        draw(texture, x, y, z, texture.getWidth(), texture.getHeight());
     }
 
     @Override
     public void draw (Texture texture, float x, float y, float width, float height) {
+        draw(texture, x, y, 0, width,height);
+    }
+    public void draw (Texture texture, float x, float y, float z, float width, float height){
         if (!drawing) throw new IllegalStateException("PolygonSpriteBatch.begin must be called before draw.");
 
         final short[] triangles = this.triangles;
@@ -438,28 +455,28 @@ public class CustomSpriteBatch implements Batch {
         int idx = this.vertexIndex;
         vertices[idx++] = x;
         vertices[idx++] = y;
-        vertices[idx++] = 0;
+        vertices[idx++] = z;
         vertices[idx++] = color;
         vertices[idx++] = u;
         vertices[idx++] = v;
 
         vertices[idx++] = x;
         vertices[idx++] = fy2;
-        vertices[idx++] = 0;
+        vertices[idx++] = z;
         vertices[idx++] = color;
         vertices[idx++] = u;
         vertices[idx++] = v2;
 
         vertices[idx++] = fx2;
         vertices[idx++] = fy2;
-        vertices[idx++] = 0;
+        vertices[idx++] = z;
         vertices[idx++] = color;
         vertices[idx++] = u2;
         vertices[idx++] = v2;
 
         vertices[idx++] = fx2;
         vertices[idx++] = y;
-        vertices[idx++] = 0;
+        vertices[idx++] = z;
         vertices[idx++] = color;
         vertices[idx++] = u2;
         vertices[idx++] = v;
@@ -505,11 +522,17 @@ public class CustomSpriteBatch implements Batch {
 
     @Override
     public void draw (TextureRegion region, float x, float y) {
-        draw(region, x, y, region.getRegionWidth(), region.getRegionHeight());
+        draw(region, x, y, 0);
+    }
+    public void draw (TextureRegion region, float x, float y, float z) {
+        draw(region, x, y, z, region.getRegionWidth(), region.getRegionHeight());
     }
 
     @Override
     public void draw (TextureRegion region, float x, float y, float width, float height) {
+        draw(region, x, y, 0, width , height);
+    }
+    public void draw (TextureRegion region, float x, float y, float z, float width, float height) {
         if (!drawing) throw new IllegalStateException("PolygonSpriteBatch.begin must be called before draw.");
 
         final short[] triangles = this.triangles;
@@ -542,28 +565,28 @@ public class CustomSpriteBatch implements Batch {
         int idx = this.vertexIndex;
         vertices[idx++] = x;
         vertices[idx++] = y;
-        vertices[idx++] = 0;
+        vertices[idx++] = z;
         vertices[idx++] = color;
         vertices[idx++] = u;
         vertices[idx++] = v;
 
         vertices[idx++] = x;
         vertices[idx++] = fy2;
-        vertices[idx++] = 0;
+        vertices[idx++] = z;
         vertices[idx++] = color;
         vertices[idx++] = u;
         vertices[idx++] = v2;
 
         vertices[idx++] = fx2;
         vertices[idx++] = fy2;
-        vertices[idx++] = 0;
+        vertices[idx++] = z;
         vertices[idx++] = color;
         vertices[idx++] = u2;
         vertices[idx++] = v2;
 
         vertices[idx++] = fx2;
         vertices[idx++] = y;
-        vertices[idx++] = 0;
+        vertices[idx++] = z;
         vertices[idx++] = color;
         vertices[idx++] = u2;
         vertices[idx++] = v;
@@ -584,6 +607,9 @@ public class CustomSpriteBatch implements Batch {
 
     @Override
     public void draw (TextureRegion region, float width, float height, Affine2 transform) {
+        draw(region, width, height, transform, 0);
+    }
+    public void draw (TextureRegion region, float width, float height, Affine2 transform, float z) {
         if (!drawing) throw new IllegalStateException("PolygonSpriteBatch.begin must be called before draw.");
 
         final short[] triangles = this.triangles;
@@ -624,34 +650,33 @@ public class CustomSpriteBatch implements Batch {
         int idx = vertexIndex;
         vertices[idx++] = x1;
         vertices[idx++] = y1;
-        vertices[idx++] = 0;
+        vertices[idx++] = z;
         vertices[idx++] = color;
         vertices[idx++] = u;
         vertices[idx++] = v;
 
         vertices[idx++] = x2;
         vertices[idx++] = y2;
-        vertices[idx++] = 0;
+        vertices[idx++] = z;
         vertices[idx++] = color;
         vertices[idx++] = u;
         vertices[idx++] = v2;
 
         vertices[idx++] = x3;
         vertices[idx++] = y3;
-        vertices[idx++] = 0;
+        vertices[idx++] = z;
         vertices[idx++] = color;
         vertices[idx++] = u2;
         vertices[idx++] = v2;
 
         vertices[idx++] = x4;
         vertices[idx++] = y4;
-        vertices[idx++] = 0;
+        vertices[idx++] = z;
         vertices[idx++] = color;
         vertices[idx++] = u2;
         vertices[idx++] = v;
         vertexIndex = idx;
     }
-
     @Override
     public void flush () {
         if (vertexIndex == 0) return;
