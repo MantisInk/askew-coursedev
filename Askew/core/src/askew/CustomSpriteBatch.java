@@ -190,6 +190,32 @@ public class CustomSpriteBatch implements Batch {
 
         drawing = true;
     }
+    public void beginBackground () {
+        if (drawing) throw new IllegalStateException("PolygonSpriteBatch.end must be called before begin.");
+        renderCalls = 0;
+        setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+        Gdx.gl.glDepthMask(false);
+        if (customShader != null)
+            customShader.begin();
+        else
+            shader.begin();
+        setupMatrices();
+
+        drawing = true;
+    }
+    public void beginParticle () {
+        if (drawing) throw new IllegalStateException("PolygonSpriteBatch.end must be called before begin.");
+        renderCalls = 0;
+        setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE);
+        Gdx.gl.glDepthMask(false);
+        if (customShader != null)
+            customShader.begin();
+        else
+            shader.begin();
+        setupMatrices();
+
+        drawing = true;
+    }
 
     @Override
     public void end () {
