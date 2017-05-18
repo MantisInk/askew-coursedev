@@ -277,10 +277,12 @@ public class GameModeController extends WorldController {
 	public void pause(){
 		prevPaused = paused;
 		if (!paused) {
+			manager.getMenuManager().setupPauseMenu();
 			paused = true;
 			pause_mode = PAUSE_RESUME;
 		}
 		else {
+			manager.getMenuManager().setupLevelCompleteMenu();
 			paused = false;
 		}
 		playerIsReady = false;
@@ -523,24 +525,16 @@ public class GameModeController extends WorldController {
 				prevPaused = paused;
 				return false;
 			}
-			//InputController input = InputController.getInstance();
-			if ((input.didBottomButtonPress() || input.didEnterKeyPress()) && pause_mode == PAUSE_RESUME) {
+
+			String updateString = manager.getMenuManager().update().orElse("");
+			if (updateString.contains("Resume")) {
 				paused = false;
 				playerIsReady = false;
-			} else if ((input.didBottomButtonPress() || input.didEnterKeyPress()) && pause_mode == PAUSE_RESTART) {
+			} else if (updateString.contains("Restart")) {
 				reset();
-			} else if ((input.didBottomButtonPress() || input.didEnterKeyPress()) && pause_mode == PAUSE_MAINMENU) {
-				System.out.println("MM");
+			} else if (updateString.contains("Main Menu")) {
 				listener.exitScreen(this, EXIT_GM_MM);
 			}
-
-			if ((input.didTopDPadPress() || input.didUpArrowPress()) && pause_mode > 0) {
-				pause_mode--;
-			}
-			if ((input.didBottomDPadPress() || input.didDownArrowPress()) && pause_mode < 2) {
-				pause_mode++;
-			}
-
 		}
 
 		//Checks to see if player has selected the button on the starting screen
@@ -755,7 +749,16 @@ public class GameModeController extends WorldController {
 //					0, 2 * worldScale.x / fern.getWidth(), 2 * worldScale.y / fern.getHeight());
 			manager.getMenuManager().draw();
 			canvas.end();
-		} else {
+		}
+		else if (paused) {
+			canvas.begin();
+			canvas.draw(background);
+			canvas.end();
+			canvas.begin();
+			manager.getMenuManager().draw();
+			canvas.end();
+		}
+		else {
 
 			canvas.begin();
 			canvas.draw(background);
@@ -862,15 +865,6 @@ public class GameModeController extends WorldController {
 				canvas.end();
 			}
 
-			// draw pause menu stuff over everything
-			if (paused && !victory) {
-				canvas.begin();
-				canvas.draw(pauseTexture);
-				canvas.draw(fern, Color.WHITE, fern.getWidth() / 2, fern.getHeight() / 2,
-						pause_locs[pause_mode].x * canvas.getWidth(), pause_locs[pause_mode].y * canvas.getHeight(),
-						0, 2 * worldScale.x / fern.getWidth(), 2 * worldScale.y / fern.getHeight());
-				canvas.end();
-			}
 			canvas.begin();
 			canvas.draw(edgefade);
 			canvas.end();

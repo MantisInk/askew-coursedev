@@ -104,6 +104,15 @@ public class MenuManager {
         finishSetup();
     }
 
+    public void setupPauseMenu() {
+        clear();
+        mainButtons.add(new TextButton("Resume",
+                textButtonStyle));
+        mainButtons.add(new TextButton("Restart", textButtonStyle));
+        mainButtons.add(new TextButton("Main Menu", textButtonStyle));
+        finishSetup();
+    }
+
     public void setupMainMenu() {
         clear();
         mainButtons.add(new TextButton("Play", textButtonStyle));
