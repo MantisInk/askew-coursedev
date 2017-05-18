@@ -74,7 +74,7 @@ public class SlothModel extends ComplexObstacle {
     /**
      * The number of DISTINCT body parts
      */
-    private static final int BODY_TEXTURE_COUNT = 11;
+    private static final int BODY_TEXTURE_COUNT = 13;
     /**
      * Set damping constant for rotation of Flow's arms
      */
@@ -185,6 +185,9 @@ public class SlothModel extends ComplexObstacle {
     @Getter
     private transient Body mostRecentTarget = null;
     private int airTime;
+    private static final int FRAMES_PER_BLINK = 150;
+    private int blinkFrame = 0;
+
     /**
      * Texture assets for the body parts
      */
@@ -193,6 +196,7 @@ public class SlothModel extends ComplexObstacle {
     private transient float previousAngleRight;
     private transient float cummulativeAngleLeft = 0;
     private transient float cummulativeAngleRight = 0;
+    private boolean facingFront;
 
     /**
      * Creates a new ragdoll with its head at the given position.
@@ -990,6 +994,9 @@ public class SlothModel extends ComplexObstacle {
         Texture managedPowerGlow = manager.get("texture/sloth/power_glow.png");
         Texture managedDeadFlow = manager.get("texture/sloth/dead.png");
         Texture managedScaredFlow = manager.get("texture/sloth/scared.png");
+        Texture managedBlinkFlow = manager.get("texture/sloth/blink.png");
+        Texture managedHalfBlinkFlow = manager.get("texture/sloth/halfblink" +
+                ".png");
         partTextures[0] = new TextureRegion(managedHand);
         partTextures[1] = new TextureRegion(managedFrontArm);
         partTextures[3] = new TextureRegion(managedBackArm);
@@ -1001,6 +1008,8 @@ public class SlothModel extends ComplexObstacle {
         partTextures[8] = new TextureRegion(managedPowerGlow);
         partTextures[9] = new TextureRegion(managedDeadFlow);
         partTextures[10] = new TextureRegion(managedScaredFlow);
+        partTextures[11] = new TextureRegion(managedBlinkFlow);
+        partTextures[12] = new TextureRegion(managedHalfBlinkFlow);
 
 //        for(int i = 0; i < partTextures.length; i++){
 //            partTextures[i].getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
@@ -1017,6 +1026,9 @@ public class SlothModel extends ComplexObstacle {
 
     @Override
     public void draw(GameCanvas canvas) {
+        if (blinkFrame > 2) {
+            blinkFrame--;
+        }
         for (int body_ind = bodies.size - 1; body_ind >= 0; body_ind--) {
             BoxObstacle part = (BoxObstacle) bodies.get(body_ind);
             TextureRegion texture = part.getTexture();
@@ -1030,6 +1042,7 @@ public class SlothModel extends ComplexObstacle {
 
                 if (body_ind == PART_BODY) {
                     if (currentCooldown < 0) {
+                        facingFront = false;
                         if (flowFacingState >= lower_threshold && flowFacingState <= upper_threshold) {
                             // Right
                             part.setTexture(partTextures[2]);
@@ -1059,14 +1072,15 @@ public class SlothModel extends ComplexObstacle {
                                 texture.flip(true, false);
                             }
                         } else {
+                            facingFront = true;
                             part.setTexture(getFrontFlow());
                         }
 
                         if (old_texture != part.getTexture() || (old_texture.isFlipX() != part.getTexture().isFlipX())) {
                             currentCooldown = TRANSITION_COOLDOWN;
                         }
-                    } else {
-
+                    } else if (facingFront) {
+                        part.setTexture(getFrontFlow());
                     }
                     currentCooldown--;
 
@@ -1345,12 +1359,31 @@ public class SlothModel extends ComplexObstacle {
     }
 
     private TextureRegion getFrontFlow() {
+        int normalIndex = 4;
+        if (blinkFrame <= 2) {
+            switch (blinkFrame) {
+                case 2:
+                    normalIndex = 12;
+                    blinkFrame--;
+                    break;
+                case 1:
+                    normalIndex = 11;
+                    blinkFrame--;
+                    break;
+                case 0:
+                    normalIndex = 12;
+                    blinkFrame = FRAMES_PER_BLINK + (int) Math.floor(Math
+                            .random() *
+                            30);
+                    break;
+            }
+        }
         if (this.dismembered) {
             return this.partTextures[9];
         } else if (this.airTime > 60) {
             return this.partTextures[10];
         } else {
-            return this.partTextures[4];
+            return this.partTextures[normalIndex];
         }
     }
 

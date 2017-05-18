@@ -104,3 +104,4 @@ texture/wall/thorn.png
 texture/wall/wall.png
 texture/wall/wall2.png
 texture/wall/wall3.png
+texture/owl/ebb.png

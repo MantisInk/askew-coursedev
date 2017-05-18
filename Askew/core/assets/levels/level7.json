@@ -15,36 +15,36 @@
     {
       "CLASSNAME": "askew.entity.wall.WallModel",
       "INSTANCE": {
+        "color": -1,
         "x": 6.0,
         "y": 0.0,
-        "color": -1,
         "points": [
           0.0,
           0.0,
-          -0.0,
+          0.0,
           19.0,
           2.0,
           19.0,
           2.0,
-          -0.0
+          0.0
         ]
       }
     },
     {
       "CLASSNAME": "askew.entity.wall.WallModel",
       "INSTANCE": {
+        "color": -1,
         "x": 0.0,
         "y": 0.0,
-        "color": -1,
         "points": [
           0.0,
           0.0,
-          -0.0,
+          0.0,
           28.0,
           2.0,
           28.0,
           2.0,
-          -0.0
+          0.0
         ]
       }
     },
@@ -117,18 +117,18 @@
     {
       "CLASSNAME": "askew.entity.wall.WallModel",
       "INSTANCE": {
+        "color": -1,
         "x": 8.0,
         "y": 17.0,
-        "color": -1,
         "points": [
           0.0,
           0.0,
-          -0.0,
+          0.0,
           2.0,
           7.0,
           2.0,
           7.0,
-          -0.0
+          0.0
         ]
       }
     },
@@ -165,8 +165,10 @@
     {
       "CLASSNAME": "askew.entity.owl.OwlModel",
       "INSTANCE": {
-        "x": 10.0,
-        "y": 14.0
+        "x": 9.977501,
+        "y": 12.99999,
+        "pin": {},
+        "owlBody": {}
       }
     },
     {
@@ -219,7 +221,9 @@
         "y": 7.0,
         "lTheta": 0.0,
         "rTheta": 0.0,
-        "airTime": 0
+        "airTime": 0,
+        "blinkFrame": 67,
+        "facingFront": true
       }
     }
   ]

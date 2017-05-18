@@ -138,6 +138,7 @@ public class GameModeController extends WorldController {
 	protected float cameraY;
 	protected float cameraVelocityX;
 	protected float cameraVelocityY;
+	private VictoryCutscene victoryCutscene;
 
 	//For playtesting control schemes
 	private int currentMovement;
@@ -219,6 +220,7 @@ public class GameModeController extends WorldController {
 		edgefade = manager.get("texture/postprocess/edgefade.png");
 
 		particleController.setTextures(manager);
+		victoryCutscene = new VictoryCutscene(manager);
 
 		super.loadContent(manager);
 		platformAssetState = AssetState.COMPLETE;
@@ -365,6 +367,7 @@ public class GameModeController extends WorldController {
 		} else {
 			instance.setVolume("windmusic",0);
 		}
+		victoryCutscene.reset();
 	}
 
 	/**
@@ -739,140 +742,137 @@ public class GameModeController extends WorldController {
     }
 
     public void draw(float delta) {
-        canvas.clear();
+		canvas.clear();
 
-        canvas.begin();
-        canvas.draw(background);
-        canvas.end();
+		if (victory) {
+			canvas.begin();
+			canvas.draw(background);
+			victoryCutscene.draw(canvas);
+			canvas.draw(victoryTexture);
+			canvas.draw(fern, Color.WHITE, fern.getWidth() / 2, fern.getHeight() / 2,
+					victory_locs[victory_mode].x * canvas.getWidth(), victory_locs[victory_mode].y * canvas.getHeight(),
+					0, 2 * worldScale.x / fern.getWidth(), 2 * worldScale.y / fern.getHeight());
+			canvas.end();
+		} else {
 
-        float slothX = slothList.stream().map(sloth -> sloth.getBody().getPosition().x).reduce((x, y) -> x + y).orElse(0f) / slothList.size();
-        float slothY = slothList.stream().map(sloth -> sloth.getBody().getPosition().y).reduce((x, y) -> x + y).orElse(0f) / slothList.size();
+			canvas.begin();
+			canvas.draw(background);
+			canvas.end();
 
-        cameraVelocityX = cameraVelocityX * 0.4f + (slothX - cameraX) * 0.18f;
-        cameraVelocityY = cameraVelocityY * 0.4f + (slothY - cameraY) * 0.18f;
-        cameraX += cameraVelocityX;
-        cameraY += cameraVelocityY;
+			float slothX = slothList.stream().map(sloth -> sloth.getBody().getPosition().x).reduce((x, y) -> x + y).orElse(0f) / slothList.size();
+			float slothY = slothList.stream().map(sloth -> sloth.getBody().getPosition().y).reduce((x, y) -> x + y).orElse(0f) / slothList.size();
 
-        // Check for camera in bounds
-        // Y Checks
-        if (cameraY - bounds.height / 2f < levelModel.getMinY()) {
-            cameraY = levelModel.getMinY() + bounds.height / 2f;
-        }
+			cameraVelocityX = cameraVelocityX * 0.4f + (slothX - cameraX) * 0.18f;
+			cameraVelocityY = cameraVelocityY * 0.4f + (slothY - cameraY) * 0.18f;
+			cameraX += cameraVelocityX;
+			cameraY += cameraVelocityY;
 
-        if (cameraY + bounds.height / 2f > levelModel.getMaxY()) {
-            cameraY = levelModel.getMaxY() - bounds.height / 2f;
-        }
+			// Check for camera in bounds
+			// Y Checks
+			if (cameraY - bounds.height / 2f < levelModel.getMinY()) {
+				cameraY = levelModel.getMinY() + bounds.height / 2f;
+			}
 
-        // X Checks
-        if (cameraX - bounds.width / 2 < levelModel.getMinX()) {
-            cameraX = levelModel.getMinX() + bounds.width / 2f;
-        }
+			if (cameraY + bounds.height / 2f > levelModel.getMaxY()) {
+				cameraY = levelModel.getMaxY() - bounds.height / 2f;
+			}
 
-        if (cameraX + bounds.width / 2f > levelModel.getMaxX()) {
-            cameraX = levelModel.getMaxX() - bounds.width / 2f;
-        }
+			// X Checks
+			if (cameraX - bounds.width / 2 < levelModel.getMinX()) {
+				cameraX = levelModel.getMinX() + bounds.width / 2f;
+			}
 
-        camTrans.setToTranslation(-1 * cameraX * worldScale.x
-                , -1 * cameraY * worldScale.y);
+			if (cameraX + bounds.width / 2f > levelModel.getMaxX()) {
+				cameraX = levelModel.getMaxX() - bounds.width / 2f;
+			}
 
-        camTrans.translate(canvas.getWidth() / 2, canvas.getHeight() / 2);
-        canvas.getCampos().set(cameraX * worldScale.x
-                , cameraY * worldScale.y);
+			camTrans.setToTranslation(-1 * cameraX * worldScale.x
+					, -1 * cameraY * worldScale.y);
 
-        canvas.begin(camTrans);
+			camTrans.translate(canvas.getWidth() / 2, canvas.getHeight() / 2);
+			canvas.getCampos().set(cameraX * worldScale.x
+					, cameraY * worldScale.y);
 
-        //noinspection unchecked
-        Collections.sort(entities);
-        Particle[] particles = particleController.getSorted();
-        particleController.setDrawScale(worldScale);
-        int n = particleController.numParticles();
-        int total = entities.size() + n;
-        int i = 0;
-        int j = 0;
-        Particle p;
-        Entity ent;
-        while (i + j < total) {
-            p = null;
-            ent = null;
-            if (i < n) {
-                p = particles[i];
-            }
-            if (j < entities.size()) {
-                ent = entities.get(j);
-            }
-            // FIXME: I think there is an issue with the logic here. or at
-            // least semantics. You normally shouldnt do a null compareTo,
-            // but it looks like that's whats happening here -
-            // trevor
-            //noinspection ConstantConditions
-            if (ent != null && ent.compareTo(p) < 0) {
-                ent.setDrawScale(worldScale);
-                ent.draw(canvas);
-                j++;
-            } else if (p != null) {
-                particleController.draw(canvas, p);
-                i++;
-            }
-        }
+			canvas.begin(camTrans);
+
+			//noinspection unchecked
+			Collections.sort(entities);
+			Particle[] particles = particleController.getSorted();
+			particleController.setDrawScale(worldScale);
+			int n = particleController.numParticles();
+			int total = entities.size() + n;
+			int i = 0;
+			int j = 0;
+			Particle p;
+			Entity ent;
+			while (i + j < total) {
+				p = null;
+				ent = null;
+				if (i < n) {
+					p = particles[i];
+				}
+				if (j < entities.size()) {
+					ent = entities.get(j);
+				}
+				// FIXME: I think there is an issue with the logic here. or at
+				// least semantics. You normally shouldnt do a null compareTo,
+				// but it looks like that's whats happening here -
+				// trevor
+				//noinspection ConstantConditions
+				if (ent != null && ent.compareTo(p) < 0) {
+					ent.setDrawScale(worldScale);
+					ent.draw(canvas);
+					j++;
+				} else if (p != null) {
+					particleController.draw(canvas, p);
+					i++;
+				}
+			}
 
 
-        if (!playerIsReady && !paused && coverOpacity <= 0)
-            printHelp();
-        canvas.end();
-        slothList.forEach(x -> x.drawGrab(canvas, camTrans));
+			if (!playerIsReady && !paused && coverOpacity <= 0)
+				printHelp();
+			canvas.end();
+			slothList.forEach(x -> x.drawGrab(canvas, camTrans));
 
-        canvas.begin();
-        canvas.drawTextStandard("current time:    " + currentTime, 10f, 70f);
-        canvas.drawTextStandard("record time:     " + recordTime, 10f, 50f);
+			if (debug) {
+				canvas.beginDebug(camTrans);
+				entities.stream().filter(obj -> obj instanceof Obstacle).forEachOrdered(obj -> ((Obstacle) obj).drawDebug(canvas));
+				canvas.endDebug();
+				canvas.begin();
+				// text
+				canvas.drawTextStandard("FPS: " + 1f / delta, 10.0f, 100.0f);
+				canvas.end();
+				slothList.forEach(sloth -> sloth.drawForces(canvas, camTrans));
+			}
 
-        canvas.end();
+			if (coverOpacity > 0) {
+				Gdx.gl.glEnable(GL20.GL_BLEND);
+				displayFont.setColor(Color.WHITE);
+				Color coverColor = new Color(0, 0, 0, coverOpacity);
+				canvas.drawRectangle(coverColor, 0, 0, canvas.getWidth(), canvas
+						.getHeight());
+				coverOpacity -= (1 / CYCLES_OF_INTRO);
+				Gdx.gl.glDisable(GL20.GL_BLEND);
+				canvas.begin();
+				if (!playerIsReady && !paused && !victory)
+					canvas.drawTextCentered(levelModel.getTitle(), displayFont, 0f);
+				canvas.end();
+			}
 
-        if (debug) {
-            canvas.beginDebug(camTrans);
-            entities.stream().filter(obj -> obj instanceof Obstacle).forEachOrdered(obj -> ((Obstacle) obj).drawDebug(canvas));
-            canvas.endDebug();
-            canvas.begin();
-            // text
-            canvas.drawTextStandard("FPS: " + 1f / delta, 10.0f, 100.0f);
-            canvas.end();
-            slothList.forEach(sloth -> sloth.drawForces(canvas, camTrans));
-        }
-
-        if (coverOpacity > 0) {
-            Gdx.gl.glEnable(GL20.GL_BLEND);
-            displayFont.setColor(Color.WHITE);
-            Color coverColor = new Color(0, 0, 0, coverOpacity);
-            canvas.drawRectangle(coverColor, 0, 0, canvas.getWidth(), canvas
-                    .getHeight());
-            coverOpacity -= (1 / CYCLES_OF_INTRO);
-            Gdx.gl.glDisable(GL20.GL_BLEND);
-            canvas.begin();
-            if (!playerIsReady && !paused && !victory)
-                canvas.drawTextCentered(levelModel.getTitle(), displayFont, 0f);
-            canvas.end();
-        }
-
-        if (victory) {
-            canvas.begin();
-            canvas.draw(victoryTexture);
-            canvas.draw(fern, Color.WHITE, fern.getWidth() / 2, fern.getHeight() / 2,
-                    victory_locs[victory_mode].x * canvas.getWidth(), victory_locs[victory_mode].y * canvas.getHeight(),
-                    0, 2 * worldScale.x / fern.getWidth(), 2 * worldScale.y / fern.getHeight());
-            canvas.end();
-        }
-
-        // draw pause menu stuff over everything
-        if (paused && !victory) {
-            canvas.begin();
-            canvas.draw(pauseTexture);
-            canvas.draw(fern, Color.WHITE, fern.getWidth() / 2, fern.getHeight() / 2,
-                    pause_locs[pause_mode].x * canvas.getWidth(), pause_locs[pause_mode].y * canvas.getHeight(),
-                    0, 2 * worldScale.x / fern.getWidth(), 2 * worldScale.y / fern.getHeight());
-            canvas.end();
-        }
-        canvas.begin();
-        canvas.draw(edgefade);
-        canvas.end();
-    }
+			// draw pause menu stuff over everything
+			if (paused && !victory) {
+				canvas.begin();
+				canvas.draw(pauseTexture);
+				canvas.draw(fern, Color.WHITE, fern.getWidth() / 2, fern.getHeight() / 2,
+						pause_locs[pause_mode].x * canvas.getWidth(), pause_locs[pause_mode].y * canvas.getHeight(),
+						0, 2 * worldScale.x / fern.getWidth(), 2 * worldScale.y / fern.getHeight());
+				canvas.end();
+			}
+			canvas.begin();
+			canvas.draw(edgefade);
+			canvas.end();
+		}
+	}
 
 }

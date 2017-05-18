@@ -203,8 +203,10 @@
     {
       "CLASSNAME": "askew.entity.owl.OwlModel",
       "INSTANCE": {
-        "x": 31.0,
-        "y": 6.0
+        "x": 30.994177,
+        "y": 5.005,
+        "pin": {},
+        "owlBody": {}
       }
     },
     {
@@ -310,7 +312,9 @@
         "y": 0.0,
         "lTheta": 0.0,
         "rTheta": 0.0,
-        "airTime": 0
+        "airTime": 0,
+        "blinkFrame": 24,
+        "facingFront": true
       }
     }
   ]

@@ -52,8 +52,10 @@
     {
       "CLASSNAME": "askew.entity.owl.OwlModel",
       "INSTANCE": {
-        "x": 6.0,
-        "y": 29.0
+        "x": 1.0,
+        "y": 28.0,
+        "pin": {},
+        "owlBody": {}
       }
     },
     {
@@ -105,23 +107,21 @@
       }
     },
     {
-      "CLASSNAME": "askew.entity.tree.PoleVault",
+      "CLASSNAME": "askew.entity.tree.Trunk",
       "INSTANCE": {
-        "numLinks": 5.0,
+        "x": 8.0,
+        "y": 11.0,
         "angle": 90.0,
-        "linksize": 1.0,
-        "x": 10.0,
-        "y": 28.0
+        "numLinks": 4.0
       }
     },
     {
-      "CLASSNAME": "askew.entity.tree.PoleVault",
+      "CLASSNAME": "askew.entity.tree.Trunk",
       "INSTANCE": {
-        "numLinks": 4.0,
+        "x": 10.0,
+        "y": 28.0,
         "angle": 90.0,
-        "linksize": 1.0,
-        "x": 8.0,
-        "y": 11.0
+        "numLinks": 10.0
       }
     },
     {
@@ -131,7 +131,9 @@
         "y": 5.0,
         "lTheta": 0.0,
         "rTheta": 0.0,
-        "airTime": 0
+        "airTime": 0,
+        "blinkFrame": 40,
+        "facingFront": true
       }
     }
   ]
