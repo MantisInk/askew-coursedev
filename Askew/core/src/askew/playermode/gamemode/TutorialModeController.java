@@ -16,6 +16,7 @@ import askew.InputControllerManager;
 import askew.MantisAssetManager;
 import askew.entity.Entity;
 import askew.entity.FilterGroup;
+import askew.entity.obstacle.ComplexObstacle;
 import askew.entity.obstacle.Obstacle;
 import askew.entity.owl.OwlModel;
 import askew.entity.sloth.SlothModel;
@@ -290,8 +291,8 @@ public class TutorialModeController extends GameModeController {
 		ind = -1;
 		swing = false;
 		back = false;
-//		ebbLvl = ebbGrabPts;
-		ebbLvl = ebbVine2;
+		ebbLvl = ebbGrabPts;
+//		ebbLvl = ebbVine2;
 		for(int i = 0; i < shimmyGrabbed.length; i++)
 			shimmyGrabbed[i] = false;
 		for(int i = 0; i < flingGrabbed.length; i++)
@@ -523,7 +524,8 @@ public class TutorialModeController extends GameModeController {
 				swing = trunkGrabbed.get(2);
 				back = trunkGrabbed.get(3);
 //				System.out.print(swing+"   "+back+"   "+ind+"   "+trunkGrabbed.get(5)+"   ");
-				if((swing && ind == 5) || back && ind == 5) {
+//				if((swing && ind == 5) || back && ind == 5) {
+				if (ind == 5) {
 					ebbLvl++;
 				}
 				break;
@@ -1216,10 +1218,8 @@ public class TutorialModeController extends GameModeController {
 					break;
 				case ebbVine1:
 					// reach for vine
-					if((!sloth.isActualLeftGrab() && !sloth.isActualRightGrab()) ||
-							((sloth.isActualLeftGrab() || sloth.isActualRightGrab()) && !(checkGrabbedObst(vineEntities.get(0))))) {
+					if(((sloth.isActualLeftGrab() || sloth.isActualRightGrab()) && (checkGrabbedObst(trunkEntities.get(6))))) {
 						canvas.draw(vine0, new Color(0x7f7f7fFF), 0, 0, 1400, 1600, 0, 1, 1);
-//						canvas.draw(swing3, new Color(0x7f7f7fFF), 0, 0, 1515, 1585, 0, 1, 1);
 						// swing on vine
 					} else {
 						canvas.draw(vine3, new Color(0x7f7f7fFF), vine3.getWidth(), vine3.getHeight(), 1600, 2000, 0, 1, 1);
@@ -1229,15 +1229,16 @@ public class TutorialModeController extends GameModeController {
 					break;
 				case ebbVine2:
 					// reach for vine1
-					if((!sloth.isActualLeftGrab() && !sloth.isActualRightGrab()) ||
-							((sloth.isActualLeftGrab() || sloth.isActualRightGrab()) && !(checkGrabbedObst(vineEntities.get(1))) && !(checkGrabbedObst(vineEntities.get(2))))) {
+					if(((sloth.isActualLeftGrab() || sloth.isActualRightGrab()) && !(checkGrabbedObst(vineEntities.get(1))) && !(checkGrabbedObst(vineEntities.get(2))))) {
 						canvas.draw(swing3, new Color(0x7f7f7fFF), 0, 0, 2185, 1585, 0, 1, 1);
-					// swing on vine1
-					} else if (checkGrabbedObst(vineEntities.get(1))) {
-						canvas.draw(vine4, new Color(0x7f7f7fFF), 0, vine1.getHeight(), 2385, 2075, 0, 1, 1);
-						canvas.draw(vine2, new Color(0x7f7f7fFF), 0, vine2.getHeight(), 2415, 2015, 0, 1, 1);
-						// swing on vine2
 					} else {
+						// swing on vine1
+						if (checkGrabbedObst(vineEntities.get(1))) {
+							canvas.draw(vine4, new Color(0x7f7f7fFF), 0, vine4.getHeight(), 2393, 2000, 0, 1, 1);
+						// swing on vine2
+						} else if (checkGrabbedObst(vineEntities.get(2))) {
+							canvas.draw(vine2, new Color(0x7f7f7fFF), 0, vine2.getHeight(), 2700, 2000, 0, 1, 1);
+						}
 					}
 					break;
 			}
@@ -1326,7 +1327,7 @@ public class TutorialModeController extends GameModeController {
 
     }
 
-	private boolean checkGrabbedObst(Vine vine) {
+	private boolean checkGrabbedObst(ComplexObstacle vine) {
 		for(Obstacle plank : vine.getBodies()){
 			if (plank.getBody().getUserData() instanceof Obstacle && ((Obstacle) plank.getBody().getUserData()).isGrabbed()) {
 				return true;
