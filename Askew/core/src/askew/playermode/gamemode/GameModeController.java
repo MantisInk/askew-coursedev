@@ -169,6 +169,7 @@ public class GameModeController extends WorldController {
 	protected float fogTime;
 	private int levelCompleteJunkState;
 	private int showStatsTimer;
+	private int victorySloth;
 
 	/**
 	 * Preloads the assets for this controller.
@@ -552,7 +553,7 @@ public class GameModeController extends WorldController {
 						((showStatsTimer < 0) && levelCompleteJunkState !=2 )) {
 					if (levelCompleteJunkState == -1) {
 						manager.getMenuManager().throwJunkOnTheScreen
-								("???? Won!");
+								("Sloth " + victorySloth + " Won!");
 						levelCompleteJunkState++;
 						showStatsTimer = 80;
 						greatSound.play();
@@ -776,7 +777,8 @@ public class GameModeController extends WorldController {
                 if (!owl.isDoingVictory()) {
                     victorySound.play(0.10f);
                     SoundController.getInstance().stop("bgmusic");
-                    SlothModel sloth = collisions.winningSloth();
+                    victorySloth = collisions.winningSloth();
+					SlothModel sloth = slothList.get(victorySloth);
                     sloth.releaseLeft(world);
                     sloth.releaseRight(world);
                     if (collisions.getLeftBody(world, sloth) != null && collisions.getLeftBody(world, sloth).equals(owl.getBody()))

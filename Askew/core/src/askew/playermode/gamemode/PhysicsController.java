@@ -24,6 +24,7 @@ class PhysicsController implements ContactListener {
     private BoxObstacle goalDoor;
     @Getter
     private boolean isFlowWin;
+    private int victorySloth;
 
     /**
      * This function deals with collisions.
@@ -72,13 +73,16 @@ class PhysicsController implements ContactListener {
             // Check for thorns
             if (bd1 != null && bd2 != null && (isSlothPart(bd1) || isSlothPart(bd2))) {
                 Obstacle other;
+                Obstacle slothy;
                 // TODO: Sloth Homicide
                 if (isSlothPart(bd1) && isSlothPart(bd2)) return;
 
                 if (isSlothPart(bd1)) {
                     other = bd2;
+                    slothy = bd1;
                 } else {
                     other = bd1;
+                    slothy = bd2;
                 }
 
                 if (other.getName() != null && (other.getName().equals("thorns") || other.getName().equals("ghost"))) {
@@ -86,6 +90,15 @@ class PhysicsController implements ContactListener {
                 }
 
                 if (other.getName() != null && other.getName().equals("owl")) {
+                    for (int i = 0 ; i < slothList.size(); i++) {
+                        SlothModel sloth = slothList.get(i);
+                        for (Obstacle b : sloth.getBodies()){
+                            if (b == slothy) {
+                                System.out.println("YES");
+                                victorySloth = i;
+                            }
+                        }
+                    }
                     isFlowWin = true;
                 }
 
@@ -156,9 +169,7 @@ class PhysicsController implements ContactListener {
         slothList.add(sloth);
     }
 
-    public SlothModel winningSloth() {
-        // TODO
-        return slothList.get(0);
-//        return winningSloth;
+    public int winningSloth() {
+        return victorySloth;
     }
 }
