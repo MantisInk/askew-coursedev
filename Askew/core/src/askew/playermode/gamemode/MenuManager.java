@@ -15,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.utils.Align;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +31,6 @@ public class MenuManager {
     private BitmapFont font;
     private TextButtonStyle textButtonStyle;
     private LabelStyle labelStyle;
-    private boolean didUpdate;
     private ChangeListener changeListener;
     private List<TextButton> mainButtons;
     private Sound blip;
@@ -44,6 +44,7 @@ public class MenuManager {
     private boolean leftRight;
     private boolean leftLeft;
     private boolean leftDown;
+    private boolean didUpdate;
 
     public MenuManager(BitmapFont regina, BitmapFont beckyIsBack, Sound blip,
      Sound blip2                  ) {
@@ -113,6 +114,41 @@ public class MenuManager {
         finishSetup();
     }
 
+    public void setupLevelSelectMenu(int currentLevel) {
+        clear();
+        mainButtons.add(new TextButton("Level: " + currentLevel, textButtonStyle));
+        mainButtons.add(new TextButton("Main Menu", textButtonStyle));
+        finishSetup();
+    }
+
+    public void setupSettingsMenu(boolean control, boolean grab, boolean
+            graphics, boolean music) {
+        clear();
+        mainButtons.add(new TextButton("Control Scheme: " + (control ? "One Arm" : "Two Arm"),
+                textButtonStyle));
+        mainButtons.add(new TextButton("Grab Scheme: " + (grab ? "Normal" : "Reverse"), textButtonStyle));
+        mainButtons.add(new TextButton("Graphics Quality: " + (graphics ? "LOW" : "HIGH"),
+                textButtonStyle));
+        mainButtons.add(new TextButton("Music: " + (music ? "ON" : "OFF"), textButtonStyle));
+        mainButtons.add(new TextButton("Main Menu", textButtonStyle));
+        mainButtons.forEach(x->x.align(Align.left));
+        Label title = new Label("Settings", labelStyle);
+        title.setFontScale(1.0f);
+        table.add(title).center().top().padTop(300f).padRight(300f).padLeft
+                (500f);
+        finishSetup();
+    }
+
+    public boolean updateButtonContainingText(String key, String newLabel) {
+        for (TextButton b : mainButtons) {
+            if (b.getText().toString().contains(key)) {
+                b.setText(newLabel);
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void setupMainMenu() {
         clear();
         mainButtons.add(new TextButton("Play", textButtonStyle));
@@ -141,6 +177,10 @@ public class MenuManager {
      * @return a status code -1 if nothing of value has happened.
      */
     public Optional<String> update() {
+        if (didUpdate) {
+            return Optional.empty();
+        }
+        didUpdate = true;
         InputController input = InputControllerManager.getInstance()
                 .getController(0);
 
@@ -162,9 +202,15 @@ public class MenuManager {
                     mainButtonIndex);
         } else if ((leftLeft && !prevLeftLeft) || input.didLeftArrowPress()) {
             blip.play();
+            return Optional.of("ACTION_LEFT "+mainButtons.get
+                    (mainButtonIndex).getText().toString() +
+                    mainButtonIndex);
         } else if ((leftRight && !prevLeftRight) || input.didRightArrowPress()) {
             // right
             blip.play();
+            return Optional.of("ACTION_RIGHT "+mainButtons.get
+                    (mainButtonIndex).getText().toString() +
+                    mainButtonIndex);
         } else if ((leftUp && !prevLeftUp) || input.didUpArrowPress()) {
             // up
             int prevIndex = mainButtonIndex;
@@ -188,8 +234,8 @@ public class MenuManager {
     }
 
     public void draw() {
-        if (!didUpdate) {
-            didUpdate = true;
+        if (didUpdate) {
+            didUpdate = false;
         }
         stage.act(Gdx.graphics.getDeltaTime());
         stage.draw();

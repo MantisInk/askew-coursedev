@@ -294,6 +294,7 @@ public class GameModeController extends WorldController {
 	 * This method disposes of the world and creates a new one.
 	 */
 	public void reset() {
+		super.reset();
 		Gdx.input.setCursorCatched(true);
 		coverOpacity = 2f; // start at 2 for 1 second of full black
 		this.windVolume = 0;
@@ -507,16 +508,18 @@ public class GameModeController extends WorldController {
 		if (victory) {
 			paused = false;
 			String updateString = manager.getMenuManager().update().orElse("");
-			if (updateString.contains("Main Menu")) {
-				listener.exitScreen(this, EXIT_GM_MM);
-			} else if (updateString.contains("Restart")) {
-				reset();
-			} else if (updateString.contains("Next Level")) {
-				playerIsReady = false;
-				int current = GlobalConfiguration.getInstance().getCurrentLevel();
-				GlobalConfiguration.getInstance().setCurrentLevel(current + 1);
-				setLevel();
-				listener.exitScreen(this, EXIT_GM_GM);
+			if (!updateString.contains("ACTION")) {
+				if (updateString.contains("Main Menu")) {
+					listener.exitScreen(this, EXIT_GM_MM);
+				} else if (updateString.contains("Restart")) {
+					reset();
+				} else if (updateString.contains("Next Level")) {
+					playerIsReady = false;
+					int current = GlobalConfiguration.getInstance().getCurrentLevel();
+					GlobalConfiguration.getInstance().setCurrentLevel(current + 1);
+					setLevel();
+					listener.exitScreen(this, EXIT_GM_GM);
+				}
 			}
 		}
 
@@ -527,13 +530,15 @@ public class GameModeController extends WorldController {
 			}
 
 			String updateString = manager.getMenuManager().update().orElse("");
-			if (updateString.contains("Resume")) {
-				paused = false;
-				playerIsReady = false;
-			} else if (updateString.contains("Restart")) {
-				reset();
-			} else if (updateString.contains("Main Menu")) {
-				listener.exitScreen(this, EXIT_GM_MM);
+			if (!updateString.contains("ACTION")) {
+				if (updateString.contains("Resume")) {
+					paused = false;
+					playerIsReady = false;
+				} else if (updateString.contains("Restart")) {
+					reset();
+				} else if (updateString.contains("Main Menu")) {
+					listener.exitScreen(this, EXIT_GM_MM);
+				}
 			}
 		}
 
@@ -743,6 +748,8 @@ public class GameModeController extends WorldController {
 			canvas.end();
 			canvas.begin();
 			victoryCutscene.draw(canvas);
+			canvas.end();
+			canvas.begin();
 //			canvas.draw(victoryTexture);
 //			canvas.draw(fern, Color.WHITE, fern.getWidth() / 2, fern.getHeight() / 2,
 //					victory_locs[victory_mode].x * canvas.getWidth(), victory_locs[victory_mode].y * canvas.getHeight(),

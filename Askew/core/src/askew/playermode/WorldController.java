@@ -106,7 +106,7 @@ public abstract class WorldController implements Screen {
     /**
      * Retro font for displaying messages
      */
-    protected final boolean playingMusic;
+    protected boolean playingMusic;
     /**
      * Track all loaded assets (for unloading purposes)
      */
@@ -460,7 +460,10 @@ public abstract class WorldController implements Screen {
      * <p>
      * This method disposes of the world and creates a new one.
      */
-    public abstract void reset();
+    public void reset() {
+        playingMusic = GlobalConfiguration.getInstance().getAsBoolean
+                ("enableMusic");
+    }
 
     /**
      * Returns whether to process the update loop

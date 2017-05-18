@@ -95,6 +95,7 @@ public class MainMenuController extends WorldController {
     private int settings_button = CONTROL_SCHEME;
     private boolean control = false;        // false means one arm control scheme
     private boolean grab = false;           // false means hold to grab
+    private boolean music = false;
     private boolean prevLeftUp, prevLeftDown, prevLeftLeft, prevLeftRight;        // keep track of previous joystick positions
     private boolean leftUp, leftDown, leftLeft, leftRight;                        // track current joystick positions
     @Getter
@@ -199,77 +200,15 @@ public class MainMenuController extends WorldController {
 
         canvas.begin(); // DO NOT SCALE
         canvas.draw(menu);
-        if (mode == HOME_SCREEN) {
-            canvas.end();
-            canvas.begin();
-            // I apologize for this. - Trevor
-            manager.getMenuManager().draw();
-        }
-        // TODO: new level select screen
-        else if (mode == LEVEL_SELECT) {
-            canvas.draw(menu2);
-            canvas.drawText("         " + selected, displayFont, 0.42f * canvas.getWidth(), 0.45f * canvas.getHeight());
-            canvas.draw(fern, Color.WHITE, fern.getWidth() / 2, fern.getHeight() / 2,
-                    select_button_locs[select_button].x * canvas.getWidth(), select_button_locs[select_button].y * canvas.getHeight(),
-                    0, worldScale.x / fern.getWidth(), worldScale.y / fern.getHeight());
-        } else if (mode == SETTINGS) {
-            for (int i = 0; i < settings_text_locs.length; i++) {
-                if (i == 0 || i == 3 || i == 6 || i == 9)
-                    canvas.drawTextAlignedRight(settings_text[i], regina, settings_text_locs[i].x * canvas.getWidth(), settings_text_locs[i].y * canvas.getHeight(), fontcolor);
-            }
-            if (control) {
-                canvas.drawText(settings_text[2], regina2, settings_text_locs[2].x * canvas.getWidth(), settings_text_locs[2].y * canvas.getHeight());
-                canvas.drawText(settings_text[1], regina1, settings_text_locs[1].x * canvas.getWidth(), settings_text_locs[1].y * canvas.getHeight());
-            } else {
-                canvas.drawText(settings_text[1], regina2, settings_text_locs[1].x * canvas.getWidth(), settings_text_locs[1].y * canvas.getHeight());
-                canvas.drawText(settings_text[2], regina1, settings_text_locs[2].x * canvas.getWidth(), settings_text_locs[2].y * canvas.getHeight());
-            }
-            if (grab) {
-                canvas.drawText(settings_text[4], regina2, settings_text_locs[4].x * canvas.getWidth(), settings_text_locs[4].y * canvas.getHeight());
-                canvas.drawText(settings_text[5], regina1, settings_text_locs[5].x * canvas.getWidth(), settings_text_locs[5].y * canvas.getHeight());
-            } else {
-                canvas.drawText(settings_text[5], regina2, settings_text_locs[5].x * canvas.getWidth(), settings_text_locs[5].y * canvas.getHeight());
-                canvas.drawText(settings_text[4], regina1, settings_text_locs[4].x * canvas.getWidth(), settings_text_locs[4].y * canvas.getHeight());
-            }
-            if (graphics) {
-                canvas.drawText(settings_text[8], regina2, settings_text_locs[8].x * canvas.getWidth(), settings_text_locs[8].y * canvas.getHeight());
-                canvas.drawText(settings_text[7], regina1, settings_text_locs[7].x * canvas.getWidth(), settings_text_locs[7].y * canvas.getHeight());
-            } else {
-                canvas.drawText(settings_text[7], regina2, settings_text_locs[7].x * canvas.getWidth(), settings_text_locs[7].y * canvas.getHeight());
-                canvas.drawText(settings_text[8], regina1, settings_text_locs[8].x * canvas.getWidth(), settings_text_locs[8].y * canvas.getHeight());
-            }
-            int swtch;
-            switch (settings_button) {
-                case 0:
-                    swtch = (control) ? 1 : 0;
-                    canvas.draw(fern, Color.WHITE, fern.getWidth() / 2, fern.getHeight() / 2,
-                            settings_button_locs[swtch].x * canvas.getWidth(), settings_button_locs[swtch].y * canvas.getHeight(),
-                            0, worldScale.x / fern.getWidth(), worldScale.y / fern.getHeight());
-                    break;
-                case 1:
-                    swtch = (grab) ? 2 : 3;
-                    canvas.draw(fern, Color.WHITE, fern.getWidth() / 2, fern.getHeight() / 2,
-                            settings_button_locs[swtch].x * canvas.getWidth(), settings_button_locs[swtch].y * canvas.getHeight(),
-                            0, worldScale.x / fern.getWidth(), worldScale.y / fern.getHeight());
-                    break;
-                case 2:
-                    swtch = (graphics) ? 5 : 4;
-                    canvas.draw(fern, Color.WHITE, fern.getWidth() / 2, fern.getHeight() / 2,
-                            settings_button_locs[swtch].x * canvas.getWidth(), settings_button_locs[swtch].y * canvas.getHeight(),
-                            0, worldScale.x / fern.getWidth(), worldScale.y / fern.getHeight());
-                    break;
-                default:
-                    swtch = 6;
-                    canvas.draw(fern, Color.WHITE, fern.getWidth() / 2, fern.getHeight() / 2,
-                            settings_button_locs[swtch].x * canvas.getWidth(), settings_button_locs[swtch].y * canvas.getHeight(),
-                            0, worldScale.x / fern.getWidth(), worldScale.y / fern.getHeight());
-            }
-        }
+        canvas.end();
+        canvas.begin();
+        manager.getMenuManager().draw();
         canvas.end();
     }
 
     @Override
     public void reset() {
+        super.reset();
         bounds = new Rectangle(0, 0, 16.0f, 9.0f);
         Gdx.input.setCursorCatched(false);
         nextCon = "";
@@ -280,6 +219,7 @@ public class MainMenuController extends WorldController {
                 instance.play("menumusic", MENU_MUSIC, true, GameModeController.MAX_MUSIC_VOLUME);
         }
         manager.getMenuManager().setupMainMenu();
+        mode = HOME_SCREEN;
     }
 
     @Override
@@ -290,92 +230,99 @@ public class MainMenuController extends WorldController {
                 return;
             }
             String updateString = manager.getMenuManager().update().orElse("");
-            if (updateString.contains("Play")) {
-                selected = GlobalConfiguration.getInstance().getCurrentLevel();
-                if (selected > MAX_LEVEL) {
+            if (!updateString.contains
+                    ("ACTION")) {
+                if (updateString.contains("Play")) {
+                    selected = GlobalConfiguration.getInstance().getCurrentLevel();
+                    if (selected > MAX_LEVEL) {
+                        selected = 1;
+                        GlobalConfiguration.getInstance().setCurrentLevel(selected);
+                    }
+                    nextCon = "GM";
+                } else if (updateString.contains("Tutorial")) {
+                    nextCon = "TL";
+                } else if (updateString.contains("Level Select")) {
+                    mode = LEVEL_SELECT;
+                    select_button = CHOOSE_LEVEL;
                     selected = 1;
-                    GlobalConfiguration.getInstance().setCurrentLevel(selected);
+                    manager.getMenuManager().setupLevelSelectMenu(selected);
+                } else if (updateString.contains("Settings")) {
+                    mode = SETTINGS;
+                    settings_button = CONTROL_SCHEME;
+                    manager.getMenuManager().setupSettingsMenu(control,grab,
+                            graphics,music);
+                } else if (updateString.contains("Exit")) {
+                    listener.exitScreen(this, EXIT_QUIT);
                 }
-                System.out.println("selected " + selected);
-                nextCon = "GM";
-            } else if (updateString.contains("Tutorial")) {
-                nextCon = "TL";
-            } else if (updateString.contains("Level Select")) {
-                mode = LEVEL_SELECT;
-                select_button = CHOOSE_LEVEL;
-                selected = 1;
-            } else if (updateString.contains("Settings")) {
-                mode = SETTINGS;
-                settings_button = CONTROL_SCHEME;
-            } else if (updateString.contains("Exit")) {
-                listener.exitScreen(this, EXIT_QUIT);
             }
         } else if (mode == LEVEL_SELECT) {
             if (mode != prevMode)
                 return;
 
-            if ((input.didBottomButtonPress() || input.didEnterKeyPress()) && select_button == RETURN_HOME) {
-                System.out.println("return home");
+            String updateString = manager.getMenuManager().update().orElse("");
+            if (updateString.contains("Main Menu") && (!updateString.contains
+                    ("ACTION"))) {
                 mode = HOME_SCREEN;
-                home_button = PLAY_BUTTON;
-            } else if ((input.didBottomButtonPress() || input.didEnterKeyPress()) && select_button == CHOOSE_LEVEL) {
-                GlobalConfiguration.getInstance().setCurrentLevel(selected);
-                System.out.println("selected level");
-                nextCon = "GM";
-                return;
-            }
-
-            if ((input.didLeftDPadPress() || (leftLeft && !prevLeftLeft) || input.didLeftArrowPress()) && selected > minLevel && select_button == CHOOSE_LEVEL) {
-                selected--;
-            } else if ((input.didRightDPadPress() || (leftRight && !prevLeftRight) || input.didRightArrowPress()) && selected < maxLevel && select_button == CHOOSE_LEVEL) {
-                selected++;
-            }
-
-            if (input.didTopDPadPress() || input.didUpArrowPress() || (leftUp && !prevLeftUp)) {
-                select_button = CHOOSE_LEVEL;
-            } else if (input.didBottomDPadPress() || input.didDownArrowPress() || (leftDown && !prevLeftDown)) {
-                select_button = RETURN_HOME;
+                manager.getMenuManager().setupMainMenu();
+            } else if (updateString.contains("Level")) {
+                if (updateString.contains("ACTION_RIGHT")) {
+                    if (selected > minLevel) selected--;
+                    manager.getMenuManager().updateButtonContainingText("Level",
+                            "Level: " + selected);
+                } else if (updateString.contains("ACTION_LEFT")) {
+                    if (selected < maxLevel) selected++;
+                    manager.getMenuManager().updateButtonContainingText("Level",
+                            "Level: " + selected);
+                } else {
+                    GlobalConfiguration.getInstance().setCurrentLevel(selected);
+                    nextCon = "GM";
+                }
             }
         } else if (mode == SETTINGS) {
             if (mode != prevMode)
                 return;
 
-            if ((input.didBottomButtonPress() || input.didEnterKeyPress()) && settings_button == SETTINGS_RETURN_HOME) {
-                System.out.println("return home");
+            String updateString = manager.getMenuManager().update().orElse("");
+            if (updateString.contains("Main Menu") && (!updateString.contains
+                    ("ACTION"))) {
+                mode = HOME_SCREEN;
+                manager.getMenuManager().setupMainMenu();
                 mode = HOME_SCREEN;
                 home_button = PLAY_BUTTON;
                 GlobalConfiguration.getInstance().setFlowControlMode(control);
                 GlobalConfiguration.getInstance().setFlowMovementMode(grab);
                 GlobalConfiguration.getInstance().setGraphicsQuality(graphics);
-            }
-
-            if (input.didTopDPadPress() || input.didUpArrowPress() || (!prevLeftUp && leftUp)) {
-                if (settings_button > 0) {
-                    settings_button--;
-                }
-            } else if (input.didBottomDPadPress() || input.didDownArrowPress() || (!prevLeftDown && leftDown)) {
-                if (settings_button < NUM_SETTINGS) {
-                    settings_button++;
-                }
-            } else if (input.didRightDPadPress() || input.didRightArrowPress() || (!prevLeftRight && leftRight)) {
-                if (settings_button == CONTROL_SCHEME) {
+                GlobalConfiguration.getInstance().setMusic(music);
+            } else if (updateString.contains("Control Scheme")) {
+                if (updateString.contains("ACTION_RIGHT") || updateString
+                        .contains("ACTION_LEFT")) {
                     control = !control;
+                    manager.getMenuManager().updateButtonContainingText
+                            ("Control", "Control Scheme: " +
+                                    (control ? "One Arm" : "Two Arm"));
                 }
-                if (settings_button == GRAB_CONTROL) {
+            } else if (updateString.contains("Grab Scheme")) {
+                if (updateString.contains("ACTION_RIGHT") || updateString
+                        .contains("ACTION_LEFT")) {
                     grab = !grab;
+                    manager.getMenuManager().updateButtonContainingText
+                            ("Grab", "Grab Scheme: " +
+                                    (grab ? "Normal" : "Reverse"));
                 }
-                if (settings_button == GRAPHICS_QUALITY) {
+            } else if (updateString.contains("Graphics Quality")) {
+                if (updateString.contains("ACTION_RIGHT") || updateString
+                        .contains("ACTION_LEFT")) {
                     graphics = !graphics;
+                    manager.getMenuManager().updateButtonContainingText
+                            ("Graphics", "Graphics Quality: " +
+                                    (graphics ? "LOW" : "HIGH"));
                 }
-            } else if (input.didLeftDPadPress() || input.didLeftArrowPress() || (!prevLeftLeft && leftLeft)) {
-                if (settings_button == CONTROL_SCHEME) {
-                    control = !control;
-                }
-                if (settings_button == GRAB_CONTROL) {
-                    grab = !grab;
-                }
-                if (settings_button == GRAPHICS_QUALITY) {
-                    graphics = !graphics;
+            } else if (updateString.contains("Music")) {
+                if (updateString.contains("ACTION_RIGHT") || updateString
+                        .contains("ACTION_LEFT")) {
+                    music = !music;
+                    manager.getMenuManager().updateButtonContainingText
+                            ("Music", "Music: " + (music ? "ON" : "OFF"));
                 }
             }
         }

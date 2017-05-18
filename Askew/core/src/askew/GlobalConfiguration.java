@@ -99,4 +99,8 @@ public class GlobalConfiguration {
         else
             dataBlob.addProperty("graphics", 1);
     }
+
+    public void setMusic(boolean mode) {
+            dataBlob.addProperty("enableMusic", mode);
+    }
 }
