@@ -805,6 +805,7 @@ public class GameModeController extends WorldController {
 			int j = 0;
 			Particle p;
 			Entity ent;
+
 			while (i + j < total) {
 				p = null;
 				ent = null;
@@ -829,7 +830,9 @@ public class GameModeController extends WorldController {
 				}
 			}
 
+			canvas.end();
 
+			canvas.begin();
 			if (!playerIsReady && !paused && coverOpacity <= 0)
 				printHelp();
 			canvas.end();

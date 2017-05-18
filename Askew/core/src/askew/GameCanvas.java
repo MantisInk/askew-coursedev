@@ -55,7 +55,7 @@ public class GameCanvas {
     /**
      * Drawing context to handle texture AND POLYGONS as sprites
      */
-    private PolygonSpriteBatch spriteBatch;
+    private CustomSpriteBatch spriteBatch;
     /**
      * Track whether or not we are active (for error checking)
      */
@@ -100,7 +100,7 @@ public class GameCanvas {
      */
     public GameCanvas() {
         active = DrawPass.INACTIVE;
-        spriteBatch = new PolygonSpriteBatch();
+        spriteBatch = new CustomSpriteBatch();
         SpriteBatch batch = new SpriteBatch();
         debugRender = new ShapeRenderer();
 

@@ -15,6 +15,7 @@
 package askew.entity.tree;
 
 import askew.MantisAssetManager;
+import askew.entity.Entity;
 import askew.entity.obstacle.BoxObstacle;
 import askew.entity.obstacle.ComplexObstacle;
 import askew.entity.obstacle.Obstacle;
@@ -81,6 +82,8 @@ public abstract class TreeParent extends ComplexObstacle {
 
 
     TreeParent(float x, float y) {
+
+        this.setDrawNumber(Entity.DN_STICK);
 //		setName(TRUNK_NAME);
 //		numLinks = length;
 //		this.x = x;
