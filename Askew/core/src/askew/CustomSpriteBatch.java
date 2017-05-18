@@ -469,15 +469,12 @@ public class CustomSpriteBatch implements Batch {
     @Override
     public void draw (Texture texture, float[] spriteVertices, int offset, int count) {
         if (!drawing) throw new IllegalStateException("PolygonSpriteBatch.begin must be called before draw.");
-        //System.out.println("no");
-        //return;
+
         final short[] triangles = this.triangles;
         final float[] vertices = this.vertices;
-        System.out.println(count);
         final int triangleCount = count / 20 * 6;
         if (texture != lastTexture) {
             switchTexture(texture);
-            if(texture == null);
         }
         else if (triangleIndex + triangleCount > triangles.length || vertexIndex + count > vertices.length) //
             flush();
@@ -495,24 +492,15 @@ public class CustomSpriteBatch implements Batch {
         }
         this.triangleIndex = triangleIndex;
 
-        //System.arraycopy(spriteVertices, offset, vertices, vertexIndex, count);
-
         for (int i = 0; i < count; i += 5) {
-            System.out.println(spriteVertices[offset + i]);
-            System.out.println(spriteVertices[offset + i + 1]);
-            System.out.println(spriteVertices[offset + i + 2]);
-            System.out.println(spriteVertices[offset + i + 3]);
-            System.out.println(spriteVertices[offset + i + 4]);
-
-
             vertices[vertexIndex++] = spriteVertices[offset + i];
             vertices[vertexIndex++] = spriteVertices[offset + i + 1];
-            vertices[vertexIndex++] = -.2f;
+            vertices[vertexIndex++] = 0f;
             vertices[vertexIndex++] = spriteVertices[offset + i + 2];
             vertices[vertexIndex++] = spriteVertices[offset + i + 3];
             vertices[vertexIndex++] = spriteVertices[offset + i + 4];
         }
-        //this.vertexIndex += count;
+        this.vertexIndex = vertexIndex;
     }
 
     @Override
