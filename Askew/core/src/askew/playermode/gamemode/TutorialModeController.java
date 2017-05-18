@@ -1178,6 +1178,7 @@ public class TutorialModeController extends GameModeController {
 
 		if(currentStage == STAGE_EBB) {
 			Color tint = new Color(0x7f7f7fB0);
+			SlothModel sloth = slothList.get(0);
 			switch(ebbLvl) {
 				case ebbGrabPts:
 					if(!ebbGrabbed[0]) {
@@ -1211,7 +1212,6 @@ public class TutorialModeController extends GameModeController {
 					canvas.draw(swing3, new Color(0x7f7f7fFF), 0, 0, 1065, 1490, -0.1f, 1, 1);
 					break;
 				case ebbVine1:
-					SlothModel sloth = slothList.get(0);
 					// reach for vine
 					if((!sloth.isActualLeftGrab() && !sloth.isActualRightGrab()) ||
 							((sloth.isActualLeftGrab() || sloth.isActualRightGrab()) && !(checkGrabbedObst(vineEntities.get(0))))) {
@@ -1222,6 +1222,14 @@ public class TutorialModeController extends GameModeController {
 					}
 					break;
 				case ebbVine2:
+					// reach for vine
+					if((!sloth.isActualLeftGrab() && !sloth.isActualRightGrab()) ||
+							((sloth.isActualLeftGrab() || sloth.isActualRightGrab()) && !(checkGrabbedObst(vineEntities.get(0))))) {
+						canvas.draw(swing3, new Color(0x7f7f7fFF), 0, 0, 2185, 1585, 0, 1, 1);
+						// swing on vine
+					} else {
+						break;
+					}
 					break;
 			}
 		}
