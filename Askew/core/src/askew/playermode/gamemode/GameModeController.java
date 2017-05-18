@@ -111,7 +111,8 @@ public class GameModeController extends WorldController {
 	@Setter
 	protected String loadLevel, DEFAULT_LEVEL;
 	protected LevelModel levelModel; 				// LevelModel for the level the player is currently on
-	private int numLevel, MAX_LEVEL; 	// track int val of lvl #
+	private int numLevel, MAX_LEVEL, MAX_MULTI_LEVEL; 	// track int val of
+	// lvl #
 
 	protected float currentTime, recordTime;	// track current and record time to complete level
 	private boolean storeTimeRecords;
@@ -159,7 +160,7 @@ public class GameModeController extends WorldController {
 	protected float coverOpacity;
 
 	protected ParticleController particleController;
-	protected static final int MAX_PARTICLES = 5;
+	protected static final int MAX_PARTICLES = 15;
 	protected static final int INITIAL_FOG = 5;
 	protected float fogTime;
 	private int levelCompleteJunkState;
@@ -261,6 +262,8 @@ public class GameModeController extends WorldController {
 		world.setContactListener(collisions);
 		DEFAULT_LEVEL = GlobalConfiguration.getInstance().getAsString("defaultLevel");
 		MAX_LEVEL = GlobalConfiguration.getInstance().getAsInt("maxLevel");
+		MAX_MULTI_LEVEL = GlobalConfiguration.getInstance().getAsInt
+				("maxMultiLevel");
 		loadLevel = DEFAULT_LEVEL;
 		storeTimeRecords = GlobalConfiguration.getInstance().getAsBoolean("storeTimeRecords");
 		jsonLoaderSaver = new JSONLoaderSaver(false);
@@ -270,13 +273,21 @@ public class GameModeController extends WorldController {
 
 	// for use in progressing through levels
 	public void setLevel() {
-		int lvl = GlobalConfiguration.getInstance().getCurrentLevel();
-		if (lvl > MAX_LEVEL) {
-			loadLevel = "level1";
-			System.out.println("MM");
-			listener.exitScreen(this, EXIT_GM_MM);
-		} else
-			loadLevel = "level"+lvl;
+		if (GlobalConfiguration.getInstance().getAsBoolean("multiplayer")) {
+			int lvl = GlobalConfiguration.getInstance().getCurrentMultiLevel();
+			if (lvl > MAX_MULTI_LEVEL) {
+				loadLevel = "multilevel1";
+				listener.exitScreen(this, EXIT_GM_MM);
+			} else
+				loadLevel = "multilevel" + lvl;
+		} else {
+			int lvl = GlobalConfiguration.getInstance().getCurrentLevel();
+			if (lvl > MAX_LEVEL) {
+				loadLevel = "level1";
+				listener.exitScreen(this, EXIT_GM_MM);
+			} else
+				loadLevel = "level"+lvl;
+		}
 	}
 
 	// for use in loading levels that aren't part of the progression
@@ -305,7 +316,6 @@ public class GameModeController extends WorldController {
 	 */
 	public void reset() {
 		super.reset();
-		levelCompleteJunkState = 0;
 		showStatsTimer = 60;
 		Gdx.input.setCursorCatched(true);
 		coverOpacity = 2f; // start at 2 for 1 second of full black
@@ -390,6 +400,11 @@ public class GameModeController extends WorldController {
 		}
 		victoryCutscene.reset();
 		manager.getMenuManager().setupLevelCompleteMenu();
+		if (loadLevel.contains("multi")) {
+			levelCompleteJunkState = -1;
+		} else {
+			levelCompleteJunkState = 0;
+		}
 	}
 
 	/**
@@ -440,43 +455,45 @@ public class GameModeController extends WorldController {
 			}
 
 			if (slothId == 2) {
+				assert(GlobalConfiguration.getInstance().getAsBoolean
+						("multiplayer"));
 				// Attach the sloths
-				Vine wtfVine = new Vine(initFlowX, initFlowY, 6, 0, 0, 0,
-						false);
-				wtfVine.setTextures(manager);
-				addObject(wtfVine);
-				entities.remove(wtfVine);
-				entities.add(0, wtfVine);
-
-				List<Obstacle> lazy = new ArrayList<>();
-				wtfVine.getBodies().forEach(lazy::add);
-				Filter f = new Filter();
-				f.maskBits = 0;
-				f.categoryBits = 0;
-				wtfVine.getBodies().forEach(body -> body.setFilterData(f));
-				Obstacle left = lazy.get(0);
-
-				// Definition for a revolute joint
-				RevoluteJointDef jointDef = new RevoluteJointDef();
-
-				// Initial joint
-				jointDef.bodyB = slothList.get(0).getMainBody();
-				jointDef.bodyA = left.getBody();
-				jointDef.localAnchorB.set(new Vector2(0, 0.2f));
-				jointDef.localAnchorA.set(new Vector2(0, Vine.lheight / 2));
-				jointDef.collideConnected = false;
-				world.createJoint(jointDef);
-
-				// Definition for a revolute joint
-				jointDef = new RevoluteJointDef();
-
-				// Initial joint
-				jointDef.bodyB = slothList.get(1).getMainBody();
-				jointDef.bodyA = lazy.get(lazy.size() - 1).getBody();
-				jointDef.localAnchorB.set(new Vector2(0, 0.2f));
-				jointDef.localAnchorA.set(new Vector2(0, -Vine.lheight / 2));
-				jointDef.collideConnected = false;
-				world.createJoint(jointDef);
+//				Vine wtfVine = new Vine(initFlowX, initFlowY, 6, 0, 0, 0,
+//						false);
+//				wtfVine.setTextures(manager);
+//				addObject(wtfVine);
+//				entities.remove(wtfVine);
+//				entities.add(0, wtfVine);
+//
+//				List<Obstacle> lazy = new ArrayList<>();
+//				wtfVine.getBodies().forEach(lazy::add);
+//				Filter f = new Filter();
+//				f.maskBits = 0;
+//				f.categoryBits = 0;
+//				wtfVine.getBodies().forEach(body -> body.setFilterData(f));
+//				Obstacle left = lazy.get(0);
+//
+//				// Definition for a revolute joint
+//				RevoluteJointDef jointDef = new RevoluteJointDef();
+//
+//				// Initial joint
+//				jointDef.bodyB = slothList.get(0).getMainBody();
+//				jointDef.bodyA = left.getBody();
+//				jointDef.localAnchorB.set(new Vector2(0, 0.2f));
+//				jointDef.localAnchorA.set(new Vector2(0, Vine.lheight / 2));
+//				jointDef.collideConnected = false;
+//				world.createJoint(jointDef);
+//
+//				// Definition for a revolute joint
+//				jointDef = new RevoluteJointDef();
+//
+//				// Initial joint
+//				jointDef.bodyB = slothList.get(1).getMainBody();
+//				jointDef.bodyA = lazy.get(lazy.size() - 1).getBody();
+//				jointDef.localAnchorB.set(new Vector2(0, 0.2f));
+//				jointDef.localAnchorA.set(new Vector2(0, -Vine.lheight / 2));
+//				jointDef.collideConnected = false;
+//				world.createJoint(jointDef);
 			}
 			for (int i = 0; i < INITIAL_FOG; i++) {
 				particleController.fog(levelModel.getMaxX() - levelModel.getMinX(), levelModel.getMaxY() - levelModel.getMinY());
@@ -525,12 +542,21 @@ public class GameModeController extends WorldController {
 					("");
 			if (!updateString.contains("ACTION")) {
 				if (updateString.contains("Main Menu")) {
+					okSound.play();
 					listener.exitScreen(this, EXIT_GM_MM);
 				} else if (updateString.contains("Restart")) {
+					okSound.play();
 					reset();
 				} else if (updateString.contains("Next Level") ||
 						((showStatsTimer < 0) && levelCompleteJunkState !=2 )) {
-					if (levelCompleteJunkState == 0) {
+					if (levelCompleteJunkState == -1) {
+						manager.getMenuManager().throwJunkOnTheScreen
+								("???? Won!");
+						levelCompleteJunkState++;
+						showStatsTimer = 80;
+						greatSound.play();
+					}
+					else if (levelCompleteJunkState == 0) {
 						manager.getMenuManager().throwJunkOnTheScreen
 								("Completion Time: " +  String.format("%.2f",
 										currentTime));
@@ -539,8 +565,7 @@ public class GameModeController extends WorldController {
 						okSound.play();
 					} else if (levelCompleteJunkState == 1) {
 						boolean newRecord = RecordBook.getInstance()
-								.setRecord("level" + GlobalConfiguration
-												.getInstance().getCurrentLevel(),
+								.setRecord(loadLevel,
 										currentTime);
 						if (newRecord) {
 							manager.getMenuManager().throwJunkOnTheScreen
@@ -548,8 +573,7 @@ public class GameModeController extends WorldController {
 							greatSound.play();
 						} else {
 							float record = RecordBook.getInstance
-									().getRecord("level" + GlobalConfiguration
-											.getInstance().getCurrentLevel());
+									().getRecord(loadLevel);
 							manager.getMenuManager().throwJunkOnTheScreen
 									("Record Time: " + String.format("%.2f",
 											record));
@@ -607,10 +631,15 @@ public class GameModeController extends WorldController {
 	 */
 	public boolean checkReady(){
 		if (paused) return false;
-
-		return InputControllerManager.getInstance().inputControllers().parallelStream()
-				.map(controller ->controller.getRightGrab() || controller.getRightGrab())
-				.reduce(false,(acc,el)->acc || el);
+		if (loadLevel.contains("multi"))
+			return InputControllerManager.getInstance().inputControllers().stream()
+				.map(controller ->controller.getRightGrab() || controller
+						.getLeftGrab())
+				.reduce(true,(acc,el)->acc && el);
+		else
+			return InputControllerManager.getInstance().getController(0)
+					.getRightGrab() || InputControllerManager.getInstance()
+					.getController(0).getLeftGrab();
 	}
 
 	public void printHelp(){
@@ -761,7 +790,7 @@ public class GameModeController extends WorldController {
                     .map(sloth -> sloth.getMainBody().getLinearVelocity().len())
                     .reduce((acc, el) -> acc + el)
                     .orElse(0f) / slothList.size();
-            float windVolume = slothSpeed / 20f;
+            float windVolume = slothSpeed / 14f;
             this.windVolume += (windVolume - this.windVolume) * 0.04f;
             if (this.windVolume > 1) this.windVolume = 1;
             SoundController.getInstance().setVolume("windmusic", this.windVolume);
@@ -815,8 +844,9 @@ public class GameModeController extends WorldController {
 			canvas.draw(background);
 			canvas.end();
 
-			float slothX = slothList.stream().map(sloth -> sloth.getBody().getPosition().x).reduce((x, y) -> x + y).orElse(0f) / slothList.size();
-			float slothY = slothList.stream().map(sloth -> sloth.getBody().getPosition().y).reduce((x, y) -> x + y).orElse(0f) / slothList.size();
+			float slothX = slothList.stream().map(sloth -> sloth.getBody()
+					.getPosition().x).reduce(Math::max).orElse(0f);
+			float slothY = slothList.stream().map(sloth -> sloth.getBody().getPosition().y).reduce(Math::max).orElse(0f);
 
 			cameraVelocityX = cameraVelocityX * 0.4f + (slothX - cameraX) * 0.18f;
 			cameraVelocityY = cameraVelocityY * 0.4f + (slothY - cameraY) * 0.18f;

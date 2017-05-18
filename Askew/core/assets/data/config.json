@@ -13,7 +13,9 @@
   "defaultLevel": "level1",
   "storeTimeRecords": true,
   "maxLevel": 11,
+  "maxMultiLevel": 1,
   "currentLevel": 1,
+  "currentMultiLevel": 1,
   "enableMusic": false,
   "maxTutorial": 3
 }

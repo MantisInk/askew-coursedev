@@ -132,15 +132,6 @@
         "lTheta": 0.0,
         "rTheta": 0.0
       }
-    },
-    {
-      "CLASSNAME": "askew.entity.sloth.SlothModel",
-      "INSTANCE": {
-        "x": 7.7891665,
-        "y": 7.2150006,
-        "lTheta": 0.0,
-        "rTheta": 0.0
-      }
     }
   ]
 }

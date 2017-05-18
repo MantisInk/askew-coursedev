@@ -71,6 +71,10 @@ public class GlobalConfiguration {
         return dataBlob.get("currentLevel").getAsInt();
     }
 
+    public int getCurrentMultiLevel() {
+        return dataBlob.get("currentMultiLevel").getAsInt();
+    }
+
     public void setCurrentLevel(int lvl) {
         dataBlob.remove("currentLevel");
         dataBlob.addProperty("currentLevel", lvl);
