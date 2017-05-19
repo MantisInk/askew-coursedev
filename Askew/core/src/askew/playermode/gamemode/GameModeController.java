@@ -459,6 +459,7 @@ public class GameModeController extends WorldController {
 					owlOPosX = o.getPosition().x;
 					owlOPosY = o.getPosition().y;
 				}
+				o.setDrawScale(worldScale);
 
 			}
 
@@ -902,6 +903,9 @@ public class GameModeController extends WorldController {
 				entities.remove(owl);
 
 				setWorldScale(canvas);
+				for(Entity e: entities){
+					e.setDrawScale(worldScale);
+				}
                 float recordT = currentTime;
                 int recordG = currentGrabs -1; // cuz grabbing the owl adds an extra grab
 				instance.play("bgmusic", "sound/music/levelselect.ogg", true,
@@ -936,7 +940,6 @@ public class GameModeController extends WorldController {
 			canvas.end();
 			canvas.begin(camTrans);
 			for(Entity e : entities){
-				e.setDrawScale(worldScale);
 				e.draw(canvas);
 			}
 			canvas.end();
