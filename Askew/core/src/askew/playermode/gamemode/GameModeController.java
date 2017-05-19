@@ -20,6 +20,7 @@ import askew.entity.owl.OwlModel;
 import askew.entity.sloth.SlothModel;
 import askew.entity.vine.Vine;
 import askew.playermode.WorldController;
+import askew.playermode.gamemode.Particles.Effect;
 import askew.playermode.gamemode.Particles.Particle;
 import askew.playermode.gamemode.Particles.ParticleController;
 import askew.playermode.leveleditor.LevelModel;
@@ -164,8 +165,9 @@ public class GameModeController extends WorldController {
 	protected float coverOpacity;
 
 	protected ParticleController particleController;
-	protected static final int MAX_PARTICLES = 15;
-	protected static final int INITIAL_FOG = 5;
+	protected static final int MAX_PARTICLES = 500;
+	protected static final int INITIAL_FOG = 50;
+
 	protected float fogTime;
 	private int levelCompleteJunkState;
 	private int showStatsTimer;
@@ -495,7 +497,7 @@ public class GameModeController extends WorldController {
 //				world.createJoint(jointDef);
 			}
 			for(int i = 0; i < INITIAL_FOG; i++) {
-				//particleController.fog(levelModel.getMaxX()-levelModel.getMinX(),levelModel.getMaxY()-levelModel.getMinY() );
+				particleController.fogEffect.spawn(levelModel.getMaxX()-levelModel.getMinX(),levelModel.getMaxY()-levelModel.getMinY() );
 			}
 			currentTime = 0f;
 			currentGrabs = 0;
@@ -663,7 +665,7 @@ public class GameModeController extends WorldController {
 	public void update(float dt) {
 
 		if (InputControllerManager.getInstance().getController(0).isZKeyPressed()) {
-			particleController.effect1(10,18);
+			particleController.testEffect.spawn(10,18);
 		}
 
 		if (!paused) {
@@ -749,6 +751,14 @@ public class GameModeController extends WorldController {
                             fallDeathHeight = sloth.getPosition().y - NEAR_FALL_DEATH_DISTANCE;
                         }
                     }
+                    Body rightHand = sloth.getRightHand();
+					Obstacle rightArm = sloth.getRightArm();
+					if(rightHand != null && rightArm != null)
+                    	particleController.handTrailEffect.spawn(rightHand.getPosition().x, rightHand.getPosition().y, rightArm.getAngle());
+					Body leftHand = sloth.getLeftHand();
+					Obstacle leftArm = sloth.getLeftArm();
+					if(leftHand != null && leftArm != null)
+						particleController.handTrailEffect.spawn(leftHand.getPosition().x, leftHand.getPosition().y, leftArm.getAngle());
                 }
             }
 			leftNewGrab = (!leftPrevGrab && slothList.get(0).isActualLeftGrab());
@@ -764,7 +774,8 @@ public class GameModeController extends WorldController {
 
 			currentTime += dt;
 			if (currentTime - fogTime > .1f) {
-//                particleController.fog(cameraX, cameraY);
+               particleController.fogEffect.spawn(cameraX, cameraY);
+
                 fogTime = currentTime;
             }
             particleController.update(dt);
@@ -926,18 +937,38 @@ public class GameModeController extends WorldController {
 			canvas.getCampos().set(cameraX * worldScale.x
 					, cameraY * worldScale.y);
 
-			canvas.begin(camTrans);
 
 			//noinspection unchecked
 			Collections.sort(entities);
-			Particle[] particles = particleController.getSorted();
-			particleController.setDrawScale(worldScale);
+
+
+			canvas.begin(camTrans);
+			for(Entity e : entities){
+				e.setDrawScale(worldScale);
+				e.draw(canvas);
+			}
+			canvas.end();
+
+			int n = 0;
+			canvas.beginParticle(camTrans);
+			for(Effect e: particleController.effects){
+				e.draw(canvas);
+				n += e.size();
+			}
+			canvas.end();
+			System.out.println(n);
+
+
+
+
+			/*
 			int n = particleController.numParticles();
 			int total = entities.size() + n;
 			int i = 0;
 			int j = 0;
 			Particle p;
 			Entity ent;
+
 			while (i + j < total) {
 				p = null;
 				ent = null;
@@ -961,8 +992,10 @@ public class GameModeController extends WorldController {
 					i++;
 				}
 			}
+			*/
 
 
+			canvas.begin();
 			if (!playerIsReady && !paused && coverOpacity <= 0)
 				printHelp();
 			canvas.end();

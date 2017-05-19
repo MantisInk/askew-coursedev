@@ -16,6 +16,7 @@ package askew.entity.vine;
 
 import askew.GlobalConfiguration;
 import askew.MantisAssetManager;
+import askew.entity.Entity;
 import askew.entity.FilterGroup;
 import askew.entity.obstacle.*;
 import com.badlogic.gdx.graphics.Texture;
@@ -141,6 +142,7 @@ public class Vine extends ComplexObstacle {
         this.omega = omega;
         this.topPin = topPin;
         this.texture = texture;
+        this.setDrawNumber(Entity.DN_VINE);
         VINE_TEXTURE = VINE_TEXTURES[texture];
         build();
     }
