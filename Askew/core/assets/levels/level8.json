@@ -1,5 +1,5 @@
 {
-  "levelModelVersion": 4,
+  "levelModelVersion": 5,
   "goalTimeGold": 30,
   "goalTimeSilver": 45,
   "goalTimeBronze": 60,
@@ -12,6 +12,42 @@
   "background": "texture/background/background1.png",
   "soundtrack": "TODO",
   "entities": [
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 35.0,
+        "y": 1.0,
+        "angle": 0.0,
+        "numLinks": 11.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 47.0,
+        "y": 1.0,
+        "angle": 0.0,
+        "numLinks": 4.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 60.0,
+        "y": 8.0,
+        "angle": 90.0,
+        "numLinks": 7.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.StiffBranch",
+      "INSTANCE": {
+        "angle": 0.0,
+        "numLinks": 9.0,
+        "x": 47.0,
+        "y": 5.0
+      }
+    },
     {
       "CLASSNAME": "askew.entity.vine.Vine",
       "INSTANCE": {
@@ -123,46 +159,8 @@
     {
       "CLASSNAME": "askew.entity.owl.OwlModel",
       "INSTANCE": {
-        "x": 57.0,
-        "y": 8.0,
-        "pin": {},
-        "owlBody": {}
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.tree.Trunk",
-      "INSTANCE": {
-        "x": 35.0,
-        "y": 1.0,
-        "angle": 0.0,
-        "numLinks": 11.0
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.tree.Trunk",
-      "INSTANCE": {
-        "x": 47.0,
-        "y": 1.0,
-        "angle": 0.0,
-        "numLinks": 4.0
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.tree.Trunk",
-      "INSTANCE": {
-        "x": 60.0,
-        "y": 8.0,
-        "angle": 90.0,
-        "numLinks": 7.0
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.tree.StiffBranch",
-      "INSTANCE": {
-        "angle": 0.0,
-        "numLinks": 9.0,
-        "x": 47.0,
-        "y": 5.0
+        "x": 56.93987,
+        "y": 7.839002
       }
     },
     {
@@ -172,9 +170,7 @@
         "y": 1.8199999,
         "lTheta": 0.0,
         "rTheta": 0.0,
-        "airTime": 0,
-        "blinkFrame": 155,
-        "facingFront": true
+        "shouldDie": false
       }
     }
   ]

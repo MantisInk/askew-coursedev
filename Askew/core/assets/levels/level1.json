@@ -35,7 +35,7 @@
         "width": 20.0,
         "height": 20.0,
         "depth": 12.0,
-        "angle": 45.0,
+        "angle": 2578.31,
         "scalex": 1.0,
         "scaley": 1.0,
         "texturePath": "texture/background/BackgroundStuff/sil2.png",
@@ -140,7 +140,7 @@
         "width": 4.0,
         "height": 4.0,
         "depth": 1.5,
-        "angle": 45.0,
+        "angle": 2578.31,
         "scalex": 1.0,
         "scaley": 1.0,
         "texturePath": "texture/background/BackgroundStuff/zebraPlant.png",
@@ -155,7 +155,7 @@
         "width": 4.0,
         "height": 4.0,
         "depth": 1.5,
-        "angle": 45.0,
+        "angle": 2578.31,
         "scalex": 1.0,
         "scaley": 1.0,
         "texturePath": "texture/background/BackgroundStuff/zebraPlant.png",
@@ -530,15 +530,6 @@
       }
     },
     {
-      "CLASSNAME": "askew.entity.owl.OwlModel",
-      "INSTANCE": {
-        "x": 22.00249,
-        "y": 9.793327,
-        "pin": {},
-        "owlBody": {}
-      }
-    },
-    {
       "CLASSNAME": "askew.entity.tree.Trunk",
       "INSTANCE": {
         "x": 24.297012,
@@ -629,6 +620,13 @@
       }
     },
     {
+      "CLASSNAME": "askew.entity.owl.OwlModel",
+      "INSTANCE": {
+        "x": 21.801014,
+        "y": 9.607005
+      }
+    },
+    {
       "CLASSNAME": "askew.entity.sloth.SlothModel",
       "INSTANCE": {
         "x": -7.0,
@@ -661,7 +659,7 @@
         "width": 3.0,
         "height": 3.0,
         "depth": 0.75,
-        "angle": 45.0,
+        "angle": 2578.31,
         "scalex": 1.0,
         "scaley": 1.0,
         "texturePath": "texture/background/BackgroundStuff/leafPalm.png",
@@ -676,7 +674,7 @@
         "width": 3.0,
         "height": 3.0,
         "depth": 0.75,
-        "angle": 45.0,
+        "angle": 2578.31,
         "scalex": 1.0,
         "scaley": 1.0,
         "texturePath": "texture/background/BackgroundStuff/leafPalm.png",
@@ -691,7 +689,7 @@
         "width": 3.0,
         "height": 3.0,
         "depth": 0.75,
-        "angle": 90.0,
+        "angle": 5156.62,
         "scalex": 1.0,
         "scaley": 1.0,
         "texturePath": "texture/background/BackgroundStuff/leafPalm.png",
@@ -706,7 +704,7 @@
         "width": 3.0,
         "height": 3.0,
         "depth": 0.75,
-        "angle": 180.0,
+        "angle": 10313.24,
         "scalex": 1.0,
         "scaley": 1.0,
         "texturePath": "texture/background/BackgroundStuff/leafPalm.png",
@@ -721,7 +719,7 @@
         "width": 3.0,
         "height": 3.0,
         "depth": 0.75,
-        "angle": 180.0,
+        "angle": 10313.24,
         "scalex": 1.0,
         "scaley": 1.0,
         "texturePath": "texture/background/BackgroundStuff/leafPalm.png",
@@ -736,7 +734,7 @@
         "width": 3.0,
         "height": 3.0,
         "depth": 0.75,
-        "angle": 180.0,
+        "angle": 10313.24,
         "scalex": 1.0,
         "scaley": 1.0,
         "texturePath": "texture/background/BackgroundStuff/leafPalm.png",
@@ -751,7 +749,7 @@
         "width": 3.0,
         "height": 3.0,
         "depth": 0.75,
-        "angle": 180.0,
+        "angle": 10313.24,
         "scalex": 1.0,
         "scaley": 1.0,
         "texturePath": "texture/background/BackgroundStuff/leafPalm.png",
@@ -766,7 +764,7 @@
         "width": 3.0,
         "height": 3.0,
         "depth": 0.75,
-        "angle": 180.0,
+        "angle": 10313.24,
         "scalex": 1.0,
         "scaley": 1.0,
         "texturePath": "texture/background/BackgroundStuff/leafPalm.png",
@@ -781,7 +779,7 @@
         "width": 3.0,
         "height": 3.0,
         "depth": 0.75,
-        "angle": 180.0,
+        "angle": 10313.24,
         "scalex": 1.0,
         "scaley": 1.0,
         "texturePath": "texture/background/BackgroundStuff/leafPalm.png",
@@ -796,7 +794,7 @@
         "width": 3.0,
         "height": 3.0,
         "depth": 0.75,
-        "angle": 180.0,
+        "angle": 10313.24,
         "scalex": 1.0,
         "scaley": 1.0,
         "texturePath": "texture/background/BackgroundStuff/leafPalm.png",

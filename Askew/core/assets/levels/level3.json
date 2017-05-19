@@ -1,5 +1,5 @@
 {
-  "levelModelVersion": 4,
+  "levelModelVersion": 5,
   "goalTimeGold": 30,
   "goalTimeSilver": 45,
   "goalTimeBronze": 60,
@@ -268,39 +268,6 @@
       }
     },
     {
-      "CLASSNAME": "askew.entity.tree.Trunk",
-      "INSTANCE": {
-        "x": -0.75399876,
-        "y": 11.635007,
-        "angle": 45.0,
-        "numLinks": 5.0
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.vine.Vine",
-      "INSTANCE": {
-        "numLinks": 5.0,
-        "x": 4.0690002,
-        "y": 15.379009,
-        "angle": 8.64825,
-        "omega": -55.434685,
-        "pin": false,
-        "texture": 0
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.vine.Vine",
-      "INSTANCE": {
-        "numLinks": 5.0,
-        "x": 1.1960001,
-        "y": 16.96501,
-        "angle": -13.455925,
-        "omega": 10.111681,
-        "pin": false,
-        "texture": 0
-      }
-    },
-    {
       "CLASSNAME": "askew.entity.BackgroundEntity",
       "INSTANCE": {
         "x": -4.770999,
@@ -328,6 +295,85 @@
         "scaley": 1.0,
         "texturePath": "texture/background/topvine/Topvine11.png",
         "color": -1720844289
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.wall.WallModel",
+      "INSTANCE": {
+        "color": 1280305407,
+        "x": 14.261007,
+        "y": 9.282007,
+        "thorn": false,
+        "points": [
+          0.0,
+          0.0,
+          -0.012999535,
+          4.394,
+          4.6799994,
+          4.394,
+          4.6279993,
+          0.052000046
+        ]
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": -0.75399876,
+        "y": 11.635007,
+        "angle": 45.0,
+        "numLinks": 5.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 18.941006,
+        "y": 9.035007,
+        "angle": 90.0,
+        "numLinks": 5.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 13.949006,
+        "y": 14.014008,
+        "angle": 180.0,
+        "numLinks": 5.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 18.915007,
+        "y": 13.975008,
+        "angle": 90.0,
+        "numLinks": 5.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "numLinks": 5.0,
+        "x": 4.0690002,
+        "y": 15.379009,
+        "angle": 8.64825,
+        "omega": -55.434685,
+        "pin": false,
+        "texture": 0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "numLinks": 5.0,
+        "x": 1.1960001,
+        "y": 16.96501,
+        "angle": -13.455925,
+        "omega": 10.111681,
+        "pin": false,
+        "texture": 0
       }
     },
     {
@@ -391,42 +437,6 @@
       }
     },
     {
-      "CLASSNAME": "askew.entity.tree.Trunk",
-      "INSTANCE": {
-        "x": 18.941006,
-        "y": 9.035007,
-        "angle": 90.0,
-        "numLinks": 5.0
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.tree.Trunk",
-      "INSTANCE": {
-        "x": 13.949006,
-        "y": 14.014008,
-        "angle": 180.0,
-        "numLinks": 5.0
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.owl.OwlModel",
-      "INSTANCE": {
-        "x": 17.008316,
-        "y": 8.991661,
-        "pin": {},
-        "owlBody": {}
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.tree.Trunk",
-      "INSTANCE": {
-        "x": 18.915007,
-        "y": 13.975008,
-        "angle": 90.0,
-        "numLinks": 5.0
-      }
-    },
-    {
       "CLASSNAME": "askew.entity.vine.Vine",
       "INSTANCE": {
         "numLinks": 3.0,
@@ -451,21 +461,10 @@
       }
     },
     {
-      "CLASSNAME": "askew.entity.wall.WallModel",
+      "CLASSNAME": "askew.entity.owl.OwlModel",
       "INSTANCE": {
-        "color": 1280305407,
-        "x": 14.261007,
-        "y": 9.282007,
-        "points": [
-          0.0,
-          0.0,
-          -0.012999535,
-          4.394,
-          4.6799994,
-          4.394,
-          4.6279993,
-          0.052000046
-        ]
+        "x": 16.484009,
+        "y": 8.892004
       }
     },
     {
@@ -475,9 +474,7 @@
         "y": 12.414991,
         "lTheta": 0.0,
         "rTheta": 0.0,
-        "airTime": 0,
-        "blinkFrame": 69,
-        "facingFront": true
+        "shouldDie": false
       }
     },
     {

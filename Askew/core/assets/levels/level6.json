@@ -208,15 +208,6 @@
       }
     },
     {
-      "CLASSNAME": "askew.entity.owl.OwlModel",
-      "INSTANCE": {
-        "x": 30.994177,
-        "y": 5.005,
-        "pin": {},
-        "owlBody": {}
-      }
-    },
-    {
       "CLASSNAME": "askew.entity.wall.WallModel",
       "INSTANCE": {
         "color": 8880383,
@@ -521,6 +512,13 @@
         "omega": 0.0,
         "pin": false,
         "texture": 0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.owl.OwlModel",
+      "INSTANCE": {
+        "x": 31.00502,
+        "y": 4.8490014
       }
     },
     {

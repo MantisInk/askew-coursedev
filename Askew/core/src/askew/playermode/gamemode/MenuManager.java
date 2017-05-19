@@ -98,7 +98,7 @@ public class MenuManager {
 
     public void setupLevelCompleteMenu() {
         clear();
-        table.add(midVerticalGroup).expand().center();
+        table.add(midVerticalGroup).expand().center().top().padTop(100f);
         mainButtons.add(new TextButton("Next Level",
                 textButtonStyle));
         mainButtons.add(new TextButton("Restart", textButtonStyle));
