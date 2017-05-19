@@ -102,8 +102,8 @@ public class OwlModel extends ComplexObstacle {
         owlBody.setName("owl");
         owlBody.setDensity(1);
         Filter f = new Filter();
-        f.maskBits = FilterGroup.ARM | FilterGroup.SLOTH | FilterGroup.HAND;
-        f.categoryBits = FilterGroup.WALL;
+        f.maskBits = FilterGroup.SLOTH;
+        f.categoryBits = FilterGroup.WALL | FilterGroup.WIN;
         owlBody.setFilterData(f);
         owlBody.setCustomScale(1.4f,1.4f);
         bodies.add(owlBody);

@@ -331,15 +331,15 @@ public class SlothModel extends ComplexObstacle {
         if (collides) {
             body = new BoxObstacle(partCache.x, partCache.y, dWidth, dHeight);
             Filter f = new Filter();
-            f.maskBits = FilterGroup.WALL | FilterGroup.THORN;
-            f.categoryBits = FilterGroup.SLOTH;
+            f.maskBits = FilterGroup.WALL | FilterGroup.LOSE;
+            f.categoryBits = FilterGroup.SLOTH | FilterGroup.BODY;
             body.setFilterData(f);
         } else {
             body = new BoxObstacle(partCache.x, partCache.y, dWidth, dHeight);
             body.setFriction(.4f);
             Filter f = new Filter();
-            f.maskBits = FilterGroup.THORN;
-            f.categoryBits = FilterGroup.ARM;
+            f.maskBits = FilterGroup.LOSE;
+            f.categoryBits = FilterGroup.ARM | FilterGroup.SLOTH;
             body.setFilterData(f);
         }
 
@@ -388,6 +388,9 @@ public class SlothModel extends ComplexObstacle {
         jointDef.localAnchorA.set(anchorA);
         jointDef.localAnchorB.set(anchorB);
         jointDef.collideConnected = false;
+        jointDef.maxMotorTorque =1.0f;
+        jointDef.motorSpeed = 0.0f;
+        jointDef.enableMotor = true;
         Joint joint = world.createJoint(jointDef);
         joints.add(joint);
     }
@@ -945,7 +948,7 @@ public class SlothModel extends ComplexObstacle {
 
         Filter f = new Filter();
         f.maskBits = FilterGroup.VINE | FilterGroup.WALL;
-        f.categoryBits = FilterGroup.HAND;
+        f.categoryBits = FilterGroup.HAND | FilterGroup.SLOTH;
         sensorFixture1 = bodies.get(PART_LEFT_HAND).getBody().createFixture(sensorDef);
         sensorFixture1.setUserData("slothpart sloth left hand slothid" + id);
         sensorFixture2 = bodies.get(PART_RIGHT_HAND).getBody().createFixture(sensorDef);
