@@ -1034,22 +1034,22 @@ public class TutorialModeController extends GameModeController {
 
 				if(currentStage == STAGE_PINNED) {
 					if(moveLeftArm){
-						canvas.draw(joystick, Color.WHITE, joystick.getWidth() / 2, joystick.getHeight()/2, 350, 75, angle, 1.5f*worldScale.x / joystick.getWidth(), 1.5f*worldScale.y / joystick.getHeight());
-						canvas.draw(joystick, Color.WHITE, joystick.getWidth() / 2, joystick.getHeight()/2, 1250, 75, 0, 1.5f*worldScale.x / joystick.getWidth(), 1.5f*worldScale.y / joystick.getHeight());
+						canvas.draw(joystick, Color.WHITE, joystick.getWidth() / 2, joystick.getHeight()/2, 0.2f*canvas.getWidth(), 0.1f*canvas.getHeight(), angle, 1.5f*worldScale.x / joystick.getWidth(), 1.5f*worldScale.y / joystick.getHeight());
+						canvas.draw(joystick, Color.WHITE, joystick.getWidth() / 2, joystick.getHeight()/2, 0.8f*canvas.getWidth(), 0.1f*canvas.getHeight(), 0, 1.5f*worldScale.x / joystick.getWidth(), 1.5f*worldScale.y / joystick.getHeight());
 					} else{
-						canvas.draw(joystick, Color.WHITE, joystick.getWidth() / 2, joystick.getHeight()/2, 350, 75, 0, 1.5f*worldScale.x / joystick.getWidth(), 1.5f*worldScale.y / joystick.getHeight());
-						canvas.draw(joystick, Color.WHITE, joystick.getWidth() / 2, joystick.getHeight()/2, 1250, 75, angle, 1.5f*worldScale.x / joystick.getWidth(), 1.5f*worldScale.y / joystick.getHeight());
+						canvas.draw(joystick, Color.WHITE, joystick.getWidth() / 2, joystick.getHeight()/2, 0.2f*canvas.getWidth(), 0.1f*canvas.getHeight(), 0, 1.5f*worldScale.x / joystick.getWidth(), 1.5f*worldScale.y / joystick.getHeight());
+						canvas.draw(joystick, Color.WHITE, joystick.getWidth() / 2, joystick.getHeight()/2, 0.8f*canvas.getWidth(), 0.1f*canvas.getHeight(), angle, 1.5f*worldScale.x / joystick.getWidth(), 1.5f*worldScale.y / joystick.getHeight());
 					}
 				} else if(currentStage == STAGE_GRAB) {
 					if (!grabbedAll) {
-				canvas.drawTextCentered("Try to grab all 5 branches", instrFont, 275f);
+				canvas.drawTextCentered("Grab all 5 branches", instrFont, 0.35f*canvas.getHeight());
 			}
 		} else if (currentStage == STAGE_SHIMMY) {
-			canvas.drawTextCentered("Try to shimmy across to the owl", instrFont, 275f);
+			canvas.drawTextCentered("Shimmy across to the owl", instrFont, 0.35f*canvas.getHeight());
 		} else if (currentStage == STAGE_FLING) {
-			canvas.drawTextCentered("Try to fling from branch to branch", instrFont, 275f);
+			canvas.drawTextCentered("Fling from branch to branch", instrFont, 0.35f*canvas.getHeight());
 		} else if (currentStage == STAGE_VINE) {
-			canvas.drawTextCentered("Learn to swing on the vines", instrFont, 275f);
+			canvas.drawTextCentered("Learn to swing on the vines", instrFont, 0.35f*canvas.getHeight());
 		} else if (currentStage == STAGE_EBB) {
 			switch(ebbLvl) {
 				case ebbGrabPts:
@@ -1098,16 +1098,16 @@ public class TutorialModeController extends GameModeController {
 		}
 		if((currentStage == STAGE_PINNED && time > 6f) ||
 				(currentStage == STAGE_GRAB && grabbedAll)) {
-			canvas.drawTextCentered("Press A to continue", instrFont, 200f);
+			canvas.drawTextCentered("Press A to continue", instrFont, 0.25f*canvas.getHeight());
 		}
 		if(currentStage == STAGE_PINNED) {
-			canvas.drawTextCentered("Practice moving one arm at a time", instrFont, 250f);
+			canvas.drawTextCentered("Practice moving one arm at a time", instrFont, 0.35f*canvas.getHeight());
 			if (moveLeftArm) {
-				canvas.draw(rPressed, Color.WHITE, rPressed.getWidth() / 2, 0, 365, 150, 0, worldScale.x / rPressed.getWidth(), worldScale.y / rPressed.getHeight());
-				canvas.drawTextCentered("Press RB to switch arms", instrFont, -250f);
+				canvas.draw(rPressed, Color.WHITE, rPressed.getWidth() / 2, 0, 0.25f*canvas.getWidth(), 0.2f*canvas.getHeight(), 0, worldScale.x / rPressed.getWidth(), worldScale.y / rPressed.getHeight());
+				canvas.drawTextCentered("Press RB to switch arms", instrFont, -0.25f*canvas.getHeight());
 			} else {
-				canvas.draw(lPressed, Color.WHITE, lPressed.getWidth() / 2, 0, 365, 150, 0, worldScale.x / lPressed.getWidth(), worldScale.y / lPressed.getHeight());
-				canvas.drawTextCentered("Press LB to switch arms", instrFont, -250f);
+				canvas.draw(lPressed, Color.WHITE, lPressed.getWidth() / 2, 0, 0.25f*canvas.getWidth(), 0.2f*canvas.getHeight(), 0, worldScale.x / lPressed.getWidth(), worldScale.y / lPressed.getHeight());
+				canvas.drawTextCentered("Press LB to switch arms", instrFont, -0.25f*canvas.getHeight());
 			}
 		}
 	}
