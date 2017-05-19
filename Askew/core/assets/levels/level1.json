@@ -45,21 +45,6 @@
     {
       "CLASSNAME": "askew.entity.BackgroundEntity",
       "INSTANCE": {
-        "x": -13.4387455,
-        "y": 19.38625,
-        "width": 3.0,
-        "height": 3.0,
-        "depth": 5.0,
-        "angle": 0.0,
-        "scalex": 1.0,
-        "scaley": 1.0,
-        "texturePath": "texture/background/BackgroundStuff/eyes.png",
-        "color": -176
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.BackgroundEntity",
-      "INSTANCE": {
         "x": 15.924998,
         "y": 12.187496,
         "width": 25.0,
@@ -192,24 +177,6 @@
         "scaley": 2.0,
         "texturePath": "texture/eye/eyes.png",
         "color": -96
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.tree.Trunk",
-      "INSTANCE": {
-        "x": 24.297012,
-        "y": 9.763008,
-        "angle": 90.0,
-        "numLinks": 7.0
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.tree.Trunk",
-      "INSTANCE": {
-        "x": 13.117008,
-        "y": 13.9880085,
-        "angle": 225.0,
-        "numLinks": 6.0
       }
     },
     {
@@ -458,6 +425,7 @@
         "color": 1914808831,
         "x": 17.34201,
         "y": 13.091012,
+        "thorn": false,
         "points": [
           0.0,
           0.0,
@@ -476,6 +444,7 @@
         "color": 1914808831,
         "x": 23.933018,
         "y": 6.032002,
+        "thorn": false,
         "points": [
           0.0,
           0.0,
@@ -494,6 +463,7 @@
         "color": 1914808831,
         "x": 12.19401,
         "y": 18.928013,
+        "thorn": false,
         "points": [
           0.0,
           0.0,
@@ -510,6 +480,7 @@
         "color": 1914808831,
         "x": 12.18101,
         "y": 15.002012,
+        "thorn": false,
         "points": [
           0.0,
           0.0,
@@ -528,6 +499,7 @@
         "color": 1914808831,
         "x": 11.89501,
         "y": 9.997005,
+        "thorn": false,
         "points": [
           0.0,
           0.0,
@@ -544,6 +516,7 @@
         "color": 1914808831,
         "x": 11.88201,
         "y": 1.8980012,
+        "thorn": false,
         "points": [
           0.0,
           0.0,
@@ -554,6 +527,33 @@
           1.0562544,
           -0.01499939
         ]
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.owl.OwlModel",
+      "INSTANCE": {
+        "x": 22.00249,
+        "y": 9.793327,
+        "pin": {},
+        "owlBody": {}
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 24.297012,
+        "y": 9.763008,
+        "angle": 90.0,
+        "numLinks": 7.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 13.117008,
+        "y": 13.9880085,
+        "angle": 225.0,
+        "numLinks": 6.0
       }
     },
     {
@@ -629,20 +629,13 @@
       }
     },
     {
-      "CLASSNAME": "askew.entity.owl.OwlModel",
-      "INSTANCE": {
-        "x": 22.152012,
-        "y": 10.751008
-      }
-    },
-    {
       "CLASSNAME": "askew.entity.sloth.SlothModel",
       "INSTANCE": {
         "x": -7.0,
         "y": 14.0,
         "lTheta": 0.0,
         "rTheta": 0.0,
-        "airTime": 0
+        "shouldDie": false
       }
     },
     {

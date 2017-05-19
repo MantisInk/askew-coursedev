@@ -15,6 +15,7 @@
 package askew.entity.tree;
 
 import askew.MantisAssetManager;
+import askew.entity.Entity;
 import askew.entity.obstacle.BoxObstacle;
 import askew.entity.obstacle.ComplexObstacle;
 import askew.entity.obstacle.Obstacle;
@@ -44,14 +45,11 @@ public abstract class TreeParent extends ComplexObstacle {
      * The debug name for each plank
      */
     static final float BASIC_DENSITY = 13f;
-    /**
-     * The density of each plank in the bridge
-     */
-    static final float lwidth = .25f;
-    static final float lheight = 1.0f;
-    /**
-     * The size of the entire bridge
-     */
+
+
+    static final float PLANK_WIDTH = .10f;
+    static final float PLANK_HEIGHT = 1.0f;
+
 
 //	@Getter @Setter
 //	private transient float x;
@@ -84,6 +82,8 @@ public abstract class TreeParent extends ComplexObstacle {
 
 
     TreeParent(float x, float y) {
+
+        this.setDrawNumber(Entity.DN_STICK);
 //		setName(TRUNK_NAME);
 //		numLinks = length;
 //		this.x = x;

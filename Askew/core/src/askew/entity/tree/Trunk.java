@@ -86,7 +86,7 @@ public class Trunk extends TreeParent {
     }
 
     public void build() {
-        planksize = new Vector2(lwidth, lheight);
+        planksize = new Vector2(PLANK_WIDTH, PLANK_HEIGHT);
 
         // Compute the bridge length
         dimension = new Vector2(0, numLinks);
@@ -96,21 +96,21 @@ public class Trunk extends TreeParent {
         norm.rotate(angle);
 
         // If too small, only make one plank.
-        int nLinks = (int) (length / lheight);
+        int nLinks = (int) (length / PLANK_HEIGHT);
         if (nLinks <= 1) {
             nLinks = 1;
-//			lheight = length;
+//			PLANK_HEIGHT = length;
             spacing = 0;
         } else {
-            spacing = length - nLinks * lheight;
+            spacing = length - nLinks * PLANK_HEIGHT;
             spacing /= (nLinks - 1);
         }
 
         // Create the planks
-        planksize.y = lheight;
+        planksize.y = PLANK_HEIGHT;
         Vector2 pos = new Vector2();
         for (int ii = 0; ii < nLinks; ii++) {
-            float t = ii * (lheight + spacing) + lheight / 2.0f;
+            float t = ii * (PLANK_HEIGHT + spacing) + PLANK_HEIGHT / 2.0f;
             pos.set(norm);
             pos.scl(t);
             pos.add(x, y);
@@ -120,6 +120,7 @@ public class Trunk extends TreeParent {
             plank.setAngle((float) Math.toRadians(angle));
             plank.setBodyType(BodyDef.BodyType.StaticBody);
             plank.setDrawScale(drawScale);
+            plank.setCustomScale(2.5f,1.0f);
             Filter f = new Filter();
             f.maskBits = FilterGroup.WALL | FilterGroup.SLOTH | FilterGroup.HAND;
             f.categoryBits = FilterGroup.VINE;
@@ -127,7 +128,7 @@ public class Trunk extends TreeParent {
             bodies.add(plank);
         }
         final_norm = new Vector2(pos);
-        final_norm.add(0, lheight / 2);
+        final_norm.add(0, PLANK_HEIGHT / 2);
     }
 
     /**
@@ -147,8 +148,8 @@ public class Trunk extends TreeParent {
 
         Joint joint;
 
-        Vector2 anchor1 = new Vector2(0, lheight / 2);
-        Vector2 anchor2 = new Vector2(0, -lheight / 2);
+        Vector2 anchor1 = new Vector2(0, PLANK_HEIGHT / 2);
+        Vector2 anchor2 = new Vector2(0, -PLANK_HEIGHT / 2);
 
         // Link the planks together
         for (int ii = 0; ii < bodies.size - 1; ii++) {

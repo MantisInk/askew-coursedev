@@ -12,7 +12,15 @@ public abstract class Entity implements Comparable {
     private final transient Vector2 objectScaleCache = new Vector2();
     protected transient Vector2 drawScale;
     protected transient Vector2 objectScale;
+
     protected transient int drawNumber = 0;
+    public static final int DN_SLOTH = -20;
+    public static final int DN_VINE = -3;
+    public static final int DN_WALL = -4;
+    public static final int DN_STICK = -2;
+
+
+
 
     public abstract Vector2 getPosition();
 

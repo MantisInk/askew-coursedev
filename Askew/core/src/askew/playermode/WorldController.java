@@ -106,7 +106,7 @@ public abstract class WorldController implements Screen {
     /**
      * Retro font for displaying messages
      */
-    protected final boolean playingMusic;
+    protected boolean playingMusic;
     /**
      * Track all loaded assets (for unloading purposes)
      */
@@ -143,6 +143,7 @@ public abstract class WorldController implements Screen {
     /**
      * The world scale
      */
+    @Getter
     protected Vector2 worldScale;
     /**
      * Whether or not debug mode is active
@@ -435,6 +436,7 @@ public abstract class WorldController implements Screen {
      */
     protected void addObject(Entity obj) {
         //assert inBounds(obj) : "Object is not in bounds";
+
         entities.add(obj);
         if (obj instanceof Obstacle) {
             ((Obstacle) obj).activatePhysics(world);
@@ -460,7 +462,10 @@ public abstract class WorldController implements Screen {
      * <p>
      * This method disposes of the world and creates a new one.
      */
-    public abstract void reset();
+    public void reset() {
+        playingMusic = GlobalConfiguration.getInstance().getAsBoolean
+                ("enableMusic");
+    }
 
     /**
      * Returns whether to process the update loop

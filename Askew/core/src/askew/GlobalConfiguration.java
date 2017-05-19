@@ -71,6 +71,10 @@ public class GlobalConfiguration {
         return dataBlob.get("currentLevel").getAsInt();
     }
 
+    public int getCurrentMultiLevel() {
+        return dataBlob.get("currentMultiLevel").getAsInt();
+    }
+
     public void setCurrentLevel(int lvl) {
         dataBlob.remove("currentLevel");
         dataBlob.addProperty("currentLevel", lvl);
@@ -98,5 +102,18 @@ public class GlobalConfiguration {
             dataBlob.addProperty("graphics", 0);
         else
             dataBlob.addProperty("graphics", 1);
+    }
+
+    public void setMusic(boolean mode) {
+            dataBlob.addProperty("enableMusic", mode);
+    }
+
+    public void setMultiplayer(boolean multiplayer) {
+        dataBlob.addProperty("multiplayer", multiplayer);
+    }
+
+    public void setCurrentMultiLevel(int currentMultiLevel) {
+        dataBlob.remove("currentMultiLevel");
+        dataBlob.addProperty("currentMultiLevel", currentMultiLevel);
     }
 }

@@ -41,6 +41,7 @@ class DesktopLauncher {
         config.resizable = false;
         config.fullscreen = false;
         config.title = "Askew";
+        config.vSyncEnabled = false;
         config.addIcon("texture/icon.png", Files.FileType.Internal);
         new LwjglApplication(new GDXRoot(), config);
     }

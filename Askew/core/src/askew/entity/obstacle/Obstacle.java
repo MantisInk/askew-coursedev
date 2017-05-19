@@ -926,7 +926,7 @@ public abstract class Obstacle extends Entity {
         setCustomScale(value.x, value.y);
     }
 
-    void setCustomScale(float x, float y) {
+    public void setCustomScale(float x, float y) {
         customScale.set(x, y);
     }
 
