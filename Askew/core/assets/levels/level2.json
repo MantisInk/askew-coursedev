@@ -1,5 +1,5 @@
 {
-  "levelModelVersion": 4,
+  "levelModelVersion": 5,
   "goalTimeGold": 30,
   "goalTimeSilver": 45,
   "goalTimeBronze": 60,
@@ -20,7 +20,7 @@
         "width": 20.0,
         "height": 20.0,
         "depth": 6.0,
-        "angle": 45.0,
+        "angle": 2578.31,
         "scalex": 1.0,
         "scaley": 1.0,
         "texturePath": "texture/background/BackgroundStuff/sil2.png",
@@ -65,7 +65,7 @@
         "width": 15.0,
         "height": 15.0,
         "depth": 4.0,
-        "angle": 180.0,
+        "angle": 10313.24,
         "scalex": 1.0,
         "scaley": 1.0,
         "texturePath": "texture/background/BackgroundStuff/sil2.png",
@@ -429,10 +429,8 @@
     {
       "CLASSNAME": "askew.entity.owl.OwlModel",
       "INSTANCE": {
-        "x": 20.0,
-        "y": 10.0,
-        "pin": {},
-        "owlBody": {}
+        "x": 19.825012,
+        "y": 9.854006
       }
     },
     {
@@ -442,9 +440,7 @@
         "y": 16.87401,
         "lTheta": 0.0,
         "rTheta": 0.0,
-        "airTime": 0,
-        "blinkFrame": 138,
-        "facingFront": true
+        "shouldDie": false
       }
     }
   ]

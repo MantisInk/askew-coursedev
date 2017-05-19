@@ -411,8 +411,10 @@ public abstract class WorldController implements Screen {
      */
     public void setCanvas(GameCanvas canvas) {
         this.canvas = canvas;
-        this.worldScale.x = 1.3f * (float) canvas.getWidth() / bounds.getWidth();
-        this.worldScale.y = 1.3f * (float) canvas.getHeight() / bounds.getHeight();
+        this.worldScale.x = 1.3f * (float) canvas.getWidth() / bounds
+                .getWidth();
+        this.worldScale.y = 1.3f * (float) canvas.getHeight() / bounds
+                .getHeight();
     }
 
     /**
@@ -467,6 +469,7 @@ public abstract class WorldController implements Screen {
                 ("enableMusic");
         bounds.height = DEFAULT_HEIGHT;
         bounds.width = DEFAULT_WIDTH;
+        setWorldScale(canvas);
     }
 
     /**
@@ -644,8 +647,10 @@ public abstract class WorldController implements Screen {
     public void setWorldScale(GameCanvas canvas) {
         //System.out.println("IN SET SCALE");
         //System.out.println("pre set ("+scale.x+","+scale.y+")");
-        this.worldScale.x = 1.0f * (float) canvas.getWidth() / bounds.getWidth();
-        this.worldScale.y = 1.0f * (float) canvas.getHeight() / bounds.getHeight();
+        this.worldScale.x = 1.3f * (float) canvas.getWidth() / bounds
+                .getWidth();
+        this.worldScale.y = 1.3f * (float) canvas.getHeight() / bounds
+                .getHeight();
         //System.out.println("post set ("+scale.x+","+scale.y+")");
     }
 

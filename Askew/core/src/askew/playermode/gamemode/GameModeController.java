@@ -894,8 +894,9 @@ public class GameModeController extends WorldController {
 					instance.stop("bgmusic");
                 victory = true;
                 playerIsReady = false;
-				bounds.width /= 3f;
-				bounds.height /= 3f;
+				bounds.width /= 2f;
+				bounds.height /= 2f;
+				owlOPosX -= bounds.width / 4f;
 				for (SlothModel sloth : slothList) {
 					entities.remove(sloth);
 				}
