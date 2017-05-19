@@ -5,11 +5,13 @@ import askew.GameCanvas;
 import askew.MantisAssetManager;
 import askew.playermode.gamemode.Particles.Particle;
 import com.badlogic.gdx.math.Vector2;
+import lombok.Getter;
 
 @SuppressWarnings("WeakerAccess")
 public abstract class Entity implements Comparable {
     private final transient Vector2 drawScaleCache = new Vector2();
     private final transient Vector2 objectScaleCache = new Vector2();
+    @Getter
     protected transient Vector2 drawScale;
     protected transient Vector2 objectScale;
 

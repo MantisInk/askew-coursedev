@@ -92,6 +92,7 @@ public class SlothModel extends ComplexObstacle {
     private static final float HAND_YOFFSET = 0;
     private static final float BODY_HEIGHT = 1.4f;
     private static final float BODY_WIDTH = 1.8f * (489f / 835f);
+    @Getter
     private static final float ARM_WIDTH = 1.75f;
     private static final float ARM_HEIGHT = 0.5f;
     private static final float ARM_XOFFSET = ARM_WIDTH / 2f + .375f;

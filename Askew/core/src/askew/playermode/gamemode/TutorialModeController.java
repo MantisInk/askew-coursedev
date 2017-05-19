@@ -399,8 +399,9 @@ public class TutorialModeController extends GameModeController {
 				default:
 					System.err.println(currentStage);
 			}
-			if(moveToNextStage())
+			if(moveToNextStage()){
 				next = true;
+			}
 		}
 	}
 
