@@ -19,8 +19,12 @@ import com.badlogic.gdx.math.Vector2;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 @SuppressWarnings("FieldCanBeLocal")
 public class MainMenuController extends WorldController {
+    private float accumulator = 0;
     private static final String FERN_TEXTURE = "texture/background/fern.png";
     private static final String MENU_BACKGROUND1_TEXTURE = "texture/background/menu1.png";
     private static final String MENU_BACKGROUND2_TEXTURE = "texture/background/menu2.png";
@@ -104,8 +108,30 @@ public class MainMenuController extends WorldController {
     private BitmapFont regina1;
     private BitmapFont regina2;
     private MantisAssetManager manager;
+    private final ArrayList<String> menuflow_texturePaths =  new ArrayList<String>(
+            Arrays.asList(
+                    "texture/background/happyswing_01.png",
+                    "texture/background/happyswing_02.png",
+                    "texture/background/happyswing_03.png",
+                    "texture/background/happyswing_04.png",
+                    "texture/background/happyswing_05.png",
+                    "texture/background/happyswing_06.png",
+                    "texture/background/happyswing_07.png",
+                    "texture/background/happyswing_08.png",
+                    "texture/background/happyswing_09.png",
+                    "texture/background/happyswing_10.png",
+                    "texture/background/happyswing_11.png",
+                    "texture/background/happyswing_12.png",
+                    "texture/background/happyswing_14.png",
+                    "texture/background/happyswing_15.png",
+                    "texture/background/happyswing_16.png",
+                    "texture/background/happyswing_17.png",
+                    "texture/background/happyswing_18.png"
+            ));
 
     private Texture fern, menu1, menu2, menu;
+    private final ArrayList<Texture> menuflow_textures = new ArrayList<>();
+    private Texture menuflow;
 
     public MainMenuController() {
         mode = PLAY_BUTTON;
@@ -117,6 +143,7 @@ public class MainMenuController extends WorldController {
         leftDown = false;
         leftLeft = false;
         leftRight = false;
+        accumulator = 0;
         MAX_LEVEL = GlobalConfiguration.getInstance().getAsInt("maxLevel");
         control = GlobalConfiguration.getInstance().getAsInt("flowControlMode") != 1;
         grab = GlobalConfiguration.getInstance().getAsInt("flowMovementMode") != 1;
@@ -136,6 +163,12 @@ public class MainMenuController extends WorldController {
         menu1 = manager.get(MENU_BACKGROUND1_TEXTURE);
         menu2 = manager.get(MENU_BACKGROUND2_TEXTURE);
         menu = manager.get(MENU_BACKGROUND_TEXTURE);
+        Texture tex;
+        for (int i = 0; i < menuflow_texturePaths.size(); i++) {
+            tex = manager.get(menuflow_texturePaths.get(i));
+            menuflow_textures.add(tex);
+        }
+        menuflow = menuflow_textures.get(0);
 
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(fontFile);
         FreeTypeFontGenerator.FreeTypeFontParameter param = new FreeTypeFontGenerator.FreeTypeFontParameter();
@@ -200,6 +233,7 @@ public class MainMenuController extends WorldController {
 
         canvas.begin(); // DO NOT SCALE
         canvas.draw(menu);
+        canvas.draw(menuflow,Color.WHITE,0,menuflow.getHeight(),515,935,0,0.8f,0.8f);
         canvas.end();
         canvas.begin();
         manager.getMenuManager().draw();
@@ -224,6 +258,10 @@ public class MainMenuController extends WorldController {
 
     @Override
     public void update(float dt) {
+//        accumulator = ((accumulator*2+dt))%menuflow_textures.size();
+//        int ind = (int) accumulator;
+//        menuflow = menuflow_textures.get(ind);
+
         InputController input = InputControllerManager.getInstance().getController(0);
         if (mode == HOME_SCREEN) {
             if (mode != prevMode) {
