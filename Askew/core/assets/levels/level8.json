@@ -9,7 +9,7 @@
   "minX": 0.0,
   "minY": -10.0,
   "title": "The One that Tilts You",
-  "background": "texture/background/background1.png",
+  "background": "texture/background/BackgroundStuff/turquoise.png",
   "soundtrack": "TODO",
   "entities": [
     {
@@ -67,18 +67,6 @@
         "x": 12.0,
         "y": 6.0,
         "angle": 30.0,
-        "omega": 0.0,
-        "pin": false,
-        "texture": 0
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.vine.Vine",
-      "INSTANCE": {
-        "numLinks": 5.0,
-        "x": 7.0,
-        "y": 6.0,
-        "angle": -30.0,
         "omega": 0.0,
         "pin": false,
         "texture": 0
@@ -154,6 +142,30 @@
         "omega": 0.0,
         "pin": false,
         "texture": 0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "numLinks": 5.0,
+        "x": 8.905001,
+        "y": 4.0299997,
+        "angle": 5.0,
+        "omega": -400.0,
+        "pin": false,
+        "texture": 0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "numLinks": 5.0,
+        "x": 7.007001,
+        "y": 5.993,
+        "angle": -30.0,
+        "omega": 0.0,
+        "pin": false,
+        "texture": 2
       }
     },
     {

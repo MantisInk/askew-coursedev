@@ -34,7 +34,7 @@ class JsonEntityFactory {
         // FIXME: Pretty sure this is a bug. -trevor
         Texture managedTexture = manager.get(Vine.VINE_TEXTURES[texture], Texture.class);
         //TextureRegion vineTexture = new TextureRegion(managedTexture);
-        vine = new Vine(x, y, numlinks, angle, omega, 0);
+        vine = new Vine(x, y, numlinks, angle, omega, texture);
         vine.setTextures(manager);
         return vine;
     }
