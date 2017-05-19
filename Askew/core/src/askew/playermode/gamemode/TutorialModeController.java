@@ -249,7 +249,7 @@ public class TutorialModeController extends GameModeController {
 		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("font/ReginaFree.ttf"));
 		FreeTypeFontGenerator.FreeTypeFontParameter param = new FreeTypeFontGenerator.FreeTypeFontParameter();
 		param.size = 56;
-		param.color = Color.YELLOW;
+		param.color = Color.CYAN;
 		param.shadowColor = Color.LIGHT_GRAY;
 		param.shadowOffsetX = 1;
 		param.shadowOffsetY = 1;
@@ -377,6 +377,7 @@ public class TutorialModeController extends GameModeController {
 			} else {
 				System.out.println("tutorial completed");
 				GlobalConfiguration.getInstance().setCurrentLevel(1);
+				System.out.println(GlobalConfiguration.getInstance().getCurrentLevel());
 				listener.exitScreen(this, EXIT_TL_GM);
 				return false;
 			}
@@ -483,7 +484,7 @@ public class TutorialModeController extends GameModeController {
 					omega_0 = omega;
 					grabs = 0;
 				}
-				if (grabs > 2.5) {
+				if (grabs > 2f) {
 					ebbLvl++;
 				}
 //				System.out.print("time "+grabs+"   ");
@@ -1041,11 +1042,11 @@ public class TutorialModeController extends GameModeController {
 //		canvas.draw(container, Color.WHITE, container.getWidth() / 2, 0, 425, 300, 0, worldScale.x * 5 / container.getWidth(), worldScale.y * 5 / container.getHeight());
 				if(currentStage == STAGE_PINNED) {
 					if(moveLeftArm){
-						canvas.draw(joystickTexture, Color.WHITE, joystickTexture.getRegionWidth() / 2, 0, 350, 450, 0, worldScale.x / joystickTexture.getRegionWidth(), worldScale.y / joystickTexture.getRegionHeight());
-						canvas.draw(joystickNeutralTexture, Color.WHITE, joystickNeutralTexture.getRegionWidth() / 2, 0, 450, 450, 0, worldScale.x / joystickNeutralTexture.getRegionWidth(), worldScale.y / joystickNeutralTexture.getRegionHeight());
+						canvas.draw(joystickTexture, Color.WHITE, joystickTexture.getRegionWidth() / 2, 0, 350, 50, 0, worldScale.x / joystickTexture.getRegionWidth(), worldScale.y / joystickTexture.getRegionHeight());
+						canvas.draw(joystickNeutralTexture, Color.WHITE, joystickNeutralTexture.getRegionWidth() / 2, 0, 1250, 50, 0, worldScale.x / joystickNeutralTexture.getRegionWidth(), worldScale.y / joystickNeutralTexture.getRegionHeight());
 					} else{
-						canvas.draw(joystickNeutralTexture, Color.WHITE, joystickNeutralTexture.getRegionWidth() / 2, 0, 350, 450, 0, worldScale.x / joystickNeutralTexture.getRegionWidth(), worldScale.y / joystickNeutralTexture.getRegionHeight());
-						canvas.draw(joystickTexture, Color.WHITE, joystickTexture.getRegionWidth() / 2, 0, 450, 450, 0, worldScale.x / joystickTexture.getRegionWidth(), worldScale.y / joystickTexture.getRegionHeight());
+						canvas.draw(joystickNeutralTexture, Color.WHITE, joystickNeutralTexture.getRegionWidth() / 2, 0, 350, 50, 0, worldScale.x / joystickNeutralTexture.getRegionWidth(), worldScale.y / joystickNeutralTexture.getRegionHeight());
+						canvas.draw(joystickTexture, Color.WHITE, joystickTexture.getRegionWidth() / 2, 0, 1250, 50, 0, worldScale.x / joystickTexture.getRegionWidth(), worldScale.y / joystickTexture.getRegionHeight());
 					}
 				} else if(currentStage == STAGE_GRAB) {
 					if (!grabbedAll) {
@@ -1060,39 +1061,39 @@ public class TutorialModeController extends GameModeController {
 		} else if (currentStage == STAGE_EBB) {
 			switch(ebbLvl) {
 				case ebbGrabPts:
-					canvas.drawTextCentered("Try to grab all 4 endpoints", instrFont, 275f);
+					canvas.drawTextCentered("Grab all 4 endpoints", instrFont, 300);
 					break;
 				case ebbFlag:
-					canvas.drawTextCentered("Try to hold Flow's arms horizontally \nwithout grabbing for 2.5s", instrFont, 275f);
+					canvas.drawTextCentered("Hold Flow's arms horizontally \nwithout grabbing for 2s", instrFont, 300);
 					canvas.drawText("time held: "+((int)(grabs*100))/100.0, instrFont, 0.4f*canvas.getWidth(), 0.3f*canvas.getHeight());
 					break;
 				case ebbFling:
-					canvas.drawTextCentered("Try to fling from one short \ntrunk to the other", instrFont, 275f);
+					canvas.drawTextCentered("Try to fling from one short \nbranch to the other", instrFont, 300);
 					break;
 				case ebbFlingUp:
-					canvas.drawTextCentered("Now try flinging upwards", instrFont, 275f);
+					canvas.drawTextCentered("Now try flinging upwards", instrFont, 300);
 					break;
 				case ebbVine1:
-					canvas.drawTextCentered("Use the vine to reach \nthe next trunk", instrFont, 275f);
+					canvas.drawTextCentered("Use the vine to reach \nthe next branch", instrFont, 300);
 					break;
 				case ebbVine2:
-					canvas.drawTextCentered("Use the next 2 vines \nto reach the following trunk", instrFont, 275f);
+					canvas.drawTextCentered("Use the next 2 vines \nto reach the following branch", instrFont, 300);
 					break;
 				default:
-					canvas.drawTextCentered("Reach Cherry the owl \nto complete the tutorial", instrFont, 275f);
+					canvas.drawTextCentered("Reach Cherry the owl \nto complete the tutorial", instrFont, 300);
 			}
 		}
 		if (currentStage >= STAGE_GRAB) {
 			if(slothList.get(0).isActualRightGrab()) {
-				canvas.draw(rPressed, Color.WHITE, rPressed.getWidth() / 2, 0, 450, 550, 0, worldScale.x / rPressed.getWidth(), worldScale.y / rPressed.getHeight());
-				canvas.draw(lUp, Color.WHITE, lUp.getWidth() / 2, 0, 350, 550, 0, worldScale.x / lUp.getWidth(), worldScale.y / lUp.getHeight());
-				canvas.draw(joystickTexture, Color.WHITE, joystickTexture.getRegionWidth() / 2, 0, 350, 450, 0, worldScale.x / joystickTexture.getRegionWidth(), worldScale.y / joystickTexture.getRegionHeight());
-				canvas.draw(joystickNeutralTexture, Color.WHITE, joystickNeutralTexture.getRegionWidth() / 2, 0, 450, 450, 0, worldScale.x/ joystickNeutralTexture.getRegionWidth(), worldScale.y / joystickNeutralTexture.getRegionHeight());
+				canvas.draw(lUp, Color.WHITE, lUp.getWidth() / 2, 0, 350, 150, 0, worldScale.x / lUp.getWidth(), worldScale.y / lUp.getHeight());
+				canvas.draw(rPressed, Color.WHITE, rPressed.getWidth() / 2, 0, 1250, 150, 0, worldScale.x / rPressed.getWidth(), worldScale.y / rPressed.getHeight());
+				canvas.draw(joystickTexture, Color.WHITE, joystickTexture.getRegionWidth() / 2, 0, 350, 50, 0, worldScale.x / joystickTexture.getRegionWidth(), worldScale.y / joystickTexture.getRegionHeight());
+				canvas.draw(joystickNeutralTexture, Color.WHITE, joystickNeutralTexture.getRegionWidth() / 2, 0, 1250, 50, 0, worldScale.x/ joystickNeutralTexture.getRegionWidth(), worldScale.y / joystickNeutralTexture.getRegionHeight());
 			} else {
-				canvas.draw(rUp, Color.WHITE, rUp.getWidth() / 2, 0, 450, 550, 0, worldScale.x / rUp.getWidth(), worldScale.y / rUp.getHeight());
-				canvas.draw(lPressed, Color.WHITE, lPressed.getWidth() / 2, 0, 350, 550, 0, worldScale.x / lPressed.getWidth(), worldScale.y / lPressed.getHeight());
-				canvas.draw(joystickNeutralTexture, Color.WHITE, joystickNeutralTexture.getRegionWidth() / 2, 0, 350, 450, 0, worldScale.x / joystickNeutralTexture.getRegionWidth(), worldScale.y / joystickNeutralTexture.getRegionHeight());
-				canvas.draw(joystickTexture, Color.WHITE, joystickTexture.getRegionWidth() / 2, 0, 450, 450, 0, worldScale.x / joystickTexture.getRegionWidth(), worldScale.y / joystickTexture.getRegionHeight());
+				canvas.draw(lPressed, Color.WHITE, lPressed.getWidth() / 2, 0, 350, 150, 0, worldScale.x / lPressed.getWidth(), worldScale.y / lPressed.getHeight());
+				canvas.draw(rUp, Color.WHITE, rUp.getWidth() / 2, 0, 1250, 150, 0, worldScale.x / rUp.getWidth(), worldScale.y / rUp.getHeight());
+				canvas.draw(joystickNeutralTexture, Color.WHITE, joystickNeutralTexture.getRegionWidth() / 2, 0, 350, 50, 0, worldScale.x / joystickNeutralTexture.getRegionWidth(), worldScale.y / joystickNeutralTexture.getRegionHeight());
+				canvas.draw(joystickTexture, Color.WHITE, joystickTexture.getRegionWidth() / 2, 0, 1250, 50, 0, worldScale.x / joystickTexture.getRegionWidth(), worldScale.y / joystickTexture.getRegionHeight());
 			}
 		}
 		if((currentStage == STAGE_PINNED && time > 6f) ||
@@ -1218,10 +1219,10 @@ public class TutorialModeController extends GameModeController {
 					break;
 				case ebbVine1:
 					// reach for vine
-					if(((sloth.isActualLeftGrab() || sloth.isActualRightGrab()) && (checkGrabbedObst(trunkEntities.get(6))))) {
+					if(((sloth.isActualLeftGrab() || sloth.isActualRightGrab()) && (checkGrabbedObst(trunkEntities.get(5))))) {
 						canvas.draw(vine0, new Color(0x7f7f7fFF), 0, 0, 1400, 1600, 0, 1, 1);
 						// swing on vine
-					} else {
+					} else if (checkGrabbedObst(vineEntities.get(0))) {
 						canvas.draw(vine3, new Color(0x7f7f7fFF), vine3.getWidth(), vine3.getHeight(), 1600, 2000, 0, 1, 1);
 						canvas.draw(vine1, new Color(0x7f7f7fFF), 0, vine1.getHeight(), 1600, 2000, 0, 1, 1);
 						canvas.draw(vine2, new Color(0x7f7f7fFF), 0, vine2.getHeight(), 1600, 2000, 0, 1, 1);
@@ -1338,7 +1339,7 @@ public class TutorialModeController extends GameModeController {
 
 	public void restart() {
         //change back to 1
-        currentStage = 3;
+        currentStage = 1;
     }
 
     public void printVector(Vector2 v) {
