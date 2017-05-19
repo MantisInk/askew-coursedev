@@ -9,25 +9,263 @@
   "minX": 0.0,
   "minY": 0.0,
   "title": "The One That\u0027s Not So Bad",
-  "background": "texture/background/background1.png",
+  "background": "texture/background/BackgroundStuff/turquoise.png",
   "soundtrack": "TODO",
   "entities": [
     {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": -0.1949873,
+        "y": 12.544998,
+        "width": 15.0,
+        "height": 15.0,
+        "depth": 5.0,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/sil6.png",
+        "color": -1
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": -14.611996,
+        "y": 12.115999,
+        "width": 17.0,
+        "height": 17.0,
+        "depth": 4.0,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/pine4.png",
+        "color": 74279679
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 30.524004,
+        "y": 11.232006,
+        "width": 15.0,
+        "height": 15.0,
+        "depth": 4.0,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/pine3.png",
+        "color": 74279679
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 20.176004,
+        "y": 11.699999,
+        "width": 17.0,
+        "height": 17.0,
+        "depth": 4.0,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/pine4.png",
+        "color": 74279679
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 2.9120064,
+        "y": 11.856001,
+        "width": 7.0,
+        "height": 7.0,
+        "depth": 4.0,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/cloud.png",
+        "color": -139
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 4.19901,
+        "y": 10.985001,
+        "width": 15.0,
+        "height": 15.0,
+        "depth": 3.0,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/pine3.png",
+        "color": 74279679
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.EyeEntity",
+      "INSTANCE": {
+        "pathEyes": "texture/eye/eyes.png",
+        "pathPupils": "texture/eye/pupils.png",
+        "x": 19.86401,
+        "y": 6.058,
+        "width": 1.0,
+        "height": 1.0,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/eye/eyes.png",
+        "color": -160
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 9.717503,
+        "y": 1.0919995,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/foreground/fernTile.png",
+        "color": 5855743
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 16.503502,
+        "y": 1.1504996,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/foreground/fernTile.png",
+        "color": 5855743
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": -3.932497,
+        "y": 1.1699996,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/foreground/fernTile.png",
+        "color": 5855743
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 23.036005,
+        "y": 1.2869997,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/foreground/fernTile.png",
+        "color": 5855743
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 17.075512,
+        "y": 0.33149958,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/foreground/fernTile.png",
+        "color": 5855743
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 7.1630025,
+        "y": -0.4679997,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/foreground/fernTile.png",
+        "color": 5855743
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": -2.6454964,
+        "y": 0.05850005,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/foreground/fernTile.png",
+        "color": 5855743
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 2.7755022,
+        "y": 1.1309996,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/foreground/fernTile.png",
+        "color": 5855743
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.ghost.GhostModel",
+      "INSTANCE": {
+        "x": 15.392006,
+        "y": 3.38,
+        "patroldx1": 1.83,
+        "patroldy1": 3.38,
+        "patroldx2": 15.39,
+        "patroldy2": 3.38
+      }
+    },
+    {
       "CLASSNAME": "askew.entity.wall.WallModel",
       "INSTANCE": {
-        "color": -1,
-        "x": 8.0,
-        "y": 12.0,
+        "color": 312186623,
+        "x": 8.073,
+        "y": 9.802004,
         "thorn": false,
         "points": [
           0.0,
           0.0,
           0.0,
           16.0,
-          2.0,
-          16.0,
-          2.0,
-          0.0
+          4.875,
+          15.886015,
+          4.927,
+          -0.013000488
         ]
       }
     },
@@ -43,8 +281,8 @@
     {
       "CLASSNAME": "askew.entity.tree.Trunk",
       "INSTANCE": {
-        "x": 16.0,
-        "y": 3.0,
+        "x": 16.055006,
+        "y": 3.0940013,
         "angle": 0.0,
         "numLinks": 5.0
       }
@@ -95,10 +333,44 @@
       }
     },
     {
+      "CLASSNAME": "askew.entity.tree.PoleVault",
+      "INSTANCE": {
+        "numLinks": 6.0,
+        "angle": 90.0,
+        "linksize": 1.0,
+        "x": 7.9820004,
+        "y": 14.027008
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "numLinks": 3.5,
+        "x": 12.974006,
+        "y": 9.815002,
+        "angle": 5.0,
+        "omega": -400.0,
+        "pin": false,
+        "texture": 1
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "numLinks": 5.0,
+        "x": 8.060006,
+        "y": 9.802004,
+        "angle": 5.0,
+        "omega": -400.0,
+        "pin": false,
+        "texture": 1
+      }
+    },
+    {
       "CLASSNAME": "askew.entity.owl.OwlModel",
       "INSTANCE": {
-        "x": 17.94001,
-        "y": 7.839
+        "x": 18.213009,
+        "y": 7.761003
       }
     },
     {
