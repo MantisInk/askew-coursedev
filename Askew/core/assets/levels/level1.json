@@ -90,8 +90,8 @@
     {
       "CLASSNAME": "askew.entity.BackgroundEntity",
       "INSTANCE": {
-        "x": 2.3270006,
-        "y": 8.268003,
+        "x": 5.083002,
+        "y": 5.9800014,
         "width": 10.0,
         "height": 10.0,
         "depth": 3.0,
@@ -105,8 +105,8 @@
     {
       "CLASSNAME": "askew.entity.BackgroundEntity",
       "INSTANCE": {
-        "x": -9.815,
-        "y": 9.619999,
+        "x": -10.231,
+        "y": 9.282006,
         "width": 15.0,
         "height": 15.0,
         "depth": 2.0,
@@ -135,8 +135,8 @@
     {
       "CLASSNAME": "askew.entity.BackgroundEntity",
       "INSTANCE": {
-        "x": 3.5230007,
-        "y": 5.824003,
+        "x": 6.500003,
+        "y": 5.382002,
         "width": 4.0,
         "height": 4.0,
         "depth": 1.5,
@@ -654,8 +654,8 @@
     {
       "CLASSNAME": "askew.entity.BackgroundEntity",
       "INSTANCE": {
-        "x": -6.995623,
-        "y": 9.78656,
+        "x": -8.709999,
+        "y": 10.088007,
         "width": 3.0,
         "height": 3.0,
         "depth": 0.75,
