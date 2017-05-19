@@ -941,9 +941,15 @@ public class GameModeController extends WorldController {
 				e.draw(canvas);
 			}
 			canvas.end();
+			Gdx.gl.glEnable(GL20.GL_BLEND);
+			Color coverColor = new Color(0, 0, 0, 0.25f);
+			canvas.drawRectangle(coverColor, 0, 0, canvas.getWidth(), canvas
+					.getHeight());
+			Gdx.gl.glClear(GL20.GL_DEPTH_BUFFER_BIT);
 			canvas.begin();
 			victoryCutscene.draw(canvas);
 			canvas.end();
+//			Gdx.gl.glDisable(GL20.GL_BLEND);
 			canvas.begin();
 			manager.getMenuManager().draw();
 			canvas.end();
@@ -1099,7 +1105,7 @@ public class GameModeController extends WorldController {
 				canvas.drawRectangle(coverColor, 0, 0, canvas.getWidth(), canvas
 						.getHeight());
 				coverOpacity -= (1 / CYCLES_OF_INTRO);
-				Gdx.gl.glDisable(GL20.GL_BLEND);
+//				Gdx.gl.glDisable(GL20.GL_BLEND);
 				canvas.begin();
 				if (!playerIsReady && !paused && !victory)
 					canvas.drawTextCentered(levelModel.getTitle(), displayFont, 0f);

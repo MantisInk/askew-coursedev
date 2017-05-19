@@ -21,7 +21,7 @@ public class VictoryCutscene {
     private static final float[] owlposx = {
             -0.10f, 0.00f, 0.07f, .16f, .28f,
             .32f,.35f,.42f,.45f,.50f,
-            .57f,.70f,.75f,80f,.85f,.90f,.95f,1f
+            .57f,.70f,.75f,.80f,.85f,.90f,.95f,1f
     };
     private static final float[] owlposy = {
             0.3f, 0.3f, 0.3f, 0.3f, 0.3f,
@@ -98,7 +98,7 @@ public class VictoryCutscene {
                         (int) (ch / 1.5f)
                 );
 
-                if (owlFrame < 11) {
+                if (owlFrame < 10) {
                     // ebb not rekt
                     // flow
                     drawFrame = happyFlowAnimation.getKeyFrame(flowElapseTime, true);
