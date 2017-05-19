@@ -1101,9 +1101,7 @@ public class TutorialModeController extends GameModeController {
 			canvas.drawTextCentered("Press A to continue", instrFont, 200f);
 		}
 		if(currentStage == STAGE_PINNED) {
-			if (time < 6f) {
-				canvas.drawTextCentered("Practice moving one arm at a time", instrFont, 250f);
-			}
+			canvas.drawTextCentered("Practice moving one arm at a time", instrFont, 250f);
 			if (moveLeftArm) {
 				canvas.draw(rPressed, Color.WHITE, rPressed.getWidth() / 2, 0, 365, 150, 0, worldScale.x / rPressed.getWidth(), worldScale.y / rPressed.getHeight());
 				canvas.drawTextCentered("Press RB to switch arms", instrFont, -250f);

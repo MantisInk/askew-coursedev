@@ -4,9 +4,9 @@
   "goalTimeSilver": 45,
   "goalTimeBronze": 60,
   "recordTime": 9999999.0,
-  "maxX": 20.0,
+  "maxX": 10.0,
   "maxY": 20.0,
-  "minX": -7.0,
+  "minX": -15.0,
   "minY": 0.0,
   "title": "Grabbing",
   "background": "texture/background/BackgroundStuff/rusty.png",
@@ -67,10 +67,10 @@
     {
       "CLASSNAME": "askew.entity.tree.Trunk",
       "INSTANCE": {
-        "x": -3.96,
-        "y": 14.019997,
+        "x": -9.0,
+        "y": 14.0,
         "angle": -90.0,
-        "numLinks": 4.0
+        "numLinks": 9.0
       }
     },
     {
@@ -187,10 +187,11 @@
     {
       "CLASSNAME": "askew.entity.sloth.SlothModel",
       "INSTANCE": {
-        "x": -1.8600006,
-        "y": 14.039996,
+        "x": -7.0,
+        "y": 14.0,
         "lTheta": 0.0,
-        "rTheta": 0.0
+        "rTheta": 0.0,
+        "airTime": 0
       }
     }
   ]
