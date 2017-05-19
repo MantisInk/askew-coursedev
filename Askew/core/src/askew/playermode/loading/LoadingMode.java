@@ -79,7 +79,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
     /**
      * Ration of the bar height to the screen
      */
-    private static final float BAR_HEIGHT_RATIO = 0.25f;
+    private static final float BAR_HEIGHT_RATIO = 0.20f;
     /**
      * Height of the progress bar
      */

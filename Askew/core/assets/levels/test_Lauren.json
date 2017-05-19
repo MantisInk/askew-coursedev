@@ -1,249 +1,210 @@
 {
-  "levelModelVersion": 3,
+  "levelModelVersion": 5,
   "goalTimeGold": 30,
   "goalTimeSilver": 45,
   "goalTimeBronze": 60,
   "recordTime": 9999999.0,
-  "maxX": 100.0,
-  "maxY": 100.0,
+  "maxX": 29.0,
+  "maxY": 20.0,
   "minX": 0.0,
   "minY": 0.0,
-  "title": "Title",
-  "background": "texture/background/background1.png",
+  "title": "Climb",
+  "background": "texture/background/BackgroundStuff/rusty.png",
   "soundtrack": "TODO",
   "entities": [
     {
-      "CLASSNAME": "askew.entity.sloth.SlothModel",
+      "CLASSNAME": "askew.entity.BackgroundEntity",
       "INSTANCE": {
-        "x": 3.0387497,
-        "y": 4.2575,
-        "lTheta": 0.0,
-        "rTheta": 0.0,
-        "grabbed": false
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.tree.Trunk",
-      "INSTANCE": {
-        "x": 1.9987497,
-        "y": 4.095,
+        "x": 17.277008,
+        "y": 7.553003,
+        "width": 15.0,
+        "height": 15.0,
+        "depth": 4.0,
         "angle": 0.0,
-        "numLinks": 12.0,
-        "grabbed": false
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/sil4.png",
+        "color": 1831665919
       }
     },
     {
-      "CLASSNAME": "askew.entity.tree.Trunk",
+      "CLASSNAME": "askew.entity.BackgroundEntity",
       "INSTANCE": {
-        "x": 4.0625,
-        "y": 4.04625,
+        "x": 14.768007,
+        "y": 10.673002,
+        "width": 8.0,
+        "height": 8.0,
+        "depth": 4.0,
         "angle": 0.0,
-        "numLinks": 12.0,
-        "grabbed": false
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/cloud1.png",
+        "color": -160
       }
     },
     {
-      "CLASSNAME": "askew.entity.tree.Trunk",
+      "CLASSNAME": "askew.entity.BackgroundEntity",
       "INSTANCE": {
-        "x": 21.986256,
-        "y": 13.958746,
-        "angle": 90.0,
-        "numLinks": 4.0,
-        "grabbed": false
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.tree.Trunk",
-      "INSTANCE": {
-        "x": 5.9799995,
-        "y": 5.98,
-        "angle": 90.0,
-        "numLinks": 4.0,
-        "grabbed": false
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.tree.Trunk",
-      "INSTANCE": {
-        "x": 5.915,
-        "y": 7.962498,
-        "angle": 90.0,
-        "numLinks": 4.0,
-        "grabbed": false
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.tree.Trunk",
-      "INSTANCE": {
-        "x": 6.0287495,
-        "y": 10.026249,
-        "angle": 90.0,
-        "numLinks": 4.0,
-        "grabbed": false
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.tree.Trunk",
-      "INSTANCE": {
-        "x": 5.9799986,
-        "y": 12.008745,
-        "angle": 90.0,
-        "numLinks": 4.0,
-        "grabbed": false
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.tree.Trunk",
-      "INSTANCE": {
-        "x": 5.8824997,
-        "y": 14.0724945,
-        "angle": 90.0,
-        "numLinks": 4.0,
-        "grabbed": false
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.tree.Trunk",
-      "INSTANCE": {
-        "x": 20.019997,
-        "y": 4.111251,
+        "x": 11.089001,
+        "y": 10.530006,
+        "width": 15.0,
+        "height": 15.0,
+        "depth": 3.0,
         "angle": 0.0,
-        "numLinks": 12.0,
-        "grabbed": false
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/sil2.png",
+        "color": -1387790081
       }
     },
     {
-      "CLASSNAME": "askew.entity.tree.Trunk",
+      "CLASSNAME": "askew.entity.BackgroundEntity",
       "INSTANCE": {
-        "x": 5.996246,
-        "y": 3.997501,
-        "angle": 90.0,
-        "numLinks": 4.0,
-        "grabbed": false
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.tree.Trunk",
-      "INSTANCE": {
-        "x": 5.996246,
-        "y": 4.0300007,
+        "x": 13.130008,
+        "y": 4.056,
+        "width": 8.0,
+        "height": 8.0,
+        "depth": 2.0,
         "angle": 0.0,
-        "numLinks": 12.0,
-        "grabbed": false
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/palmTreeBig.png",
+        "color": -1
       }
     },
     {
-      "CLASSNAME": "askew.entity.tree.Trunk",
+      "CLASSNAME": "askew.entity.BackgroundEntity",
       "INSTANCE": {
-        "x": 2.0149994,
-        "y": 15.989996,
-        "angle": 270.0,
-        "numLinks": 20.0,
-        "grabbed": false
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.tree.Trunk",
-      "INSTANCE": {
-        "x": 18.037495,
-        "y": 4.062501,
+        "x": 17.992012,
+        "y": -0.33799982,
+        "width": 5.0,
+        "height": 5.0,
+        "depth": 1.5,
         "angle": 0.0,
-        "numLinks": 12.0,
-        "grabbed": false
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/palms.png",
+        "color": -1
       }
     },
     {
-      "CLASSNAME": "askew.entity.tree.Trunk",
+      "CLASSNAME": "askew.entity.BackgroundEntity",
       "INSTANCE": {
-        "x": 22.002506,
-        "y": 4.1275005,
+        "x": 21.762012,
+        "y": -0.8709998,
+        "width": 5.0,
+        "height": 5.0,
+        "depth": 1.5,
         "angle": 0.0,
-        "numLinks": 12.0,
-        "grabbed": false
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/palms.png",
+        "color": -1
       }
     },
     {
-      "CLASSNAME": "askew.entity.tree.Trunk",
+      "CLASSNAME": "askew.entity.BackgroundEntity",
       "INSTANCE": {
-        "x": 21.953754,
-        "y": 3.9650006,
-        "angle": 90.0,
-        "numLinks": 4.0,
-        "grabbed": false
+        "x": 25.818012,
+        "y": -0.14300013,
+        "width": 5.0,
+        "height": 5.0,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/palms.png",
+        "color": -1
       }
     },
     {
-      "CLASSNAME": "askew.entity.tree.Trunk",
+      "CLASSNAME": "askew.entity.BackgroundEntity",
       "INSTANCE": {
-        "x": 22.002506,
-        "y": 6.0450006,
-        "angle": 90.0,
-        "numLinks": 4.0,
-        "grabbed": false
+        "x": 9.282007,
+        "y": -0.70200014,
+        "width": 5.0,
+        "height": 5.0,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/palms.png",
+        "color": -1
       }
     },
     {
-      "CLASSNAME": "askew.entity.tree.Trunk",
+      "CLASSNAME": "askew.entity.BackgroundEntity",
       "INSTANCE": {
-        "x": 21.953754,
-        "y": 7.9625,
-        "angle": 90.0,
-        "numLinks": 4.0,
-        "grabbed": false
+        "x": -0.46799755,
+        "y": -0.83200026,
+        "width": 5.0,
+        "height": 5.0,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/palms.png",
+        "color": -1
       }
     },
     {
-      "CLASSNAME": "askew.entity.tree.Trunk",
+      "CLASSNAME": "askew.entity.BackgroundEntity",
       "INSTANCE": {
-        "x": 21.970005,
-        "y": 9.99375,
-        "angle": 90.0,
-        "numLinks": 4.0,
-        "grabbed": false
+        "x": 14.443007,
+        "y": -0.80599976,
+        "width": 5.0,
+        "height": 5.0,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/palms.png",
+        "color": -1
       }
     },
     {
-      "CLASSNAME": "askew.entity.tree.Trunk",
+      "CLASSNAME": "askew.entity.BackgroundEntity",
       "INSTANCE": {
-        "x": 21.953754,
-        "y": 11.976248,
-        "angle": 90.0,
-        "numLinks": 4.0,
-        "grabbed": false
+        "x": -2.7559974,
+        "y": 0.9619999,
+        "width": 4.0,
+        "height": 4.0,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/leafPalm.png",
+        "color": -1
       }
     },
     {
-      "CLASSNAME": "askew.entity.vine.Vine",
+      "CLASSNAME": "askew.entity.BackgroundEntity",
       "INSTANCE": {
-        "numLinks": 5.0,
-        "x": 8.986247,
-        "y": 15.892496,
-        "angle": 5.0,
-        "omega": -400.0,
-        "pin": false,
-        "texture": 0,
-        "grabbed": false
+        "x": 3.250002,
+        "y": -0.71500015,
+        "width": 4.0,
+        "height": 4.0,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/leafPalm.png",
+        "color": -1
       }
     },
     {
-      "CLASSNAME": "askew.entity.vine.Vine",
+      "CLASSNAME": "askew.entity.BackgroundEntity",
       "INSTANCE": {
-        "numLinks": 5.0,
-        "x": 14.039997,
-        "y": 16.038746,
-        "angle": 5.0,
-        "omega": -400.0,
-        "pin": false,
-        "texture": 0,
-        "grabbed": false
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.owl.OwlModel",
-      "INSTANCE": {
-        "x": 21.352497,
-        "y": 4.9075007,
-        "grabbed": false
+        "x": 6.4610023,
+        "y": -0.4420004,
+        "width": 4.0,
+        "height": 4.0,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/leafPalm.png",
+        "color": -1
       }
     },
     {
@@ -254,8 +215,7 @@
         "patroldx1": 16.0,
         "patroldy1": 10.0,
         "patroldx2": 24.0,
-        "patroldy2": 10.0,
-        "grabbed": false
+        "patroldy2": 10.0
       }
     },
     {
@@ -266,20 +226,232 @@
         "patroldx1": 6.0,
         "patroldy1": 17.5,
         "patroldx2": 18.0,
-        "patroldy2": 17.5,
-        "grabbed": false
+        "patroldy2": 17.5
       }
     },
     {
       "CLASSNAME": "askew.entity.ghost.GhostModel",
       "INSTANCE": {
-        "x": 14.0,
-        "y": 14.0,
+        "x": 14.248005,
+        "y": 13.988009,
         "patroldx1": 14.0,
         "patroldy1": 14.0,
         "patroldx2": 24.0,
-        "patroldy2": 14.0,
-        "grabbed": false
+        "patroldy2": 14.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 1.9987497,
+        "y": 4.095,
+        "angle": 0.0,
+        "numLinks": 12.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 4.0625,
+        "y": 4.04625,
+        "angle": 0.0,
+        "numLinks": 12.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 21.986256,
+        "y": 13.958746,
+        "angle": 90.0,
+        "numLinks": 4.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 5.9799995,
+        "y": 5.98,
+        "angle": 90.0,
+        "numLinks": 4.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 5.915,
+        "y": 7.962498,
+        "angle": 90.0,
+        "numLinks": 4.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 6.0287495,
+        "y": 10.026249,
+        "angle": 90.0,
+        "numLinks": 4.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 5.9799986,
+        "y": 12.008745,
+        "angle": 90.0,
+        "numLinks": 4.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 5.8824997,
+        "y": 14.0724945,
+        "angle": 90.0,
+        "numLinks": 4.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 20.046015,
+        "y": 3.9910002,
+        "angle": 0.0,
+        "numLinks": 12.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 5.996246,
+        "y": 3.997501,
+        "angle": 90.0,
+        "numLinks": 4.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 5.996246,
+        "y": 4.0300007,
+        "angle": 0.0,
+        "numLinks": 12.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 2.0149994,
+        "y": 15.989996,
+        "angle": 270.0,
+        "numLinks": 20.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 18.037495,
+        "y": 4.062501,
+        "angle": 0.0,
+        "numLinks": 12.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 22.002506,
+        "y": 4.1275005,
+        "angle": 0.0,
+        "numLinks": 12.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 21.953754,
+        "y": 3.9650006,
+        "angle": 90.0,
+        "numLinks": 4.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 22.002506,
+        "y": 6.0450006,
+        "angle": 90.0,
+        "numLinks": 4.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 21.953754,
+        "y": 7.9625,
+        "angle": 90.0,
+        "numLinks": 4.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 21.970005,
+        "y": 9.99375,
+        "angle": 90.0,
+        "numLinks": 4.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 21.953754,
+        "y": 11.976248,
+        "angle": 90.0,
+        "numLinks": 4.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "numLinks": 5.0,
+        "x": 8.996004,
+        "y": 15.938009,
+        "angle": 5.0,
+        "omega": -400.0,
+        "pin": false,
+        "texture": 2
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "numLinks": 5.0,
+        "x": 13.975004,
+        "y": 15.96401,
+        "angle": 5.0,
+        "omega": -400.0,
+        "pin": false,
+        "texture": 2
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.owl.OwlModel",
+      "INSTANCE": {
+        "x": 19.266012,
+        "y": 5.8630004
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.sloth.SlothModel",
+      "INSTANCE": {
+        "x": 3.0387497,
+        "y": 4.2575,
+        "lTheta": 0.0,
+        "rTheta": 0.0,
+        "shouldDie": false,
+        "torqueIntegral": 0.0,
+        "temptq": 0.0
       }
     }
   ]

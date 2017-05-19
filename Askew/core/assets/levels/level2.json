@@ -8,7 +8,7 @@
   "maxY": 21.0,
   "minX": -7.0,
   "minY": 5.0,
-  "title": "level2",
+  "title": "Jump!",
   "background": "texture/background/BackgroundStuff/purple.png",
   "soundtrack": "TODO",
   "entities": [
