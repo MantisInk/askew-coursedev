@@ -67,27 +67,20 @@ public class TutorialModeController extends GameModeController {
 	private final float CONTROLLER_DEADZONE = 0.15f;
 
 	private boolean pressedA = false;
-	private boolean prevRightGrab;
-	private boolean prevLeftGrab;
 	private boolean grabbedAll;
 	private boolean moveLeftArm = false;
-
 	private float time = 0f;
-
-	private float elapseTime;
 	private float count;
-
 	BitmapFont instrFont;
 
 	private String lPressedPath = "texture/background/tutorial/lclicked.png";
 	private String rPressedPath = "texture/background/tutorial/rclicked.png";
 	private String lUpPath = "texture/background/tutorial/lup.png";
-	private String rUpPath = "texture/background/tutorial/rup.png";;
-	Texture lPressed;
-	Texture rPressed;
-	Texture lUp;
-	Texture rUp;
-	Texture holdUp;
+	private String rUpPath = "texture/background/tutorial/rup.png";
+	private String lDownPath = "texture/background/tutorial/ldown.png";
+	private String rDownPath = "texture/background/tutorial/rdown.png";
+	Texture lPressed, rPressed, lUp, rUp, lDown, rDown;
+	Texture joystick, holdUp, holdDown, holdLeft, holdRight, swing0, swing1, swing2, swing3, swing4, vine0, vine1, vine2, vine3, vine4;
 	private String joystickPath = "texture/background/tutorial/joystick.png";
 	private String holdUpPath = "texture/background/tutorial/holdUp.png";
 	private String holdDownPath = "texture/background/tutorial/holdDown.png";
@@ -103,8 +96,6 @@ public class TutorialModeController extends GameModeController {
 	private String vine2Path = "texture/background/tutorial/vine2.png";
 	private String vine3Path = "texture/background/tutorial/vine3.png";
 	private String vine4Path = "texture/background/tutorial/vine4.png";
-	Texture joystick;
-	Texture holdDown, holdLeft, holdRight, swing0, swing1, swing2, swing3, swing4, vine0, vine1, vine2, vine3, vine4;
 
 	// list of objects for stage of tutorial
 	private ArrayList<Boolean> trunkGrabbed = new ArrayList<Boolean>();
@@ -212,6 +203,8 @@ public class TutorialModeController extends GameModeController {
 		rPressed = manager.get(rPressedPath);
 		lUp = manager.get(lUpPath);
 		rUp = manager.get(rUpPath);
+		lDown = manager.get(lDownPath);
+		rDown = manager.get(rDownPath);
 		joystick = manager.get(joystickPath);
 
 		holdUp = manager.get(holdUpPath);
@@ -380,7 +373,6 @@ public class TutorialModeController extends GameModeController {
 	public void update(float dt) {
 		super.update(dt);
 		if (!paused) {
-			elapseTime += dt;
 			time = time+dt ;
 			// TODO: move sloth movement in slothmodel
 			slothList.get(0).setTutorial();
@@ -409,8 +401,6 @@ public class TutorialModeController extends GameModeController {
 			}
 			if(moveToNextStage())
 				next = true;
-			prevLeftGrab = slothList.get(0).isActualLeftGrab();
-			prevRightGrab = slothList.get(0).isActualRightGrab();
 		}
 	}
 
@@ -1034,6 +1024,13 @@ public class TutorialModeController extends GameModeController {
 		} else if (7 <= temp && temp < 8){
 			angle = (float)Math.PI*7/4;
 		}
+		temp = (currentTime%2f);
+		boolean bumperDown = false;
+		if (0 <= temp && temp < 1){
+			bumperDown = false;
+		} else {
+			bumperDown = true;
+		}
 
 				if(currentStage == STAGE_PINNED) {
 					if(moveLeftArm){
@@ -1080,13 +1077,21 @@ public class TutorialModeController extends GameModeController {
 		}
 		if (currentStage >= STAGE_GRAB) {
 			if(slothList.get(0).isActualRightGrab()) {
-				canvas.draw(lUp, Color.WHITE, lUp.getWidth() / 2, 0, 350, 150, 0, worldScale.x / lUp.getWidth(), worldScale.y / lUp.getHeight());
+				if(!bumperDown) {
+					canvas.draw(lUp, Color.WHITE, lUp.getWidth() / 2, 0, 350, 150, 0, worldScale.x / lUp.getWidth(), worldScale.y / lUp.getHeight());
+				} else {
+					canvas.draw(lDown, Color.WHITE, lDown.getWidth() / 2, 0, 350, 150, 0, worldScale.x / lDown.getWidth(), worldScale.y / lDown.getHeight());
+				}
 				canvas.draw(rPressed, Color.WHITE, rPressed.getWidth() / 2, 0, 1250, 150, 0, worldScale.x / rPressed.getWidth(), worldScale.y / rPressed.getHeight());
 				canvas.draw(joystick, Color.WHITE, joystick.getWidth() / 2, joystick.getHeight()/2, 350, 75, angle, 1.25f*worldScale.x / joystick.getWidth(), 1.25f*worldScale.y / joystick.getHeight());
 				canvas.draw(joystick, Color.WHITE, joystick.getWidth() / 2, joystick.getHeight()/2, 1250, 75, 0, 1.25f*worldScale.x/ joystick.getWidth(), 1.25f*worldScale.y / joystick.getHeight());
 			} else {
 				canvas.draw(lPressed, Color.WHITE, lPressed.getWidth() / 2, 0, 350, 150, 0, worldScale.x / lPressed.getWidth(), worldScale.y / lPressed.getHeight());
-				canvas.draw(rUp, Color.WHITE, rUp.getWidth() / 2, 0, 1250, 150, 0, worldScale.x / rUp.getWidth(), worldScale.y / rUp.getHeight());
+				if(!bumperDown) {
+					canvas.draw(rUp, Color.WHITE, rUp.getWidth() / 2, 0, 1250, 150, 0, worldScale.x / rUp.getWidth(), worldScale.y / rUp.getHeight());
+				} else {
+					canvas.draw(rDown, Color.WHITE, rDown.getWidth() / 2, 0, 1250, 150, 0, worldScale.x / rDown.getWidth(), worldScale.y / rDown.getHeight());
+				}
 				canvas.draw(joystick, Color.WHITE, joystick.getWidth() / 2, joystick.getHeight()/2, 350, 75, 0, 1.25f*worldScale.x / joystick.getWidth(), 1.25f*worldScale.y / joystick.getHeight());
 				canvas.draw(joystick, Color.WHITE, joystick.getWidth() / 2, joystick.getHeight()/2, 1250, 75, angle, 1.25f*worldScale.x / joystick.getWidth(), 1.25f*worldScale.y / joystick.getHeight());
 			}
