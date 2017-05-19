@@ -454,8 +454,7 @@ public class GameModeController extends WorldController {
 			}
 
 			if (slothId == 2) {
-				assert(GlobalConfiguration.getInstance().getAsBoolean
-						("multiplayer"));
+				if (!multiplayer) multiplayer = true;
 				// Attach the sloths
 //				Vine wtfVine = new Vine(initFlowX, initFlowY, 6, 0, 0, 0,
 //						false);
@@ -549,8 +548,7 @@ public class GameModeController extends WorldController {
 				} else if (updateString.contains("Restart")) {
 					okSound.play();
 					reset();
-				} else if (updateString.contains("Next Level") ||
-						((showStatsTimer < 0) && levelCompleteJunkState !=2 )) {
+				} else if (updateString.contains("BUTT") || ((showStatsTimer < 0) && levelCompleteJunkState !=2 )) {
 					if (levelCompleteJunkState == -1) {
 						manager.getMenuManager().throwJunkOnTheScreen
 								("Sloth " + victorySloth + " Won!");
@@ -582,14 +580,17 @@ public class GameModeController extends WorldController {
 							okSound.play();
 						}
 						levelCompleteJunkState++;
-					} else {
-						playerIsReady = false;
-						int current = GlobalConfiguration.getInstance().getCurrentLevel();
-						GlobalConfiguration.getInstance().setCurrentLevel(current + 1);
-						setLevel();
-						listener.exitScreen(this, EXIT_GM_GM);
 					}
 				}
+				else if (updateString.contains("Level") &&
+							levelCompleteJunkState == 2) {
+							playerIsReady = false;
+							int current = GlobalConfiguration.getInstance().getCurrentLevel();
+							GlobalConfiguration.getInstance().setCurrentLevel(current + 1);
+							setLevel();
+							listener.exitScreen(this, EXIT_GM_GM);
+						}
+
 			}
 		}
 

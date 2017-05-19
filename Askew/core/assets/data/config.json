@@ -12,7 +12,7 @@
   "fullscreen": false,
   "defaultLevel": "level1",
   "storeTimeRecords": true,
-  "maxMultiLevel": 1,
+  "maxMultiLevel": 2,
   "maxLevel": 7,
   "multiplayer": false,
   "currentLevel": 1,

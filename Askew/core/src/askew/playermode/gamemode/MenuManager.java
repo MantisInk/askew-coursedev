@@ -242,6 +242,9 @@ public class MenuManager {
             if (prevIndex != mainButtonIndex)
                 mainButtons.get(mainButtonIndex).toggle();
             if (playSound) blip.play();
+        } else if (input.didLeftButtonPress()) {
+            if (playSound) blip.play();
+            return Optional.of("BUTT");
         }
         return Optional.empty();
     }
