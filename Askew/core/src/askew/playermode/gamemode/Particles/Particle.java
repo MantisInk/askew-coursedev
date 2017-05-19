@@ -96,6 +96,20 @@ public class Particle implements Comparable {
         this.type = 2;
     }
 
+    public void spawnEyes(float x, float y) {
+        this.x = x + (float) ((Math.random() - .5) * 15);
+        this.y = y + (float) ((Math.random() - .5) * 15);
+        this.width = .2f;
+        this.height = .2f;
+        this.depth = 6f + (float) ((Math.random() - .5) * 3);
+//        this.angle = angle;
+        this.tint = new Color(0xFFFFFF4F);
+        this.textureNum = 0;
+        this.deathTime = .75f;
+        this.accumulator = 0;
+        this.type = 3;
+    }
+
 
     public void update(float delta) {
         accumulator += delta;
@@ -108,7 +122,10 @@ public class Particle implements Comparable {
         if(type == 2){
             this.tint.set(1, 1, 1, .25f * (1-t));
         }
-
+        if(type == 3){
+            this.tint.set(1, 1, 1, 0);
+            this.textureNum = (textureNum+1)%4;
+        }
 
     }
 
