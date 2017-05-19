@@ -4,7 +4,7 @@
   "goalTimeSilver": 45,
   "goalTimeBronze": 60,
   "recordTime": 9.213538,
-  "maxX": 22.0,
+  "maxX": 24.0,
   "maxY": 24.0,
   "minX": -4.0,
   "minY": -4.0,
@@ -527,22 +527,22 @@
     {
       "CLASSNAME": "askew.entity.ghost.GhostModel",
       "INSTANCE": {
-        "x": 15.0,
+        "x": 11.0,
         "y": 13.0,
-        "patroldx1": 8.0,
+        "patroldx1": 7.0,
         "patroldy1": 13.0,
-        "patroldx2": 14.0,
+        "patroldx2": 11.0,
         "patroldy2": 13.0
       }
     },
     {
       "CLASSNAME": "askew.entity.ghost.GhostModel",
       "INSTANCE": {
-        "x": 12.0,
+        "x": 14.0,
         "y": 6.0,
-        "patroldx1": 13.0,
+        "patroldx1": 14.0,
         "patroldy1": 6.0,
-        "patroldx2": 17.0,
+        "patroldx2": 18.0,
         "patroldy2": 6.0
       }
     },
@@ -580,15 +580,6 @@
         "y": -4.0,
         "angle": 0.0,
         "numLinks": 22.0
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.tree.Trunk",
-      "INSTANCE": {
-        "x": 0.79300356,
-        "y": 21.125013,
-        "angle": -90.0,
-        "numLinks": 5.0
       }
     },
     {
@@ -688,22 +679,19 @@
       }
     },
     {
-      "CLASSNAME": "askew.entity.vine.Vine",
+      "CLASSNAME": "askew.entity.tree.Trunk",
       "INSTANCE": {
-        "numLinks": 4.0,
-        "x": 8.0,
-        "y": 23.0,
-        "angle": 5.0,
-        "omega": -200.0,
-        "pin": false,
-        "texture": 0
+        "x": -2.0,
+        "y": 20.0,
+        "angle": -90.0,
+        "numLinks": 8.0
       }
     },
     {
       "CLASSNAME": "askew.entity.vine.Vine",
       "INSTANCE": {
         "numLinks": 4.0,
-        "x": 15.0,
+        "x": 8.0,
         "y": 22.0,
         "angle": 5.0,
         "omega": -200.0,
@@ -712,17 +700,29 @@
       }
     },
     {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "numLinks": 4.0,
+        "x": 14.0,
+        "y": 21.0,
+        "angle": 15.0,
+        "omega": -200.0,
+        "pin": false,
+        "texture": 0
+      }
+    },
+    {
       "CLASSNAME": "askew.entity.owl.OwlModel",
       "INSTANCE": {
-        "x": 2.0,
-        "y": 21.0
+        "x": -1.000999,
+        "y": 19.825014
       }
     },
     {
       "CLASSNAME": "askew.entity.sloth.SlothModel",
       "INSTANCE": {
-        "x": 5.1220036,
-        "y": 17.511013,
+        "x": 6.552002,
+        "y": 17.25101,
         "lTheta": 0.0,
         "rTheta": 0.0,
         "shouldDie": false
