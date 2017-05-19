@@ -601,11 +601,13 @@
     {
       "CLASSNAME": "askew.entity.sloth.SlothModel",
       "INSTANCE": {
-        "x": -2.9509993,
-        "y": 16.87401,
+        "x": -3.1849995,
+        "y": 14.911012,
         "lTheta": 0.0,
         "rTheta": 0.0,
-        "shouldDie": false
+        "shouldDie": false,
+        "torqueIntegral": 0.0,
+        "temptq": 0.0
       }
     }
   ]
