@@ -611,7 +611,7 @@ public class SlothModel extends ComplexObstacle {
         // ANTI GIMP - Trevor. Filled with magic ###s
         float maxVelocity = Math.max(Math.abs(rightAngularVelocity),Math.abs(leftAngularVelocity));
         float gimpScale = 1.0f;
-        float CUTOFF = 16.5f;
+        float CUTOFF = 18f;
         if (maxVelocity > CUTOFF) {
             gimpScale = (float) Math.exp(-( (maxVelocity-CUTOFF) / 4.5f));
         }
