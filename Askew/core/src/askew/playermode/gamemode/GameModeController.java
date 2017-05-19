@@ -742,8 +742,12 @@ public class GameModeController extends WorldController {
 								coverOpacity = 2 * (1 - normalizedDistanceFromDeath);
 								if (coverOpacity > 1) coverOpacity = 1;
 								SoundController.getInstance().setVolume("fallmusic", (1 -
-										normalizedDistanceFromDeath)*MAX_MUSIC_VOLUME*2);
-								SoundController.getInstance().setPitch("fallmusic",normalizedDistanceFromDeath*0.6f+0.1f);
+										normalizedDistanceFromDeath)
+										*MAX_MUSIC_VOLUME*2);
+								SoundController.getInstance().setPitch
+										("fallmusic",
+												normalizedDistanceFromDeath
+														*0.1f+0.8f);
 								if (playingMusic)
 									SoundController.getInstance().setVolume("bgmusic",
 											normalizedDistanceFromDeath*MAX_MUSIC_VOLUME);
