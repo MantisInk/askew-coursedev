@@ -20,6 +20,7 @@ public class ParticleController {
     public FogEffect fogEffect;
     public HandTrailEffect handTrailEffect;
     public EyesEffect eyeEffect;
+    public SurpriseEffect surpriseEffect;
     @Setter
     public int graphicsSetting;
 
@@ -40,6 +41,8 @@ public class ParticleController {
         effects.add(handTrailEffect);
         eyeEffect = new EyesEffect(this, unspawned);
         effects.add(eyeEffect);
+        surpriseEffect = new SurpriseEffect(this,unspawned);
+        effects.add(surpriseEffect);
         for (int i = 0; i < maxParticles; ++i) {
             Particle particle = new Particle();
             unspawned.add(particle);
