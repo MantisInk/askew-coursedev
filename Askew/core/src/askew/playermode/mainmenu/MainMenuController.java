@@ -316,7 +316,7 @@ public class MainMenuController extends WorldController {
                     grab = !grab;
                     manager.getMenuManager().updateButtonContainingText
                             ("Grab", "Grab Scheme: " +
-                                    (grab ? "Normal" : "Toggle"));
+                                    (grab ? "Normal" : "Reverse"));
                 }
             } else if (updateString.contains("Graphics Quality")) {
                 if (updateString.contains("ACTION_RIGHT") || updateString

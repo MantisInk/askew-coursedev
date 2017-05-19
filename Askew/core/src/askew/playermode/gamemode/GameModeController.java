@@ -18,10 +18,8 @@ import askew.entity.Entity;
 import askew.entity.obstacle.Obstacle;
 import askew.entity.owl.OwlModel;
 import askew.entity.sloth.SlothModel;
-import askew.entity.vine.Vine;
 import askew.playermode.WorldController;
 import askew.playermode.gamemode.Particles.Effect;
-import askew.playermode.gamemode.Particles.Particle;
 import askew.playermode.gamemode.Particles.ParticleController;
 import askew.playermode.leveleditor.LevelModel;
 import askew.util.RecordBook;
@@ -35,17 +33,12 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.Filter;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
-import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
 /**
  * Gameplay specific controller for Askew.
@@ -171,7 +164,7 @@ public class GameModeController extends WorldController {
 	protected static final int MAX_PARTICLES = 5000;
 	protected static final int INITIAL_FOG = 50;
 
-	protected float fogTime;
+	protected float fogTime,eyeTime;
 	private int levelCompleteJunkState;
 	private int showStatsTimer;
 	private int victorySloth;
@@ -344,6 +337,7 @@ public class GameModeController extends WorldController {
 
 		particleController.reset();
 		fogTime = 0;
+		eyeTime = 0;
 		for(Entity obj : entities) {
 			if( (obj instanceof Obstacle))
 				((Obstacle)obj).deactivatePhysics(world);
@@ -511,6 +505,7 @@ public class GameModeController extends WorldController {
 			for(int i = 0; i < INITIAL_FOG; i++) {
 				particleController.fogEffect.spawn(levelModel.getMaxX()-levelModel.getMinX(),levelModel.getMaxY()-levelModel.getMinY() );
 			}
+			particleController.eyeEffect.spawn(levelModel.getMinX(), levelModel.getMaxX(), levelModel.getMinY(), levelModel.getMaxY());
 			currentTime = 0f;
 			currentGrabs = 0;
 			leftPrevGrab = false;
@@ -824,6 +819,10 @@ public class GameModeController extends WorldController {
 
                 fogTime = currentTime;
             }
+            if (currentTime - eyeTime > 9.8f) {
+				particleController.eyeEffect.spawn(levelModel.getMinX(), levelModel.getMaxX(), levelModel.getMinY(), levelModel.getMaxY());
+				eyeTime = currentTime;
+			}
             particleController.update(dt);
 
 
