@@ -439,6 +439,8 @@ public class SlothModel extends ComplexObstacle {
     private float calculateTorque(float deltaTheta, float omega) {
         //return (float) Math.max(-1.0f,Math.min(1.0f, 1.2 * Math.sin(deltaTheta)));
         return (float) ((10.0 / (1 + Math.exp(omega + (deltaTheta * 4)))) - 5);//#MAGIC 4, DELTA THETA NORMALIZER
+        //return deltaTheta * 2;
+        //return (float) ((10.0 / (1 + Math.exp(omega + (deltaTheta * 4)))) - 5);//#MAGIC 4, DELTA THETA NORMALIZER
     }
 
     /**
@@ -455,6 +457,9 @@ public class SlothModel extends ComplexObstacle {
         }
         return diff;
     }
+
+    private float torqueIntegral = 0;
+    private float temptq = 0;
 
     public void doThePhysics() {
         // TODO: MOVE
@@ -567,13 +572,13 @@ public class SlothModel extends ComplexObstacle {
         float cimpulseR = 0;
         float cimpulseL = 0;
         if (isActualLeftGrab() && rLength > .4f) {
-            counterfL = counterfactor * calculateTorque(dRcLTheta, leftAngularVelocity / OMEGA_NORMALIZER);
+            counterfL = counterfactor * calculateTorque(dRcLTheta, leftAngularVelocity / OMEGA_NORMALIZER) * (((1 - lLength) * .5f) + .5f);
             if (dRcLTheta * cwtrL < 0 && Math.abs(angleChangeRight) < .05f) {
                 cimpulseL = ((leftHand.getMass() * ARM_XOFFSET * ARM_XOFFSET) + leftArm.getInertia()) * leftArm.getAngularVelocity() * -1 * 60 * 3 * (1 - lLength);
             }
         }
         if (isActualRightGrab() && lLength > .4f) {
-            counterfR = counterfactor * calculateTorque(dLcRTheta, rightAngularVelocity / OMEGA_NORMALIZER);
+            counterfR = counterfactor * calculateTorque(dLcRTheta, rightAngularVelocity / OMEGA_NORMALIZER) * (((1 - lLength) * .5f) + .5f);
             if (dLcRTheta * cwtrR < 0 && Math.abs(angleChangeLeft) < .05f) {
                 cimpulseR = ((rightHand.getMass() * ARM_XOFFSET * ARM_XOFFSET) + rightArm.getInertia()) * rightArm.getAngularVelocity() * -1 * 60 * 3 * (1 - rLength);
             }
@@ -601,6 +606,9 @@ public class SlothModel extends ComplexObstacle {
         forceL.set((float) (lTorque * Math.sin(lTheta)), (float) (lTorque * Math.cos(lTheta)));
         forceR.set((float) (rTorque * Math.sin(rTheta)), (float) (rTorque * Math.cos(rTheta)));
 
+
+        float avgTorque = (lTorque + rTorque)/2;
+        System.out.println(avgTorque);
         // ANTI GIMP - Trevor. Filled with magic ###s
         /*
         float maxVelocity = Math.max(Math.abs(rightAngularVelocity),Math.abs(leftAngularVelocity));

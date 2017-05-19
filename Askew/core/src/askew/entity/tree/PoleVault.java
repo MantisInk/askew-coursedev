@@ -172,6 +172,11 @@ public class PoleVault extends TreeParent {
 
         pos.y += linksize / 2;
         start = new WheelObstacle(pos.x, pos.y, TRUNK_PIN_RADIUS);
+        Filter f = new Filter();
+        f.maskBits = FilterGroup.NOCOLLIDE;
+        f.categoryBits = FilterGroup.NOCOLLIDE;
+        start.setFilterData(f);
+
         start.setName(TRUNK_PIN_NAME + 0);
         start.setDensity(BASIC_DENSITY);
         start.setBodyType(BodyDef.BodyType.StaticBody);

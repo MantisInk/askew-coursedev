@@ -161,8 +161,8 @@ public class GameModeController extends WorldController {
 	protected float coverOpacity;
 
 	protected ParticleController particleController;
-	protected static final int MAX_PARTICLES = 5000;
-	protected static final int INITIAL_FOG = 50;
+	protected static final int MAX_PARTICLES = 0;
+	protected static final int INITIAL_FOG = 0;
 
 	protected float fogTime,eyeTime;
 	private int levelCompleteJunkState;
@@ -304,6 +304,7 @@ public class GameModeController extends WorldController {
 	}
 
 	public void pause(){
+		if (isComplete()) return;
 		prevPaused = paused;
 		if (!paused) {
 			manager.getMenuManager().setupPauseMenu();
@@ -459,6 +460,7 @@ public class GameModeController extends WorldController {
 					owlOPosX = o.getPosition().x;
 					owlOPosY = o.getPosition().y;
 				}
+				o.setDrawScale(worldScale);
 
 			}
 
@@ -611,7 +613,7 @@ public class GameModeController extends WorldController {
 			}
 		}
 
-		if (paused) {
+		if (!isComplete() && paused) {
 			if (!prevPaused) {
 				prevPaused = paused;
 				return false;
@@ -898,6 +900,9 @@ public class GameModeController extends WorldController {
 				entities.remove(owl);
 
 				setWorldScale(canvas);
+				for(Entity e: entities){
+					e.setDrawScale(worldScale);
+				}
                 float recordT = currentTime;
                 int recordG = currentGrabs -1; // cuz grabbing the owl adds an extra grab
 				instance.play("bgmusic", "sound/music/levelselect.ogg", true,
@@ -932,7 +937,6 @@ public class GameModeController extends WorldController {
 			canvas.end();
 			canvas.begin(camTrans);
 			for(Entity e : entities){
-				e.setDrawScale(worldScale);
 				e.draw(canvas);
 			}
 			canvas.end();
