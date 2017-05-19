@@ -13,7 +13,7 @@
   "defaultLevel": "level1",
   "storeTimeRecords": true,
   "maxMultiLevel": 4,
-  "maxLevel": 10,
+  "maxLevel": 12,
   "multiplayer": false,
   "currentLevel": 1,
   "currentMultiLevel": 1,

@@ -87,7 +87,7 @@ public class MainMenuController extends WorldController {
     private int minLevel = 1;
     @Getter
     @Setter
-    private int maxLevel = 10;
+    private int maxLevel = 12;
     private int mode;
     private int prevMode;
     private int home_button = PLAY_BUTTON;
