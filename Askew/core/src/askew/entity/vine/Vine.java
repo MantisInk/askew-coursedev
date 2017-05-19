@@ -233,10 +233,15 @@ public class Vine extends ComplexObstacle {
         Vector2 pos = bodies.get(0).getPosition();
         pos.y += linksize / 2;
         start = new WheelObstacle(pos.x, pos.y, ANCHOR_RADIUS);
+        Filter f = new Filter();
+        f.maskBits = FilterGroup.NOCOLLIDE;
+        f.categoryBits = FilterGroup.NOCOLLIDE;
+        start.setFilterData(f);
         start.setName(ANCHOR_NAME + 0);
         start.setDensity(BASIC_DENSITY);
         start.setBodyType(BodyDef.BodyType.StaticBody);
         start.activatePhysics(world);
+
 
         // Definition for a revolute joint
         RevoluteJointDef jointDef = new RevoluteJointDef();
@@ -276,6 +281,7 @@ public class Vine extends ComplexObstacle {
             pos = last.getPosition();
             pos.y += linksize;
             finish = new WheelObstacle(pos.x, pos.y, ANCHOR_RADIUS);
+            finish.setFilterData(f);
             finish.setName(ANCHOR_NAME + 1);
             finish.setDensity(BASIC_DENSITY);
             finish.setBodyType(BodyDef.BodyType.StaticBody);
