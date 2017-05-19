@@ -125,7 +125,7 @@ public class Particle implements Comparable {
             this.tint.set(1, 1, 1, .10f * (-.5f * (float) Math.cos(6.283 * t) + .5f));
         }
         if(type == 2){
-            this.tint.set(1, 1, 1, .25f * (1-t));
+            this.tint.set(1f, .93f, .91f, .25f * (1-t));
         }
         if(type == 3){
             float alpha = -0.8f*(float)Math.abs(t-5) + 4;
