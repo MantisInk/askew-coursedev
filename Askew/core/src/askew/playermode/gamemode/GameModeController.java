@@ -161,8 +161,8 @@ public class GameModeController extends WorldController {
 	protected float coverOpacity;
 
 	protected ParticleController particleController;
-	protected static final int MAX_PARTICLES = 5000;
-	protected static final int INITIAL_FOG = 50;
+	protected static final int MAX_PARTICLES = 0;
+	protected static final int INITIAL_FOG = 0;
 
 	protected float fogTime,eyeTime;
 	private int levelCompleteJunkState;
@@ -304,6 +304,7 @@ public class GameModeController extends WorldController {
 	}
 
 	public void pause(){
+		if (isComplete()) return;
 		prevPaused = paused;
 		if (!paused) {
 			manager.getMenuManager().setupPauseMenu();
@@ -611,7 +612,7 @@ public class GameModeController extends WorldController {
 			}
 		}
 
-		if (paused) {
+		if (!isComplete() && paused) {
 			if (!prevPaused) {
 				prevPaused = paused;
 				return false;
