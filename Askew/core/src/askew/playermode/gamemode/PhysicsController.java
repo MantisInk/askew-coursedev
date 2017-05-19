@@ -26,8 +26,6 @@ class PhysicsController implements ContactListener {
     @Getter
     private boolean isFlowWin;
     private int victorySloth;
-    private ArrayList<Body> leftHands;
-    private ArrayList<Body> rightHands;
 
     private ArrayList<ArrayList<Body>> rightLists = new ArrayList<>();
     private ArrayList<ArrayList<Body>> leftLists = new ArrayList<>();
@@ -44,9 +42,13 @@ class PhysicsController implements ContactListener {
 
     public void reset() {
         slothList.clear();
-        leftHands.clear();
-        rightHands.clear();
+        for(ArrayList a : rightLists){
+            a.clear();
+        }
         rightLists.clear();
+        for(ArrayList a : leftLists){
+            a.clear();
+        }
         leftLists.clear();
 
         goalDoor = null;
@@ -54,9 +56,6 @@ class PhysicsController implements ContactListener {
         isFlowWin = false;
     }
 
-    private boolean isSlothPart(Obstacle obs) {
-        return obs.getName() != null && obs.getName().contains("slothpart");
-    }
 
     /**
      * Callback method for the start of a collision
@@ -86,13 +85,25 @@ class PhysicsController implements ContactListener {
             me = fix1;
             other = fix2;
         }else if (twoIsSloth){
-            me = fix1;
-            other = fix2;
+            me = fix2;
+            other = fix1;
         }else{
             return;
         }
         body1 = me.getBody();
         body2 = other.getBody();
+
+        if((me.getFilterData().categoryBits & FilterGroup.HAND) != 0){
+            for (SlothModel sloth : slothList) {
+                if(body1 == sloth.getRightHand()){
+                    rightLists.get(sloth.getId()).add(body2);
+                }
+                if(body1 == sloth.getLeftHand()){
+                    leftLists.get(sloth.getId()).add(body2);
+                }
+            }
+        }
+
 
         if((other.getFilterData().categoryBits & FilterGroup.LOSE) != 0) {
             for (SlothModel sloth : slothList) {
@@ -105,7 +116,7 @@ class PhysicsController implements ContactListener {
             }
         }
 
-        if((other.getFilterData().categoryBits & FilterGroup.LOSE) != 0) {
+        if((other.getFilterData().categoryBits & FilterGroup.WIN) != 0) {
             for (SlothModel sloth : slothList) {
                 for (Obstacle b : sloth.getBodies()) {
                     if (b.getBody() == body1) {
@@ -124,7 +135,42 @@ class PhysicsController implements ContactListener {
      * This method is called when two entities cease to touch.
      */
     public void endContact(Contact contact) {
+        Fixture fix1 = contact.getFixtureA();
+        Fixture fix2 = contact.getFixtureB();
 
+        Body body1 = fix1.getBody();
+        Body body2 = fix2.getBody();
+
+        Fixture me = null;
+        Fixture other = null;
+
+        boolean oneIsSloth = (fix1.getFilterData().categoryBits & FilterGroup.SLOTH) != 0;
+        boolean twoIsSloth = (fix2.getFilterData().categoryBits & FilterGroup.SLOTH) != 0;
+
+        if(oneIsSloth && twoIsSloth) {
+            return;
+        }else if (oneIsSloth){
+            me = fix1;
+            other = fix2;
+        }else if (twoIsSloth){
+            me = fix2;
+            other = fix1;
+        }else{
+            return;
+        }
+        body1 = me.getBody();
+        body2 = other.getBody();
+
+        if((me.getFilterData().categoryBits & FilterGroup.HAND) != 0){
+            for (SlothModel sloth : slothList) {
+                if(body1 == sloth.getRightHand()){
+                    rightLists.get(sloth.getId()).remove(body2);
+                }
+                if(body1 == sloth.getLeftHand()){
+                    leftLists.get(sloth.getId()).remove(body2);
+                }
+            }
+        }
     }
 
 
@@ -156,8 +202,8 @@ class PhysicsController implements ContactListener {
 
     public void addSloth(SlothModel sloth) {
         slothList.add(sloth);
-        leftHands.add(sloth.getLeftHand());
-        rightHands.add(sloth.getRightHand());
+        leftLists.add(new ArrayList<>());
+        rightLists.add(new ArrayList<>());
 
     }
 

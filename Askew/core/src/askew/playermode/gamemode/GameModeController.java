@@ -707,8 +707,8 @@ public class GameModeController extends WorldController {
 				for (int i = 0; i < slothList.size(); i++){
 					SlothModel sloth = slothList.get(i);
 					// Process actions in object model
-					Body leftCollisionBody = collisions.getLeftBody(world, sloth);
-					Body rightCollisionBody = collisions.getRightBody(world, sloth);
+					Body leftCollisionBody = collisions.getLeftBody(sloth);
+					Body rightCollisionBody = collisions.getRightBody(sloth);
 					sloth.setLeftHori(InputControllerManager.getInstance().getController(i).getLeftHorizontal());
 					sloth.setLeftVert(InputControllerManager.getInstance().getController(i).getLeftVertical());
 					sloth.setRightHori(InputControllerManager.getInstance().getController(i).getRightHorizontal());
@@ -837,9 +837,9 @@ public class GameModeController extends WorldController {
 					SlothModel sloth = slothList.get(victorySloth);
                     sloth.releaseLeft(world);
                     sloth.releaseRight(world);
-                    if (collisions.getLeftBody(world, sloth) != null && collisions.getLeftBody(world, sloth).equals(owl.getBody()))
+                    if (collisions.getLeftBody( sloth) != null && collisions.getLeftBody( sloth).equals(owl.getBody()))
                         sloth.grab(world, owl.getBody(), true);
-                    else if (collisions.getRightBody(world, sloth) != null && collisions.getRightBody(world, sloth).equals(owl.getBody()))
+                    else if (collisions.getRightBody( sloth) != null && collisions.getRightBody( sloth).equals(owl.getBody()))
                         sloth.grab(world, owl.getBody(), false);
                     else {
                         sloth.grab(world, owl.getBody(), true);
