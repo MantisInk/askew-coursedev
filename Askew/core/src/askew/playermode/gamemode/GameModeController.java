@@ -145,6 +145,8 @@ public class GameModeController extends WorldController {
 	protected float cameraVelocityY;
 	private VictoryCutscene victoryCutscene;
 	private boolean multiplayer;
+	private float owlOPosX;
+	private float owlOPosY;
 
 	//For playtesting control schemes
 	private int currentMovement;
@@ -454,6 +456,8 @@ public class GameModeController extends WorldController {
 				}
 				if (o instanceof OwlModel) {
 					owl = (OwlModel) o;
+					owlOPosX = o.getPosition().x;
+					owlOPosY = o.getPosition().y;
 				}
 
 			}
@@ -693,6 +697,10 @@ public class GameModeController extends WorldController {
 				if (framesToDie < 0) {
 					reset();
 				}
+				if (slothList.stream().map(SlothModel::isDismembered).reduce
+						(Boolean::logicalAnd).orElse(true)) {
+					framesToDie--;
+				}
 			}
 			// Prevent control input if flow is win
 			if (!collisions.isFlowWin()) {
@@ -885,6 +893,15 @@ public class GameModeController extends WorldController {
 					instance.stop("bgmusic");
                 victory = true;
                 playerIsReady = false;
+				bounds.width *= 0.6f;
+				bounds.height *= 0.6f;
+				owlOPosX -= bounds.width * 0.3f;
+				for (SlothModel sloth : slothList) {
+					entities.remove(sloth);
+				}
+				entities.remove(owl);
+
+				setWorldScale(canvas);
                 float recordT = currentTime;
                 int recordG = currentGrabs -1; // cuz grabbing the owl adds an extra grab
 				instance.play("bgmusic", "sound/music/levelselect.ogg", true,
@@ -906,17 +923,33 @@ public class GameModeController extends WorldController {
 		canvas.clear();
 
 		if (victory) {
+			// TODO
+			camTrans.setToTranslation(-1 * owlOPosX * worldScale.x
+					, -1 * owlOPosY * worldScale.y);
+
+			camTrans.translate(canvas.getWidth() / 2f, canvas.getHeight() / 2f);
+			canvas.getCampos().set(owlOPosX * worldScale.x
+					, owlOPosY * worldScale.y );
+
 			canvas.begin();
 			canvas.draw(background);
 			canvas.end();
+			canvas.begin(camTrans);
+			for(Entity e : entities){
+				e.setDrawScale(worldScale);
+				e.draw(canvas);
+			}
+			canvas.end();
+			Gdx.gl.glEnable(GL20.GL_BLEND);
+			Color coverColor = new Color(0, 0, 0, 0.25f);
+			canvas.drawRectangle(coverColor, 0, 0, canvas.getWidth(), canvas
+					.getHeight());
+			Gdx.gl.glClear(GL20.GL_DEPTH_BUFFER_BIT);
 			canvas.begin();
 			victoryCutscene.draw(canvas);
 			canvas.end();
+//			Gdx.gl.glDisable(GL20.GL_BLEND);
 			canvas.begin();
-//			canvas.draw(victoryTexture);
-//			canvas.draw(fern, Color.WHITE, fern.getWidth() / 2, fern.getHeight() / 2,
-//					victory_locs[victory_mode].x * canvas.getWidth(), victory_locs[victory_mode].y * canvas.getHeight(),
-//					0, 2 * worldScale.x / fern.getWidth(), 2 * worldScale.y / fern.getHeight());
 			manager.getMenuManager().draw();
 			canvas.end();
 		}
@@ -1071,7 +1104,7 @@ public class GameModeController extends WorldController {
 				canvas.drawRectangle(coverColor, 0, 0, canvas.getWidth(), canvas
 						.getHeight());
 				coverOpacity -= (1 / CYCLES_OF_INTRO);
-				Gdx.gl.glDisable(GL20.GL_BLEND);
+//				Gdx.gl.glDisable(GL20.GL_BLEND);
 				canvas.begin();
 				if (!playerIsReady && !paused && !victory)
 					canvas.drawTextCentered(levelModel.getTitle(), displayFont, 0f);

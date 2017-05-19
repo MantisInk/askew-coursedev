@@ -21,7 +21,7 @@ public class GhostModel extends BoxObstacle {
 
     private static final float GHOST_SPEED = 1f;
     private static final float GHOST_WIDTH = 0.8f;
-    private static final float GHOST_HEIGHT = GHOST_WIDTH * (464f / 289f);
+    private static final float GHOST_HEIGHT = GHOST_WIDTH * (546f / 289f);
 
     //JSON
     @Getter

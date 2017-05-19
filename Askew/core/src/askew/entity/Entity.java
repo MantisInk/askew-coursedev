@@ -18,6 +18,7 @@ public abstract class Entity implements Comparable {
     public static final int DN_VINE = -3;
     public static final int DN_WALL = -4;
     public static final int DN_STICK = -2;
+    public static final int DN_EBB = -10;
 
 
 

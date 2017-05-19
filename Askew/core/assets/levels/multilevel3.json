@@ -1,5 +1,5 @@
 {
-  "levelModelVersion": 4,
+  "levelModelVersion": 5,
   "goalTimeGold": 30,
   "goalTimeSilver": 45,
   "goalTimeBronze": 60,
@@ -268,39 +268,6 @@
       }
     },
     {
-      "CLASSNAME": "askew.entity.tree.Trunk",
-      "INSTANCE": {
-        "x": -0.75399876,
-        "y": 11.635007,
-        "angle": 45.0,
-        "numLinks": 5.0
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.vine.Vine",
-      "INSTANCE": {
-        "numLinks": 5.0,
-        "x": 4.0690002,
-        "y": 15.379009,
-        "angle": 8.64825,
-        "omega": -55.434685,
-        "pin": false,
-        "texture": 0
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.vine.Vine",
-      "INSTANCE": {
-        "numLinks": 5.0,
-        "x": 1.1960001,
-        "y": 16.96501,
-        "angle": -13.455925,
-        "omega": 10.111681,
-        "pin": false,
-        "texture": 0
-      }
-    },
-    {
       "CLASSNAME": "askew.entity.BackgroundEntity",
       "INSTANCE": {
         "x": -4.770999,
@@ -328,126 +295,6 @@
         "scaley": 1.0,
         "texturePath": "texture/background/topvine/Topvine11.png",
         "color": -1720844289
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.vine.Vine",
-      "INSTANCE": {
-        "numLinks": 3.5,
-        "x": 1.8330002,
-        "y": 16.25001,
-        "angle": 5.680406,
-        "omega": 81.55561,
-        "pin": false,
-        "texture": 0
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.vine.Vine",
-      "INSTANCE": {
-        "numLinks": 4.7,
-        "x": 4.5370035,
-        "y": 15.964012,
-        "angle": 9.684628,
-        "omega": 35.259876,
-        "pin": false,
-        "texture": 0
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.vine.Vine",
-      "INSTANCE": {
-        "numLinks": 3.8,
-        "x": 8.632007,
-        "y": 16.30201,
-        "angle": 6.380989,
-        "omega": 7.0931964,
-        "pin": false,
-        "texture": 0
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.vine.Vine",
-      "INSTANCE": {
-        "numLinks": 4.8,
-        "x": 8.307006,
-        "y": 16.71801,
-        "angle": 6.288792,
-        "omega": -59.4395,
-        "pin": false,
-        "texture": 0
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.vine.Vine",
-      "INSTANCE": {
-        "numLinks": 5.1,
-        "x": 9.269006,
-        "y": 16.73101,
-        "angle": -13.455925,
-        "omega": 10.111681,
-        "pin": false,
-        "texture": 0
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.tree.Trunk",
-      "INSTANCE": {
-        "x": 18.941006,
-        "y": 9.035007,
-        "angle": 90.0,
-        "numLinks": 5.0
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.tree.Trunk",
-      "INSTANCE": {
-        "x": 13.949006,
-        "y": 14.014008,
-        "angle": 180.0,
-        "numLinks": 5.0
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.owl.OwlModel",
-      "INSTANCE": {
-        "x": 17.008316,
-        "y": 8.991661,
-        "pin": {},
-        "owlBody": {}
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.tree.Trunk",
-      "INSTANCE": {
-        "x": 18.915007,
-        "y": 13.975008,
-        "angle": 90.0,
-        "numLinks": 5.0
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.vine.Vine",
-      "INSTANCE": {
-        "numLinks": 3.0,
-        "x": 2.4440002,
-        "y": 16.328009,
-        "angle": 15.0,
-        "omega": -5.0,
-        "pin": false,
-        "texture": 0
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.vine.Vine",
-      "INSTANCE": {
-        "numLinks": 6.0,
-        "x": 3.5230007,
-        "y": 17.433008,
-        "angle": -9.684628,
-        "omega": 35.259876,
-        "pin": false,
-        "texture": 0
       }
     },
     {
@@ -519,12 +366,164 @@
       }
     },
     {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": -0.75399876,
+        "y": 11.635007,
+        "angle": 45.0,
+        "numLinks": 5.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 18.941006,
+        "y": 9.035007,
+        "angle": 90.0,
+        "numLinks": 5.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 13.949006,
+        "y": 14.014008,
+        "angle": 180.0,
+        "numLinks": 5.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 18.915007,
+        "y": 13.975008,
+        "angle": 90.0,
+        "numLinks": 5.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "numLinks": 5.0,
+        "x": 4.0690002,
+        "y": 15.379009,
+        "angle": 8.64825,
+        "omega": -55.434685,
+        "pin": false,
+        "texture": 0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "numLinks": 5.0,
+        "x": 1.1960001,
+        "y": 16.96501,
+        "angle": -13.455925,
+        "omega": 10.111681,
+        "pin": false,
+        "texture": 0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "numLinks": 3.5,
+        "x": 1.8330002,
+        "y": 16.25001,
+        "angle": 5.680406,
+        "omega": 81.55561,
+        "pin": false,
+        "texture": 0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "numLinks": 4.7,
+        "x": 4.5370035,
+        "y": 15.964012,
+        "angle": 9.684628,
+        "omega": 35.259876,
+        "pin": false,
+        "texture": 0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "numLinks": 3.8,
+        "x": 8.632007,
+        "y": 16.30201,
+        "angle": 6.380989,
+        "omega": 7.0931964,
+        "pin": false,
+        "texture": 0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "numLinks": 4.8,
+        "x": 8.307006,
+        "y": 16.71801,
+        "angle": 6.288792,
+        "omega": -59.4395,
+        "pin": false,
+        "texture": 0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "numLinks": 5.1,
+        "x": 9.269006,
+        "y": 16.73101,
+        "angle": -13.455925,
+        "omega": 10.111681,
+        "pin": false,
+        "texture": 0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "numLinks": 3.0,
+        "x": 2.4440002,
+        "y": 16.328009,
+        "angle": 15.0,
+        "omega": -5.0,
+        "pin": false,
+        "texture": 0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "numLinks": 6.0,
+        "x": 3.5230007,
+        "y": 17.433008,
+        "angle": -9.684628,
+        "omega": 35.259876,
+        "pin": false,
+        "texture": 0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.owl.OwlModel",
+      "INSTANCE": {
+        "x": 16.952011,
+        "y": 8.879005
+      }
+    },
+    {
       "CLASSNAME": "askew.entity.sloth.SlothModel",
       "INSTANCE": {
         "x": -2.5891666,
         "y": 12.414991,
         "lTheta": 0.0,
-        "rTheta": 0.0
+        "rTheta": 0.0,
+        "shouldDie": false
       }
     },
     {
@@ -533,7 +532,8 @@
         "x": -2.5999994,
         "y": 12.428008,
         "lTheta": 0.0,
-        "rTheta": 0.0
+        "rTheta": 0.0,
+        "shouldDie": false
       }
     },
     {

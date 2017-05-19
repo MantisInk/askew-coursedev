@@ -98,7 +98,7 @@ public class MenuManager {
 
     public void setupLevelCompleteMenu() {
         clear();
-        table.add(midVerticalGroup).expand().center();
+        table.add(midVerticalGroup).expand().center().top().padTop(100f);
         mainButtons.add(new TextButton("Next Level",
                 textButtonStyle));
         mainButtons.add(new TextButton("Restart", textButtonStyle));
@@ -129,7 +129,8 @@ public class MenuManager {
                 "Arm" : "One Arm"),
                 textButtonStyle));
         mainButtons.add(new TextButton("Grab Scheme: " + (grab ? "Normal" : "Toggle"), textButtonStyle));
-        mainButtons.add(new TextButton("Graphics Quality: " + (graphics ? "LOW" : "HIGH"),
+        mainButtons.add(new TextButton("Graphics Quality: " + (graphics ? "HIGH"
+                : "LOW"),
                 textButtonStyle));
         mainButtons.add(new TextButton("Music: " + (music ? "ON" : "OFF"), textButtonStyle));
         mainButtons.add(new TextButton("Main Menu", textButtonStyle));
