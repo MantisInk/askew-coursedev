@@ -116,6 +116,7 @@ public class OwlModel extends BoxObstacle  {
     public float doVictory() {
         if (!doingVictory) {
             doingVictory = true;
+            
         }
         this.victoryDistance ++;
         return (victoryDistance/120f);
