@@ -8,7 +8,7 @@
   "maxY": 23.0,
   "minX": -7.0,
   "minY": 0.0,
-  "title": "Grabbing",
+  "title": "Getting Around",
   "background": "texture/background/BackgroundStuff/rusty.png",
   "soundtrack": "TODO",
   "entities": [
