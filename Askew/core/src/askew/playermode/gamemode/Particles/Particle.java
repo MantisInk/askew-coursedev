@@ -108,8 +108,21 @@ public class Particle implements Comparable {
         this.deathTime = 10f;
         this.accumulator = (float)Math.random()*1.5f;
         this.fx = (float)(Math.random() * 5) - 3; // = cooldown
-        this.fy = (float)(Math.random() * 5) + 3;; //start time
+        this.fy = (float)(Math.random() * 4) + 1;; //start time
         this.type = 3;
+    }
+
+    public void spawnSurprise(float x, float y,float length, float angle, Color tint) {
+        this.x = x;
+        this.y = y;
+        this.width = length;
+        this.height = .1f;
+        this.depth = 1f;
+        this.angle = angle;
+        this.tint = tint;
+        this.deathTime = 1.5f;
+        this.accumulator = 0;
+        this.type = 4;
     }
 
 
@@ -128,7 +141,7 @@ public class Particle implements Comparable {
             if(fx < 0 ){
                 this.fx += delta;
                 if(fx >= 0){
-                    fx = 4f;
+                    fx = (float)(Math.random() * 5) + 3;
                     this.tint = new Color(1,1,1,(float) Math.random() * .3f);
                 }
 
@@ -136,11 +149,14 @@ public class Particle implements Comparable {
             else {
                 this.fx -= delta;
                 if(fx < 0){
-                    fx = -1f;
+                    fx = (float)(Math.random() * -2) - 1;
                     this.tint = new Color(0,0,0,0);
                 }
                 this.textureNum = (int) (accumulator * fy) % 4;
             }
+        }
+        if(type == 4){
+            this.tint.set(1f, 0f, 0f,  (1-t));
         }
 
     }

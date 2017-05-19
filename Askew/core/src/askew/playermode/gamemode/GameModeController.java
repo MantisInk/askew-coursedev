@@ -683,7 +683,7 @@ public class GameModeController extends WorldController {
 	public void update(float dt) {
 
 		if (InputControllerManager.getInstance().getController(0).isZKeyPressed()) {
-			particleController.testEffect.spawn(10,18);
+			particleController.surpriseEffect.spawn(slothList.get(0).getBody().getPosition().x,slothList.get(0).getBody().getPosition().y, 1f, .4f, new Color(1,1,0,1));
 		}
 
 		if (!paused) {
