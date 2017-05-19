@@ -302,7 +302,7 @@ public class GameCanvas {
      *
      * @param state the color blending rule
      */
-    private void setBlendState(BlendState state) {
+    public void setBlendState(BlendState state) {
         if (state == blend) {
             return;
         }

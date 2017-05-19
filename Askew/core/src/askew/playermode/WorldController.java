@@ -143,6 +143,7 @@ public abstract class WorldController implements Screen {
     /**
      * The world scale
      */
+    @Getter
     protected Vector2 worldScale;
     /**
      * Whether or not debug mode is active

@@ -83,6 +83,19 @@ public class Particle implements Comparable {
         this.type = 0;
     }
 
+    public void spawnHandTrail(float x, float y, float angle) {
+        this.x = x;
+        this.y = y;
+        this.width = .2f;
+        this.height = .2f;
+        this.depth = 1.0001f;
+        this.angle = angle;
+        this.tint = new Color(0xFFFFFF4F);
+        this.deathTime = .25f;
+        this.accumulator = 0;
+        this.type = 2;
+    }
+
 
     public void update(float delta) {
         accumulator += delta;
@@ -91,6 +104,9 @@ public class Particle implements Comparable {
             this.x += (this.vx * delta);
             this.y += (this.vy * delta);
             this.tint.set(1, 1, 1, .10f * (-.5f * (float) Math.cos(6.283 * t) + .5f));
+        }
+        if(type == 2){
+            this.tint.set(1, 1, 1, .25f * (1-t));
         }
 
 

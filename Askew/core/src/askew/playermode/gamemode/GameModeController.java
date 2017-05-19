@@ -20,6 +20,7 @@ import askew.entity.owl.OwlModel;
 import askew.entity.sloth.SlothModel;
 import askew.entity.vine.Vine;
 import askew.playermode.WorldController;
+import askew.playermode.gamemode.Particles.Effect;
 import askew.playermode.gamemode.Particles.Particle;
 import askew.playermode.gamemode.Particles.ParticleController;
 import askew.playermode.leveleditor.LevelModel;
@@ -456,7 +457,7 @@ public class GameModeController extends WorldController {
 				world.createJoint(jointDef);
 			}
 			for(int i = 0; i < INITIAL_FOG; i++) {
-				particleController.fog(levelModel.getMaxX()-levelModel.getMinX(),levelModel.getMaxY()-levelModel.getMinY() );
+				particleController.fogEffect.spawn(levelModel.getMaxX()-levelModel.getMinX(),levelModel.getMaxY()-levelModel.getMinY() );
 			}
 			currentTime = 0f;
 	}
@@ -590,7 +591,7 @@ public class GameModeController extends WorldController {
 	public void update(float dt) {
 
 		if (InputControllerManager.getInstance().getController(0).isZKeyPressed()) {
-			particleController.effect1(10,18);
+			particleController.testEffect.spawn(10,18);
 		}
 
 		if (!paused) {
@@ -658,11 +659,19 @@ public class GameModeController extends WorldController {
                             fallDeathHeight = sloth.getPosition().y - NEAR_FALL_DEATH_DISTANCE;
                         }
                     }
+                    Body rightHand = sloth.getRightHand();
+					Obstacle rightArm = sloth.getRightArm();
+					if(rightHand != null && rightArm != null)
+                    	particleController.handTrailEffect.spawn(rightHand.getPosition().x, rightHand.getPosition().y, rightArm.getAngle());
+					Body leftHand = sloth.getLeftHand();
+					Obstacle leftArm = sloth.getLeftArm();
+					if(leftHand != null && leftArm != null)
+						particleController.handTrailEffect.spawn(leftHand.getPosition().x, leftHand.getPosition().y, leftArm.getAngle());
                 }
             }
             currentTime += dt;
             if (currentTime - fogTime > .1f) {
-                particleController.fog(cameraX, cameraY);
+                particleController.fogEffect.spawn(cameraX, cameraY);
                 fogTime = currentTime;
             }
             particleController.update(dt);
@@ -805,17 +814,17 @@ public class GameModeController extends WorldController {
 			}
 			canvas.end();
 
-
-			Particle[] particles = particleController.getSorted();
-			particleController.setDrawScale(worldScale);
-			int n = particleController.spawned.size();
-			System.out.println(n);
+			int n = 0;
 			canvas.beginParticle(camTrans);
-			for(int i = 0; i < n; i++){
-				particleController.draw(canvas, particles[i]);
+			for(Effect e: particleController.effects){
+				e.draw(canvas);
+				n += e.size();
 			}
-
 			canvas.end();
+			System.out.println(n);
+
+
+
 
 			/*
 			int n = particleController.numParticles();
