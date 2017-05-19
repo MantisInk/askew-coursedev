@@ -21,7 +21,8 @@ public class ParticleController {
     public TestEffect testEffect;
     public FogEffect fogEffect;
     public HandTrailEffect handTrailEffect;
-
+    @Setter
+    public int graphicsSetting;
 
     @Setter
     Vector2 drawScale;
@@ -67,6 +68,6 @@ public class ParticleController {
             e.update(delta);
         }
     }
-    
+
 
 }

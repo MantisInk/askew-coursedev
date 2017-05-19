@@ -156,6 +156,7 @@ public class GameModeController extends WorldController {
 	//For playtesting control schemes
 	private int currentMovement;
 	private int currentControl;
+	private int graphicsSetting = 0;
 	private float windVolume;
 	private int framesToDie;
 
@@ -360,6 +361,8 @@ public class GameModeController extends WorldController {
 		victory_mode = VICTORY_NEXT;
 		currentControl = GlobalConfiguration.getInstance().getAsInt("flowControlMode");
 		currentMovement = GlobalConfiguration.getInstance().getAsInt("flowMovementMode");
+		graphicsSetting = GlobalConfiguration.getInstance().getAsInt("graphics");
+		particleController.setGraphicsSetting(graphicsSetting);
         populateLevel();
 		fallDeathHeight = levelModel.getMinY() -
 				LOWEST_ENTITY_FALL_DEATH_THRESHOLD;
@@ -1012,6 +1015,11 @@ public class GameModeController extends WorldController {
 				slothList.forEach(sloth -> sloth.drawForces(canvas, camTrans));
 			}
 
+
+			canvas.begin();
+			canvas.draw(edgefade, 0.000001f);
+			canvas.end();
+
 			if (coverOpacity > 0) {
 				Gdx.gl.glEnable(GL20.GL_BLEND);
 				displayFont.setColor(Color.WHITE);
@@ -1026,9 +1034,6 @@ public class GameModeController extends WorldController {
 				canvas.end();
 			}
 
-			canvas.begin();
-			canvas.draw(edgefade);
-			canvas.end();
 		}
 	}
 
