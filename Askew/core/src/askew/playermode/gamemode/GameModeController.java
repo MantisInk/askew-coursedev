@@ -613,7 +613,7 @@ public class GameModeController extends WorldController {
 			}
 		}
 
-		if (!isComplete() && paused) {
+		if (!isComplete() && !victory && paused) {
 			if (!prevPaused) {
 				prevPaused = paused;
 				return false;
@@ -891,9 +891,9 @@ public class GameModeController extends WorldController {
 					instance.stop("bgmusic");
                 victory = true;
                 playerIsReady = false;
-				bounds.width = 9.6f;
-				bounds.height = 5.4f;
-				owlOPosX =  6.72f;
+				bounds.width = 9.6f * 0.6f;
+				bounds.height = 5.4f * 0.6f;
+//				owlOPosX =  6.72f;
 				for (SlothModel sloth : slothList) {
 					entities.remove(sloth);
 				}
