@@ -153,7 +153,7 @@ public class StiffBranch extends TreeParent {
             plank.setAngle((float) Math.toRadians(angle));
             plank.setCustomScale(2.5f,1.0f);
             Filter f = new Filter();
-            f.maskBits = FilterGroup.WALL | FilterGroup.SLOTH | FilterGroup.HAND;
+            f.maskBits = FilterGroup.WALL | FilterGroup.HAND;
             f.categoryBits = FilterGroup.VINE;
             plank.setFilterData(f);
             bodies.add(plank);
@@ -181,6 +181,11 @@ public class StiffBranch extends TreeParent {
         Vector2 pos = bodies.get(0).getPosition();
         pos.y -= linksize / 2;
         start = new WheelObstacle(pos.x, pos.y, BRANCH_PIN_RADIUS);
+        Filter f = new Filter();
+        f.maskBits = FilterGroup.NOCOLLIDE;
+        f.categoryBits = FilterGroup.NOCOLLIDE;
+        start.setFilterData(f);
+
         start.setName(BRANCH_PIN_NAME + 0);
         start.setDensity(BASIC_DENSITY);
         start.setBodyType(BodyDef.BodyType.StaticBody);

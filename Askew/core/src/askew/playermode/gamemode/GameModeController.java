@@ -460,6 +460,7 @@ public class GameModeController extends WorldController {
 					owlOPosX = o.getPosition().x;
 					owlOPosY = o.getPosition().y;
 				}
+				o.setDrawScale(worldScale);
 
 			}
 
@@ -506,7 +507,7 @@ public class GameModeController extends WorldController {
 			for(int i = 0; i < INITIAL_FOG; i++) {
 				particleController.fogEffect.spawn(levelModel.getMaxX()-levelModel.getMinX(),levelModel.getMaxY()-levelModel.getMinY() );
 			}
-			particleController.eyeEffect.spawn(levelModel.getMinX(), levelModel.getMaxX(), levelModel.getMinY(), levelModel.getMaxY());
+			particleController.eyeEffect.spawn();
 			currentTime = 0f;
 			currentGrabs = 0;
 			leftPrevGrab = false;
@@ -820,10 +821,6 @@ public class GameModeController extends WorldController {
 
                 fogTime = currentTime;
             }
-            if (currentTime - eyeTime > 9.8f) {
-				particleController.eyeEffect.spawn(levelModel.getMinX(), levelModel.getMaxX(), levelModel.getMinY(), levelModel.getMaxY());
-				eyeTime = currentTime;
-			}
             particleController.update(dt);
 
 
@@ -903,6 +900,9 @@ public class GameModeController extends WorldController {
 				entities.remove(owl);
 
 				setWorldScale(canvas);
+				for(Entity e: entities){
+					e.setDrawScale(worldScale);
+				}
                 float recordT = currentTime;
                 int recordG = currentGrabs -1; // cuz grabbing the owl adds an extra grab
 				instance.play("bgmusic", "sound/music/levelselect.ogg", true,
@@ -937,7 +937,6 @@ public class GameModeController extends WorldController {
 			canvas.end();
 			canvas.begin(camTrans);
 			for(Entity e : entities){
-				e.setDrawScale(worldScale);
 				e.draw(canvas);
 			}
 			canvas.end();
