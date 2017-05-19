@@ -1034,80 +1034,80 @@ public class TutorialModeController extends GameModeController {
 
 				if(currentStage == STAGE_PINNED) {
 					if(moveLeftArm){
-						canvas.draw(joystick, Color.WHITE, joystick.getWidth() / 2, joystick.getHeight()/2, 350, 75, angle, 1.5f*worldScale.x / joystick.getWidth(), 1.5f*worldScale.y / joystick.getHeight());
-						canvas.draw(joystick, Color.WHITE, joystick.getWidth() / 2, joystick.getHeight()/2, 1250, 75, 0, 1.5f*worldScale.x / joystick.getWidth(), 1.5f*worldScale.y / joystick.getHeight());
+						canvas.draw(joystick, Color.WHITE, joystick.getWidth() / 2, joystick.getHeight()/2, 0.2f*canvas.getWidth(), 0.1f*canvas.getHeight(), angle, 1.5f*worldScale.x / joystick.getWidth(), 1.5f*worldScale.y / joystick.getHeight());
+						canvas.draw(joystick, Color.WHITE, joystick.getWidth() / 2, joystick.getHeight()/2, 0.8f*canvas.getWidth(), 0.1f*canvas.getHeight(), 0, 1.5f*worldScale.x / joystick.getWidth(), 1.5f*worldScale.y / joystick.getHeight());
 					} else{
-						canvas.draw(joystick, Color.WHITE, joystick.getWidth() / 2, joystick.getHeight()/2, 350, 75, 0, 1.5f*worldScale.x / joystick.getWidth(), 1.5f*worldScale.y / joystick.getHeight());
-						canvas.draw(joystick, Color.WHITE, joystick.getWidth() / 2, joystick.getHeight()/2, 1250, 75, angle, 1.5f*worldScale.x / joystick.getWidth(), 1.5f*worldScale.y / joystick.getHeight());
+						canvas.draw(joystick, Color.WHITE, joystick.getWidth() / 2, joystick.getHeight()/2, 0.2f*canvas.getWidth(), 0.1f*canvas.getHeight(), 0, 1.5f*worldScale.x / joystick.getWidth(), 1.5f*worldScale.y / joystick.getHeight());
+						canvas.draw(joystick, Color.WHITE, joystick.getWidth() / 2, joystick.getHeight()/2, 0.8f*canvas.getWidth(), 0.1f*canvas.getHeight(), angle, 1.5f*worldScale.x / joystick.getWidth(), 1.5f*worldScale.y / joystick.getHeight());
 					}
 				} else if(currentStage == STAGE_GRAB) {
 					if (!grabbedAll) {
-				canvas.drawTextCentered("Try to grab all 5 branches", instrFont, 275f);
+				canvas.drawTextCentered("Grab all 5 branches", instrFont, 0.35f*canvas.getHeight());
 			}
 		} else if (currentStage == STAGE_SHIMMY) {
-			canvas.drawTextCentered("Try to shimmy across to the owl", instrFont, 275f);
+			canvas.drawTextCentered("Shimmy across to the owl", instrFont, 0.35f*canvas.getHeight());
 		} else if (currentStage == STAGE_FLING) {
-			canvas.drawTextCentered("Try to fling from branch to branch", instrFont, 275f);
+			canvas.drawTextCentered("Fling from branch to branch", instrFont, 0.35f*canvas.getHeight());
 		} else if (currentStage == STAGE_VINE) {
-			canvas.drawTextCentered("Learn to swing on the vines", instrFont, 275f);
+			canvas.drawTextCentered("Learn to swing on the vines", instrFont, 0.35f*canvas.getHeight());
 		} else if (currentStage == STAGE_EBB) {
 			switch(ebbLvl) {
 				case ebbGrabPts:
-					canvas.drawTextCentered("Grab all 4 endpoints", instrFont, 300);
+					canvas.drawTextCentered("Grab all 4 endpoints", instrFont, 0.35f*canvas.getHeight());
 					break;
 				case ebbFlag:
-					canvas.drawTextCentered("Hold Flow's arms horizontally \nwithout grabbing for 2s", instrFont, 300);
-					canvas.drawText("time held: "+((int)(grabs*100))/100.0, instrFont, 0.4f*canvas.getWidth(), 0.3f*canvas.getHeight());
+					canvas.drawTextCentered("Hold Flow's arms horizontally \nwithout grabbing for 2s", instrFont, 0.35f*canvas.getHeight());
+					canvas.drawText("time held: "+((int)(grabs*100))/100.0, instrFont, 0.4f*canvas.getWidth(), 0.15f*canvas.getHeight());
 					break;
 				case ebbFling:
-					canvas.drawTextCentered("Try to fling from one short \nbranch to the other", instrFont, 300);
+					canvas.drawTextCentered("Try to fling from one short \nbranch to the other", instrFont, 0.35f*canvas.getHeight());
 					break;
 				case ebbFlingUp:
-					canvas.drawTextCentered("Now try flinging upwards", instrFont, 300);
+					canvas.drawTextCentered("Now try flinging upwards", instrFont, 0.35f*canvas.getHeight());
 					break;
 				case ebbVine1:
-					canvas.drawTextCentered("Use the vine to reach \nthe next branch", instrFont, 300);
+					canvas.drawTextCentered("Use the vine to reach \nthe next branch", instrFont, 0.35f*canvas.getHeight());
 					break;
 				case ebbVine2:
-					canvas.drawTextCentered("Use the next 2 vines \nto reach the following branch", instrFont, 300);
+					canvas.drawTextCentered("Use the next 2 vines \nto reach the following branch", instrFont, 0.35f*canvas.getHeight());
 					break;
 				default:
-					canvas.drawTextCentered("Reach Cherry the owl \nto complete the tutorial", instrFont, 300);
+					canvas.drawTextCentered("Reach Cherry the owl \nto complete the tutorial", instrFont, 0.35f*canvas.getHeight());
 			}
 		}
 		if (currentStage >= STAGE_GRAB) {
 			if(slothList.get(0).isActualRightGrab()) {
 				if(!bumperDown) {
-					canvas.draw(lUp, Color.WHITE, lUp.getWidth() / 2, 0, 350, 150, 0, worldScale.x / lUp.getWidth(), worldScale.y / lUp.getHeight());
+					canvas.draw(lUp, Color.WHITE, lUp.getWidth() / 2, 0, 0.2f*canvas.getWidth(), 0.2f*canvas.getHeight(), 0, worldScale.x / lUp.getWidth(), worldScale.y / lUp.getHeight());
 				} else {
-					canvas.draw(lDown, Color.WHITE, lDown.getWidth() / 2, 0, 350, 150, 0, worldScale.x / lDown.getWidth(), worldScale.y / lDown.getHeight());
+					canvas.draw(lDown, Color.WHITE, lDown.getWidth() / 2, 0, 0.2f*canvas.getWidth(), 0.2f*canvas.getHeight(), 0, worldScale.x / lDown.getWidth(), worldScale.y / lDown.getHeight());
 				}
-				canvas.draw(rPressed, Color.WHITE, rPressed.getWidth() / 2, 0, 1250, 150, 0, worldScale.x / rPressed.getWidth(), worldScale.y / rPressed.getHeight());
-				canvas.draw(joystick, Color.WHITE, joystick.getWidth() / 2, joystick.getHeight()/2, 350, 75, angle, 1.25f*worldScale.x / joystick.getWidth(), 1.25f*worldScale.y / joystick.getHeight());
-				canvas.draw(joystick, Color.WHITE, joystick.getWidth() / 2, joystick.getHeight()/2, 1250, 75, 0, 1.25f*worldScale.x/ joystick.getWidth(), 1.25f*worldScale.y / joystick.getHeight());
+				canvas.draw(rPressed, Color.WHITE, rPressed.getWidth() / 2, 0, 0.8f*canvas.getWidth(), 0.2f*canvas.getHeight(), 0, worldScale.x / rPressed.getWidth(), worldScale.y / rPressed.getHeight());
+				canvas.draw(joystick, Color.WHITE, joystick.getWidth() / 2, joystick.getHeight()/2, 0.2f*canvas.getWidth(), 0.1f*canvas.getHeight(), angle, 1.25f*worldScale.x / joystick.getWidth(), 1.25f*worldScale.y / joystick.getHeight());
+				canvas.draw(joystick, Color.WHITE, joystick.getWidth() / 2, joystick.getHeight()/2, 0.8f*canvas.getWidth(), 0.1f*canvas.getHeight(), 0, 1.25f*worldScale.x/ joystick.getWidth(), 1.25f*worldScale.y / joystick.getHeight());
 			} else {
-				canvas.draw(lPressed, Color.WHITE, lPressed.getWidth() / 2, 0, 350, 150, 0, worldScale.x / lPressed.getWidth(), worldScale.y / lPressed.getHeight());
+				canvas.draw(lPressed, Color.WHITE, lPressed.getWidth() / 2, 0, 0.2f*canvas.getWidth(), 0.2f*canvas.getHeight(), 0, worldScale.x / lPressed.getWidth(), worldScale.y / lPressed.getHeight());
 				if(!bumperDown) {
-					canvas.draw(rUp, Color.WHITE, rUp.getWidth() / 2, 0, 1250, 150, 0, worldScale.x / rUp.getWidth(), worldScale.y / rUp.getHeight());
+					canvas.draw(rUp, Color.WHITE, rUp.getWidth() / 2, 0, 0.8f*canvas.getWidth(), 0.2f*canvas.getHeight(), 0, worldScale.x / rUp.getWidth(), worldScale.y / rUp.getHeight());
 				} else {
-					canvas.draw(rDown, Color.WHITE, rDown.getWidth() / 2, 0, 1250, 150, 0, worldScale.x / rDown.getWidth(), worldScale.y / rDown.getHeight());
+					canvas.draw(rDown, Color.WHITE, rDown.getWidth() / 2, 0, 0.8f*canvas.getWidth(), 0.2f*canvas.getHeight(), 0, worldScale.x / rDown.getWidth(), worldScale.y / rDown.getHeight());
 				}
-				canvas.draw(joystick, Color.WHITE, joystick.getWidth() / 2, joystick.getHeight()/2, 350, 75, 0, 1.25f*worldScale.x / joystick.getWidth(), 1.25f*worldScale.y / joystick.getHeight());
-				canvas.draw(joystick, Color.WHITE, joystick.getWidth() / 2, joystick.getHeight()/2, 1250, 75, angle, 1.25f*worldScale.x / joystick.getWidth(), 1.25f*worldScale.y / joystick.getHeight());
+				canvas.draw(joystick, Color.WHITE, joystick.getWidth() / 2, joystick.getHeight()/2, 0.2f*canvas.getWidth(), 0.1f*canvas.getHeight(), 0, 1.25f*worldScale.x / joystick.getWidth(), 1.25f*worldScale.y / joystick.getHeight());
+				canvas.draw(joystick, Color.WHITE, joystick.getWidth() / 2, joystick.getHeight()/2, 0.8f*canvas.getWidth(), 0.1f*canvas.getHeight(), angle, 1.25f*worldScale.x / joystick.getWidth(), 1.25f*worldScale.y / joystick.getHeight());
 			}
 		}
 		if((currentStage == STAGE_PINNED && time > 6f) ||
 				(currentStage == STAGE_GRAB && grabbedAll)) {
-			canvas.drawTextCentered("Press A to continue", instrFont, 200f);
+			canvas.drawTextCentered("Press A to continue", instrFont, 0.25f*canvas.getHeight());
 		}
 		if(currentStage == STAGE_PINNED) {
-			canvas.drawTextCentered("Practice moving one arm at a time", instrFont, 250f);
+			canvas.drawTextCentered("Practice moving one arm at a time", instrFont, 0.35f*canvas.getHeight());
 			if (moveLeftArm) {
-				canvas.draw(rPressed, Color.WHITE, rPressed.getWidth() / 2, 0, 365, 150, 0, worldScale.x / rPressed.getWidth(), worldScale.y / rPressed.getHeight());
-				canvas.drawTextCentered("Press RB to switch arms", instrFont, -250f);
+				canvas.draw(rPressed, Color.WHITE, rPressed.getWidth() / 2, 0, 0.25f*canvas.getWidth(), 0.2f*canvas.getHeight(), 0, worldScale.x / rPressed.getWidth(), worldScale.y / rPressed.getHeight());
+				canvas.drawTextCentered("Press RB to switch arms", instrFont, -0.25f*canvas.getHeight());
 			} else {
-				canvas.draw(lPressed, Color.WHITE, lPressed.getWidth() / 2, 0, 365, 150, 0, worldScale.x / lPressed.getWidth(), worldScale.y / lPressed.getHeight());
-				canvas.drawTextCentered("Press LB to switch arms", instrFont, -250f);
+				canvas.draw(lPressed, Color.WHITE, lPressed.getWidth() / 2, 0, 0.25f*canvas.getWidth(), 0.2f*canvas.getHeight(), 0, worldScale.x / lPressed.getWidth(), worldScale.y / lPressed.getHeight());
+				canvas.drawTextCentered("Press LB to switch arms", instrFont, -0.25f*canvas.getHeight());
 			}
 		}
 	}
@@ -1186,57 +1186,57 @@ public class TutorialModeController extends GameModeController {
 			switch(ebbLvl) {
 				case ebbGrabPts:
 					if(!ebbGrabbed[0]) {
-						canvas.draw(holdLeft, tint, holdLeft.getWidth(), holdRight.getHeight()/2, 425, 1100, 0, 1, 1);
+						canvas.draw(holdLeft, tint, holdLeft.getWidth(), holdLeft.getHeight()/2, 0.26f*canvas.getWidth(), 1.21f*canvas.getHeight(), 0, canvas.getWidth()/1600, canvas.getHeight()/900);
 					}
 					if(!ebbGrabbed[1]) {
-						canvas.draw(holdDown, tint, holdDown.getWidth() / 2, holdDown.getHeight(), 405, 1110, 0, 1, 1);
+						canvas.draw(holdDown, tint, holdDown.getWidth() / 2, holdDown.getHeight(), 0.25f*canvas.getWidth(), 1.22f*canvas.getHeight(), 0, canvas.getWidth()/1600, canvas.getHeight()/900);
 					}
 					if(!ebbGrabbed[2]) {
-						canvas.draw(holdRight, tint, 0, holdRight.getHeight()/2, 375, 1090, 0, 1, 1);
+						canvas.draw(holdRight, tint, 0, holdRight.getHeight()/2, 0.24f*canvas.getWidth(), 1.2f*canvas.getHeight(), 0, canvas.getWidth()/1600, canvas.getHeight()/900);
 					}
 					if(!ebbGrabbed[3]) {
-						canvas.draw(holdUp, tint, holdUp.getWidth() / 2, 0, 405, 1090, 0, 1, 1);
+						canvas.draw(holdUp, tint, holdUp.getWidth() / 2, 0, 0.25f*canvas.getWidth(), 1.2f*canvas.getHeight(), 0, canvas.getWidth()/1600, canvas.getHeight()/900);
 					}
 					break;
 				case ebbFlag:
-					canvas.draw(holdRight, tint, 0, holdRight.getHeight()/2, 375, 1290, 0, 1, 1);
+					canvas.draw(holdRight, tint, 0, holdRight.getHeight()/2, 0.24f*canvas.getWidth(), 1.42f*canvas.getHeight(), 0, canvas.getWidth()/1600, canvas.getHeight()/900);
 					break;
 				case ebbFling:
-					canvas.draw(swing0, new Color(0x7f7f7f90), swing0.getWidth(), swing0.getHeight(), 785, 1320, 0, 1, 1);
-					canvas.draw(swing1, tint, 0, swing1.getHeight(), 760, 1320, 0, 1, 1);
-					canvas.draw(swing2, new Color(0x7f7f7fD0), 0, swing2.getHeight(), 750, 1320, 0, 1, 1);
-					canvas.draw(swing3, new Color(0x7f7f7fFF), 0, 0, 815, 1365, -0.1f, 1, 1);
-					canvas.draw(swing4, new Color(0x7f7f7fF0), 0, swing4.getHeight(), 995, 1415+swing4.getHeight(), 0.1f, 1, 1);
+					canvas.draw(swing0, new Color(0x7f7f7f90), swing0.getWidth(), swing0.getHeight(), 0.51f*canvas.getWidth(), 1.46f*canvas.getHeight(), 0, canvas.getWidth()/1600, canvas.getHeight()/900);
+					canvas.draw(swing1, tint, 0, swing1.getHeight(), 0.49f*canvas.getWidth(), 1.46f*canvas.getHeight(), 0, canvas.getWidth()/1600, canvas.getHeight()/900);
+					canvas.draw(swing2, new Color(0x7f7f7fD0), 0, swing2.getHeight(), 0.49f*canvas.getWidth(), 1.46f*canvas.getHeight(), 0, canvas.getWidth()/1600, canvas.getHeight()/900);
+					canvas.draw(swing3, new Color(0x7f7f7fFF), 0, 0, 0.52f*canvas.getWidth(), 1.5f*canvas.getHeight(), -0.1f, canvas.getWidth()/1600, canvas.getHeight()/900);
+					canvas.draw(swing4, new Color(0x7f7f7fF0), 0, swing4.getHeight(), 0.62f*canvas.getWidth(), 1.57f*canvas.getHeight()+swing4.getHeight(), 0.1f, canvas.getWidth()/1600, canvas.getHeight()/900);
 					break;
 				case ebbFlingUp:
-					canvas.draw(swing0, new Color(0x7f7f7f90), swing0.getWidth(), swing0.getHeight(), 785, 1320, 0, 1, 1);
-					canvas.draw(swing1, tint, 0, swing1.getHeight(), 760, 1320, 0, 1, 1);
-					canvas.draw(swing2, new Color(0x7f7f7fD0), 0, swing2.getHeight(), 750, 1320, 0, 1, 1);
-					canvas.draw(swing3, new Color(0x7f7f7fFF), 0, 0, 815, 1365, -0.1f, 1, 1);
-					canvas.draw(swing3, new Color(0x7f7f7fFF), 0, 0, 1065, 1490, -0.1f, 1, 1);
+					canvas.draw(swing0, new Color(0x7f7f7f90), swing0.getWidth(), swing0.getHeight(), 0.51f*canvas.getWidth(), 1.46f*canvas.getHeight(), 0, canvas.getWidth()/1600, canvas.getHeight()/900);
+					canvas.draw(swing1, tint, 0, swing1.getHeight(), 0.49f*canvas.getWidth(), 1.46f*canvas.getHeight(), 0, canvas.getWidth()/1600, canvas.getHeight()/900);
+					canvas.draw(swing2, new Color(0x7f7f7fD0), 0, swing2.getHeight(), 0.49f*canvas.getWidth(), 1.46f*canvas.getHeight(), 0, canvas.getWidth()/1600, canvas.getHeight()/900);
+					canvas.draw(swing3, new Color(0x7f7f7fFF), 0, 0, 0.52f*canvas.getWidth(), 1.5f*canvas.getHeight(), -0.1f, canvas.getWidth()/1600, canvas.getHeight()/900);
+					canvas.draw(swing3, new Color(0x7f7f7fFF), 0, 0, 0.59f*canvas.getWidth(), 1.63f*canvas.getHeight(), 0f, canvas.getWidth()/1600, canvas.getHeight()/900);
 					break;
 				case ebbVine1:
 					// reach for vine
 					if(((sloth.isActualLeftGrab() || sloth.isActualRightGrab()) && (checkGrabbedObst(trunkEntities.get(5))))) {
-						canvas.draw(vine0, new Color(0x7f7f7fFF), 0, 0, 1400, 1600, 0, 1, 1);
+						canvas.draw(vine0, new Color(0x7f7f7fFF), 0, vine0.getHeight(), 0.875f*canvas.getWidth(), 2.22f*canvas.getHeight(), 0, canvas.getWidth()/1600, canvas.getHeight()/900);
 						// swing on vine
 					} else if (checkGrabbedObst(vineEntities.get(0))) {
-						canvas.draw(vine3, new Color(0x7f7f7fFF), vine3.getWidth(), vine3.getHeight(), 1600, 2000, 0, 1, 1);
-						canvas.draw(vine1, new Color(0x7f7f7fFF), 0, vine1.getHeight(), 1600, 2000, 0, 1, 1);
-						canvas.draw(vine2, new Color(0x7f7f7fFF), 0, vine2.getHeight(), 1600, 2000, 0, 1, 1);
+						canvas.draw(vine3, new Color(0x7f7f7fFF), vine3.getWidth(), vine3.getHeight(), 1f*canvas.getWidth(), 2.22f*canvas.getHeight(), 0, canvas.getWidth()/1600, canvas.getHeight()/900);
+						canvas.draw(vine1, new Color(0x7f7f7fFF), 0, vine1.getHeight(), 0.995f*canvas.getWidth(), 2.22f*canvas.getHeight(), 0, canvas.getWidth()/1600, canvas.getHeight()/900);
+						canvas.draw(vine2, new Color(0x7f7f7fFF), 0, vine2.getHeight(), 1*canvas.getWidth(), 2.22f*canvas.getHeight(), 0, canvas.getWidth()/1600, canvas.getHeight()/900);
 					}
 					break;
 				case ebbVine2:
 					// reach for vine1
 					if(((sloth.isActualLeftGrab() || sloth.isActualRightGrab()) && !(checkGrabbedObst(vineEntities.get(1))) && !(checkGrabbedObst(vineEntities.get(2))))) {
-						canvas.draw(swing3, new Color(0x7f7f7fFF), 0, 0, 2185, 1585, 0, 1, 1);
+						canvas.draw(swing3, new Color(0x7f7f7fFF), 0, 0, 1.4f*canvas.getWidth(), 1.77f*canvas.getHeight(), 0, canvas.getWidth()/1600, canvas.getHeight()/900);
 					} else {
 						// swing on vine1
 						if (checkGrabbedObst(vineEntities.get(2))) {
-							canvas.draw(vine2, new Color(0x7f7f7fFF), 0, vine2.getHeight(), 2700, 2000, 0, 1, 1);
+							canvas.draw(vine2, new Color(0x7f7f7fFF), 0, vine2.getHeight(), 1.6875f*canvas.getWidth(), 2.22f*canvas.getHeight(), 0, canvas.getWidth()/1600, canvas.getHeight()/900);
 							// swing on vine2
 						} else if (checkGrabbedObst(vineEntities.get(1))) {
-							canvas.draw(vine4, new Color(0x7f7f7fFF), 0, vine4.getHeight(), 2393, 2000, 0, 1, 1);
+							canvas.draw(vine4, new Color(0x7f7f7fFF), 0, vine4.getHeight(), 1.49f*canvas.getWidth(), 2.22f*canvas.getHeight(), 0, canvas.getWidth()/1600, canvas.getHeight()/900);
 						}
 					}
 					break;
