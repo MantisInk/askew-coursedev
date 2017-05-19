@@ -86,12 +86,11 @@ class PhysicsController implements ContactListener {
                 }
 
                 if (other.getName() != null && (other.getName().equals("thorns") || other.getName().equals("ghost"))) {
-                    isFlowKill = true;
-                    for (int i = 0 ; i < slothList.size(); i++) {
-                        SlothModel sloth = slothList.get(i);
-                        for (Obstacle b : sloth.getBodies()){
+                    for (SlothModel sloth : slothList) {
+                        for (Obstacle b : sloth.getBodies()) {
                             if (b == slothy) {
                                 sloth.shouldDie = true;
+                                System.out.println(sloth);
                             }
                         }
                     }

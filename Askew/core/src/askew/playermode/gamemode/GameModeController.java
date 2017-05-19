@@ -843,11 +843,11 @@ public class GameModeController extends WorldController {
 
             slothList.forEach(sloth -> {
                 if (sloth.isGrabbedEntity() && !collisions.isFlowWin()) {
-                    grabSound.play();
+					releaseSound.play();
                 }
 
                 if (sloth.isReleasedEntity() && !collisions.isFlowWin()) {
-                    releaseSound.play();
+//                    releaseSound.play();
                 }
 
                 // Normal physics
@@ -999,7 +999,6 @@ public class GameModeController extends WorldController {
 				n += e.size();
 			}
 			canvas.end();
-			System.out.println(n);
 
 
 
