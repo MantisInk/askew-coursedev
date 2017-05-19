@@ -36,9 +36,9 @@ public class VictoryCutscene {
                 .findRegions("happyswing"), Animation.PlayMode.NORMAL);
         sadFlowAnimation = new Animation(0.070f, manager.getTextureAtlas()
                 .findRegions("sadswing"), Animation.PlayMode.NORMAL);
-        happyEbbAnimation = new Animation(0.80f, manager.getTextureAtlas()
+        happyEbbAnimation = new Animation(0.080f, manager.getTextureAtlas()
                 .findRegions("ebbswing"), Animation.PlayMode.NORMAL);
-        owlAnimation = new Animation(0.80f, manager.getTextureAtlas()
+        owlAnimation = new Animation(0.080f, manager.getTextureAtlas()
                 .findRegions("owlcatchomg"), Animation.PlayMode.NORMAL);
         reset();
     }
