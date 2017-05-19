@@ -753,7 +753,9 @@ public class GameModeController extends WorldController {
 						framesToDie--;
 						if (sloth.dismember(world)) {
                             ghostSound.play();
-                            fallDeathHeight = sloth.getPosition().y - NEAR_FALL_DEATH_DISTANCE;
+                            fallDeathHeight = sloth.getMainBody().getPosition()
+									.y -
+									NEAR_FALL_DEATH_DISTANCE;
                         }
                     }
 
@@ -894,13 +896,19 @@ public class GameModeController extends WorldController {
 			canvas.end();
 
 			float slothX = -100000;
-			float slothY = 100000;
+			float slothY = -100000;
+			boolean foundOne = false;
 			for (SlothModel sloth : slothList) {
 				if (sloth.isDismembered()) continue;
 				if (sloth.getBody().getPosition().x > slothX) {
 					slothX = sloth.getBody().getPosition().x;
 					slothY = sloth.getBody().getPosition().y;
+					foundOne = true;
 				}
+			}
+			if (!foundOne) {
+				slothX = slothList.get(0).getBody().getPosition().x;
+				slothY = slothList.get(0).getBody().getPosition().y;
 			}
 
 			float velocityModifier = 0.18f;

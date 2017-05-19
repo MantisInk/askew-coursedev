@@ -346,8 +346,8 @@
       "CLASSNAME": "askew.entity.vine.Vine",
       "INSTANCE": {
         "numLinks": 4.7,
-        "x": 4.5370007,
-        "y": 15.95101,
+        "x": 4.5370035,
+        "y": 15.964012,
         "angle": 9.684628,
         "omega": 35.259876,
         "pin": false,
@@ -484,18 +484,37 @@
       "CLASSNAME": "askew.entity.wall.WallModel",
       "INSTANCE": {
         "color": -1,
-        "x": -2.9509993,
-        "y": 11.154007,
+        "x": 5.0,
+        "y": 4.0,
         "thorn": true,
         "points": [
           0.0,
           0.0,
+          -0.0,
+          5.0,
+          2.0,
+          5.0,
+          2.0,
+          -0.0
+        ]
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.wall.WallModel",
+      "INSTANCE": {
+        "color": -1,
+        "x": 6.0,
+        "y": 14.0,
+        "thorn": true,
+        "points": [
           0.0,
+          0.0,
+          -6.0,
+          5.0,
           1.0,
+          5.0,
           1.0,
-          1.0,
-          1.0,
-          0.0
+          -0.0
         ]
       }
     },
