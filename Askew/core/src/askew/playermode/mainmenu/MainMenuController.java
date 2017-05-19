@@ -324,7 +324,7 @@ public class MainMenuController extends WorldController {
                     graphics = !graphics;
                     manager.getMenuManager().updateButtonContainingText
                             ("Graphics", "Graphics Quality: " +
-                                    (graphics ? "HIGH" : "LOW"));
+                                    (graphics ? "LOW" : "HIGH"));
                 }
             } else if (updateString.contains("Music")) {
                 if (updateString.contains("ACTION_RIGHT") || updateString

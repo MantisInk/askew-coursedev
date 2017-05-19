@@ -12,7 +12,7 @@ import java.util.LinkedList;
 
 public class EyesEffect extends Effect {
 
-    private final int effect1_num = 15;
+    private int effect1_num = 15;
     private int ct = 0;
     private int cap = 5;
     private final String frame0Path = "texture/particle/eyes0.png";
@@ -28,6 +28,12 @@ public class EyesEffect extends Effect {
     }
 
     public void spawn() {
+        if(particleController.graphicsSetting == 0){
+            effect1_num = 4;
+        }
+        else{
+            effect1_num = 15;
+        }
         Particle current;
         Rectangle b = particleController.gmc.getBounds();
         float bx = (b.x / 1.3f) - 16f;
@@ -68,21 +74,21 @@ public class EyesEffect extends Effect {
     @Override
     public void draw(GameCanvas canvas) {
 
-//        for (Particle p : spawned) {
-//
-//            if (p.accumulator > 0) {
-//                if (eye_textures.get(p.textureNum) != null) {
-//                    TextureRegion tex = eye_textures.get(p.textureNum);
-//                    canvas.drawBackgroundEntity(tex,
-//                            p.tint,
-//                            tex.getRegionWidth() / 2,
-//                            tex.getRegionHeight() / 2,
-//                            p.x * drawScale.x, p.y * drawScale.y, p.depth, p.angle,
-//                            (1.0f / tex.getRegionWidth()) * p.width * drawScale.x, (1.0f / tex.getRegionHeight() * p.height * drawScale.y),
-//                            1);
-//                }
-//
-//            }
-//        }
+        for (Particle p : spawned) {
+
+            if (p.accumulator > 0) {
+                if (eye_textures.get(p.textureNum) != null) {
+                    TextureRegion tex = eye_textures.get(p.textureNum);
+                    canvas.drawBackgroundEntity(tex,
+                            p.tint,
+                            tex.getRegionWidth() / 2,
+                            tex.getRegionHeight() / 2,
+                            p.x * drawScale.x, p.y * drawScale.y, p.depth, p.angle,
+                            (1.0f / tex.getRegionWidth()) * p.width * drawScale.x, (1.0f / tex.getRegionHeight() * p.height * drawScale.y),
+                            1);
+                }
+
+            }
+        }
     }
 }
