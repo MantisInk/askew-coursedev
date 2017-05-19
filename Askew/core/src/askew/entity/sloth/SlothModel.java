@@ -608,7 +608,6 @@ public class SlothModel extends ComplexObstacle {
 
 
         float avgTorque = (lTorque + rTorque)/2;
-        System.out.println(avgTorque);
         // ANTI GIMP - Trevor. Filled with magic ###s
         /*
         float maxVelocity = Math.max(Math.abs(rightAngularVelocity),Math.abs(leftAngularVelocity));
