@@ -340,6 +340,7 @@ public class LoadingMode implements Screen, InputProcessor, ControllerListener {
      */
     private void draw() {
         if (background == null) return;
+        canvas.clear();
         canvas.begin();
         canvas.draw(background);
         if (playButton == null) {

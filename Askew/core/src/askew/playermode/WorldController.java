@@ -143,6 +143,7 @@ public abstract class WorldController implements Screen {
     /**
      * The world scale
      */
+    @Getter
     protected Vector2 worldScale;
     /**
      * Whether or not debug mode is active
@@ -435,6 +436,7 @@ public abstract class WorldController implements Screen {
      */
     protected void addObject(Entity obj) {
         //assert inBounds(obj) : "Object is not in bounds";
+
         entities.add(obj);
         if (obj instanceof Obstacle) {
             ((Obstacle) obj).activatePhysics(world);

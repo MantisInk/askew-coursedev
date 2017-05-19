@@ -55,7 +55,7 @@ public class GameCanvas {
     /**
      * Drawing context to handle texture AND POLYGONS as sprites
      */
-    private PolygonSpriteBatch spriteBatch;
+    private CustomSpriteBatch spriteBatch;
     /**
      * Track whether or not we are active (for error checking)
      */
@@ -100,7 +100,7 @@ public class GameCanvas {
      */
     public GameCanvas() {
         active = DrawPass.INACTIVE;
-        spriteBatch = new PolygonSpriteBatch();
+        spriteBatch = new CustomSpriteBatch();
         SpriteBatch batch = new SpriteBatch();
         debugRender = new ShapeRenderer();
 
@@ -302,7 +302,7 @@ public class GameCanvas {
      *
      * @param state the color blending rule
      */
-    private void setBlendState(BlendState state) {
+    public void setBlendState(BlendState state) {
         if (state == blend) {
             return;
         }
@@ -380,6 +380,55 @@ public class GameCanvas {
         setBlendState(BlendState.NO_PREMULT);
         active = DrawPass.STANDARD;
     }
+
+    /**
+     * Start a standard drawing sequence.
+     * <p>
+     * Nothing is flushed to the graphics card until the method end() is called.
+     *
+     * @param affine the global transform apply to the camera
+     */
+    public void beginParticle(Affine2 affine) {
+        global.setAsAffine(affine);
+        global.mulLeft(camera.combined);
+        spriteBatch.setProjectionMatrix(global);
+
+        spriteBatch.beginParticle();
+        active = DrawPass.STANDARD;
+    }
+
+    /**
+     * Start a standard drawing sequence.
+     * <p>
+     * Nothing is flushed to the graphics card until the method end() is called.
+     *
+     * @param sx the amount to scale the x-axis
+     * @param sy the amount to scale the y-axis
+     */
+    public void beginParticle(float sx, float sy) {
+        global.idt();
+        global.scl(sx, sy, 1.0f);
+        global.mulLeft(camera.combined);
+
+        setBlendState(BlendState.NO_PREMULT);
+        spriteBatch.setProjectionMatrix(global);
+        spriteBatch.beginParticle();
+        active = DrawPass.STANDARD;
+    }
+
+    /**
+     * Start a standard drawing sequence.
+     * <p>
+     * Nothing is flushed to the graphics card until the method end() is called.
+     */
+    public void beginParticle() {
+        spriteBatch.setProjectionMatrix(camera.combined);
+        spriteBatch.beginParticle();
+        setBlendState(BlendState.NO_PREMULT);
+        active = DrawPass.STANDARD;
+    }
+
+
 
     /**
      * Ends a drawing sequence, flushing texture to the graphics card.
@@ -486,7 +535,14 @@ public class GameCanvas {
     }
 
     public void draw(Texture image) {
-        draw(image, Color.WHITE, 0, 0, getWidth(), getHeight());
+        if (active != DrawPass.STANDARD) {
+            Gdx.app.error("askew.GameCanvas", "Cannot draw without active begin()", new IllegalStateException());
+            return;
+        }
+
+        // Unlike Lab 1, we can shortcut without a master drawing method
+        spriteBatch.setColor(Color.WHITE);
+        spriteBatch.draw(image, 0, 0, 0.999f, getWidth(), getHeight());
     }
 
     /**
@@ -923,7 +979,11 @@ public class GameCanvas {
             return;
         }
         GlyphLayout layout = new GlyphLayout(font, text);
-        font.draw(spriteBatch, layout, x, y);
+        BitmapFontCache cache = font.getCache();
+        //font.draw(spriteBatch, layout, x, y);
+        cache.clear();
+        cache.addText(layout, x, y);
+        cache.draw(spriteBatch);
     }
 
     /**
@@ -1222,7 +1282,7 @@ public class GameCanvas {
 
         computeTransform(ox, oy, campos.x + offsetx, campos.y + offsety, angle, sx, sy);
         spriteBatch.setColor(tint);
-        spriteBatch.draw(region, region.getRegionWidth(), region.getRegionHeight(), local);
+        spriteBatch.draw(region, region.getRegionWidth(), region.getRegionHeight(), local, depth/(1 + depth));
     }
 
     /**
