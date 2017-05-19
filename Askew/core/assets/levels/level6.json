@@ -1,50 +1,174 @@
 {
-  "levelModelVersion": 4,
+  "levelModelVersion": 5,
   "goalTimeGold": 30,
   "goalTimeSilver": 45,
   "goalTimeBronze": 60,
   "recordTime": 9999999.0,
   "maxX": 38.0,
   "maxY": 10.0,
-  "minX": -4.0,
+  "minX": -6.0,
   "minY": -15.0,
   "title": "tre23@cornell.edu",
-  "background": "texture/background/background1.png",
+  "background": "texture/background/BackgroundStuff/turquoise.png",
   "soundtrack": "TODO",
   "entities": [
     {
-      "CLASSNAME": "askew.entity.tree.Trunk",
+      "CLASSNAME": "askew.entity.BackgroundEntity",
       "INSTANCE": {
-        "x": -2.0,
-        "y": -8.0,
-        "angle": 270.0,
-        "numLinks": 3.0
+        "x": 27.885008,
+        "y": -14.105001,
+        "width": 12.0,
+        "height": 12.0,
+        "depth": 5.0,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/palmTree.png",
+        "color": 4801279
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": -3.8869991,
+        "y": -12.935004,
+        "width": 12.0,
+        "height": 12.0,
+        "depth": 3.0,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/sil1.png",
+        "color": 38881279
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 24.960009,
+        "y": -16.354008,
+        "width": 12.0,
+        "height": 12.0,
+        "depth": 2.0,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/palmTree.png",
+        "color": 4801279
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 7.2020016,
+        "y": -15.691008,
+        "width": 4.0,
+        "height": 4.0,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/shrub1.png",
+        "color": -1
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 1.1180019,
+        "y": -15.119007,
+        "width": 4.0,
+        "height": 4.0,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/shrub1.png",
+        "color": -1
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 12.662001,
+        "y": -15.158009,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/leafPalm.png",
+        "color": -1
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 12.883003,
+        "y": -15.873009,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/leafPalm.png",
+        "color": -1
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 15.541508,
+        "y": -15.834004,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/leafPalm.png",
+        "color": -1
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 9.457508,
+        "y": -15.288004,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/leafPalm.png",
+        "color": -1
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 10.900508,
+        "y": -16.360504,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/leafPalm.png",
+        "color": -1
       }
     },
     {
       "CLASSNAME": "askew.entity.wall.WallModel",
       "INSTANCE": {
-        "color": -1,
-        "x": -2.0,
-        "y": 2.0,
-        "points": [
-          0.0,
-          0.0,
-          0.0,
-          1.0,
-          6.0,
-          1.0,
-          6.0,
-          0.0
-        ]
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.wall.WallModel",
-      "INSTANCE": {
-        "color": -1,
+        "color": 8880383,
         "x": 0.0,
         "y": 0.0,
+        "thorn": false,
         "points": [
           4.0,
           3.0,
@@ -58,69 +182,6 @@
           -2.0,
           24.0,
           3.0
-        ]
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.wall.WallModel",
-      "INSTANCE": {
-        "color": -1,
-        "x": 3.0,
-        "y": -2.0,
-        "points": [
-          0.0,
-          0.0,
-          0.0,
-          4.0,
-          1.0,
-          4.0,
-          1.0,
-          0.0
-        ]
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.tree.Trunk",
-      "INSTANCE": {
-        "x": -2.0,
-        "y": -2.0,
-        "angle": 270.0,
-        "numLinks": 3.0
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.wall.WallModel",
-      "INSTANCE": {
-        "color": -1,
-        "x": -3.0,
-        "y": -20.0,
-        "points": [
-          0.0,
-          0.0,
-          0.0,
-          23.0,
-          1.0,
-          23.0,
-          1.0,
-          0.0
-        ]
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.wall.WallModel",
-      "INSTANCE": {
-        "color": -1,
-        "x": 37.0,
-        "y": -19.0,
-        "points": [
-          0.0,
-          0.0,
-          0.0,
-          20.0,
-          1.0,
-          20.0,
-          1.0,
-          0.0
         ]
       }
     },
@@ -147,66 +208,223 @@
       }
     },
     {
-      "CLASSNAME": "askew.entity.wall.WallModel",
-      "INSTANCE": {
-        "color": -1,
-        "x": 22.0,
-        "y": -4.0,
-        "points": [
-          0.0,
-          0.0,
-          0.0,
-          15.0,
-          6.0,
-          15.0,
-          6.0,
-          0.0
-        ]
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.wall.WallModel",
-      "INSTANCE": {
-        "color": -1,
-        "x": 34.0,
-        "y": -4.0,
-        "points": [
-          0.0,
-          0.0,
-          0.0,
-          15.0,
-          4.0,
-          15.0,
-          4.0,
-          0.0
-        ]
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.wall.WallModel",
-      "INSTANCE": {
-        "color": -1,
-        "x": 28.0,
-        "y": 9.0,
-        "points": [
-          0.0,
-          0.0,
-          0.0,
-          2.0,
-          6.0,
-          2.0,
-          6.0,
-          0.0
-        ]
-      }
-    },
-    {
       "CLASSNAME": "askew.entity.owl.OwlModel",
       "INSTANCE": {
         "x": 30.994177,
         "y": 5.005,
         "pin": {},
         "owlBody": {}
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.wall.WallModel",
+      "INSTANCE": {
+        "color": 8880383,
+        "x": -1.9629993,
+        "y": 1.8720007,
+        "thorn": false,
+        "points": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          6.0,
+          1.0,
+          6.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.wall.WallModel",
+      "INSTANCE": {
+        "color": 8880383,
+        "x": -2.9119997,
+        "y": -20.111012,
+        "thorn": false,
+        "points": [
+          0.0,
+          0.0,
+          0.0,
+          23.0,
+          1.0,
+          23.0,
+          1.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.wall.WallModel",
+      "INSTANCE": {
+        "color": 8880383,
+        "x": 2.9250002,
+        "y": -2.0020003,
+        "thorn": false,
+        "points": [
+          0.0,
+          0.0,
+          0.0,
+          4.0,
+          1.0,
+          4.0,
+          1.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.wall.WallModel",
+      "INSTANCE": {
+        "color": 8880383,
+        "x": 21.970022,
+        "y": -3.9390001,
+        "thorn": false,
+        "points": [
+          0.0,
+          0.0,
+          0.0,
+          15.0,
+          6.0,
+          15.0,
+          6.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.wall.WallModel",
+      "INSTANCE": {
+        "color": 8880383,
+        "x": 28.17102,
+        "y": 9.100004,
+        "thorn": false,
+        "points": [
+          0.0,
+          0.0,
+          0.0,
+          2.0,
+          6.0,
+          2.0,
+          6.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.wall.WallModel",
+      "INSTANCE": {
+        "color": 8880383,
+        "x": 33.917023,
+        "y": -3.9780002,
+        "thorn": false,
+        "points": [
+          0.0,
+          0.0,
+          0.0,
+          15.0,
+          4.0,
+          15.0,
+          4.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.wall.WallModel",
+      "INSTANCE": {
+        "color": 8880383,
+        "x": 36.90702,
+        "y": -19.032011,
+        "thorn": false,
+        "points": [
+          0.0,
+          0.0,
+          0.0,
+          20.0,
+          1.0,
+          20.0,
+          1.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": -2.131999,
+        "y": -9.620004,
+        "width": 10.0,
+        "height": 10.0,
+        "depth": 1.0,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/palmTree1.png",
+        "color": -1
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 4.524001,
+        "y": -14.638008,
+        "width": 4.0,
+        "height": 4.0,
+        "depth": 1.0,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/palms.png",
+        "color": -1
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": -1.3129997,
+        "y": -14.183006,
+        "width": 4.0,
+        "height": 4.0,
+        "depth": 1.0,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/palms.png",
+        "color": -1
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 0.7020016,
+        "y": -14.456008,
+        "width": 4.0,
+        "height": 4.0,
+        "depth": 1.0,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/palms.png",
+        "color": -1
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": -2.0,
+        "y": -8.0,
+        "angle": 270.0,
+        "numLinks": 3.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": -2.0,
+        "y": -2.0,
+        "angle": 270.0,
+        "numLinks": 3.0
       }
     },
     {
@@ -249,8 +467,8 @@
       "CLASSNAME": "askew.entity.vine.Vine",
       "INSTANCE": {
         "numLinks": 7.0,
-        "x": 22.0,
-        "y": -5.0,
+        "x": 22.035015,
+        "y": -4.9660006,
         "angle": 30.0,
         "omega": -400.0,
         "pin": false,
@@ -261,8 +479,8 @@
       "CLASSNAME": "askew.entity.vine.Vine",
       "INSTANCE": {
         "numLinks": 7.0,
-        "x": 6.0,
-        "y": -5.0,
+        "x": 6.019001,
+        "y": -5.0179996,
         "angle": -25.0,
         "omega": 0.0,
         "pin": false,
@@ -312,9 +530,7 @@
         "y": 0.0,
         "lTheta": 0.0,
         "rTheta": 0.0,
-        "airTime": 0,
-        "blinkFrame": 24,
-        "facingFront": true
+        "shouldDie": false
       }
     }
   ]
