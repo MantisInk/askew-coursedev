@@ -155,7 +155,7 @@ class JsonEntityFactory {
         float width = instance.get("width").getAsFloat();
         float height = instance.get("height").getAsFloat();
         float depth = instance.get("depth").getAsFloat();
-        float angle = instance.get("angle").getAsFloat();
+        float angle = (float)Math.toRadians(instance.get("angle").getAsFloat());
         float scalex = instance.get("scalex").getAsFloat();
         float scaley = instance.get("scaley").getAsFloat();
         String colorString;
