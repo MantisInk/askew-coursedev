@@ -585,8 +585,14 @@ public class GameModeController extends WorldController {
 				else if (updateString.contains("Level") &&
 							levelCompleteJunkState == 2) {
 							playerIsReady = false;
-							int current = GlobalConfiguration.getInstance().getCurrentLevel();
-							GlobalConfiguration.getInstance().setCurrentLevel(current + 1);
+					if (multiplayer) {
+						int current = GlobalConfiguration.getInstance().getCurrentMultiLevel();
+						GlobalConfiguration.getInstance().setCurrentMultiLevel
+								(current +	1);
+					} else {
+						int current = GlobalConfiguration.getInstance().getCurrentLevel();
+						GlobalConfiguration.getInstance().setCurrentLevel(current + 1);
+					}
 							setLevel();
 							listener.exitScreen(this, EXIT_GM_GM);
 						}
