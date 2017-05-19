@@ -22,7 +22,7 @@ public class EyeEntity extends BackgroundEntity {
 
     public EyeEntity(float x, float y, float depth,
                      float angle, float scalex, float scaley, int color) {
-        super(x, y, 1, 1, 1.5f, 0, scalex, scaley, "texture/eye/eyes.png", color);
+        super(x, y, 1, 1, depth, angle, scalex, scaley, "texture/eye/eyes.png", color);
         pupilOffset = new Vector2();
     }
 
