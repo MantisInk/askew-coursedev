@@ -190,7 +190,7 @@ public class Vine extends ComplexObstacle {
             plank.setAngle((float) Math.toRadians(angle));
             plank.setAngularVelocity(omega * (nLinks - ii - 1) / (nLinks));
             Filter f = new Filter();
-            f.maskBits = FilterGroup.WALL | FilterGroup.SLOTH | FilterGroup.HAND;
+            f.maskBits = FilterGroup.WALL | FilterGroup.HAND;
             f.categoryBits = FilterGroup.VINE;
             plank.setFilterData(f);
             bodies.add(plank);

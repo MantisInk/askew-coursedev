@@ -1,5 +1,6 @@
 package askew.playermode.gamemode;
 
+import askew.entity.FilterGroup;
 import askew.entity.obstacle.BoxObstacle;
 import askew.entity.obstacle.Obstacle;
 import askew.entity.sloth.SlothModel;
@@ -26,6 +27,9 @@ class PhysicsController implements ContactListener {
     private boolean isFlowWin;
     private int victorySloth;
 
+    private ArrayList<ArrayList<Body>> rightLists = new ArrayList<>();
+    private ArrayList<ArrayList<Body>> leftLists = new ArrayList<>();
+
     /**
      * This function deals with collisions.
      * Fixture collision mask groups:
@@ -38,14 +42,20 @@ class PhysicsController implements ContactListener {
 
     public void reset() {
         slothList.clear();
+        for(ArrayList a : rightLists){
+            a.clear();
+        }
+        rightLists.clear();
+        for(ArrayList a : leftLists){
+            a.clear();
+        }
+        leftLists.clear();
+
         goalDoor = null;
         isFlowKill = false;
         isFlowWin = false;
     }
 
-    private boolean isSlothPart(Obstacle obs) {
-        return obs.getName() != null && obs.getName().contains("slothpart");
-    }
 
     /**
      * Callback method for the start of a collision
@@ -63,55 +73,60 @@ class PhysicsController implements ContactListener {
         Body body1 = fix1.getBody();
         Body body2 = fix2.getBody();
 
-        try {
-            if (!(body1.getUserData() instanceof Obstacle) || !(body2.getUserData() instanceof Obstacle))
-                return;
+        Fixture me = null;
+        Fixture other = null;
 
-            Obstacle bd1 = (Obstacle) body1.getUserData();
-            Obstacle bd2 = (Obstacle) body2.getUserData();
+        boolean oneIsSloth = (fix1.getFilterData().categoryBits & FilterGroup.SLOTH) != 0;
+        boolean twoIsSloth = (fix2.getFilterData().categoryBits & FilterGroup.SLOTH) != 0;
 
-            // Check for thorns
-            if (bd1 != null && bd2 != null && (isSlothPart(bd1) || isSlothPart(bd2))) {
-                Obstacle other;
-                Obstacle slothy;
-                // TODO: Sloth Homicide
-                if (isSlothPart(bd1) && isSlothPart(bd2)) return;
-
-                if (isSlothPart(bd1)) {
-                    other = bd2;
-                    slothy = bd1;
-                } else {
-                    other = bd1;
-                    slothy = bd2;
-                }
-
-                if (other.getName() != null && (other.getName().equals("thorns") || other.getName().equals("ghost"))) {
-                    for (SlothModel sloth : slothList) {
-                        for (Obstacle b : sloth.getBodies()) {
-                            if (b == slothy) {
-                                sloth.shouldDie = true;
-                                System.out.println(sloth);
-                            }
-                        }
-                    }
-                }
-
-                if (other.getName() != null && other.getName().equals("owl")) {
-                    for (int i = 0 ; i < slothList.size(); i++) {
-                        SlothModel sloth = slothList.get(i);
-                        for (Obstacle b : sloth.getBodies()){
-                            if (b == slothy) {
-                                victorySloth = i;
-                            }
-                        }
-                    }
-                    isFlowWin = true;
-                }
-
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        if(oneIsSloth && twoIsSloth) {
+            return;
+        }else if (oneIsSloth){
+            me = fix1;
+            other = fix2;
+        }else if (twoIsSloth){
+            me = fix2;
+            other = fix1;
+        }else{
+            return;
         }
+        body1 = me.getBody();
+        body2 = other.getBody();
+
+        if((me.getFilterData().categoryBits & FilterGroup.HAND) != 0){
+            for (SlothModel sloth : slothList) {
+                if(body1 == sloth.getRightHand()){
+                    rightLists.get(sloth.getId()).add(body2);
+                }
+                if(body1 == sloth.getLeftHand()){
+                    leftLists.get(sloth.getId()).add(body2);
+                }
+            }
+        }
+
+
+        if((other.getFilterData().categoryBits & FilterGroup.LOSE) != 0) {
+            for (SlothModel sloth : slothList) {
+                for (Obstacle b : sloth.getBodies()) {
+                    if (b.getBody() == body1) {
+                        sloth.shouldDie = true;
+                        System.out.println(sloth);
+                    }
+                }
+            }
+        }
+
+        if((other.getFilterData().categoryBits & FilterGroup.WIN) != 0) {
+            for (SlothModel sloth : slothList) {
+                for (Obstacle b : sloth.getBodies()) {
+                    if (b.getBody() == body1) {
+                        victorySloth = sloth.getId();
+                    }
+                }
+            }
+            isFlowWin = true;
+        }
+        
     }
 
     /**
@@ -120,43 +135,57 @@ class PhysicsController implements ContactListener {
      * This method is called when two entities cease to touch.
      */
     public void endContact(Contact contact) {
-    }
+        Fixture fix1 = contact.getFixtureA();
+        Fixture fix2 = contact.getFixtureB();
 
-    private Body getBody(World world, String checkString, SlothModel sloth) {
-        return Arrays.stream(world.getContactList().toArray()).filter(Contact::isTouching).map(contact -> {
-            Fixture fix1 = contact.getFixtureA();
-            Fixture fix2 = contact.getFixtureB();
+        Body body1 = fix1.getBody();
+        Body body2 = fix2.getBody();
 
-            Body body1 = fix1.getBody();
-            Body body2 = fix2.getBody();
+        Fixture me = null;
+        Fixture other = null;
 
-            Object fd1 = fix1.getUserData();
-            Object fd2 = fix2.getUserData();
+        boolean oneIsSloth = (fix1.getFilterData().categoryBits & FilterGroup.SLOTH) != 0;
+        boolean twoIsSloth = (fix2.getFilterData().categoryBits & FilterGroup.SLOTH) != 0;
 
-            if (!(body1.getUserData() instanceof Obstacle) || !(body2.getUserData() instanceof Obstacle))
-                return null;
+        if(oneIsSloth && twoIsSloth) {
+            return;
+        }else if (oneIsSloth){
+            me = fix1;
+            other = fix2;
+        }else if (twoIsSloth){
+            me = fix2;
+            other = fix1;
+        }else{
+            return;
+        }
+        body1 = me.getBody();
+        body2 = other.getBody();
 
-            Obstacle bd1 = (Obstacle) body1.getUserData();
-            Obstacle bd2 = (Obstacle) body2.getUserData();
-
-            if (fd1 != null && ((String) fd1).contains(checkString) && bd2 != sloth && bd2 != null) {
-                return body2;
+        if((me.getFilterData().categoryBits & FilterGroup.HAND) != 0){
+            for (SlothModel sloth : slothList) {
+                if(body1 == sloth.getRightHand()){
+                    rightLists.get(sloth.getId()).remove(body2);
+                }
+                if(body1 == sloth.getLeftHand()){
+                    leftLists.get(sloth.getId()).remove(body2);
+                }
             }
-
-            if (fd2 != null && ((String) fd2).contains(checkString) && bd1 != sloth) {
-                return body1;
-            }
-
-            return null;
-        }).filter(Objects::nonNull).findFirst().orElse(null);
+        }
     }
 
-    public Body getLeftBody(World world, SlothModel sloth) {
-        return getBody(world, "sloth left hand slothid" + sloth.getId(), sloth);
+
+    public Body getLeftBody(SlothModel sloth) {
+        if (leftLists.get(sloth.getId()).size() > 0) {
+            return leftLists.get(sloth.getId()).get(0);
+        }
+        return null;
     }
 
-    public Body getRightBody(World world, SlothModel sloth) {
-        return getBody(world, "sloth right hand slothid" + sloth.getId(), sloth);
+    public Body getRightBody(SlothModel sloth) {
+        if (rightLists.get(sloth.getId()).size() > 0) {
+            return rightLists.get(sloth.getId()).get(0);
+        }
+        return null;
     }
 
     /**
@@ -173,6 +202,9 @@ class PhysicsController implements ContactListener {
 
     public void addSloth(SlothModel sloth) {
         slothList.add(sloth);
+        leftLists.add(new ArrayList<>());
+        rightLists.add(new ArrayList<>());
+
     }
 
     public int winningSloth() {

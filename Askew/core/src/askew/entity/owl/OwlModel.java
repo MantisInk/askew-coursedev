@@ -58,9 +58,8 @@ public class OwlModel extends BoxObstacle  {
         this.setRestitution(0);
         this.setSensor(true);
         Filter f = new Filter();
-        f.maskBits = FilterGroup.SLOTH | FilterGroup.HAND
-        ;
-        f.categoryBits = FilterGroup.WALL;
+        f.maskBits = FilterGroup.SLOTH | FilterGroup.HAND;
+        f.categoryBits = FilterGroup.WALL | FilterGroup.WIN;
         this.setFilterData(f);
         this.setName("owl");
         this.drawNumber = Entity.DN_EBB;
@@ -76,6 +75,7 @@ public class OwlModel extends BoxObstacle  {
     public void setDrawScale(float x, float y) {
         super.setDrawScale(x,y);
     }
+
 
 
     public void drawDebug(GameCanvas canvas) {
