@@ -666,8 +666,11 @@ public class GameModeController extends WorldController {
 
 	public void printHelp(){
 		//Display waiting text if not ready
-		//displayFont.setColor(Color.YELLOW);
-		//canvas.drawText("Hold RB/LB \n to start!", displayFont, initFlowX * worldScale.x, initFlowY * worldScale.y + 150f);
+		displayFont.setColor(Color.YELLOW);
+		canvas.drawText("Hold RB/LB \n to start!", displayFont, slothList.get
+				(0).getMainBody().getPosition().x *
+				worldScale.x, slothList.get
+				(0).getMainBody().getPosition().y * worldScale.y + 150f);
 	}
 
 	/**
@@ -705,7 +708,7 @@ public class GameModeController extends WorldController {
 				}
 			}
 			// Prevent control input if flow is win
-			if (!collisions.isFlowWin()) {
+			if (!collisions.isFlowWin() && (!victory)) {
 				for (int i = 0; i < slothList.size(); i++){
 					SlothModel sloth = slothList.get(i);
 					// Process actions in object model
@@ -1075,10 +1078,10 @@ public class GameModeController extends WorldController {
 			*/
 
 
-			canvas.begin();
-			if (!playerIsReady && !paused && coverOpacity <= 0)
-				printHelp();
+			canvas.begin(camTrans);
+			if ((!playerIsReady) && coverOpacity <= 0) printHelp();
 			canvas.end();
+
 			slothList.forEach(x -> x.drawGrab(canvas, camTrans));
 
 			if (debug) {
