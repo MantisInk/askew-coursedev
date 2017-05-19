@@ -1,5 +1,5 @@
 {
-  "levelModelVersion": 4,
+  "levelModelVersion": 5,
   "goalTimeGold": 30,
   "goalTimeSilver": 45,
   "goalTimeBronze": 60,
@@ -75,8 +75,10 @@
     {
       "CLASSNAME": "askew.entity.owl.OwlModel",
       "INSTANCE": {
-        "x": 33.0,
-        "y": 17.0
+        "x": 32.98102,
+        "y": 15.769011,
+        "pin": {},
+        "owlBody": {}
       }
     },
     {
@@ -194,6 +196,24 @@
       }
     },
     {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 19.0,
+        "y": 16.0,
+        "angle": -90.0,
+        "numLinks": 4.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 29.0,
+        "y": 16.0,
+        "angle": -90.0,
+        "numLinks": 5.0
+      }
+    },
+    {
       "CLASSNAME": "askew.entity.vine.Vine",
       "INSTANCE": {
         "numLinks": 4.0,
@@ -203,15 +223,6 @@
         "omega": -200.0,
         "pin": false,
         "texture": 0
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.tree.Trunk",
-      "INSTANCE": {
-        "x": 19.0,
-        "y": 16.0,
-        "angle": -90.0,
-        "numLinks": 4.0
       }
     },
     {
@@ -239,22 +250,13 @@
       }
     },
     {
-      "CLASSNAME": "askew.entity.tree.Trunk",
-      "INSTANCE": {
-        "x": 29.0,
-        "y": 16.0,
-        "angle": -90.0,
-        "numLinks": 5.0
-      }
-    },
-    {
       "CLASSNAME": "askew.entity.sloth.SlothModel",
       "INSTANCE": {
         "x": 2.9380007,
         "y": 10.933008,
         "lTheta": 0.0,
         "rTheta": 0.0,
-        "airTime": 0
+        "shouldDie": false
       }
     }
   ]

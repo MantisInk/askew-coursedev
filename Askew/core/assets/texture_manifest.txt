@@ -95,6 +95,10 @@ texture/leveleditor/yellowbox.png
 texture/owl/ebb.png
 texture/particle/cloud.png
 texture/particle/cloud1.png
+texture/particle/eyes0.png
+texture/particle/eyes1.png
+texture/particle/eyes2.png
+texture/particle/eyes3.png
 texture/particle/test.png
 texture/postprocess/edgefade - Copy.png
 texture/postprocess/edgefade.png

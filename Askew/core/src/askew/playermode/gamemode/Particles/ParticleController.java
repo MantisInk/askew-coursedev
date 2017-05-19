@@ -1,10 +1,8 @@
 package askew.playermode.gamemode.Particles;
 
 
-import askew.GameCanvas;
 import askew.MantisAssetManager;
 import askew.playermode.gamemode.GameModeController;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import lombok.Setter;
 
@@ -21,6 +19,7 @@ public class ParticleController {
     public TestEffect testEffect;
     public FogEffect fogEffect;
     public HandTrailEffect handTrailEffect;
+    public EyesEffect eyeEffect;
     @Setter
     public int graphicsSetting;
 
@@ -39,6 +38,8 @@ public class ParticleController {
         effects.add(fogEffect);
         handTrailEffect = new HandTrailEffect(this,unspawned);
         effects.add(handTrailEffect);
+        eyeEffect = new EyesEffect(this, unspawned);
+        effects.add(eyeEffect);
         for (int i = 0; i < maxParticles; ++i) {
             Particle particle = new Particle();
             unspawned.add(particle);
