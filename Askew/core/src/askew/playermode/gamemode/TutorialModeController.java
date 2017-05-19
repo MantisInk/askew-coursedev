@@ -257,7 +257,6 @@ public class TutorialModeController extends GameModeController {
 		trunkEntities.clear();
 		trunkGrabbed.clear();
 		super.reset();
-//		ebbLvl = ebbFling;
 		time = 0;
 		moveLeftArm = false;
 		grabs = 0;
@@ -1219,25 +1218,25 @@ public class TutorialModeController extends GameModeController {
 				case ebbVine1:
 					// reach for vine
 					if(((sloth.isActualLeftGrab() || sloth.isActualRightGrab()) && (checkGrabbedObst(trunkEntities.get(5))))) {
-						canvas.draw(vine0, new Color(0x7f7f7fFF), 0, 0, 1400, 1600, 0, 1, 1);
+						canvas.draw(vine0, new Color(0x7f7f7fFF), 0, 0, 0.875f*canvas.getWidth(), 1.77f*canvas.getHeight(), 0, 1, 1);
 						// swing on vine
 					} else if (checkGrabbedObst(vineEntities.get(0))) {
-						canvas.draw(vine3, new Color(0x7f7f7fFF), vine3.getWidth(), vine3.getHeight(), 1600, 2000, 0, 1, 1);
-						canvas.draw(vine1, new Color(0x7f7f7fFF), 0, vine1.getHeight(), 1600, 2000, 0, 1, 1);
-						canvas.draw(vine2, new Color(0x7f7f7fFF), 0, vine2.getHeight(), 1600, 2000, 0, 1, 1);
+						canvas.draw(vine3, new Color(0x7f7f7fFF), vine3.getWidth(), vine3.getHeight(), 1f*canvas.getWidth(), 2.22f*canvas.getHeight(), 0, 1, 1);
+						canvas.draw(vine1, new Color(0x7f7f7fFF), 0, vine1.getHeight(), 0.995f*canvas.getWidth(), 2.22f*canvas.getHeight(), 0, 1, 1);
+						canvas.draw(vine2, new Color(0x7f7f7fFF), 0, vine2.getHeight(), 1*canvas.getWidth(), 2.22f*canvas.getHeight(), 0, 1, 1);
 					}
 					break;
 				case ebbVine2:
 					// reach for vine1
 					if(((sloth.isActualLeftGrab() || sloth.isActualRightGrab()) && !(checkGrabbedObst(vineEntities.get(1))) && !(checkGrabbedObst(vineEntities.get(2))))) {
-						canvas.draw(swing3, new Color(0x7f7f7fFF), 0, 0, 2185, 1585, 0, 1, 1);
+						canvas.draw(swing3, new Color(0x7f7f7fFF), 0, 0, 1.4f*canvas.getWidth(), 1.77f*canvas.getHeight(), 0, 1, 1);
 					} else {
 						// swing on vine1
 						if (checkGrabbedObst(vineEntities.get(2))) {
-							canvas.draw(vine2, new Color(0x7f7f7fFF), 0, vine2.getHeight(), 2700, 2000, 0, 1, 1);
+							canvas.draw(vine2, new Color(0x7f7f7fFF), 0, vine2.getHeight(), 1.6875f*canvas.getWidth(), 2.22f*canvas.getHeight(), 0, 1, 1);
 							// swing on vine2
 						} else if (checkGrabbedObst(vineEntities.get(1))) {
-							canvas.draw(vine4, new Color(0x7f7f7fFF), 0, vine4.getHeight(), 2393, 2000, 0, 1, 1);
+							canvas.draw(vine4, new Color(0x7f7f7fFF), 0, vine4.getHeight(), 1.49f*canvas.getWidth(), 2.22f*canvas.getHeight(), 0, 1, 1);
 						}
 					}
 					break;
@@ -1297,9 +1296,9 @@ public class TutorialModeController extends GameModeController {
 		}
 
 		// draw instructional animations
-		canvas.begin();
-		drawInstructions();
-		canvas.end();
+//		canvas.begin();
+//		drawInstructions();
+//		canvas.end();
 
         if (coverOpacity > 0) {
             Gdx.gl.glEnable(GL20.GL_BLEND);
@@ -1338,7 +1337,7 @@ public class TutorialModeController extends GameModeController {
 
 	public void restart() {
         //change back to 1
-        currentStage = 1;
+        currentStage = 3;
     }
 
     public void printVector(Vector2 v) {
