@@ -61,20 +61,22 @@ public class EyesEffect extends Effect {
 
     @Override
     public void draw(GameCanvas canvas) {
-        for (Particle p : spawned) {
-            if (p.accumulator > 0) {
-                if (eye_textures.get(p.textureNum) != null) {
-                    TextureRegion tex = eye_textures.get(p.textureNum);
-                    canvas.drawBackgroundEntity(tex,
-                            p.tint,
-                            tex.getRegionWidth() / 2,
-                            tex.getRegionHeight() / 2,
-                            p.x * drawScale.x, p.y * drawScale.y, p.depth, p.angle,
-                            (1.0f / tex.getRegionWidth()) * p.width * drawScale.x, (1.0f / tex.getRegionHeight() * p.height * drawScale.y),
-                            1);
-                }
 
-            }
-        }
+//        for (Particle p : spawned) {
+//
+//            if (p.accumulator > 0) {
+//                if (eye_textures.get(p.textureNum) != null) {
+//                    TextureRegion tex = eye_textures.get(p.textureNum);
+//                    canvas.drawBackgroundEntity(tex,
+//                            p.tint,
+//                            tex.getRegionWidth() / 2,
+//                            tex.getRegionHeight() / 2,
+//                            p.x * drawScale.x, p.y * drawScale.y, p.depth, p.angle,
+//                            (1.0f / tex.getRegionWidth()) * p.width * drawScale.x, (1.0f / tex.getRegionHeight() * p.height * drawScale.y),
+//                            1);
+//                }
+//
+//            }
+//        }
     }
 }

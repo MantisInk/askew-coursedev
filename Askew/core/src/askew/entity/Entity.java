@@ -129,7 +129,11 @@ public abstract class Entity implements Comparable {
 
         int comp = java.lang.Float.compare(thisDepth, oDepth);
         if (comp == 0) {
-            comp = java.lang.Integer.compare(this.drawNumber, oDrawNum);
+            if( this instanceof BackgroundEntity && o instanceof  BackgroundEntity){
+                ((BackgroundEntity) this).getTexturePath().compareTo(((BackgroundEntity) o).getTexturePath());
+            }else {
+                comp = java.lang.Integer.compare(this.drawNumber, oDrawNum);
+            }
         }
         comp *= -1;
 

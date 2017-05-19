@@ -439,6 +439,8 @@ public class SlothModel extends ComplexObstacle {
     private float calculateTorque(float deltaTheta, float omega) {
         //return (float) Math.max(-1.0f,Math.min(1.0f, 1.2 * Math.sin(deltaTheta)));
         return (float) ((10.0 / (1 + Math.exp(omega + (deltaTheta * 4)))) - 5);//#MAGIC 4, DELTA THETA NORMALIZER
+        //return deltaTheta * 2;
+        //return (float) ((10.0 / (1 + Math.exp(omega + (deltaTheta * 4)))) - 5);//#MAGIC 4, DELTA THETA NORMALIZER
     }
 
     /**
