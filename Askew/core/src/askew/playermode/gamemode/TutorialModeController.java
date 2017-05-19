@@ -1296,9 +1296,9 @@ public class TutorialModeController extends GameModeController {
 		}
 
 		// draw instructional animations
-//		canvas.begin();
-//		drawInstructions();
-//		canvas.end();
+		canvas.begin();
+		drawInstructions();
+		canvas.end();
 
         if (coverOpacity > 0) {
             Gdx.gl.glEnable(GL20.GL_BLEND);
@@ -1337,7 +1337,7 @@ public class TutorialModeController extends GameModeController {
 
 	public void restart() {
         //change back to 1
-        currentStage = 3;
+        currentStage = 1;
     }
 
     public void printVector(Vector2 v) {
