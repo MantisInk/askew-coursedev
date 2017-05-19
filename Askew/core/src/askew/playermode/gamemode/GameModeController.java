@@ -505,7 +505,7 @@ public class GameModeController extends WorldController {
 			for(int i = 0; i < INITIAL_FOG; i++) {
 				particleController.fogEffect.spawn(levelModel.getMaxX()-levelModel.getMinX(),levelModel.getMaxY()-levelModel.getMinY() );
 			}
-			particleController.eyeEffect.spawn(levelModel.getMinX(), levelModel.getMaxX(), levelModel.getMinY(), levelModel.getMaxY());
+			particleController.eyeEffect.spawn();
 			currentTime = 0f;
 			currentGrabs = 0;
 			leftPrevGrab = false;
@@ -819,10 +819,6 @@ public class GameModeController extends WorldController {
 
                 fogTime = currentTime;
             }
-            if (currentTime - eyeTime > 9.8f) {
-				particleController.eyeEffect.spawn(levelModel.getMinX(), levelModel.getMaxX(), levelModel.getMinY(), levelModel.getMaxY());
-				eyeTime = currentTime;
-			}
             particleController.update(dt);
 
 

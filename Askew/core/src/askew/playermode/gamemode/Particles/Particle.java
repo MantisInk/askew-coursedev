@@ -9,8 +9,6 @@ public class Particle implements Comparable {
 
     float x;
     float y;
-    float xmax;
-    float ymax;
     float width;
     float height;
     @Getter
@@ -99,19 +97,18 @@ public class Particle implements Comparable {
     }
 
     public void spawnEyes(float x, float y) {
-        float scl = 1.5f+(float)Math.random()*1.5f;
         this.x = x;
         this.y = y;
-        this.xmax = xmax;
-        this.ymax = ymax;
-        this.width = 1.8f*scl;
-        this.height = scl;
+        this.width = 1f  + (float)(Math.random() *.4) ;
+        this.height = .6f  + (float)(Math.random() *.2);
         this.depth = 2 + (float)(Math.random() *3);
         this.angle = 0;
-        this.tint = new Color(0xFFFFFF4F);
+        this.tint = new Color(1,1,1,(float) Math.random() * .3f);
         this.textureNum = 0;
         this.deathTime = 10f;
         this.accumulator = (float)Math.random()*1.5f;
+        this.fx = (float)(Math.random() * 5) - 3; // = cooldown
+        this.fy = (float)(Math.random() * 5) + 3;; //start time
         this.type = 3;
     }
 
@@ -128,10 +125,22 @@ public class Particle implements Comparable {
             this.tint.set(1f, .93f, .91f, .25f * (1-t));
         }
         if(type == 3){
-            float alpha = -0.8f*(float)Math.abs(t-5) + 4;
-            alpha = (alpha > 1) ? 1 : alpha;
-            this.tint.set(1, 1, 1, alpha);
-            this.textureNum = (int) (accumulator*8)%4;
+            if(fx < 0 ){
+                this.fx += delta;
+                if(fx >= 0){
+                    fx = 4f;
+                    this.tint = new Color(1,1,1,(float) Math.random() * .3f);
+                }
+
+            }
+            else {
+                this.fx -= delta;
+                if(fx < 0){
+                    fx = -1f;
+                    this.tint = new Color(0,0,0,0);
+                }
+                this.textureNum = (int) (accumulator * fy) % 4;
+            }
         }
 
     }

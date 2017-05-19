@@ -5,13 +5,14 @@ import askew.GameCanvas;
 import askew.MantisAssetManager;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Rectangle;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 
 public class EyesEffect extends Effect {
 
-    private final int effect1_num = 3;
+    private final int effect1_num = 15;
     private int ct = 0;
     private final String frame0Path = "texture/particle/eyes0.png";
     private final String frame1Path = "texture/particle/eyes1.png";
@@ -25,13 +26,21 @@ public class EyesEffect extends Effect {
         super(pc, unspawned); frameNum = 0; ct = 0;
     }
 
-    public void spawn(float x, float xmax, float y, float ymax) {
+    public void spawn() {
         Particle current;
+        Rectangle b = particleController.gmc.getBounds();
+        float bx = (b.x / 1.3f) - 16f;
+        float by = (b.y / 1.3f);
+        float bwidth = b.width * 1.3f;
+        float bheight = b.height * 1.3f;
+
+
+
         for (int i = 0; i < effect1_num; i++) {
             if (unspawned.size() > 0 ) {
                 current = unspawned.getFirst();
                 unspawned.removeFirst();
-                current.spawnEyes(x + (float) (Math.random() * (xmax-x)),y + (float) (Math.random()*(ymax-y)));
+                current.spawnEyes( (bx + ((float) (Math.random() * bwidth * 1.69f))),by + ((float) (Math.random()*bheight* 1.69f)));
                 spawned.add(current);
                 ct++;
             }
