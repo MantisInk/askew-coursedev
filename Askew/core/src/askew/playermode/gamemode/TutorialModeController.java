@@ -1053,47 +1053,47 @@ public class TutorialModeController extends GameModeController {
 		} else if (currentStage == STAGE_EBB) {
 			switch(ebbLvl) {
 				case ebbGrabPts:
-					canvas.drawTextCentered("Grab all 4 endpoints", instrFont, 300);
+					canvas.drawTextCentered("Grab all 4 endpoints", instrFont, 0.35f*canvas.getHeight());
 					break;
 				case ebbFlag:
-					canvas.drawTextCentered("Hold Flow's arms horizontally \nwithout grabbing for 2s", instrFont, 300);
-					canvas.drawText("time held: "+((int)(grabs*100))/100.0, instrFont, 0.4f*canvas.getWidth(), 0.3f*canvas.getHeight());
+					canvas.drawTextCentered("Hold Flow's arms horizontally \nwithout grabbing for 2s", instrFont, 0.35f*canvas.getHeight());
+					canvas.drawText("time held: "+((int)(grabs*100))/100.0, instrFont, 0.4f*canvas.getWidth(), -0.35f*canvas.getHeight());
 					break;
 				case ebbFling:
-					canvas.drawTextCentered("Try to fling from one short \nbranch to the other", instrFont, 300);
+					canvas.drawTextCentered("Try to fling from one short \nbranch to the other", instrFont, 0.35f*canvas.getHeight());
 					break;
 				case ebbFlingUp:
-					canvas.drawTextCentered("Now try flinging upwards", instrFont, 300);
+					canvas.drawTextCentered("Now try flinging upwards", instrFont, 0.35f*canvas.getHeight());
 					break;
 				case ebbVine1:
-					canvas.drawTextCentered("Use the vine to reach \nthe next branch", instrFont, 300);
+					canvas.drawTextCentered("Use the vine to reach \nthe next branch", instrFont, 0.35f*canvas.getHeight());
 					break;
 				case ebbVine2:
-					canvas.drawTextCentered("Use the next 2 vines \nto reach the following branch", instrFont, 300);
+					canvas.drawTextCentered("Use the next 2 vines \nto reach the following branch", instrFont, 0.35f*canvas.getHeight());
 					break;
 				default:
-					canvas.drawTextCentered("Reach Cherry the owl \nto complete the tutorial", instrFont, 300);
+					canvas.drawTextCentered("Reach Cherry the owl \nto complete the tutorial", instrFont, 0.35f*canvas.getHeight());
 			}
 		}
 		if (currentStage >= STAGE_GRAB) {
 			if(slothList.get(0).isActualRightGrab()) {
 				if(!bumperDown) {
-					canvas.draw(lUp, Color.WHITE, lUp.getWidth() / 2, 0, 350, 150, 0, worldScale.x / lUp.getWidth(), worldScale.y / lUp.getHeight());
+					canvas.draw(lUp, Color.WHITE, lUp.getWidth() / 2, 0, 0.2f*canvas.getWidth(), 0.2f*canvas.getHeight(), 0, worldScale.x / lUp.getWidth(), worldScale.y / lUp.getHeight());
 				} else {
-					canvas.draw(lDown, Color.WHITE, lDown.getWidth() / 2, 0, 350, 150, 0, worldScale.x / lDown.getWidth(), worldScale.y / lDown.getHeight());
+					canvas.draw(lDown, Color.WHITE, lDown.getWidth() / 2, 0, 0.2f*canvas.getWidth(), 0.2f*canvas.getHeight(), 0, worldScale.x / lDown.getWidth(), worldScale.y / lDown.getHeight());
 				}
-				canvas.draw(rPressed, Color.WHITE, rPressed.getWidth() / 2, 0, 1250, 150, 0, worldScale.x / rPressed.getWidth(), worldScale.y / rPressed.getHeight());
-				canvas.draw(joystick, Color.WHITE, joystick.getWidth() / 2, joystick.getHeight()/2, 350, 75, angle, 1.25f*worldScale.x / joystick.getWidth(), 1.25f*worldScale.y / joystick.getHeight());
-				canvas.draw(joystick, Color.WHITE, joystick.getWidth() / 2, joystick.getHeight()/2, 1250, 75, 0, 1.25f*worldScale.x/ joystick.getWidth(), 1.25f*worldScale.y / joystick.getHeight());
+				canvas.draw(rPressed, Color.WHITE, rPressed.getWidth() / 2, 0, 0.8f*canvas.getWidth(), 0.2f*canvas.getHeight(), 0, worldScale.x / rPressed.getWidth(), worldScale.y / rPressed.getHeight());
+				canvas.draw(joystick, Color.WHITE, joystick.getWidth() / 2, joystick.getHeight()/2, 0.2f*canvas.getWidth(), 0.1f*canvas.getHeight(), angle, 1.25f*worldScale.x / joystick.getWidth(), 1.25f*worldScale.y / joystick.getHeight());
+				canvas.draw(joystick, Color.WHITE, joystick.getWidth() / 2, joystick.getHeight()/2, 0.8f*canvas.getWidth(), 0.1f*canvas.getHeight(), 0, 1.25f*worldScale.x/ joystick.getWidth(), 1.25f*worldScale.y / joystick.getHeight());
 			} else {
-				canvas.draw(lPressed, Color.WHITE, lPressed.getWidth() / 2, 0, 350, 150, 0, worldScale.x / lPressed.getWidth(), worldScale.y / lPressed.getHeight());
+				canvas.draw(lPressed, Color.WHITE, lPressed.getWidth() / 2, 0, 0.2f*canvas.getWidth(), 0.2f*canvas.getHeight(), 0, worldScale.x / lPressed.getWidth(), worldScale.y / lPressed.getHeight());
 				if(!bumperDown) {
-					canvas.draw(rUp, Color.WHITE, rUp.getWidth() / 2, 0, 1250, 150, 0, worldScale.x / rUp.getWidth(), worldScale.y / rUp.getHeight());
+					canvas.draw(rUp, Color.WHITE, rUp.getWidth() / 2, 0, 0.8f*canvas.getWidth(), 0.2f*canvas.getHeight(), 0, worldScale.x / rUp.getWidth(), worldScale.y / rUp.getHeight());
 				} else {
-					canvas.draw(rDown, Color.WHITE, rDown.getWidth() / 2, 0, 1250, 150, 0, worldScale.x / rDown.getWidth(), worldScale.y / rDown.getHeight());
+					canvas.draw(rDown, Color.WHITE, rDown.getWidth() / 2, 0, 0.8f*canvas.getWidth(), 0.2f*canvas.getHeight(), 0, worldScale.x / rDown.getWidth(), worldScale.y / rDown.getHeight());
 				}
-				canvas.draw(joystick, Color.WHITE, joystick.getWidth() / 2, joystick.getHeight()/2, 350, 75, 0, 1.25f*worldScale.x / joystick.getWidth(), 1.25f*worldScale.y / joystick.getHeight());
-				canvas.draw(joystick, Color.WHITE, joystick.getWidth() / 2, joystick.getHeight()/2, 1250, 75, angle, 1.25f*worldScale.x / joystick.getWidth(), 1.25f*worldScale.y / joystick.getHeight());
+				canvas.draw(joystick, Color.WHITE, joystick.getWidth() / 2, joystick.getHeight()/2, 0.2f*canvas.getWidth(), 0.1f*canvas.getHeight(), 0, 1.25f*worldScale.x / joystick.getWidth(), 1.25f*worldScale.y / joystick.getHeight());
+				canvas.draw(joystick, Color.WHITE, joystick.getWidth() / 2, joystick.getHeight()/2, 0.8f*canvas.getWidth(), 0.1f*canvas.getHeight(), angle, 1.25f*worldScale.x / joystick.getWidth(), 1.25f*worldScale.y / joystick.getHeight());
 			}
 		}
 		if((currentStage == STAGE_PINNED && time > 6f) ||
