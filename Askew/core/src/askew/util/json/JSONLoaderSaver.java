@@ -176,6 +176,19 @@ public class JSONLoaderSaver {
                     }
                 }
                 return convertLevel(levelObject);
+            case 4:
+                levelObject.addProperty("levelModelVersion", 5);
+                for (JsonElement ent : levelObject.getAsJsonArray("entities")) {
+                    if (ent.getAsJsonObject().getAsJsonPrimitive("CLASSNAME")
+                            .getAsString().equals("askew.entity" +
+                                    ".BackgroundEntity")) {
+                        JsonObject inst = ent.getAsJsonObject().getAsJsonObject("INSTANCE");
+                        inst.addProperty("angle",Math.toDegrees(inst.get
+                                ("angle")
+                                .getAsFloat()));
+                    }
+                }
+                return convertLevel(levelObject);
             case LevelModel.LATEST_LEVEL_MODEL_VERSION:
                 return gson.toJson(levelObject);
             default:

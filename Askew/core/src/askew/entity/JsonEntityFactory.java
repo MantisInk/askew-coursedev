@@ -92,6 +92,10 @@ class JsonEntityFactory {
         WallModel wall;
         float x = instance.get("x").getAsFloat();
         float y = instance.get("y").getAsFloat();
+        boolean thorn = false;
+        if (instance.has("thorn")) {
+            thorn = instance.get("thorn").getAsBoolean();
+        }
         List<Float> points = new ArrayList<>();
         instance.get("points").getAsJsonArray().forEach(pt -> points.add(pt.getAsFloat()));
         Float[] arrayPoints = points.toArray(new Float[points.size()]);
@@ -118,7 +122,7 @@ class JsonEntityFactory {
                 intColor = (int) color;
             }
         }
-        wall = new WallModel(x, y, copy, intColor);
+        wall = new WallModel(x, y, copy, intColor, thorn);
         wall.setTextures(manager);
         return wall;
     }

@@ -111,4 +111,9 @@ public class GlobalConfiguration {
     public void setMultiplayer(boolean multiplayer) {
         dataBlob.addProperty("multiplayer", multiplayer);
     }
+
+    public void setCurrentMultiLevel(int currentMultiLevel) {
+        dataBlob.remove("currentMultiLevel");
+        dataBlob.addProperty("currentMultiLevel", currentMultiLevel);
+    }
 }

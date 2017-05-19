@@ -198,6 +198,7 @@ public class SlothModel extends ComplexObstacle {
     private transient float cummulativeAngleLeft = 0;
     private transient float cummulativeAngleRight = 0;
     private transient boolean facingFront;
+    public boolean shouldDie;
 
     /**
      * Creates a new ragdoll with its head at the given position.

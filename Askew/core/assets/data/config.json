@@ -12,11 +12,11 @@
   "fullscreen": false,
   "defaultLevel": "level1",
   "storeTimeRecords": true,
-  "maxMultiLevel": 1,
+  "maxMultiLevel": 3,
   "maxLevel": 7,
   "multiplayer": false,
   "currentLevel": 1,
   "currentMultiLevel": 1,
-  "enableMusic": false,
+  "enableMusic": true,
   "maxTutorial": 3
 }
