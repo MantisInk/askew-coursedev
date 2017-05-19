@@ -1186,57 +1186,57 @@ public class TutorialModeController extends GameModeController {
 			switch(ebbLvl) {
 				case ebbGrabPts:
 					if(!ebbGrabbed[0]) {
-						canvas.draw(holdLeft, tint, holdLeft.getWidth(), holdLeft.getHeight()/2, 0.26f*canvas.getWidth(), 1.21f*canvas.getHeight(), 0, 1, 1);
+						canvas.draw(holdLeft, tint, holdLeft.getWidth(), holdLeft.getHeight()/2, 0.26f*canvas.getWidth(), 1.21f*canvas.getHeight(), 0, canvas.getWidth()/1600, canvas.getHeight()/900);
 					}
 					if(!ebbGrabbed[1]) {
-						canvas.draw(holdDown, tint, holdDown.getWidth() / 2, holdDown.getHeight(), 0.25f*canvas.getWidth(), 1.22f*canvas.getHeight(), 0, 1, 1);
+						canvas.draw(holdDown, tint, holdDown.getWidth() / 2, holdDown.getHeight(), 0.25f*canvas.getWidth(), 1.22f*canvas.getHeight(), 0, canvas.getWidth()/1600, canvas.getHeight()/900);
 					}
 					if(!ebbGrabbed[2]) {
-						canvas.draw(holdRight, tint, 0, holdRight.getHeight()/2, 0.24f*canvas.getWidth(), 1.2f*canvas.getHeight(), 0, 1, 1);
+						canvas.draw(holdRight, tint, 0, holdRight.getHeight()/2, 0.24f*canvas.getWidth(), 1.2f*canvas.getHeight(), 0, canvas.getWidth()/1600, canvas.getHeight()/900);
 					}
 					if(!ebbGrabbed[3]) {
-						canvas.draw(holdUp, tint, holdUp.getWidth() / 2, 0, 0.25f*canvas.getWidth(), 1.2f*canvas.getHeight(), 0, 1, 1);
+						canvas.draw(holdUp, tint, holdUp.getWidth() / 2, 0, 0.25f*canvas.getWidth(), 1.2f*canvas.getHeight(), 0, canvas.getWidth()/1600, canvas.getHeight()/900);
 					}
 					break;
 				case ebbFlag:
-					canvas.draw(holdRight, tint, 0, holdRight.getHeight()/2, 0.24f*canvas.getWidth(), 1.42f*canvas.getHeight(), 0, 1, 1);
+					canvas.draw(holdRight, tint, 0, holdRight.getHeight()/2, 0.24f*canvas.getWidth(), 1.42f*canvas.getHeight(), 0, canvas.getWidth()/1600, canvas.getHeight()/900);
 					break;
 				case ebbFling:
-					canvas.draw(swing0, new Color(0x7f7f7f90), swing0.getWidth(), swing0.getHeight(), 0.51f*canvas.getWidth(), 1.46f*canvas.getHeight(), 0, 1, 1);
-					canvas.draw(swing1, tint, 0, swing1.getHeight(), 0.49f*canvas.getWidth(), 1.46f*canvas.getHeight(), 0, 1, 1);
-					canvas.draw(swing2, new Color(0x7f7f7fD0), 0, swing2.getHeight(), 0.49f*canvas.getWidth(), 1.46f*canvas.getHeight(), 0, 1, 1);
-					canvas.draw(swing3, new Color(0x7f7f7fFF), 0, 0, 0.52f*canvas.getWidth(), 1.5f*canvas.getHeight(), -0.1f, 1, 1);
-					canvas.draw(swing4, new Color(0x7f7f7fF0), 0, swing4.getHeight(), 0.62f*canvas.getWidth(), 1.57f*canvas.getHeight()+swing4.getHeight(), 0.1f, 1, 1);
+					canvas.draw(swing0, new Color(0x7f7f7f90), swing0.getWidth(), swing0.getHeight(), 0.51f*canvas.getWidth(), 1.46f*canvas.getHeight(), 0, canvas.getWidth()/1600, canvas.getHeight()/900);
+					canvas.draw(swing1, tint, 0, swing1.getHeight(), 0.49f*canvas.getWidth(), 1.46f*canvas.getHeight(), 0, canvas.getWidth()/1600, canvas.getHeight()/900);
+					canvas.draw(swing2, new Color(0x7f7f7fD0), 0, swing2.getHeight(), 0.49f*canvas.getWidth(), 1.46f*canvas.getHeight(), 0, canvas.getWidth()/1600, canvas.getHeight()/900);
+					canvas.draw(swing3, new Color(0x7f7f7fFF), 0, 0, 0.52f*canvas.getWidth(), 1.5f*canvas.getHeight(), -0.1f, canvas.getWidth()/1600, canvas.getHeight()/900);
+					canvas.draw(swing4, new Color(0x7f7f7fF0), 0, swing4.getHeight(), 0.62f*canvas.getWidth(), 1.57f*canvas.getHeight()+swing4.getHeight(), 0.1f, canvas.getWidth()/1600, canvas.getHeight()/900);
 					break;
 				case ebbFlingUp:
-					canvas.draw(swing0, new Color(0x7f7f7f90), swing0.getWidth(), swing0.getHeight(), 0.51f*canvas.getWidth(), 1.46f*canvas.getHeight(), 0, 1, 1);
-					canvas.draw(swing1, tint, 0, swing1.getHeight(), 0.49f*canvas.getWidth(), 1.46f*canvas.getHeight(), 0, 1, 1);
-					canvas.draw(swing2, new Color(0x7f7f7fD0), 0, swing2.getHeight(), 0.49f*canvas.getWidth(), 1.46f*canvas.getHeight(), 0, 1, 1);
-					canvas.draw(swing3, new Color(0x7f7f7fFF), 0, 0, 0.52f*canvas.getWidth(), 1.5f*canvas.getHeight(), -0.1f, 1, 1);
-					canvas.draw(swing3, new Color(0x7f7f7fFF), 0, 0, 0.59f*canvas.getWidth(), 1.63f*canvas.getHeight(), 0f, 1, 1);
+					canvas.draw(swing0, new Color(0x7f7f7f90), swing0.getWidth(), swing0.getHeight(), 0.51f*canvas.getWidth(), 1.46f*canvas.getHeight(), 0, canvas.getWidth()/1600, canvas.getHeight()/900);
+					canvas.draw(swing1, tint, 0, swing1.getHeight(), 0.49f*canvas.getWidth(), 1.46f*canvas.getHeight(), 0, canvas.getWidth()/1600, canvas.getHeight()/900);
+					canvas.draw(swing2, new Color(0x7f7f7fD0), 0, swing2.getHeight(), 0.49f*canvas.getWidth(), 1.46f*canvas.getHeight(), 0, canvas.getWidth()/1600, canvas.getHeight()/900);
+					canvas.draw(swing3, new Color(0x7f7f7fFF), 0, 0, 0.52f*canvas.getWidth(), 1.5f*canvas.getHeight(), -0.1f, canvas.getWidth()/1600, canvas.getHeight()/900);
+					canvas.draw(swing3, new Color(0x7f7f7fFF), 0, 0, 0.59f*canvas.getWidth(), 1.63f*canvas.getHeight(), 0f, canvas.getWidth()/1600, canvas.getHeight()/900);
 					break;
 				case ebbVine1:
 					// reach for vine
 					if(((sloth.isActualLeftGrab() || sloth.isActualRightGrab()) && (checkGrabbedObst(trunkEntities.get(5))))) {
-						canvas.draw(vine0, new Color(0x7f7f7fFF), 0, 0, 0.875f*canvas.getWidth(), 1.77f*canvas.getHeight(), 0, 1, 1);
+						canvas.draw(vine0, new Color(0x7f7f7fFF), 0, vine0.getHeight(), 0.875f*canvas.getWidth(), 2.22f*canvas.getHeight(), 0, canvas.getWidth()/1600, canvas.getHeight()/900);
 						// swing on vine
 					} else if (checkGrabbedObst(vineEntities.get(0))) {
-						canvas.draw(vine3, new Color(0x7f7f7fFF), vine3.getWidth(), vine3.getHeight(), 1f*canvas.getWidth(), 2.22f*canvas.getHeight(), 0, 1, 1);
-						canvas.draw(vine1, new Color(0x7f7f7fFF), 0, vine1.getHeight(), 0.995f*canvas.getWidth(), 2.22f*canvas.getHeight(), 0, 1, 1);
-						canvas.draw(vine2, new Color(0x7f7f7fFF), 0, vine2.getHeight(), 1*canvas.getWidth(), 2.22f*canvas.getHeight(), 0, 1, 1);
+						canvas.draw(vine3, new Color(0x7f7f7fFF), vine3.getWidth(), vine3.getHeight(), 1f*canvas.getWidth(), 2.22f*canvas.getHeight(), 0, canvas.getWidth()/1600, canvas.getHeight()/900);
+						canvas.draw(vine1, new Color(0x7f7f7fFF), 0, vine1.getHeight(), 0.995f*canvas.getWidth(), 2.22f*canvas.getHeight(), 0, canvas.getWidth()/1600, canvas.getHeight()/900);
+						canvas.draw(vine2, new Color(0x7f7f7fFF), 0, vine2.getHeight(), 1*canvas.getWidth(), 2.22f*canvas.getHeight(), 0, canvas.getWidth()/1600, canvas.getHeight()/900);
 					}
 					break;
 				case ebbVine2:
 					// reach for vine1
 					if(((sloth.isActualLeftGrab() || sloth.isActualRightGrab()) && !(checkGrabbedObst(vineEntities.get(1))) && !(checkGrabbedObst(vineEntities.get(2))))) {
-						canvas.draw(swing3, new Color(0x7f7f7fFF), 0, 0, 1.4f*canvas.getWidth(), 1.77f*canvas.getHeight(), 0, 1, 1);
+						canvas.draw(swing3, new Color(0x7f7f7fFF), 0, 0, 1.4f*canvas.getWidth(), 1.77f*canvas.getHeight(), 0, canvas.getWidth()/1600, canvas.getHeight()/900);
 					} else {
 						// swing on vine1
 						if (checkGrabbedObst(vineEntities.get(2))) {
-							canvas.draw(vine2, new Color(0x7f7f7fFF), 0, vine2.getHeight(), 1.6875f*canvas.getWidth(), 2.22f*canvas.getHeight(), 0, 1, 1);
+							canvas.draw(vine2, new Color(0x7f7f7fFF), 0, vine2.getHeight(), 1.6875f*canvas.getWidth(), 2.22f*canvas.getHeight(), 0, canvas.getWidth()/1600, canvas.getHeight()/900);
 							// swing on vine2
 						} else if (checkGrabbedObst(vineEntities.get(1))) {
-							canvas.draw(vine4, new Color(0x7f7f7fFF), 0, vine4.getHeight(), 1.49f*canvas.getWidth(), 2.22f*canvas.getHeight(), 0, 1, 1);
+							canvas.draw(vine4, new Color(0x7f7f7fFF), 0, vine4.getHeight(), 1.49f*canvas.getWidth(), 2.22f*canvas.getHeight(), 0, canvas.getWidth()/1600, canvas.getHeight()/900);
 						}
 					}
 					break;
