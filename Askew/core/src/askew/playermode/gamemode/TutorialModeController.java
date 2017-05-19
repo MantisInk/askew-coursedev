@@ -257,6 +257,7 @@ public class TutorialModeController extends GameModeController {
 		trunkEntities.clear();
 		trunkGrabbed.clear();
 		super.reset();
+//		ebbLvl = ebbFling;
 		time = 0;
 		moveLeftArm = false;
 		grabs = 0;
@@ -1057,7 +1058,7 @@ public class TutorialModeController extends GameModeController {
 					break;
 				case ebbFlag:
 					canvas.drawTextCentered("Hold Flow's arms horizontally \nwithout grabbing for 2s", instrFont, 0.35f*canvas.getHeight());
-					canvas.drawText("time held: "+((int)(grabs*100))/100.0, instrFont, 0.4f*canvas.getWidth(), -0.35f*canvas.getHeight());
+					canvas.drawText("time held: "+((int)(grabs*100))/100.0, instrFont, 0.4f*canvas.getWidth(), 0.15f*canvas.getHeight());
 					break;
 				case ebbFling:
 					canvas.drawTextCentered("Try to fling from one short \nbranch to the other", instrFont, 0.35f*canvas.getHeight());
@@ -1186,34 +1187,34 @@ public class TutorialModeController extends GameModeController {
 			switch(ebbLvl) {
 				case ebbGrabPts:
 					if(!ebbGrabbed[0]) {
-						canvas.draw(holdLeft, tint, holdLeft.getWidth(), holdRight.getHeight()/2, 425, 1100, 0, 1, 1);
+						canvas.draw(holdLeft, tint, holdLeft.getWidth(), holdLeft.getHeight()/2, 0.26f*canvas.getWidth(), 1.21f*canvas.getHeight(), 0, 1, 1);
 					}
 					if(!ebbGrabbed[1]) {
-						canvas.draw(holdDown, tint, holdDown.getWidth() / 2, holdDown.getHeight(), 405, 1110, 0, 1, 1);
+						canvas.draw(holdDown, tint, holdDown.getWidth() / 2, holdDown.getHeight(), 0.25f*canvas.getWidth(), 1.22f*canvas.getHeight(), 0, 1, 1);
 					}
 					if(!ebbGrabbed[2]) {
-						canvas.draw(holdRight, tint, 0, holdRight.getHeight()/2, 375, 1090, 0, 1, 1);
+						canvas.draw(holdRight, tint, 0, holdRight.getHeight()/2, 0.24f*canvas.getWidth(), 1.2f*canvas.getHeight(), 0, 1, 1);
 					}
 					if(!ebbGrabbed[3]) {
-						canvas.draw(holdUp, tint, holdUp.getWidth() / 2, 0, 405, 1090, 0, 1, 1);
+						canvas.draw(holdUp, tint, holdUp.getWidth() / 2, 0, 0.25f*canvas.getWidth(), 1.2f*canvas.getHeight(), 0, 1, 1);
 					}
 					break;
 				case ebbFlag:
-					canvas.draw(holdRight, tint, 0, holdRight.getHeight()/2, 375, 1290, 0, 1, 1);
+					canvas.draw(holdRight, tint, 0, holdRight.getHeight()/2, 0.24f*canvas.getWidth(), 1.42f*canvas.getHeight(), 0, 1, 1);
 					break;
 				case ebbFling:
-					canvas.draw(swing0, new Color(0x7f7f7f90), swing0.getWidth(), swing0.getHeight(), 785, 1320, 0, 1, 1);
-					canvas.draw(swing1, tint, 0, swing1.getHeight(), 760, 1320, 0, 1, 1);
-					canvas.draw(swing2, new Color(0x7f7f7fD0), 0, swing2.getHeight(), 750, 1320, 0, 1, 1);
-					canvas.draw(swing3, new Color(0x7f7f7fFF), 0, 0, 815, 1365, -0.1f, 1, 1);
-					canvas.draw(swing4, new Color(0x7f7f7fF0), 0, swing4.getHeight(), 995, 1415+swing4.getHeight(), 0.1f, 1, 1);
+					canvas.draw(swing0, new Color(0x7f7f7f90), swing0.getWidth(), swing0.getHeight(), 0.51f*canvas.getWidth(), 1.46f*canvas.getHeight(), 0, 1, 1);
+					canvas.draw(swing1, tint, 0, swing1.getHeight(), 0.49f*canvas.getWidth(), 1.46f*canvas.getHeight(), 0, 1, 1);
+					canvas.draw(swing2, new Color(0x7f7f7fD0), 0, swing2.getHeight(), 0.49f*canvas.getWidth(), 1.46f*canvas.getHeight(), 0, 1, 1);
+					canvas.draw(swing3, new Color(0x7f7f7fFF), 0, 0, 0.52f*canvas.getWidth(), 1.5f*canvas.getHeight(), -0.1f, 1, 1);
+					canvas.draw(swing4, new Color(0x7f7f7fF0), 0, swing4.getHeight(), 0.62f*canvas.getWidth(), 1.57f*canvas.getHeight()+swing4.getHeight(), 0.1f, 1, 1);
 					break;
 				case ebbFlingUp:
-					canvas.draw(swing0, new Color(0x7f7f7f90), swing0.getWidth(), swing0.getHeight(), 785, 1320, 0, 1, 1);
-					canvas.draw(swing1, tint, 0, swing1.getHeight(), 760, 1320, 0, 1, 1);
-					canvas.draw(swing2, new Color(0x7f7f7fD0), 0, swing2.getHeight(), 750, 1320, 0, 1, 1);
-					canvas.draw(swing3, new Color(0x7f7f7fFF), 0, 0, 815, 1365, -0.1f, 1, 1);
-					canvas.draw(swing3, new Color(0x7f7f7fFF), 0, 0, 1065, 1490, -0.1f, 1, 1);
+					canvas.draw(swing0, new Color(0x7f7f7f90), swing0.getWidth(), swing0.getHeight(), 0.51f*canvas.getWidth(), 1.46f*canvas.getHeight(), 0, 1, 1);
+					canvas.draw(swing1, tint, 0, swing1.getHeight(), 0.49f*canvas.getWidth(), 1.46f*canvas.getHeight(), 0, 1, 1);
+					canvas.draw(swing2, new Color(0x7f7f7fD0), 0, swing2.getHeight(), 0.49f*canvas.getWidth(), 1.46f*canvas.getHeight(), 0, 1, 1);
+					canvas.draw(swing3, new Color(0x7f7f7fFF), 0, 0, 0.52f*canvas.getWidth(), 1.5f*canvas.getHeight(), -0.1f, 1, 1);
+					canvas.draw(swing3, new Color(0x7f7f7fFF), 0, 0, 0.59f*canvas.getWidth(), 1.63f*canvas.getHeight(), 0f, 1, 1);
 					break;
 				case ebbVine1:
 					// reach for vine
