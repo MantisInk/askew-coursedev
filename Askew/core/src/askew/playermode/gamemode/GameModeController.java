@@ -716,6 +716,16 @@ public class GameModeController extends WorldController {
 						sloth.releaseRight(world);
 					}
 
+					if (sloth.shouldDie) {
+						if (sloth.dismember(world)) {
+							ghostSound.play();
+							if (!multiplayer)
+								fallDeathHeight = sloth.getMainBody().getPosition()
+									.y -
+									NEAR_FALL_DEATH_DISTANCE;
+						}
+					}
+
 					// Check if flow is falling
 					float slothY = sloth.getBody().getPosition().y;
 					if (slothY < fallDeathHeight + NEAR_FALL_DEATH_DISTANCE) {
@@ -744,7 +754,7 @@ public class GameModeController extends WorldController {
 						if (playingMusic)
 							SoundController.getInstance().setVolume("bgmusic",
 									MAX_MUSIC_VOLUME);
-						if ((playerIsReady || paused) && (collisions.isFlowKill() || !collisions.isFlowWin())) {
+						if ((playerIsReady || paused) && (!collisions.isFlowWin())) {
 							coverOpacity = 0;
 						}
 					}
