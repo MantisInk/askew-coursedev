@@ -609,18 +609,16 @@ public class SlothModel extends ComplexObstacle {
 
         float avgTorque = (lTorque + rTorque)/2;
         // ANTI GIMP - Trevor. Filled with magic ###s
-        /*
         float maxVelocity = Math.max(Math.abs(rightAngularVelocity),Math.abs(leftAngularVelocity));
         float gimpScale = 1.0f;
-        float CUTOFF = 17;
+        float CUTOFF = 16.5f;
         if (maxVelocity > CUTOFF) {
-            System.out.println("MaxVel:" + maxVelocity);
             gimpScale = (float) Math.exp(-( (maxVelocity-CUTOFF) / 4.5f));
         }
 
         lTorque *= gimpScale;
         rTorque *= gimpScale;
-        */
+
 
 
         if ((GRABBING_HAND_HAS_TORQUE || !isActualLeftGrab()))
