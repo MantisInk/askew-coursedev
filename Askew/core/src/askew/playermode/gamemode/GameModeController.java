@@ -708,7 +708,7 @@ public class GameModeController extends WorldController {
 				}
 			}
 			// Prevent control input if flow is win
-			if (!collisions.isFlowWin() && (!victory)) {
+			if ((!collisions.isFlowWin()) && (!isComplete()) && (!victory)) {
 				for (int i = 0; i < slothList.size(); i++){
 					SlothModel sloth = slothList.get(i);
 					// Process actions in object model
@@ -807,6 +807,7 @@ public class GameModeController extends WorldController {
 						particleController.handTrailEffect.spawn(leftHand.getPosition().x, leftHand.getPosition().y, leftArm.getAngle());
                 }
             }
+
 			leftNewGrab = (!leftPrevGrab && slothList.get(0).isActualLeftGrab());
 			rightNewGrab = (!rightPrevGrab && slothList.get(0).isActualRightGrab());
 			leftPrevGrab = slothList.get(0).isActualLeftGrab();
@@ -856,7 +857,8 @@ public class GameModeController extends WorldController {
             }
 
             slothList.forEach(sloth -> {
-                if (sloth.isGrabbedEntity() && !collisions.isFlowWin()) {
+                if (sloth.isGrabbedEntity() && !collisions.isFlowWin() &&
+						(!victory) && (!isComplete())) {
 					releaseSound.play();
                 }
 
