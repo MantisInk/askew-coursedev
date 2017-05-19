@@ -13,6 +13,7 @@ public class EyesEffect extends Effect {
 
     private final int effect1_num = 3;
     private int ct = 0;
+    private int cap = 5;
     private final String frame0Path = "texture/particle/eyes0.png";
     private final String frame1Path = "texture/particle/eyes1.png";
     private final String frame2Path = "texture/particle/eyes2.png";
@@ -27,13 +28,16 @@ public class EyesEffect extends Effect {
 
     public void spawn(float x, float xmax, float y, float ymax) {
         Particle current;
+
         for (int i = 0; i < effect1_num; i++) {
-            if (unspawned.size() > 0 ) {
-                current = unspawned.getFirst();
-                unspawned.removeFirst();
-                current.spawnEyes(x + (float) (Math.random() * (xmax-x)),y + (float) (Math.random()*(ymax-y)));
-                spawned.add(current);
-                ct++;
+            if ( spawned.size() < cap) {
+                if (unspawned.size() > 0) {
+                    current = unspawned.getFirst();
+                    unspawned.removeFirst();
+                    current.spawnEyes(x + (float) (Math.random() * (xmax - x)), y + (float) (Math.random() * (ymax - y)));
+                    spawned.add(current);
+                    ct++;
+                }
             }
         }
     }
