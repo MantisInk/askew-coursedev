@@ -9,6 +9,8 @@ public class Particle implements Comparable {
 
     float x;
     float y;
+    float xmax;
+    float ymax;
     float width;
     float height;
     @Getter
@@ -97,16 +99,19 @@ public class Particle implements Comparable {
     }
 
     public void spawnEyes(float x, float y) {
-        this.x = x + (float) ((Math.random() - .5) * 15);
-        this.y = y + (float) ((Math.random() - .5) * 15);
-        this.width = .2f;
-        this.height = .2f;
-        this.depth = 6f + (float) ((Math.random() - .5) * 3);
-//        this.angle = angle;
+        float scl = 1.5f+(float)Math.random()*1.5f;
+        this.x = x;
+        this.y = y;
+        this.xmax = xmax;
+        this.ymax = ymax;
+        this.width = 1.8f*scl;
+        this.height = scl;
+        this.depth = 2 + (float)(Math.random() *3);
+        this.angle = 0;
         this.tint = new Color(0xFFFFFF4F);
         this.textureNum = 0;
-        this.deathTime = .75f;
-        this.accumulator = 0;
+        this.deathTime = 10f;
+        this.accumulator = (float)Math.random()*1.5f;
         this.type = 3;
     }
 
@@ -123,8 +128,10 @@ public class Particle implements Comparable {
             this.tint.set(1, 1, 1, .25f * (1-t));
         }
         if(type == 3){
-            this.tint.set(1, 1, 1, 0);
-            this.textureNum = (textureNum+1)%4;
+            float alpha = -0.8f*(float)Math.abs(t-5) + 4;
+            alpha = (alpha > 1) ? 1 : alpha;
+            this.tint.set(1, 1, 1, alpha);
+            this.textureNum = (int) (accumulator*8)%4;
         }
 
     }

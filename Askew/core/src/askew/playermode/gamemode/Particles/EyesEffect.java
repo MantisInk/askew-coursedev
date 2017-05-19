@@ -11,7 +11,8 @@ import java.util.LinkedList;
 
 public class EyesEffect extends Effect {
 
-    private final int effect1_num = 100;
+    private final int effect1_num = 3;
+    private int ct = 0;
     private final String frame0Path = "texture/particle/eyes0.png";
     private final String frame1Path = "texture/particle/eyes1.png";
     private final String frame2Path = "texture/particle/eyes2.png";
@@ -21,17 +22,18 @@ public class EyesEffect extends Effect {
     private TextureRegion tex;
 
     public EyesEffect(ParticleController pc, LinkedList<Particle> unspawned) {
-        super(pc, unspawned); frameNum = 0;
+        super(pc, unspawned); frameNum = 0; ct = 0;
     }
 
-    public void spawn(float x, float y) {
+    public void spawn(float x, float xmax, float y, float ymax) {
         Particle current;
         for (int i = 0; i < effect1_num; i++) {
-            if (unspawned.size() > 0) {
+            if (unspawned.size() > 0 ) {
                 current = unspawned.getFirst();
                 unspawned.removeFirst();
-                current.spawnEyes(x,y);
+                current.spawnEyes(x + (float) (Math.random() * (xmax-x)),y + (float) (Math.random()*(ymax-y)));
                 spawned.add(current);
+                ct++;
             }
         }
     }

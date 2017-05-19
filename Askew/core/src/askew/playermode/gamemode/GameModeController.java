@@ -162,7 +162,7 @@ public class GameModeController extends WorldController {
 	protected static final int MAX_PARTICLES = 5000;
 	protected static final int INITIAL_FOG = 50;
 
-	protected float fogTime;
+	protected float fogTime,eyeTime;
 	private int levelCompleteJunkState;
 	private int showStatsTimer;
 	private int victorySloth;
@@ -335,6 +335,7 @@ public class GameModeController extends WorldController {
 
 		particleController.reset();
 		fogTime = 0;
+		eyeTime = 0;
 		for(Entity obj : entities) {
 			if( (obj instanceof Obstacle))
 				((Obstacle)obj).deactivatePhysics(world);
@@ -500,7 +501,7 @@ public class GameModeController extends WorldController {
 			for(int i = 0; i < INITIAL_FOG; i++) {
 				particleController.fogEffect.spawn(levelModel.getMaxX()-levelModel.getMinX(),levelModel.getMaxY()-levelModel.getMinY() );
 			}
-			particleController.eyeEffect.spawn(levelModel.getMaxX()-levelModel.getMinX(),levelModel.getMaxY()-levelModel.getMinY() );
+			particleController.eyeEffect.spawn(levelModel.getMinX(), levelModel.getMaxX(), levelModel.getMinY(), levelModel.getMaxY());
 			currentTime = 0f;
 			currentGrabs = 0;
 			leftPrevGrab = false;
@@ -810,7 +811,10 @@ public class GameModeController extends WorldController {
 
                 fogTime = currentTime;
             }
-            particleController.eyeEffect.spawn(cameraX, cameraY);
+            if (currentTime - eyeTime > 9.8f) {
+				particleController.eyeEffect.spawn(levelModel.getMinX(), levelModel.getMaxX(), levelModel.getMinY(), levelModel.getMaxY());
+				eyeTime = currentTime;
+			}
             particleController.update(dt);
 
 
