@@ -26,6 +26,7 @@ public class BackgroundEntity extends Entity {
     private float angle; //angle in radians
     private float scalex;
     private float scaley;
+    @Getter
     private String texturePath;
     @Setter
     @Getter
