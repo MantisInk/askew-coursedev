@@ -32,6 +32,13 @@ bumperL
   orig: 1942, 1562
   offset: 0, 0
   index: 1
+ebbhang
+  rotate: false
+  xy: 856, 352
+  size: 160, 120
+  orig: 160, 120
+  offset: 0, 0
+  index: 1
 
 packed2.png
 size: 2048,2048

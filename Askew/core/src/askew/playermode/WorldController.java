@@ -465,6 +465,8 @@ public abstract class WorldController implements Screen {
     public void reset() {
         playingMusic = GlobalConfiguration.getInstance().getAsBoolean
                 ("enableMusic");
+        bounds.height = DEFAULT_HEIGHT;
+        bounds.width = DEFAULT_WIDTH;
     }
 
     /**
