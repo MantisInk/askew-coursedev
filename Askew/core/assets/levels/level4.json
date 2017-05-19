@@ -130,10 +130,7 @@
         "x": 8.0,
         "y": 5.0,
         "lTheta": 0.0,
-        "rTheta": 0.0,
-        "airTime": 0,
-        "blinkFrame": 40,
-        "facingFront": true
+        "rTheta": 0.0
       }
     }
   ]
