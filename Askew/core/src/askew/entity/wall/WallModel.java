@@ -28,15 +28,19 @@ public class WallModel extends PolygonObstacle {
     // Instance variables
     private float x;
     private float y;
+    private boolean thorn;
+
     /**
      * The points that define the convex hull of the wall. Must be an even number (2n) of points representing (x1,y1) ... (xn,yn)
      */
     private float[] points;
 
-    public WallModel(float x, float y, float[] points, int color) {
+    public WallModel(float x, float y, float[] points, int color, boolean
+            thorn) {
         super(points, x, y);
         this.x = x;
         this.y = y;
+        this.thorn = thorn;
         this.points = points;
         this.color = color;
 
@@ -46,8 +50,16 @@ public class WallModel extends PolygonObstacle {
         this.setFriction(WALL_FRICTION);
         this.setRestitution(WALL_RESTITUTION);
         Filter f = new Filter();
-        f.maskBits = FilterGroup.SLOTH | FilterGroup.VINE;
-        f.categoryBits = FilterGroup.WALL;
+        if (thorn) {
+            f.maskBits = FilterGroup.SLOTH | FilterGroup.VINE | FilterGroup
+                    .ARM | FilterGroup.BODY | FilterGroup.HAND;
+            f.categoryBits = FilterGroup.THORN;
+            this.setName("thorns");
+        } else {
+            f.maskBits = FilterGroup.SLOTH | FilterGroup.VINE;
+            f.categoryBits = FilterGroup.WALL;
+        }
+
         this.setFilterData(f);
     }
 
@@ -56,7 +68,11 @@ public class WallModel extends PolygonObstacle {
         if (circleTextureRegion == null) {
             TextureRegion wallTextureRegion;
             wallTextureRegion = manager.getProcessedTextureMap().get(MantisAssetManager.WALL_TEXTURE);
-            edgeTextureRegion = manager.getProcessedTextureMap().get(MantisAssetManager.EDGE_TEXTURE);
+            if (thorn)  edgeTextureRegion = manager.getProcessedTextureMap()
+                    .get(MantisAssetManager.THORN_TEXTURE);
+                else
+                    edgeTextureRegion = manager.getProcessedTextureMap()
+                    .get(MantisAssetManager.EDGE_TEXTURE);
             edgeTextureRegion.setV(.035f);
             edgeTextureRegion.setV2(.965f);
             circleTextureRegion = new TextureRegion(manager.get("texture/wall/corner.png", Texture.class));
@@ -68,6 +84,7 @@ public class WallModel extends PolygonObstacle {
     public void draw(GameCanvas canvas) {
 
         float edgeWidth = 16f;
+        if (thorn) edgeWidth = 32f;
 
         // Draw corners
         for (int i = 0; i < points.length; i += 2) {

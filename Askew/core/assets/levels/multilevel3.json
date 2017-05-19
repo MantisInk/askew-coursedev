@@ -456,6 +456,7 @@
         "color": 1280305407,
         "x": 14.261007,
         "y": 9.282007,
+        "thorn": false,
         "points": [
           0.0,
           0.0,
@@ -477,6 +478,25 @@
         "patroldy1": 13.0,
         "patroldx2": 5.0,
         "patroldy2": 13.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.wall.WallModel",
+      "INSTANCE": {
+        "color": -1,
+        "x": -2.9509993,
+        "y": 11.154007,
+        "thorn": true,
+        "points": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          0.0
+        ]
       }
     },
     {
