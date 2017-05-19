@@ -603,7 +603,7 @@ public class TutorialModeController extends GameModeController {
 		}
 		if (ebbLvl > ebbVine2) {
 			f.maskBits = FilterGroup.SLOTH | FilterGroup.HAND;
-			f.categoryBits = FilterGroup.WALL;
+			f.categoryBits = FilterGroup.WIN;
 			owl.setFilterData(f);
 		}
 		return;
