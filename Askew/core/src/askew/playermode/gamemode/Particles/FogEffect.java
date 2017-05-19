@@ -11,7 +11,8 @@ import java.util.LinkedList;
 
 public class FogEffect extends Effect {
 
-    private final int fog_num = 4;
+    private int fog_num = 4;
+    private int fog_cap = 100;
     private final String fog_texturePath1 = "texture/particle/cloud.png";
     private final String fog_texturePath2 = "texture/particle/cloud1.png";
     private final ArrayList<TextureRegion> fog_textures = new ArrayList<>();
@@ -22,8 +23,16 @@ public class FogEffect extends Effect {
 
     public void spawn(float x, float y){
         Particle current;
+        if(particleController.graphicsSetting == 0){
+            fog_num = 1;
+            fog_cap = 20;
+        }
+        else{
+            fog_num = 4;
+            fog_cap = 500;
+        }
         for (int i = 0; i < fog_num; i++) {
-            if (unspawned.size() > 0) {
+            if (unspawned.size() > 0  && spawned.size() < fog_cap) {
                 current = unspawned.getFirst();
                 unspawned.removeFirst();
                 current.spawnFog(x, y, particleController.gmc.getBounds().getWidth(), particleController.gmc.getBounds().getHeight());
