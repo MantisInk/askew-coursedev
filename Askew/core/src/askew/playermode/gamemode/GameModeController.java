@@ -85,9 +85,9 @@ public class GameModeController extends WorldController {
 	public static final String[] GAMEPLAY_MUSIC = new String[] {
 			"sound/music/askew.ogg",
 			"sound/music/flowwantshisorherbaby.ogg",
-			"sound/music/youdidit.ogg",
-			"sound/music/Lauren_Track1.ogg",
-			"sound/music/Lauren_Track2.ogg"
+			"sound/music/Presentation2.ogg",
+			"sound/music/Presentation3.ogg",
+			"sound/music/Presentation1.ogg"
 	};
 
 	public static final String OK_SOUND = "sound/effect/youdidokay.wav";
@@ -188,6 +188,7 @@ public class GameModeController extends WorldController {
 		for (String soundName : GAMEPLAY_MUSIC) {
 			manager.load(soundName, Sound.class);
 		}
+		manager.load("sound/music/youdidit.ogg", Sound.class);
 		manager.load(FALL_MUSIC, Sound.class);
 		manager.load(ARM_SOUND, Sound.class);
 		manager.load(WIND_SOUND, Sound.class);
@@ -224,6 +225,8 @@ public class GameModeController extends WorldController {
 		for (String soundName : GAMEPLAY_MUSIC) {
 			SoundController.getInstance().allocate(manager, soundName);
 		}
+		SoundController.getInstance().allocate(manager, "sound/music/youdidit" +
+				".ogg");
 
 		SoundController.getInstance().allocate(manager, FALL_MUSIC);
 		SoundController.getInstance().allocate(manager, ARM_SOUND);
@@ -537,6 +540,7 @@ public class GameModeController extends WorldController {
 		}
 
 		if (victory) {
+
 			paused = false;
 			showStatsTimer--;
 			String updateString = manager.getMenuManager().update(false).orElse
@@ -860,10 +864,15 @@ public class GameModeController extends WorldController {
             SoundController.getInstance().update();
 
             if (isComplete()) {
+				SoundController instance = SoundController.getInstance();
+				if (instance.isActive("bgmusic"))
+					instance.stop("bgmusic");
                 victory = true;
                 playerIsReady = false;
                 float recordT = currentTime;
                 int recordG = currentGrabs -1; // cuz grabbing the owl adds an extra grab
+				instance.play("bgmusic", "sound/music/youdidit.ogg", true,
+						MAX_MUSIC_VOLUME);
                 if (storeTimeRecords) {
 					// TODO: work this into end of level screen
 //                    if (records.setRecord(loadLevel, recordT)) {
