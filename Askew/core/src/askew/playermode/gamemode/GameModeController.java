@@ -60,7 +60,7 @@ import java.util.List;
 public class GameModeController extends WorldController {
 
 
-	public static final float MAX_MUSIC_VOLUME = 0.15f;
+	public static final float MAX_MUSIC_VOLUME = 0.45f;
 	Affine2 camTrans = new Affine2();
 
 	/** Track asset loading from all instances and subclasses */
@@ -190,7 +190,7 @@ public class GameModeController extends WorldController {
 		for (String soundName : GAMEPLAY_MUSIC) {
 			manager.load(soundName, Sound.class);
 		}
-		manager.load("sound/music/youdidit.ogg", Sound.class);
+		manager.load("sound/music/levelselect.ogg", Sound.class);
 		manager.load(FALL_MUSIC, Sound.class);
 		manager.load(ARM_SOUND, Sound.class);
 		manager.load(WIND_SOUND, Sound.class);
@@ -227,7 +227,7 @@ public class GameModeController extends WorldController {
 		for (String soundName : GAMEPLAY_MUSIC) {
 			SoundController.getInstance().allocate(manager, soundName);
 		}
-		SoundController.getInstance().allocate(manager, "sound/music/youdidit" +
+		SoundController.getInstance().allocate(manager, "sound/music/levelselect" +
 				".ogg");
 
 		SoundController.getInstance().allocate(manager, FALL_MUSIC);
@@ -416,7 +416,10 @@ public class GameModeController extends WorldController {
 	protected void populateLevel() {
 		// Are we loading a new level?
 		if (lastLevel == null || !lastLevel.equals(loadLevel)) {
-			selectedTrack = GAMEPLAY_MUSIC[(int) Math.floor(GAMEPLAY_MUSIC.length * Math.random())];
+			selectedTrack = GAMEPLAY_MUSIC[(GlobalConfiguration.getInstance()
+					.getCurrentLevel() + GlobalConfiguration.getInstance()
+					.getCurrentMultiLevel()) %
+					GAMEPLAY_MUSIC.length];
 		}
 		lastLevel = loadLevel;
 			levelModel = jsonLoaderSaver.loadLevel(loadLevel);
@@ -865,7 +868,7 @@ public class GameModeController extends WorldController {
                     .map(sloth -> sloth.getMainBody().getLinearVelocity().len())
                     .reduce((acc, el) -> acc + el)
                     .orElse(0f) / slothList.size();
-            float windVolume = slothSpeed / 14f;
+            float windVolume = slothSpeed / 180f;
             this.windVolume += (windVolume - this.windVolume) * 0.04f;
             if (this.windVolume > 1) this.windVolume = 1;
             SoundController.getInstance().setVolume("windmusic", this.windVolume);
@@ -882,7 +885,7 @@ public class GameModeController extends WorldController {
                 playerIsReady = false;
                 float recordT = currentTime;
                 int recordG = currentGrabs -1; // cuz grabbing the owl adds an extra grab
-				instance.play("bgmusic", "sound/music/youdidit.ogg", true,
+				instance.play("bgmusic", "sound/music/levelselect.ogg", true,
 						MAX_MUSIC_VOLUME);
                 if (storeTimeRecords) {
 					// TODO: work this into end of level screen
