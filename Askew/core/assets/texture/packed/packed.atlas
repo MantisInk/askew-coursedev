@@ -276,6 +276,150 @@ size: 2048,2048
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
+happyswing
+  rotate: false
+  xy: 2, 1326
+  size: 800, 660
+  orig: 800, 660
+  offset: 0, 0
+  index: 16
+happyswing
+  rotate: false
+  xy: 2, 664
+  size: 800, 660
+  orig: 800, 660
+  offset: 0, 0
+  index: 17
+sadswing
+  rotate: false
+  xy: 804, 1326
+  size: 800, 660
+  orig: 800, 660
+  offset: 0, 0
+  index: 1
+sadswing
+  rotate: false
+  xy: 2, 2
+  size: 800, 660
+  orig: 800, 660
+  offset: 0, 0
+  index: 2
+sadswing
+  rotate: false
+  xy: 804, 664
+  size: 800, 660
+  orig: 800, 660
+  offset: 0, 0
+  index: 3
+sadswing
+  rotate: false
+  xy: 804, 2
+  size: 800, 660
+  orig: 800, 660
+  offset: 0, 0
+  index: 4
+
+packed10.png
+size: 2048,2048
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+sadswing
+  rotate: false
+  xy: 2, 1326
+  size: 800, 660
+  orig: 800, 660
+  offset: 0, 0
+  index: 5
+sadswing
+  rotate: false
+  xy: 2, 664
+  size: 800, 660
+  orig: 800, 660
+  offset: 0, 0
+  index: 6
+sadswing
+  rotate: false
+  xy: 804, 1326
+  size: 800, 660
+  orig: 800, 660
+  offset: 0, 0
+  index: 7
+sadswing
+  rotate: false
+  xy: 2, 2
+  size: 800, 660
+  orig: 800, 660
+  offset: 0, 0
+  index: 8
+sadswing
+  rotate: false
+  xy: 804, 664
+  size: 800, 660
+  orig: 800, 660
+  offset: 0, 0
+  index: 9
+sadswing
+  rotate: false
+  xy: 804, 2
+  size: 800, 660
+  orig: 800, 660
+  offset: 0, 0
+  index: 10
+
+packed11.png
+size: 2048,2048
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+sadswing
+  rotate: false
+  xy: 2, 1326
+  size: 800, 660
+  orig: 800, 660
+  offset: 0, 0
+  index: 11
+sadswing
+  rotate: false
+  xy: 2, 664
+  size: 800, 660
+  orig: 800, 660
+  offset: 0, 0
+  index: 12
+sadswing
+  rotate: false
+  xy: 804, 1326
+  size: 800, 660
+  orig: 800, 660
+  offset: 0, 0
+  index: 13
+sadswing
+  rotate: false
+  xy: 2, 2
+  size: 800, 660
+  orig: 800, 660
+  offset: 0, 0
+  index: 14
+sadswing
+  rotate: false
+  xy: 804, 664
+  size: 800, 660
+  orig: 800, 660
+  offset: 0, 0
+  index: 15
+sadswing
+  rotate: false
+  xy: 804, 2
+  size: 800, 660
+  orig: 800, 660
+  offset: 0, 0
+  index: 16
+
+packed12.png
+size: 2048,2048
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
 ebbswing
   rotate: false
   xy: 804, 1326
@@ -332,22 +476,22 @@ ebbswing
   orig: 800, 600
   offset: 0, 0
   index: 14
-happyswing
+sadswing
   rotate: false
   xy: 2, 1266
   size: 800, 660
   orig: 800, 660
   offset: 0, 0
-  index: 16
-happyswing
+  index: 17
+sadswing
   rotate: false
   xy: 2, 604
   size: 800, 660
   orig: 800, 660
   offset: 0, 0
-  index: 17
+  index: 18
 
-packed10.png
+packed13.png
 size: 2048,2048
 format: RGBA8888
 filter: Nearest,Nearest
@@ -430,7 +574,7 @@ ebbswing
   offset: 0, 0
   index: 32
 
-packed11.png
+packed14.png
 size: 2048,2048
 format: RGBA8888
 filter: Nearest,Nearest
@@ -478,7 +622,7 @@ ebbswing
   offset: 0, 0
   index: 24
 
-packed12.png
+packed15.png
 size: 2048,2048
 format: RGBA8888
 filter: Nearest,Nearest
@@ -526,7 +670,7 @@ ebbswing
   offset: 0, 0
   index: 30
 
-packed13.png
+packed16.png
 size: 2048,2048
 format: RGBA8888
 filter: Nearest,Nearest
@@ -595,7 +739,7 @@ joy
   offset: 0, 0
   index: 3
 
-packed14.png
+packed17.png
 size: 2048,1024
 format: RGBA8888
 filter: Nearest,Nearest

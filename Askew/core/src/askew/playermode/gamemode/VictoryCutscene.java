@@ -24,7 +24,7 @@ public class VictoryCutscene {
     public VictoryCutscene(MantisAssetManager manager) {
         happyFlowAnimation = new Animation(0.070f, manager.getTextureAtlas()
                 .findRegions("happyswing"), Animation.PlayMode.NORMAL);
-        happyFlowAnimation = new Animation(0.070f, manager.getTextureAtlas()
+        sadFlowAnimation = new Animation(0.070f, manager.getTextureAtlas()
                 .findRegions("sadswing"), Animation.PlayMode.NORMAL);
         happyEbbAnimation = new Animation(0.060f, manager.getTextureAtlas()
                 .findRegions("ebbswing"), Animation.PlayMode.NORMAL);
@@ -52,24 +52,56 @@ public class VictoryCutscene {
 
         TextureRegion drawFrame;
         if (frameNumber < CUTOFF_A) {
+            // flow
             drawFrame = happyFlowAnimation.getKeyFrame(elapseTime, true);
             canvas.draw(drawFrame, Color.WHITE,(int)(cw/2) + (cw/6f), (int)(ch/4)
                     ,(int)
-                            (cw/4f), (int)(ch/4f));
+                            (cw/3f), (int)(ch/3f));
 
+            // ebb
             drawFrame = happyEbbAnimation.getKeyFrame(elapseTime,
                     true);
             canvas.draw(drawFrame, Color.WHITE,(int)(cw/2),
                     (int)
-                            (ch/4) + ((cw/4f)-(cw/6f))/2f,(int)
-                            (cw/6f), (int)(ch/6f));
+                            (ch/4) + ((cw/3f)-(cw/4f))/2f,(int)
+                            (cw/4f), (int)(ch/4f));
             int ebbFrame = happyEbbAnimation.getKeyFrameIndex(elapseTime);
             if (ebbFrame != previousFrame) frameNumber++;
             previousFrame = ebbFrame;
         } else if (frameNumber < CUTOFF_B) {
+            // flow
+            drawFrame = sadFlowAnimation.getKeyFrame(elapseTime, true);
+            canvas.draw(drawFrame, Color.WHITE,(int)(cw/2) + (cw/6f), (int)(ch/4)
+                    ,(int)
+                            (cw/3f), (int)(ch/3f));
 
+            // ebb
+            drawFrame = happyEbbAnimation.getKeyFrame(elapseTime,
+                    true);
+            canvas.draw(drawFrame, Color.WHITE,(int)(cw/2),
+                    (int)
+                            (ch/4) + ((cw/3f)-(cw/4f))/2f,(int)
+                            (cw/4f), (int)(ch/4f));
+            int ebbFrame = happyEbbAnimation.getKeyFrameIndex(elapseTime);
+            if (ebbFrame != previousFrame) frameNumber++;
+            previousFrame = ebbFrame;
         } else {
+            // flow
+            drawFrame = sadFlowAnimation.getKeyFrame(elapseTime, true);
+            canvas.draw(drawFrame, Color.WHITE,(int)(cw/2) + (cw/6f), (int)(ch/4)
+                    ,(int)
+                            (cw/3f), (int)(ch/3f));
 
+            // ebb
+            drawFrame = happyEbbAnimation.getKeyFrame(elapseTime,
+                    true);
+            canvas.draw(drawFrame, Color.WHITE,(int)(cw/2),
+                    (int)
+                            (ch/4) + ((cw/3f)-(cw/4f))/2f,(int)
+                            (cw/4f), (int)(ch/4f));
+            int ebbFrame = happyEbbAnimation.getKeyFrameIndex(elapseTime);
+            if (ebbFrame != previousFrame) frameNumber++;
+            previousFrame = ebbFrame;
         }
 
     }

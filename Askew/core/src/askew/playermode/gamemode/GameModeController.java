@@ -698,6 +698,10 @@ public class GameModeController extends WorldController {
 				if (framesToDie < 0) {
 					reset();
 				}
+				if (slothList.stream().map(SlothModel::isDismembered).reduce
+						(Boolean::logicalAnd).orElse(true)) {
+					framesToDie--;
+				}
 			}
 			// Prevent control input if flow is win
 			if (!collisions.isFlowWin()) {
