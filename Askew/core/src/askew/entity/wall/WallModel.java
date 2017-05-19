@@ -51,12 +51,11 @@ public class WallModel extends PolygonObstacle {
         this.setRestitution(WALL_RESTITUTION);
         Filter f = new Filter();
         if (thorn) {
-            f.maskBits = FilterGroup.SLOTH | FilterGroup.VINE | FilterGroup
-                    .ARM | FilterGroup.BODY | FilterGroup.HAND;
-            f.categoryBits = FilterGroup.THORN;
+            f.maskBits = FilterGroup.SLOTH | FilterGroup.VINE;
+            f.categoryBits = FilterGroup.LOSE;
             this.setName("thorns");
         } else {
-            f.maskBits = FilterGroup.SLOTH | FilterGroup.VINE;
+            f.maskBits = FilterGroup.BODY | FilterGroup.VINE;
             f.categoryBits = FilterGroup.WALL;
         }
 

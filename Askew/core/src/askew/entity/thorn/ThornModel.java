@@ -53,7 +53,7 @@ public class ThornModel extends BoxObstacle {
         this.setSensor(true);
         Filter f = new Filter();
         f.maskBits = FilterGroup.SLOTH | FilterGroup.HAND | FilterGroup.ARM;
-        f.categoryBits = FilterGroup.WALL | FilterGroup.THORN;
+        f.categoryBits = FilterGroup.WALL | FilterGroup.LOSE;
         this.setFilterData(f);
         this.setName("thorns");
         this.setAngle((float) Math.toRadians(angle));
