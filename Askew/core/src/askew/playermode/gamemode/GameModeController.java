@@ -953,15 +953,7 @@ public class GameModeController extends WorldController {
 			manager.getMenuManager().draw();
 			canvas.end();
 		}
-		else if (paused) {
-			canvas.begin();
-			canvas.draw(background);
-			canvas.end();
-			canvas.begin();
-			manager.getMenuManager().draw();
-			canvas.end();
-		}
-		else {
+		else{
 
 			canvas.begin();
 			canvas.draw(background);
@@ -1097,6 +1089,7 @@ public class GameModeController extends WorldController {
 			canvas.draw(edgefade, 0.000001f);
 			canvas.end();
 
+
 			if (coverOpacity > 0) {
 				Gdx.gl.glEnable(GL20.GL_BLEND);
 				displayFont.setColor(Color.WHITE);
@@ -1111,7 +1104,19 @@ public class GameModeController extends WorldController {
 				canvas.end();
 			}
 
+
+
 		}
+		if (paused) {
+			Gdx.gl.glClear( GL20.GL_DEPTH_BUFFER_BIT);
+			canvas.begin();
+			canvas.draw(pauseTexture);
+			canvas.end();
+			canvas.begin();
+			manager.getMenuManager().draw();
+			canvas.end();
+		}
+
 	}
 
 }
