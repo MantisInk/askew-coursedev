@@ -40,7 +40,7 @@ import lombok.Setter;
 public class Vine extends ComplexObstacle {
 
     public static final float lheight = .7f;
-    public static final String[] VINE_TEXTURES = {"texture/vine/vine.png", "texture/vine/vine2.png"};
+    public static final String[] VINE_TEXTURES = {"texture/vine/vine.png", "texture/vine/vine2.png", "texture/vine/vine3.png", "texture/vine/vine4.png"};
     public static final float DAMPING_ROTATION = 5f;
     private static final String VINE_NAME = "vine";
     /**

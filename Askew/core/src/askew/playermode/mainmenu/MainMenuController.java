@@ -316,7 +316,7 @@ public class MainMenuController extends WorldController {
                     grab = !grab;
                     manager.getMenuManager().updateButtonContainingText
                             ("Grab", "Grab Scheme: " +
-                                    (grab ? "Normal" : "Toggle"));
+                                    (grab ? "Normal" : "Reverse"));
                 }
             } else if (updateString.contains("Graphics Quality")) {
                 if (updateString.contains("ACTION_RIGHT") || updateString
@@ -324,7 +324,7 @@ public class MainMenuController extends WorldController {
                     graphics = !graphics;
                     manager.getMenuManager().updateButtonContainingText
                             ("Graphics", "Graphics Quality: " +
-                                    (graphics ? "LOW" : "HIGH"));
+                                    (graphics ? "HIGH" : "LOW"));
                 }
             } else if (updateString.contains("Music")) {
                 if (updateString.contains("ACTION_RIGHT") || updateString

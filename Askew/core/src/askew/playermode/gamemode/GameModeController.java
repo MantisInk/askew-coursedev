@@ -18,10 +18,8 @@ import askew.entity.Entity;
 import askew.entity.obstacle.Obstacle;
 import askew.entity.owl.OwlModel;
 import askew.entity.sloth.SlothModel;
-import askew.entity.vine.Vine;
 import askew.playermode.WorldController;
 import askew.playermode.gamemode.Particles.Effect;
-import askew.playermode.gamemode.Particles.Particle;
 import askew.playermode.gamemode.Particles.ParticleController;
 import askew.playermode.leveleditor.LevelModel;
 import askew.util.RecordBook;
@@ -35,17 +33,12 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.Filter;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
-import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
 /**
  * Gameplay specific controller for Askew.
@@ -152,6 +145,8 @@ public class GameModeController extends WorldController {
 	protected float cameraVelocityY;
 	private VictoryCutscene victoryCutscene;
 	private boolean multiplayer;
+	private float owlOPosX;
+	private float owlOPosY;
 
 	//For playtesting control schemes
 	private int currentMovement;
@@ -169,7 +164,7 @@ public class GameModeController extends WorldController {
 	protected static final int MAX_PARTICLES = 5000;
 	protected static final int INITIAL_FOG = 50;
 
-	protected float fogTime;
+	protected float fogTime,eyeTime;
 	private int levelCompleteJunkState;
 	private int showStatsTimer;
 	private int victorySloth;
@@ -342,6 +337,7 @@ public class GameModeController extends WorldController {
 
 		particleController.reset();
 		fogTime = 0;
+		eyeTime = 0;
 		for(Entity obj : entities) {
 			if( (obj instanceof Obstacle))
 				((Obstacle)obj).deactivatePhysics(world);
@@ -460,6 +456,8 @@ public class GameModeController extends WorldController {
 				}
 				if (o instanceof OwlModel) {
 					owl = (OwlModel) o;
+					owlOPosX = o.getPosition().x;
+					owlOPosY = o.getPosition().y;
 				}
 
 			}
@@ -507,6 +505,7 @@ public class GameModeController extends WorldController {
 			for(int i = 0; i < INITIAL_FOG; i++) {
 				particleController.fogEffect.spawn(levelModel.getMaxX()-levelModel.getMinX(),levelModel.getMaxY()-levelModel.getMinY() );
 			}
+			particleController.eyeEffect.spawn(levelModel.getMinX(), levelModel.getMaxX(), levelModel.getMinY(), levelModel.getMaxY());
 			currentTime = 0f;
 			currentGrabs = 0;
 			leftPrevGrab = false;
@@ -698,6 +697,10 @@ public class GameModeController extends WorldController {
 				if (framesToDie < 0) {
 					reset();
 				}
+				if (slothList.stream().map(SlothModel::isDismembered).reduce
+						(Boolean::logicalAnd).orElse(true)) {
+					framesToDie--;
+				}
 			}
 			// Prevent control input if flow is win
 			if (!collisions.isFlowWin()) {
@@ -816,6 +819,10 @@ public class GameModeController extends WorldController {
 
                 fogTime = currentTime;
             }
+            if (currentTime - eyeTime > 9.8f) {
+				particleController.eyeEffect.spawn(levelModel.getMinX(), levelModel.getMaxX(), levelModel.getMinY(), levelModel.getMaxY());
+				eyeTime = currentTime;
+			}
             particleController.update(dt);
 
 
@@ -886,6 +893,15 @@ public class GameModeController extends WorldController {
 					instance.stop("bgmusic");
                 victory = true;
                 playerIsReady = false;
+				bounds.width = 9.6f;
+				bounds.height = 5.4f;
+				owlOPosX =  6.72f;
+				for (SlothModel sloth : slothList) {
+					entities.remove(sloth);
+				}
+				entities.remove(owl);
+
+				setWorldScale(canvas);
                 float recordT = currentTime;
                 int recordG = currentGrabs -1; // cuz grabbing the owl adds an extra grab
 				instance.play("bgmusic", "sound/music/levelselect.ogg", true,
@@ -907,17 +923,33 @@ public class GameModeController extends WorldController {
 		canvas.clear();
 
 		if (victory) {
+			// TODO
+			camTrans.setToTranslation(-1 * owlOPosX * worldScale.x
+					, -1 * owlOPosY * worldScale.y);
+
+			camTrans.translate(canvas.getWidth() / 2f, canvas.getHeight() / 2f);
+			canvas.getCampos().set(owlOPosX * worldScale.x
+					, owlOPosY * worldScale.y );
+
 			canvas.begin();
 			canvas.draw(background);
 			canvas.end();
+			canvas.begin(camTrans);
+			for(Entity e : entities){
+				e.setDrawScale(worldScale);
+				e.draw(canvas);
+			}
+			canvas.end();
+			Gdx.gl.glEnable(GL20.GL_BLEND);
+			Color coverColor = new Color(0, 0, 0, 0.25f);
+			canvas.drawRectangle(coverColor, 0, 0, canvas.getWidth(), canvas
+					.getHeight());
+			Gdx.gl.glClear(GL20.GL_DEPTH_BUFFER_BIT);
 			canvas.begin();
 			victoryCutscene.draw(canvas);
 			canvas.end();
+//			Gdx.gl.glDisable(GL20.GL_BLEND);
 			canvas.begin();
-//			canvas.draw(victoryTexture);
-//			canvas.draw(fern, Color.WHITE, fern.getWidth() / 2, fern.getHeight() / 2,
-//					victory_locs[victory_mode].x * canvas.getWidth(), victory_locs[victory_mode].y * canvas.getHeight(),
-//					0, 2 * worldScale.x / fern.getWidth(), 2 * worldScale.y / fern.getHeight());
 			manager.getMenuManager().draw();
 			canvas.end();
 		}
@@ -1072,7 +1104,7 @@ public class GameModeController extends WorldController {
 				canvas.drawRectangle(coverColor, 0, 0, canvas.getWidth(), canvas
 						.getHeight());
 				coverOpacity -= (1 / CYCLES_OF_INTRO);
-				Gdx.gl.glDisable(GL20.GL_BLEND);
+//				Gdx.gl.glDisable(GL20.GL_BLEND);
 				canvas.begin();
 				if (!playerIsReady && !paused && !victory)
 					canvas.drawTextCentered(levelModel.getTitle(), displayFont, 0f);

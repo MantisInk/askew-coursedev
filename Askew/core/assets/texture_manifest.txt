@@ -60,8 +60,10 @@ texture/background/tutorial/holdRight.png
 texture/background/tutorial/holdUp.png
 texture/background/tutorial/joystick.png
 texture/background/tutorial/lclicked.png
+texture/background/tutorial/ldown.png
 texture/background/tutorial/lup.png
 texture/background/tutorial/rclicked.png
+texture/background/tutorial/rdown.png
 texture/background/tutorial/rup.png
 texture/background/tutorial/swing0.png
 texture/background/tutorial/swing1.png
@@ -93,6 +95,10 @@ texture/leveleditor/yellowbox.png
 texture/owl/ebb.png
 texture/particle/cloud.png
 texture/particle/cloud1.png
+texture/particle/eyes0.png
+texture/particle/eyes1.png
+texture/particle/eyes2.png
+texture/particle/eyes3.png
 texture/particle/test.png
 texture/postprocess/edgefade - Copy.png
 texture/postprocess/edgefade.png

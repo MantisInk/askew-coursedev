@@ -1,5 +1,5 @@
 {
-  "levelModelVersion": 4,
+  "levelModelVersion": 5,
   "goalTimeGold": 30,
   "goalTimeSilver": 45,
   "goalTimeBronze": 60,
@@ -12,6 +12,36 @@
   "background": "texture/background/background1.png",
   "soundtrack": "TODO",
   "entities": [
+    {
+      "CLASSNAME": "askew.entity.ghost.GhostModel",
+      "INSTANCE": {
+        "x": 0.0,
+        "y": 6.0,
+        "patroldx1": 4.0,
+        "patroldy1": 6.0,
+        "patroldx2": 5.0,
+        "patroldy2": 6.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.wall.WallModel",
+      "INSTANCE": {
+        "color": -1,
+        "x": 8.0,
+        "y": 12.0,
+        "thorn": false,
+        "points": [
+          0.0,
+          0.0,
+          0.0,
+          16.0,
+          2.0,
+          16.0,
+          2.0,
+          0.0
+        ]
+      }
+    },
     {
       "CLASSNAME": "askew.entity.tree.Trunk",
       "INSTANCE": {
@@ -42,39 +72,8 @@
     {
       "CLASSNAME": "askew.entity.owl.OwlModel",
       "INSTANCE": {
-        "x": 18.0,
-        "y": 8.0,
-        "pin": {},
-        "owlBody": {}
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.ghost.GhostModel",
-      "INSTANCE": {
-        "x": 0.0,
-        "y": 6.0,
-        "patroldx1": 4.0,
-        "patroldy1": 6.0,
-        "patroldx2": 5.0,
-        "patroldy2": 6.0
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.wall.WallModel",
-      "INSTANCE": {
-        "color": -1,
-        "x": 8.0,
-        "y": 12.0,
-        "points": [
-          0.0,
-          0.0,
-          0.0,
-          16.0,
-          2.0,
-          16.0,
-          2.0,
-          0.0
-        ]
+        "x": 17.95301,
+        "y": 7.8520026
       }
     },
     {
@@ -84,9 +83,7 @@
         "y": 18.0,
         "lTheta": 0.0,
         "rTheta": 0.0,
-        "airTime": 0,
-        "blinkFrame": 5,
-        "facingFront": true
+        "shouldDie": false
       }
     }
   ]

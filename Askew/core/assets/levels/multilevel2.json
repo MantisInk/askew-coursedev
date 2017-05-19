@@ -1,5 +1,5 @@
 {
-  "levelModelVersion": 4,
+  "levelModelVersion": 5,
   "goalTimeGold": 30,
   "goalTimeSilver": 45,
   "goalTimeBronze": 60,
@@ -20,7 +20,7 @@
         "width": 20.0,
         "height": 20.0,
         "depth": 6.0,
-        "angle": 45.0,
+        "angle": 2578.31,
         "scalex": 1.0,
         "scaley": 1.0,
         "texturePath": "texture/background/BackgroundStuff/sil2.png",
@@ -65,7 +65,7 @@
         "width": 15.0,
         "height": 15.0,
         "depth": 4.0,
-        "angle": 180.0,
+        "angle": 10313.24,
         "scalex": 1.0,
         "scaley": 1.0,
         "texturePath": "texture/background/BackgroundStuff/sil2.png",
@@ -373,6 +373,25 @@
       }
     },
     {
+      "CLASSNAME": "askew.entity.wall.WallModel",
+      "INSTANCE": {
+        "color": -1,
+        "x": 8.0,
+        "y": 8.0,
+        "thorn": false,
+        "points": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          0.0
+        ]
+      }
+    },
+    {
       "CLASSNAME": "askew.entity.tree.Trunk",
       "INSTANCE": {
         "x": -5.0,
@@ -388,15 +407,6 @@
         "y": 10.0,
         "angle": 90.0,
         "numLinks": 7.0
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.owl.OwlModel",
-      "INSTANCE": {
-        "x": 20.0,
-        "y": 10.0,
-        "pin": {},
-        "owlBody": {}
       }
     },
     {
@@ -421,21 +431,10 @@
       }
     },
     {
-      "CLASSNAME": "askew.entity.wall.WallModel",
+      "CLASSNAME": "askew.entity.owl.OwlModel",
       "INSTANCE": {
-        "color": -1,
-        "x": 8.0,
-        "y": 8.0,
-        "points": [
-          0.0,
-          0.0,
-          0.0,
-          1.0,
-          1.0,
-          1.0,
-          1.0,
-          0.0
-        ]
+        "x": 19.981014,
+        "y": 9.880006
       }
     },
     {
@@ -444,7 +443,8 @@
         "x": -5.966999,
         "y": 14.911011,
         "lTheta": 0.0,
-        "rTheta": 0.0
+        "rTheta": 0.0,
+        "shouldDie": false
       }
     },
     {
@@ -453,7 +453,8 @@
         "x": -5.966999,
         "y": 14.911011,
         "lTheta": 0.0,
-        "rTheta": 0.0
+        "rTheta": 0.0,
+        "shouldDie": false
       }
     }
   ]

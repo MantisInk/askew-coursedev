@@ -10,7 +10,6 @@ import askew.entity.tree.StiffBranch;
 import askew.entity.tree.Trunk;
 import askew.entity.vine.Vine;
 import askew.entity.wall.WallModel;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.google.gson.JsonObject;
 
@@ -31,10 +30,7 @@ class JsonEntityFactory {
         float angle = instance.get("angle").getAsFloat();
         float omega = instance.get("omega").getAsFloat();
         int texture = instance.get("texture").getAsInt();
-        // FIXME: Pretty sure this is a bug. -trevor
-        Texture managedTexture = manager.get(Vine.VINE_TEXTURES[texture], Texture.class);
-        //TextureRegion vineTexture = new TextureRegion(managedTexture);
-        vine = new Vine(x, y, numlinks, angle, omega, 0);
+        vine = new Vine(x, y, numlinks, angle, omega, texture);
         vine.setTextures(manager);
         return vine;
     }
