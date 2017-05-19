@@ -10,7 +10,7 @@ public
 @Data
 class LevelModel {
 
-    public static final int LATEST_LEVEL_MODEL_VERSION = 4;
+    public static final int LATEST_LEVEL_MODEL_VERSION = 5;
 
     int levelModelVersion;
 

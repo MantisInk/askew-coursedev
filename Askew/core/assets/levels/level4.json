@@ -50,7 +50,7 @@
         "width": 25.0,
         "height": 25.0,
         "depth": 3.0,
-        "angle": 90.0,
+        "angle": 0.027415568,
         "scalex": 1.0,
         "scaley": 1.0,
         "texturePath": "texture/background/BackgroundStuff/sil1.png",
@@ -60,12 +60,12 @@
     {
       "CLASSNAME": "askew.entity.BackgroundEntity",
       "INSTANCE": {
-        "x": -10.92,
-        "y": 30.680017,
+        "x": -8.111999,
+        "y": 7.1369977,
         "width": 3.0,
         "height": 3.0,
         "depth": 3.0,
-        "angle": -1.57,
+        "angle": -4.7824936E-4,
         "scalex": 1.0,
         "scaley": 1.0,
         "texturePath": "texture/background/foreground/fernTile.png",
@@ -75,42 +75,12 @@
     {
       "CLASSNAME": "askew.entity.BackgroundEntity",
       "INSTANCE": {
-        "x": -11.232,
-        "y": 14.209,
+        "x": -8.774998,
+        "y": -2.8209972,
         "width": 3.0,
         "height": 3.0,
         "depth": 3.0,
-        "angle": -1.57,
-        "scalex": 1.0,
-        "scaley": 1.0,
-        "texturePath": "texture/background/foreground/fernTile.png",
-        "color": 1811979263
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.BackgroundEntity",
-      "INSTANCE": {
-        "x": -9.672001,
-        "y": 19.331009,
-        "width": 3.0,
-        "height": 3.0,
-        "depth": 3.0,
-        "angle": -1.57,
-        "scalex": 1.0,
-        "scaley": 1.0,
-        "texturePath": "texture/background/foreground/fernTile.png",
-        "color": 1811979263
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.BackgroundEntity",
-      "INSTANCE": {
-        "x": -10.8810005,
-        "y": 1.5210032,
-        "width": 3.0,
-        "height": 3.0,
-        "depth": 3.0,
-        "angle": -1.57,
+        "angle": -4.7824936E-4,
         "scalex": 1.0,
         "scaley": 1.0,
         "texturePath": "texture/background/foreground/fernTile.png",
@@ -315,12 +285,12 @@
     {
       "CLASSNAME": "askew.entity.BackgroundEntity",
       "INSTANCE": {
-        "x": -5.3819995,
-        "y": 14.592508,
+        "x": -4.8944993,
+        "y": 14.586006,
         "width": 2.0,
         "height": 2.0,
         "depth": 1.5,
-        "angle": -1.57,
+        "angle": -4.7824936E-4,
         "scalex": 1.0,
         "scaley": 1.0,
         "texturePath": "texture/background/foreground/fernTile.png",
@@ -330,12 +300,12 @@
     {
       "CLASSNAME": "askew.entity.BackgroundEntity",
       "INSTANCE": {
-        "x": -5.4405,
-        "y": 10.634008,
+        "x": -4.2899995,
+        "y": 10.926502,
         "width": 2.0,
         "height": 2.0,
         "depth": 1.5,
-        "angle": -1.57,
+        "angle": -4.7824936E-4,
         "scalex": 1.0,
         "scaley": 1.0,
         "texturePath": "texture/background/foreground/fernTile.png",
@@ -345,27 +315,12 @@
     {
       "CLASSNAME": "askew.entity.BackgroundEntity",
       "INSTANCE": {
-        "x": -5.421,
-        "y": 22.431517,
+        "x": -5.5184984,
+        "y": 17.043007,
         "width": 2.0,
         "height": 2.0,
         "depth": 1.5,
-        "angle": -1.57,
-        "scalex": 1.0,
-        "scaley": 1.0,
-        "texturePath": "texture/background/foreground/fernTile.png",
-        "color": 1811979263
-      }
-    },
-    {
-      "CLASSNAME": "askew.entity.BackgroundEntity",
-      "INSTANCE": {
-        "x": -5.421,
-        "y": 18.77201,
-        "width": 2.0,
-        "height": 2.0,
-        "depth": 1.5,
-        "angle": -1.57,
+        "angle": -8.347026E-6,
         "scalex": 1.0,
         "scaley": 1.0,
         "texturePath": "texture/background/foreground/fernTile.png",
