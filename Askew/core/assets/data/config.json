@@ -7,7 +7,7 @@
   "flowCanMoveGrabbingHand": true,
   "flowMovementMode": 0,
   "flowControlMode": 0,
-  "graphics": 1,
+  "graphics": 0,
   "vineDensity": 3.0,
   "fullscreen": false,
   "defaultLevel": "level1",
