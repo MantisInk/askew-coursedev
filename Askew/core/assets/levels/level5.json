@@ -868,15 +868,6 @@
       }
     },
     {
-      "CLASSNAME": "askew.entity.owl.OwlModel",
-      "INSTANCE": {
-        "x": 33.110992,
-        "y": 1.5860004,
-        "pin": {},
-        "owlBody": {}
-      }
-    },
-    {
       "CLASSNAME": "askew.entity.ghost.GhostModel",
       "INSTANCE": {
         "x": 8.0,
@@ -1353,6 +1344,13 @@
         "omega": 0.0,
         "pin": false,
         "texture": 0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.owl.OwlModel",
+      "INSTANCE": {
+        "x": 33.501015,
+        "y": 0.80600023
       }
     },
     {
