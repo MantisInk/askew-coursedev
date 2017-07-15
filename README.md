@@ -1,5 +1,5 @@
 # askew-coursedev
-Snapshot of the game at release for the Cornell 2017 GDIAC showcase
+Snapshot of _Askew_ at release for the Cornell 2017 GDIAC showcase
 ---
 
 ![Askew](https://github.com/TrevorEdwards/mantis-ink/blob/develop/art/askewLoading.png)
