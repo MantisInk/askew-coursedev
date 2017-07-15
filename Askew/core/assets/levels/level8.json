@@ -1,0 +1,354 @@
+{
+  "levelModelVersion": 5,
+  "goalTimeGold": 30,
+  "goalTimeSilver": 45,
+  "goalTimeBronze": 60,
+  "recordTime": 9999999.0,
+  "maxX": 60.0,
+  "maxY": 20.0,
+  "minX": 10.0,
+  "minY": -4.0,
+  "title": "The One that Tilts You",
+  "background": "texture/background/BackgroundStuff/turquoise.png",
+  "soundtrack": "TODO",
+  "entities": [
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 30.992004,
+        "y": -9.412001,
+        "width": 16.0,
+        "height": 16.0,
+        "depth": 8.0,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/sil6.png",
+        "color": -1
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 32.006012,
+        "y": 2.288001,
+        "width": 12.0,
+        "height": 12.0,
+        "depth": 6.0,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/palmTree1.png",
+        "color": -138
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 38.999916,
+        "y": 0.065003395,
+        "width": 20.0,
+        "height": 20.0,
+        "depth": 5.0,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/sil5.png",
+        "color": -1
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 2.288002,
+        "y": -3.4840004,
+        "width": 7.0,
+        "height": 7.0,
+        "depth": 4.0,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/bigPalmTree.png",
+        "color": -6661259
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 47.580017,
+        "y": -2.028001,
+        "width": 12.0,
+        "height": 12.0,
+        "depth": 4.0,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/palmTree.png",
+        "color": -1710111489
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 5.5900173,
+        "y": 3.5879996,
+        "width": 12.0,
+        "height": 12.0,
+        "depth": 2.0,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/palmTree1.png",
+        "color": -1
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 13.962013,
+        "y": -3.562,
+        "width": 5.0,
+        "height": 5.0,
+        "depth": 2.0,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/bigPalmTree.png",
+        "color": -6661121
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 29.978012,
+        "y": -4.472,
+        "width": 5.0,
+        "height": 5.0,
+        "depth": 2.0,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/bigPalmTree.png",
+        "color": -6927232
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 8.703508,
+        "y": -4.978999,
+        "width": 4.0,
+        "height": 4.0,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/palms.png",
+        "color": -1
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 35.90602,
+        "y": -5.330001,
+        "width": 4.0,
+        "height": 4.0,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/palms.png",
+        "color": -1
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 12.4085045,
+        "y": -5.135,
+        "width": 4.0,
+        "height": 4.0,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/palms.png",
+        "color": -1
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 27.09851,
+        "y": -6.1685,
+        "width": 4.0,
+        "height": 4.0,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/palms.png",
+        "color": -1
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.wall.WallModel",
+      "INSTANCE": {
+        "color": -1,
+        "x": 45.81196,
+        "y": 4.732001,
+        "thorn": false,
+        "points": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 35.0,
+        "y": 1.0,
+        "angle": 0.0,
+        "numLinks": 11.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 46.994926,
+        "y": 1.0920005,
+        "angle": 0.0,
+        "numLinks": 4.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 60.0,
+        "y": 8.0,
+        "angle": 90.0,
+        "numLinks": 7.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.StiffBranch",
+      "INSTANCE": {
+        "angle": 0.0,
+        "numLinks": 9.0,
+        "x": 47.0,
+        "y": 5.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "numLinks": 5.0,
+        "x": 21.944016,
+        "y": 6.006,
+        "angle": 30.0,
+        "omega": 0.0,
+        "pin": false,
+        "texture": 2
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "numLinks": 5.0,
+        "x": 27.014015,
+        "y": 5.9929996,
+        "angle": -30.0,
+        "omega": 0.0,
+        "pin": false,
+        "texture": 2
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "numLinks": 5.0,
+        "x": 31.967022,
+        "y": 6.058,
+        "angle": 30.0,
+        "omega": 0.0,
+        "pin": false,
+        "texture": 2
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "numLinks": 5.0,
+        "x": 39.051968,
+        "y": 13.8840065,
+        "angle": 30.0,
+        "omega": 0.0,
+        "pin": false,
+        "texture": 2
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "numLinks": 5.0,
+        "x": 39.01297,
+        "y": 13.832006,
+        "angle": -30.0,
+        "omega": 0.0,
+        "pin": false,
+        "texture": 2
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "numLinks": 5.0,
+        "x": 43.016968,
+        "y": 13.988007,
+        "angle": 30.0,
+        "omega": 0.0,
+        "pin": false,
+        "texture": 2
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "numLinks": 5.0,
+        "x": 17.017012,
+        "y": 6.0319996,
+        "angle": -30.0,
+        "omega": 0.0,
+        "pin": false,
+        "texture": 2
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.owl.OwlModel",
+      "INSTANCE": {
+        "x": 56.93987,
+        "y": 7.839002
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.sloth.SlothModel",
+      "INSTANCE": {
+        "x": 14.0,
+        "y": 2.0,
+        "lTheta": 0.0,
+        "rTheta": 0.0,
+        "shouldDie": false,
+        "torqueIntegral": 0.0,
+        "temptq": 0.0
+      }
+    }
+  ]
+}

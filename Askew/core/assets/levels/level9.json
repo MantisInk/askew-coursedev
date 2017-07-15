@@ -1,0 +1,1427 @@
+{
+  "levelModelVersion": 5,
+  "goalTimeGold": 30,
+  "goalTimeSilver": 45,
+  "goalTimeBronze": 60,
+  "recordTime": 19.080685,
+  "maxX": 39.0,
+  "maxY": 24.0,
+  "minX": -8.0,
+  "minY": -1.0,
+  "title": "The one where you mess up the first time.",
+  "background": "texture/background/BackgroundStuff/turquoise.png",
+  "soundtrack": "TODO",
+  "entities": [
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 21.58002,
+        "y": -7.5659847,
+        "width": 21.0,
+        "height": 21.0,
+        "depth": 6.0,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/sil1.png",
+        "color": 257644543
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 40.690006,
+        "y": 1.2349997,
+        "width": 12.0,
+        "height": 12.0,
+        "depth": 5.0,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/palmTree.png",
+        "color": 4341503
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": -2.3919907,
+        "y": 9.880007,
+        "width": 15.0,
+        "height": 15.0,
+        "depth": 4.0,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/sil2.png",
+        "color": 5132799
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": -18.979998,
+        "y": 9.620016,
+        "width": 15.0,
+        "height": 15.0,
+        "depth": 4.0,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/sil1.png",
+        "color": 257644543
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 8.716507,
+        "y": -0.29899967,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/shrub.png",
+        "color": -1
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 15.12551,
+        "y": -1.6185,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/shrub1.png",
+        "color": -1
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 5.726512,
+        "y": -0.59150064,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/shrub1.png",
+        "color": -1
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 3.9650006,
+        "y": -2.5740006,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/shrub1.png",
+        "color": -1
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 6.474009,
+        "y": 0.58500016,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/shrub1.png",
+        "color": -1
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 9.33401,
+        "y": -2.0474997,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/shrub1.png",
+        "color": -1
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": -8.248499,
+        "y": -0.40950084,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/shrub.png",
+        "color": -1
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 20.501013,
+        "y": -1.2155005,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/shrub.png",
+        "color": -1
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 32.65602,
+        "y": -2.236,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/shrub.png",
+        "color": -1
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 18.31701,
+        "y": -2.2099998,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/shrub.png",
+        "color": -1
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 17.569508,
+        "y": 0.05850041,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/shrub.png",
+        "color": -1
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 16.516506,
+        "y": 0.98800075,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/shrub.png",
+        "color": -1
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 14.81351,
+        "y": -0.1170001,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/shrub.png",
+        "color": -1
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 21.957012,
+        "y": 0.5459994,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/shrub1.png",
+        "color": -1
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 23.361012,
+        "y": -1.6965005,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/shrub1.png",
+        "color": -1
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 23.361012,
+        "y": -1.6965005,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/shrub1.png",
+        "color": -1
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": -2.1384993,
+        "y": -0.5915003,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/shrub1.png",
+        "color": -1
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": -8.768498,
+        "y": -2.2035,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/shrub1.png",
+        "color": -1
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 13.962008,
+        "y": -2.0084994,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/shrub1.png",
+        "color": -1
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 20.96251,
+        "y": -2.6129997,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/shrub1.png",
+        "color": -1
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 0.90350175,
+        "y": -1.4300003,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/shrub.png",
+        "color": -1
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": -2.359499,
+        "y": -2.1840003,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/shrub.png",
+        "color": -1
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": -11.134498,
+        "y": -0.48749995,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/shrub.png",
+        "color": -1
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 6.578,
+        "y": -2.2295003,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/shrub.png",
+        "color": -1
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 16.165516,
+        "y": 0.42900002,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/shrub.png",
+        "color": -1
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": -11.244998,
+        "y": 2.1189992,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/shrub1.png",
+        "color": -1
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": -9.450998,
+        "y": 1.9240005,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/shrub1.png",
+        "color": -1
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": -5.2389994,
+        "y": -2.2815,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/shrub1.png",
+        "color": -1
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": -5.5704985,
+        "y": 0.559,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/shrub1.png",
+        "color": -1
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 37.355526,
+        "y": -3.1524997,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/shrub1.png",
+        "color": -1
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 11.9860115,
+        "y": -1.2479997,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/shrub.png",
+        "color": -1
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 7.221502,
+        "y": 24.511518,
+        "width": 0.5,
+        "height": 0.5,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/topvine/Topvine3.png",
+        "color": -1610614273
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 4.134001,
+        "y": 23.322018,
+        "width": 2.0,
+        "height": 2.0,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/topvine/Topvine10.png",
+        "color": -1979713025
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 29.256523,
+        "y": 23.432516,
+        "width": 2.0,
+        "height": 2.0,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/topvine/Topvine11.png",
+        "color": -1979713025
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 23.647013,
+        "y": 24.550518,
+        "width": 0.5,
+        "height": 0.5,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/topvine/Topvine6.png",
+        "color": -1979713025
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 0.7865019,
+        "y": 24.394516,
+        "width": 0.5,
+        "height": 0.5,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/topvine/Topvine9.png",
+        "color": -1979713025
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 32.279007,
+        "y": 23.400013,
+        "width": 2.0,
+        "height": 2.0,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/topvine/Topvine10.png",
+        "color": -1979713025
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": -9.879999,
+        "y": 23.257015,
+        "width": 2.0,
+        "height": 2.0,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/topvine/Topvine10.png",
+        "color": -1979713025
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": -6.8965,
+        "y": 24.427017,
+        "width": 0.5,
+        "height": 0.5,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/topvine/Topvine3.png",
+        "color": -1610614273
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": -4.341998,
+        "y": 23.296017,
+        "width": 2.0,
+        "height": 2.0,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/topvine/Topvine11.png",
+        "color": -1979713025
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": -1.5729984,
+        "y": 24.368515,
+        "width": 0.5,
+        "height": 0.5,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/topvine/Topvine6.png",
+        "color": -1979713025
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 18.655014,
+        "y": 24.511517,
+        "width": 0.5,
+        "height": 0.5,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/topvine/Topvine6.png",
+        "color": -1979713025
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 16.172005,
+        "y": 23.419518,
+        "width": 2.0,
+        "height": 2.0,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/topvine/Topvine11.png",
+        "color": -1979713025
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 37.68052,
+        "y": 24.472517,
+        "width": 0.5,
+        "height": 0.5,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/topvine/Topvine3.png",
+        "color": -1610614273
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 9.737,
+        "y": 24.570019,
+        "width": 0.5,
+        "height": 0.5,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/topvine/Topvine3.png",
+        "color": -1610614273
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 21.203007,
+        "y": 24.570019,
+        "width": 0.5,
+        "height": 0.5,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/topvine/Topvine3.png",
+        "color": -1610614273
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 40.76152,
+        "y": 23.341518,
+        "width": 2.0,
+        "height": 2.0,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/topvine/Topvine10.png",
+        "color": -1979713025
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 12.9935,
+        "y": 23.458519,
+        "width": 2.0,
+        "height": 2.0,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/topvine/Topvine10.png",
+        "color": -1979713025
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 26.318512,
+        "y": 24.550518,
+        "width": 0.5,
+        "height": 0.5,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/topvine/Topvine3.png",
+        "color": -1610614273
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 35.379524,
+        "y": 24.550518,
+        "width": 0.5,
+        "height": 0.5,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/topvine/Topvine3.png",
+        "color": -1610614273
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 23.868017,
+        "y": 0.0454998,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/shrub.png",
+        "color": -1
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 34.76202,
+        "y": -1.6705003,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/shrub1.png",
+        "color": -1
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 38.49949,
+        "y": -1.6444995,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 1.5,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/shrub.png",
+        "color": -1
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.ghost.GhostModel",
+      "INSTANCE": {
+        "x": 8.0,
+        "y": 13.0,
+        "patroldx1": 8.0,
+        "patroldy1": 13.0,
+        "patroldx2": 31.0,
+        "patroldy2": 13.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 25.51902,
+        "y": -0.28600025,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 1.0,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/shrub.png",
+        "color": -1
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.wall.WallModel",
+      "INSTANCE": {
+        "color": 7896319,
+        "x": 25.883018,
+        "y": -0.9100003,
+        "thorn": false,
+        "points": [
+          0.0,
+          0.0,
+          0.0,
+          8.0,
+          -18.0,
+          8.0,
+          -18.0,
+          13.0,
+          -5.0,
+          13.0,
+          5.0,
+          13.0,
+          5.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 26.11702,
+        "y": 1.1179996,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 1.0,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/shrub1.png",
+        "color": -1
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 18.200012,
+        "y": 12.077007,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 1.0,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/shrub.png",
+        "color": -1
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 10.361008,
+        "y": 11.869007,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 1.0,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/shrub.png",
+        "color": -1
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 12.415008,
+        "y": 11.999006,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 1.0,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/shrub.png",
+        "color": -1
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 27.755018,
+        "y": 12.155006,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 1.0,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/shrub.png",
+        "color": -1
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 14.417007,
+        "y": 12.077007,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 1.0,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/shrub.png",
+        "color": -1
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 14.417007,
+        "y": 12.077007,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 1.0,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/shrub.png",
+        "color": -1
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 16.484007,
+        "y": 12.012007,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 1.0,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/shrub.png",
+        "color": -1
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 19.968012,
+        "y": 12.181007,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 1.0,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/shrub.png",
+        "color": -1
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 21.944012,
+        "y": 12.181007,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 1.0,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/shrub.png",
+        "color": -1
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 23.88102,
+        "y": 12.129007,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 1.0,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/shrub.png",
+        "color": -1
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 25.831018,
+        "y": 12.194007,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 1.0,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/shrub.png",
+        "color": -1
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 38.142006,
+        "y": 1.6770005,
+        "width": 12.0,
+        "height": 12.0,
+        "depth": 1.0,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/palmTree.png",
+        "color": 4341503
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.wall.WallModel",
+      "INSTANCE": {
+        "color": 7896319,
+        "x": 28.96402,
+        "y": 12.090006,
+        "thorn": false,
+        "points": [
+          0.0,
+          0.0,
+          1.0560226,
+          3.8990107,
+          1.0170212,
+          3.8730106,
+          2.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.StiffBranch",
+      "INSTANCE": {
+        "angle": -30.0,
+        "numLinks": 5.0,
+        "x": 0.81900024,
+        "y": 8.008004
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.StiffBranch",
+      "INSTANCE": {
+        "angle": 30.0,
+        "numLinks": 4.0,
+        "x": 1.2480001,
+        "y": 11.973009
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 1.0010004,
+        "y": 0.052000046,
+        "angle": 0.0,
+        "numLinks": 12.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 37.582993,
+        "y": 3.939001,
+        "angle": 90.0,
+        "numLinks": 5.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 37.673992,
+        "y": 0.9750004,
+        "angle": 90.0,
+        "numLinks": 5.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.PoleVault",
+      "INSTANCE": {
+        "numLinks": 9.0,
+        "angle": 0.0,
+        "linksize": 1.0,
+        "x": 1.0,
+        "y": 11.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 37.517994,
+        "y": 7.9430013,
+        "angle": 90.0,
+        "numLinks": 5.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 37.76499,
+        "y": 11.947004,
+        "angle": 90.0,
+        "numLinks": 5.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 29.0,
+        "y": 15.0,
+        "angle": 90.0,
+        "numLinks": 24.0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "numLinks": 5.0,
+        "x": 19.0,
+        "y": 7.0,
+        "angle": 15.0,
+        "omega": -5.0,
+        "pin": false,
+        "texture": 0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "numLinks": 5.0,
+        "x": 9.0,
+        "y": 7.0,
+        "angle": -40.0,
+        "omega": -5.0,
+        "pin": false,
+        "texture": 0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "numLinks": 5.0,
+        "x": 14.0,
+        "y": 7.0,
+        "angle": 15.0,
+        "omega": -5.0,
+        "pin": false,
+        "texture": 0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "numLinks": 12.0,
+        "x": 32.0,
+        "y": 24.0,
+        "angle": 0.0,
+        "omega": 0.0,
+        "pin": false,
+        "texture": 0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "numLinks": 6.0,
+        "x": 5.0,
+        "y": 24.0,
+        "angle": -15.0,
+        "omega": 0.0,
+        "pin": false,
+        "texture": 0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "numLinks": 6.0,
+        "x": 9.0,
+        "y": 24.0,
+        "angle": 15.0,
+        "omega": 0.0,
+        "pin": false,
+        "texture": 0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "numLinks": 6.0,
+        "x": 13.0,
+        "y": 24.0,
+        "angle": -15.0,
+        "omega": 0.0,
+        "pin": false,
+        "texture": 0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "numLinks": 6.0,
+        "x": 17.0,
+        "y": 24.0,
+        "angle": 15.0,
+        "omega": 0.0,
+        "pin": false,
+        "texture": 0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "numLinks": 6.0,
+        "x": 29.0,
+        "y": 24.0,
+        "angle": -15.0,
+        "omega": 0.0,
+        "pin": false,
+        "texture": 0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "numLinks": 6.0,
+        "x": 25.0,
+        "y": 24.0,
+        "angle": 15.0,
+        "omega": 0.0,
+        "pin": false,
+        "texture": 0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "numLinks": 6.0,
+        "x": 21.0,
+        "y": 24.0,
+        "angle": -15.0,
+        "omega": 0.0,
+        "pin": false,
+        "texture": 0
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.owl.OwlModel",
+      "INSTANCE": {
+        "x": 33.501015,
+        "y": 0.80600023
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.sloth.SlothModel",
+      "INSTANCE": {
+        "x": 5.0960035,
+        "y": 3.6140022,
+        "lTheta": 0.0,
+        "rTheta": 0.0,
+        "shouldDie": false
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 27.144024,
+        "y": -0.47840026,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 0.8,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/shrub.png",
+        "color": -1
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 32.125626,
+        "y": -1.4040003,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 0.8,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/shrub.png",
+        "color": -1
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 31.127222,
+        "y": -0.8112002,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 0.8,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/shrub.png",
+        "color": -1
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.BackgroundEntity",
+      "INSTANCE": {
+        "x": 33.748024,
+        "y": -1.1752005,
+        "width": 3.0,
+        "height": 3.0,
+        "depth": 0.8,
+        "angle": 0.0,
+        "scalex": 1.0,
+        "scaley": 1.0,
+        "texturePath": "texture/background/BackgroundStuff/shrub.png",
+        "color": -1
+      }
+    }
+  ]
+}

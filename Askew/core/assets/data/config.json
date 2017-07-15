@@ -1,0 +1,22 @@
+{
+  "flowGrabAnything": false,
+  "flowArmDensity": 1.1,
+  "flowTorque": 2.9,
+  "flowOmegaNormalizer": 5.0,
+  "flowGravityScale": 0.55,
+  "flowCanMoveGrabbingHand": true,
+  "flowMovementMode": 0,
+  "flowControlMode": 0,
+  "graphics": 0,
+  "vineDensity": 3.0,
+  "fullscreen": false,
+  "defaultLevel": "level1",
+  "storeTimeRecords": true,
+  "maxMultiLevel": 4,
+  "maxLevel": 12,
+  "multiplayer": false,
+  "currentLevel": 1,
+  "currentMultiLevel": 1,
+  "enableMusic": true,
+  "maxTutorial": 3
+}

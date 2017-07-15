@@ -1,0 +1,69 @@
+{
+  "levelModelVersion": 1,
+  "title": "cat",
+  "goalTimeGold": 30,
+  "goalTimeSilver": 45,
+  "goalTimeBronze": 60,
+  "height": 10,
+  "width": 10,
+  "entities": [
+    {
+      "CLASSNAME": "askew.entity.sloth.SlothModel",
+      "INSTANCE": {
+        "x": -0.875,
+        "y": 18.59375
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.wall.WallModel",
+      "INSTANCE": {
+        "x": 3.03125,
+        "y": 20.90625,
+        "points": [
+          0.0,
+          0.0,
+          0.0,
+          10.0,
+          10.0,
+          1.0,
+          1.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.wall.WallModel",
+      "INSTANCE": {
+        "x": -3.8125,
+        "y": 15.28125,
+        "points": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.wall.WallModel",
+      "INSTANCE": {
+        "x": -1.15625,
+        "y": 16.1875,
+        "points": [
+          0.0,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          0.0
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,203 @@
+{
+  "levelModelVersion": 3,
+  "goalTimeGold": 30,
+  "goalTimeSilver": 45,
+  "goalTimeBronze": 60,
+  "recordTime": 9999999.0,
+  "maxX": 75.0,
+  "maxY": 75.0,
+  "minX": -12.0,
+  "minY": 6.0,
+  "title": "The First One",
+  "background": "texture/background/BackgroundStuff/purple.png",
+  "soundtrack": "TODO",
+  "entities": [
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 17.0,
+        "y": 11.0,
+        "angle": 90.0,
+        "numLinks": 5.0,
+        "grabbed": false
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.owl.OwlModel",
+      "INSTANCE": {
+        "x": 15.0,
+        "y": 12.0,
+        "grabbed": false
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.sloth.SlothModel",
+      "INSTANCE": {
+        "x": 7.0,
+        "y": 38.0,
+        "lTheta": 0.0,
+        "rTheta": 0.0,
+        "grabbed": false
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 9.0,
+        "y": 24.0,
+        "angle": 0.0,
+        "numLinks": 5.0,
+        "grabbed": false
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 12.0,
+        "y": 15.0,
+        "angle": 0.0,
+        "numLinks": 5.0,
+        "grabbed": false
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 12.0,
+        "y": 30.0,
+        "angle": 0.0,
+        "numLinks": 5.0,
+        "grabbed": false
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.PoleVault",
+      "INSTANCE": {
+        "linksize": 1.0,
+        "numLinks": 3.0,
+        "x": 12.0,
+        "y": 17.0,
+        "angle": 45.0,
+        "grabbed": false
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 6.0,
+        "y": 17.0,
+        "angle": 0.0,
+        "numLinks": 5.0,
+        "grabbed": false
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.PoleVault",
+      "INSTANCE": {
+        "linksize": 1.0,
+        "numLinks": 3.0,
+        "x": 6.0,
+        "y": 29.0,
+        "angle": -45.0,
+        "grabbed": false
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 12.0,
+        "y": 22.0,
+        "angle": 0.0,
+        "numLinks": 5.0,
+        "grabbed": false
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.PoleVault",
+      "INSTANCE": {
+        "linksize": 1.0,
+        "numLinks": 3.0,
+        "x": 12.0,
+        "y": 25.0,
+        "angle": 45.0,
+        "grabbed": false
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 6.0,
+        "y": 27.0,
+        "angle": 0.0,
+        "numLinks": 5.0,
+        "grabbed": false
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 6.0,
+        "y": 34.0,
+        "angle": 0.0,
+        "numLinks": 5.0,
+        "grabbed": false
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.PoleVault",
+      "INSTANCE": {
+        "linksize": 1.0,
+        "numLinks": 3.0,
+        "x": 6.0,
+        "y": 20.0,
+        "angle": -30.0,
+        "grabbed": false
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.PoleVault",
+      "INSTANCE": {
+        "linksize": 1.0,
+        "numLinks": 3.0,
+        "x": 6.0,
+        "y": 36.0,
+        "angle": -45.0,
+        "grabbed": false
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.PoleVault",
+      "INSTANCE": {
+        "linksize": 1.0,
+        "numLinks": 5.0,
+        "x": 12.0,
+        "y": 33.0,
+        "angle": 60.0,
+        "grabbed": false
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "numLinks": 5.0,
+        "x": 8.0,
+        "y": 17.0,
+        "angle": 5.0,
+        "omega": -400.0,
+        "pin": false,
+        "texture": 0,
+        "grabbed": false
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.tree.Trunk",
+      "INSTANCE": {
+        "x": 8.0,
+        "y": 17.0,
+        "angle": 90.0,
+        "numLinks": 2.0,
+        "grabbed": false
+      }
+    }
+  ]
+}

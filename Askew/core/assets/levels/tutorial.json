@@ -1,0 +1,70 @@
+{
+  "levelModelVersion": 1,
+  "title": "tutorial",
+  "goalTimeGold": 30,
+  "goalTimeSilver": 45,
+  "goalTimeBronze": 60,
+  "height": 10,
+  "width": 10,
+  "entities": [
+    {
+      "CLASSNAME": "askew.entity.sloth.SlothModel",
+      "INSTANCE": {
+        "x": -2.71875,
+        "y": 19.625
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "pin": false,
+        "numLinks": 5.0,
+        "x": -1.5625,
+        "y": 19.1875
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "pin": false,
+        "numLinks": 5.0,
+        "x": -1.21875,
+        "y": 19.46875
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "pin": false,
+        "numLinks": 5.0,
+        "x": -1.3125,
+        "y": 19.15625
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "pin": false,
+        "numLinks": 5.0,
+        "x": 12.125,
+        "y": 20.875
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.sloth.SlothModel",
+      "INSTANCE": {
+        "x": 15.78125,
+        "y": 7.46875
+      }
+    },
+    {
+      "CLASSNAME": "askew.entity.vine.Vine",
+      "INSTANCE": {
+        "pin": false,
+        "numLinks": 5.0,
+        "x": 16.4375,
+        "y": 5.9375
+      }
+    }
+  ]
+}
